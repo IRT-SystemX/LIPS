@@ -1,2 +1,2 @@
 # LIPS
-The benchmark platform for power networks
+LIPS - Learning Industrial physical simulationbenchmark suite: the power grid case
