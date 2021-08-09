@@ -127,3 +127,11 @@ dmypy.json
 
 # Pyre type checker
 .pyre/
+
+#custom ignore folders
+.vscode
+lips/Outputs/Scenario1/Data/*
+lips/Outputs/Scenario1/Benchmarks/*
+lips/Outputs/Scenario1_old
+lips/Outputs/Scenario2
+lips/Outputs/Scenario5
