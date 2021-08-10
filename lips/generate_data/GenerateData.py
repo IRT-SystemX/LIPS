@@ -302,14 +302,14 @@ class GenerateData():
         dir_out = os.path.join(path, self.experiment_name)
         if not os.path.exists(dir_out):
             try:
-                os.mkdir(dir_out)
+                os.makedirs(dir_out)
             except OSError as err:
                 raise err
                 #print("OS error {0}".format(err))
 
         dir_out = os.path.join(dir_out, "Data")
         if not os.path.exists(dir_out):
-            os.mkdir(dir_out)
+            os.makedirs(dir_out)
 
         self._save_metadata(dir_out)
 
@@ -317,7 +317,7 @@ class GenerateData():
         for key_, val_ in self.dataset_original.items():
             tag_dir = os.path.join(dir_out, key_)
             if not os.path.exists(tag_dir):
-                os.mkdir(tag_dir)
+                os.makedirs(tag_dir)
             for key__, val__ in val_.items():
                 np.save(os.path.join(tag_dir, f"{key__}_real.npy"), val__)
 
