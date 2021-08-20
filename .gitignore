@@ -1,3 +1,11 @@
+# Copyright (c) 2021, IRT SystemX (https://www.irt-systemx.fr/en/)
+# See AUTHORS.txt
+# This Source Code Form is subject to the terms of the Mozilla Public License, version 2.0.
+# If a copy of the Mozilla Public License, version 2.0 was not distributed with this file,
+# you can obtain one at http://mozilla.org/MPL/2.0/.
+# SPDX-License-Identifier: MPL-2.0
+# This file is part of LIPS, LIPS is a python platform for power networks benchmarking
+
 # Byte-compiled / optimized / DLL files
 __pycache__/
 *.py[cod]
@@ -130,8 +138,19 @@ dmypy.json
 
 #custom ignore folders
 .vscode
-lips/Outputs/Scenario1/Data/*
-lips/Outputs/Scenario1/Benchmarks/*
+lips/benchmark/Benchmark copy.py
+lips/dataset/DataSet copy.py
+lips/models/*
+lips/models
+temporary.ipynb
+lips/Outputs/Scenario1/Data/super_test
+lips/Outputs/Scenario1/Data/test
+lips/Outputs/Scenario1/Data/training
+lips/Outputs/Scenario1/Data/init_obs.npy
+lips/Outputs/Scenario1/Benchmarks/benchmark1/leap_net/test/*
+
+
 lips/Outputs/Scenario1_old
 lips/Outputs/Scenario2
 lips/Outputs/Scenario5
+
