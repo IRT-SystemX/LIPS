@@ -146,8 +146,11 @@ temporary.ipynb
 lips/Outputs/Scenario1/Data/super_test
 lips/Outputs/Scenario1/Data/test
 lips/Outputs/Scenario1/Data/training
+lips/Outputs/Scenario1/Data/validation
+
 lips/Outputs/Scenario1/Data/init_obs.npy
 lips/Outputs/Scenario1/Benchmarks/benchmark1/leap_net/test/*
+lips/Outputs/Scenario1/Benchmarks/benchmark1/leap_net/super_test/*
 
 
 lips/Outputs/Scenario1_old
