@@ -2,6 +2,6 @@
 # See AUTHORS.txt
 # This file is part of LIPS, LIPS is a python platform for power networks benchmarking
 
-__all__ = ["GenerateData"]
+__all__ = ["DataSet"]
 
-from lips.generate_data.GenerateData import GenerateData
+from lips.dataset.DataSet import DataSet
