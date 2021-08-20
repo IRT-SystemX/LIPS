@@ -1,3 +1,11 @@
+# Copyright (c) 2021, IRT SystemX (https://www.irt-systemx.fr/en/)
+# See AUTHORS.txt
+# This Source Code Form is subject to the terms of the Mozilla Public License, version 2.0.
+# If a copy of the Mozilla Public License, version 2.0 was not distributed with this file,
+# you can obtain one at http://mozilla.org/MPL/2.0/.
+# SPDX-License-Identifier: MPL-2.0
+# This file is part of LIPS, LIPS is a python platform for power networks benchmarking
+
 import os
 import json
 import copy
@@ -6,7 +14,7 @@ import numpy as np
 
 from collections.abc import Iterable
 
-from lips.metrics.utils import DEFAULT_METRICS
+from lips.metrics import DEFAULT_METRICS
 from lips.metrics import metricPercentage
 #from lips.evaluation import BasicVerifier, Check_loss, Check_Kirchhoff_current_law, Check_energy_conservation
 from lips.evaluation.BasicVerifier import BasicVerifier
@@ -61,6 +69,7 @@ class Evaluation():
                         EL_tolerance=0.04,
                         LCE_tolerance=1e-3,
                         KCL_tolerance=1e-2,
+                        active_flow=True,
                         save_path=None):
         """
         function that evaluates the physics compliances on given observations
@@ -139,8 +148,8 @@ class Evaluation():
 
             if check_KCL:
                 self.metrics_physics["KCL"] = {}
-                res_kcl = Check_Kirchhoff_current_law(env=self.benchmark.generator.env,
-                                                      env_name=self.benchmark.generator.env_name,
+                res_kcl = Check_Kirchhoff_current_law(env=self.benchmark.dataset.env,
+                                                      env_name=self.benchmark.dataset.env_name,
                                                       data=self.observations,
                                                       load_p=self.observations["load_p"],
                                                       load_q=self.observations["load_q"],
@@ -148,7 +157,7 @@ class Evaluation():
                                                       prod_v=self.observations["prod_v"],
                                                       line_status=self.observations["line_status"],
                                                       topo_vect=self.observations["topo_vect"],
-                                                      active_flow=True,
+                                                      active_flow=active_flow,
                                                       tolerance=KCL_tolerance)
                 self.metrics_physics["KCL"]["violation_percentage"] = res_kcl[3]
                 self.metrics_physics["KCL"]["nodes_values"] = res_kcl[0]
@@ -193,8 +202,8 @@ class Evaluation():
 
             if check_KCL:
                 self.metrics_physics["KCL"] = {}
-                res_kcl = Check_Kirchhoff_current_law(env=self.benchmark.generator.env,
-                                                      env_name=self.benchmark.generator.env_name,
+                res_kcl = Check_Kirchhoff_current_law(env=self.benchmark.dataset.env,
+                                                      env_name=self.benchmark.dataset.env_name,
                                                       data=self.predictions,
                                                       load_p=self.observations["load_p"],
                                                       load_q=self.observations["load_q"],
@@ -202,7 +211,7 @@ class Evaluation():
                                                       prod_v=self.observations["prod_v"],
                                                       line_status=self.observations["line_status"],
                                                       topo_vect=self.observations["topo_vect"],
-                                                      active_flow=True,
+                                                      active_flow=active_flow,
                                                       tolerance=KCL_tolerance)
                 self.metrics_physics["KCL"]["violation_percentage"] = res_kcl[3]
                 self.metrics_physics["KCL"]["nodes_values"] = res_kcl[0]
@@ -289,6 +298,11 @@ class Evaluation():
 
     def evaluate_adaptability(self):
         pass
+    
+    def do_evaluations(self, todo_dict=None):
+        """
+        this function will call all the evaluation functions 
+        """
 
     def visualize_network_state(self):
         """

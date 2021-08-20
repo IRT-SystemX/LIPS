@@ -1,5 +1,9 @@
-# Copyright (c) 2021-2022, IRT SystemX and RTE (https://www.irt-systemx.fr/)
+# Copyright (c) 2021, IRT SystemX (https://www.irt-systemx.fr/en/)
 # See AUTHORS.txt
+# This Source Code Form is subject to the terms of the Mozilla Public License, version 2.0.
+# If a copy of the Mozilla Public License, version 2.0 was not distributed with this file,
+# you can obtain one at http://mozilla.org/MPL/2.0/.
+# SPDX-License-Identifier: MPL-2.0
 # This file is part of LIPS, LIPS is a python platform for power networks benchmarking
 
 import os
@@ -14,13 +18,13 @@ import grid2op
 from grid2op.PlotGrid import PlotMatplot
 
 
-from lips.generate_data.utils import create_env, reproducible_exp
-from lips.generate_data.utils import get_reference_action, apply_reference_action, get_agent
+from lips.dataset.utils import create_env, reproducible_exp
+from lips.dataset.utils import get_reference_action, apply_reference_action, get_agent
 
 
-class GenerateData():
+class DataSet():
     """
-    GenerateData class allowing to generate data with different distributions and from 
+    DataSet class allowing to generate data with different distributions and from 
     various topolgy references
 
     Attributes
@@ -40,28 +44,21 @@ class GenerateData():
     """
 
     def __init__(self,
-                 experiment_name="Scenario",
-                 env_name="l2rpn_case14_sandbox",
-                 attr_x=("prod_p", "prod_v", "load_p", "load_q"),
-                 attr_tau=("line_status", "topo_vect"),
-                 attr_y=("a_or", "a_ex", "p_or", "p_ex", "q_or",
-                         "q_ex", "prod_q", "load_v", "v_or", "v_ex"),
-                 use_lightsim_if_available=True
+                 experiment_name="Scenario"
                  # expe_type="powerlines"
                  ):
 
         # create the environment
         self.experiment_name = experiment_name
-        self.env_name = env_name
-        if isinstance(self.env_name, str):
-            self.env = create_env(
-                env_name=self.env_name, use_lightsim_if_available=use_lightsim_if_available)
-        else:
-            raise NotImplementedError
+        self.env_name = None
+        self.env = None
 
-        self._obs = self.env.reset()
+        self._obs = None
+        self.init_obs = None # observation list used for initialization of augmented simulator
 
         self._nb_samples = None
+
+        self.attr_names = None
 
         # generator agent
         self.agent_generator = dict()
@@ -70,49 +67,49 @@ class GenerateData():
         self.reference_number = dict()
         self.reference_action = dict()
 
-        self.attr_x = attr_x
-        self.attr_tau = attr_tau
-        self.attr_y = attr_y
-
         self.variable_size = dict()
 
         # a dictionary including three datasets (training, validation(optional) and test)
         self.dataset = dict()
-        self.dataset_original = dict()
 
         self.dataset_available = dict()
-        self.dataset_available["training"] = False
-        self.dataset_available["validation"] = False
-        self.dataset_available["test"] = False
 
         self.tag_list = list()
 
         self.dataset_size = dict()
 
-        self.preprocessed = dict()
-        self.preprocessed["training"] = False
-        self.preprocessed["validation"] = False
-        self.preprocessed["test"] = False
-
-        self.mean_dict = dict()
-        self.std_dict = dict()
+        self.data_path = None
 
     def init(self, tag="training", nb_samples=None):
         self.dataset[tag] = {}
-        self.dataset_original[tag] = {}
-        for attr_nm in (*self.attr_x, *self.attr_tau, *self.attr_y):
+        
+        for attr_nm in self.attr_names:
             tmp = len(getattr(self._obs, attr_nm))
             self.variable_size[attr_nm] = tmp
             self.dataset[tag][attr_nm] = np.full(
                 (nb_samples, tmp), fill_value=np.NaN, dtype=np.float)
 
+    def create_environment(self, env_name="l2rpn_case14_sandbox", use_lightsim_if_available=True):
+        self.env_name = env_name
+        if isinstance(self.env_name, str):
+            self.env = create_env(env_name=self.env_name, use_lightsim_if_available=use_lightsim_if_available)
+        else:
+            raise NotImplementedError
+
+
     def generate(self,
+                 env_name="l2rpn_case14_sandbox",
                  nb_samples=int(1024) * int(128),
                  tag="training",
                  val_regex=".*99[0-9].*",
+                 attr_names=("prod_p", "prod_v", "load_p", "load_q", "line_status", "topo_vect",
+                             "a_or", "a_ex", "p_or", "p_ex", "q_or", "q_ex", "prod_q", "load_v", 
+                             "v_or", "v_ex"),
+                 use_lightsim_if_available=True,
                  reference_number=0,
                  agent_generator_name="random_nn1",
                  agent_parameters={"p": 0.5},
+                 _nb_obs_init=512,
                  skip_gameover=True,
                  env_seed=1234,
                  agent_seed=14,
@@ -137,6 +134,9 @@ class GenerateData():
                 agent parameters to be used for generation of reference topology
                 the dict keys are p for the probability of an action or a list indicating the action zone
 
+            _nb_init_obss : ``int``
+                a few Grid2op observations to be used for AugmentedSimulator initialization
+
             skip_gameover : ``bool``
                 a boolean variable to keep the environment gameover situations or not
 
@@ -149,29 +149,33 @@ class GenerateData():
             verbose : ``bool``
                 whether or not to show the data generation progression bar
         """
+        self.create_environment(env_name, use_lightsim_if_available)
+
+        self.attr_names = attr_names
+
+        self._obs = self.env.reset()
         self._nb_samples = nb_samples
         self.init(tag, self._nb_samples)
-        # if the generated datasets are preprocessed
-        self.preprocessed[tag] = False
         self.dataset_size[tag] = nb_samples  # length of each dataset
         self.dataset_available[tag] = True
         self.tag_list.append(tag)
         self.reference_number[tag] = reference_number
 
         # select different chronics for training and evaluation parts
-        if (tag == "training") | (tag == "validation"):
-            self.env.chronics_handler.set_filter(
-                lambda path: re.match(val_regex, path) is None)
+        if (tag == "training"):
+            self.env.chronics_handler.set_filter(lambda path: re.match(val_regex, path) is None)
+            self.env.chronics_handler.real_data.reset()
+            self.init_obs = []
+        elif tag == "validation":
+            self.env.chronics_handler.set_filter(lambda path: re.match(val_regex, path) is None)
             self.env.chronics_handler.real_data.reset()
         else:
-            self.env.chronics_handler.set_filter(
-                lambda path: re.match(val_regex, path) is not None)
+            self.env.chronics_handler.set_filter(lambda path: re.match(val_regex, path) is not None)
             self.env.chronics_handler.real_data.reset()
 
         self._obs = self.env.reset()
 
-        agent_generator = get_agent(
-            self.env, agent_generator_name, agent_parameters)
+        agent_generator = get_agent(self.env, agent_generator_name, agent_parameters)
         self.agent_generator[tag] = agent_generator_name
 
         # get the reference action for reference topology
@@ -186,6 +190,8 @@ class GenerateData():
         obs = self.env.reset()
         done = False
         t = 0
+        nb_obs = 0 # counter to keep _nb_obs_init observations for augmented simulator initialization
+
         if verbose:
             pbar = tqdm(total=self._nb_samples)
 
@@ -204,94 +210,24 @@ class GenerateData():
                 done = False
                 continue
 
-            for attr_nm in (*self.attr_x, *self.attr_tau, *self.attr_y):
+            for attr_nm in self.attr_names:
                 self.dataset[tag][attr_nm][t, :] = getattr(obs, attr_nm)
+
+            if tag == "training" and nb_obs <= _nb_obs_init:
+                self.init_obs.append(obs)
+                nb_obs += 1
+
 
             t += 1
             if verbose:
                 pbar.update(1)
         if verbose:
             pbar.close()
-        if tag == "training":
-            for attr_nm in (*self.attr_x, *self.attr_tau, *self.attr_y):
-                self.mean_dict[attr_nm], self.std_dict[attr_nm] = self.get_mean_std(
-                    attr_nm)
-
-        self.dataset_original[tag] = copy.deepcopy(self.dataset[tag])
-
-    def get_mean_std(self, attr_nm):
-        obss = self.dataset["training"]
-        mean_tmp = np.mean(obss.get(attr_nm), axis=0).astype(np.float32)
-        std_tmp = np.std(obss.get(attr_nm), axis=0).astype(np.float32) + 1e-1
-
-        if attr_nm in ["prod_p"]:
-            # mult_tmp = np.array([max((pmax - pmin), 1.) for pmin, pmax in zip(obs.gen_pmin, obs.gen_pmax)],
-            #                     dtype=np.float32)
-            # default values are good enough
-            pass
-        elif attr_nm in ["prod_q"]:
-            # default values are good enough
-            pass
-        elif attr_nm in ["load_p", "load_q"]:
-            # default values are good enough
-            pass
-        elif attr_nm in ["load_v", "prod_v"]:
-            # default values are good enough
-            # stds are almost 0 for loads, this leads to instability
-            std_tmp = 1.0
-        elif attr_nm in ["v_or", "v_ex"]:
-            # default values are good enough
-            # because i multiply by the line status, so i don't want any bias
-            mean_tmp = np.float32(0.)
-            std_tmp = np.mean(obss.get(attr_nm), axis=0).astype(np.float32)
-        elif attr_nm in ["p_or", "p_ex", "q_or", "q_ex"]:
-            # because i multiply by the line status, so i don't want any bias
-            mean_tmp = np.float32(0.)
-            std_tmp = np.array([max(np.abs(val), 1.0)
-                               for val in obss.get(attr_nm)[0]], dtype=np.float32)
-        elif attr_nm in ["a_or", "a_ex"]:
-            # because i multiply by the line status, so i don't want any bias
-            mean_tmp = np.float32(0.0)
-            # which is equal to the thermal limit
-            std_tmp = np.abs(obss.get("a_or")[0] / (self._obs.rho + 1e-2))
-            std_tmp[std_tmp <= 1.0] = 1.0
-        elif attr_nm == "line_status":
-            # encode back to 0: connected, 1: disconnected
-            mean_tmp = np.float32(1.0)
-            std_tmp = np.float32(-1.0)
-        # START
-        # Added by Milad
-        elif attr_nm == "topo_vect":
-            # encode back to 0 = on bus 1, 1 = on bus 2
-            mean_tmp = np.float32(1.)
-            std_tmp = np.float32(1.)
-        elif attr_nm == "connectivity_matrix":
-            # in connectivity matrix 0: no connection, 1: connected to bus1 2: connected to bus2
-            # Not modify this encoding
-            mean_tmp = np.float32(0.)
-            std_tmp = np.float32(1.)
-        # END
-
-        return mean_tmp, std_tmp
-
-    def preprocess_data(self):
-        # if not(self.preprocessed):
-        #    for attr_nm in ()
-        for tag in self.tag_list:
-            if not(self.preprocessed[tag]):
-                for attr_nm in (*self.attr_x, *self.attr_y):
-                    self.dataset[tag][attr_nm] = (
-                        self.dataset[tag][attr_nm] - self.mean_dict[attr_nm]) / self.std_dict[attr_nm]
-                for attr_nm in self.attr_tau:
-                    self.dataset[tag][attr_nm] = abs(
-                        (self.dataset[tag][attr_nm] - self.mean_dict[attr_nm]) / self.std_dict[attr_nm])
-                self.preprocessed[tag] = True
 
     def add_tag(self, tag=None):
         """
         to add more datasets, like super test set
         """
-        self.preprocessed[tag] = False
         self.dataset_available[tag] = False
         self.tag_list.append(tag)
 
@@ -311,10 +247,15 @@ class GenerateData():
         if not os.path.exists(dir_out):
             os.makedirs(dir_out)
 
+        self.data_path = dir_out
+
         self._save_metadata(dir_out)
 
+        if self.init_obs:
+            np.save(os.path.join(dir_out,"init_obs.npy"), self.init_obs)
+
         # save the data for each existing tag
-        for key_, val_ in self.dataset_original.items():
+        for key_, val_ in self.dataset.items():
             tag_dir = os.path.join(dir_out, key_)
             if not os.path.exists(tag_dir):
                 os.makedirs(tag_dir)
@@ -331,70 +272,51 @@ class GenerateData():
             raise RuntimeError("The indicated path does not exists")
 
         self._load_metadata(dir_in)
+        
+        self.create_environment(self.env_name)
+
+        self.init_obs = list(np.load(os.path.join(dir_in,"init_obs.npy"), allow_pickle=True))
 
         # load all the available numpy files to corresponding dictionaries
         for tag in self.tag_list:
             self.dataset[tag] = {}
-            self.dataset_original[tag] = {}
             self.dataset_available[tag] = True
             tag_dir = os.path.join(dir_in, tag)
             if not os.path.exists(tag_dir):
-                raise RuntimeError(
-                    f"the directory for dataset {tag} not found")
+                raise RuntimeError(f"the directory for dataset {tag} not found")
             for key_ in self.variable_size.keys():
-                self.dataset[tag][key_] = np.load(
-                    os.path.join(tag_dir, f"{key_}_real.npy"))
-                self.dataset_original[tag][key_] = np.load(
-                    os.path.join(tag_dir, f"{key_}_real.npy"))
+                self.dataset[tag][key_] = np.load(os.path.join(tag_dir, f"{key_}_real.npy"))
 
     def _save_metadata(self, path):
         res = self._get_metadata()
-        json_nm = "metadata_GenerateData.json"
+        json_nm = "metadata_DataSet.json"
         with open(os.path.join(path, json_nm), "w", encoding="utf-8") as f:
             json.dump(obj=res, fp=f)
 
     def _load_metadata(self, path):
-        json_nm = "metadata_GenerateData.json"
+        json_nm = "metadata_DataSet.json"
         with open(os.path.join(path, json_nm), "r", encoding="utf-8") as f:
             res = json.load(f)
 
         self.env_name = res["env_name"]
-        self.attr_x = tuple(res["attr_x"])
-        self.attr_y = tuple(res["attr_y"])
-        self.attr_tau = tuple(res["attr_tau"])
+        self.attr_names = tuple(res["attr_names"])
         self.variable_size = res["variable_size"]
-        #self.mean_dict = res["normalization"]["mean_dict"]
-        #self.std_dict = res["normalization"]["std_dict"]
-        for nm_, val_ in zip(res["variable_size"].keys(), res["normalization"]["mean_dict"]):
-            self.mean_dict[nm_] = val_
-        for nm_, val_ in zip(res["variable_size"].keys(), res["normalization"]["std_dict"]):
-            self.std_dict[nm_] = val_
         self.tag_list = res["tag_list"]
         self.dataset_size = res["dataset_size"]
         self.agent_generator = res["agent_generator"]
         self.reference_number = res["reference_number"]
-
-        for tag in self.tag_list:
-            self.preprocessed[tag] = False
+        self.data_path = res["data_path"]
 
     def _get_metadata(self):
         res = dict()
         res["env_name"] = self.env_name
-        res["attr_x"] = self.attr_x
-        res["attr_y"] = self.attr_y
-        res["attr_tau"] = self.attr_tau
+        res["attr_names"] = self.attr_names
         res["variable_size"] = self.variable_size
-        res["normalization"] = {}
-        res["normalization"]["mean_dict"] = []
-        for el in self.mean_dict.values():
-            self._save_dict(res["normalization"]["mean_dict"], el)
-        res["normalization"]["std_dict"] = []
-        for el in self.std_dict.values():
-            self._save_dict(res["normalization"]["std_dict"], el)
         res["tag_list"] = self.tag_list
         res["dataset_size"] = self.dataset_size
         res["agent_generator"] = self.agent_generator
         res["reference_number"] = self.reference_number
+        res["data_path"] = self.data_path
 
         return res
 
@@ -420,11 +342,15 @@ class GenerateData():
         """
         This functions shows the network state evolution over time for a given dataset
         """
+        if self.env is None: 
+            print("Generate some data from an environment to visualize the network")
+            return
+        
         plot_helper = PlotMatplot(self.env.observation_space)
 
         obs = self.env.reset()
         fig = plot_helper.plot_obs(obs)
-        fig.show()
+        #fig.show()
 
     def visualize_network_reference_topology(self, tag):
         """
@@ -447,4 +373,4 @@ class GenerateData():
         # obs.topo_vect = np.asarray(
         #    self.dataset_original[tag]["topo_vect"][0], dtype=np.int)
         fig = plot_helper.plot_obs(obs)
-        fig.show()
+        #fig.show()
