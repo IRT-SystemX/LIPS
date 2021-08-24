@@ -157,3 +157,6 @@ lips/Outputs/Scenario1_old
 lips/Outputs/Scenario2
 lips/Outputs/Scenario5
 
+.idea
+test_generate_data.py
+test_feature/
