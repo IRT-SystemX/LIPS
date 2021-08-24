@@ -36,6 +36,13 @@ class PowerGridDataSet(DataSet):
         DataSet.__init__(self, experiment_name=experiment_name)
         self._nb_divergence = 0
         self._attr_names = copy.deepcopy(attr_names)
+        self.size = None
+
+        # for the sampling
+        self._previous = None
+        self._order = None
+
+        # TODO add a seed for reproducible experiment !
 
     def generate(self,
                  simulator: Environment,
@@ -100,7 +107,8 @@ class PowerGridDataSet(DataSet):
                     self._nb_divergence += 1
                     obs = simulator.reset()  # reset the simulator in case of "divergence"d
             self._store_obs(ds_size, obs)
-
+        self.size = nb_samples
+        self._init_sample()
         if path_out is not None:
             # I should save the data
             self._save_internal_data(path_out)
@@ -147,6 +155,66 @@ class PowerGridDataSet(DataSet):
         if self.data is not None:
             warnings.warn(f"Deleting previous run in attempting to load the new one located at {path}")
         self.data = {}
+        self.size = None
         for attr_nm in self._attr_names:
             path_this_array = f"{os.path.join(full_path, attr_nm)}.npz"
             self.data[attr_nm] = np.load(path_this_array)["data"]
+            self.size = self.data[attr_nm].shape[0]
+
+        self._init_sample()
+
+    def _init_sample(self):
+        self._previous = 0
+        self._order = np.arange(self.size)
+        np.random.shuffle(self._order)
+
+    def sample(self, nb_sample: int, sampler=None):
+        """
+        For now, this sampling method will sample uniformly at random from the dataset.
+
+        There is a guarantee: if you generate `sef.size` consecutive data with this method
+        for example `batch1 = dataset.sample(data.size / 2)` then `batch2 = dataset.sample(data.size / 2)`
+        in this case batch1 and batch2 will count different example of the dataset and the union batch1 and batch2
+        will make the entire dataset [NB the above is true if the dataset has just been created, or if batch1
+        comes from the first batch issued from this dataset.]
+
+        Parameters
+        ----------
+        nb_sample:
+            Number of sample to retrieve from the dataset.
+
+        sampler:
+            currently unused
+
+        Returns
+        -------
+        A batch of data, either for training or for testing.
+
+        """
+        if nb_sample < 0:
+            raise RuntimeError("Impossible to require a negative number of data.")
+        if nb_sample > self.size:
+            raise RuntimeError("Impossible to require more than the size of the dataset")
+
+        res = {}
+        if nb_sample + self._previous < self.size:
+            # i just sample the next batch of data
+            for el in self._attr_names:
+                res[el] = self.data[el][self._order[self._previous:(self._previous+nb_sample)], :]
+            self._previous += nb_sample
+        else:
+            this_sz = self.size - self._previous
+            # init the results
+            for el in self._attr_names:
+                res[el] = np.zeros((nb_sample, self.data[el].shape[1]), dtype=self.data[el].dtype)
+            # fill with the remaining of the data
+            for el in self._attr_names:
+                res[el][:this_sz] = self.data[el][self._order[self._previous:], :]
+
+            # sample another order to see the data
+            self._init_sample()
+            # fill with the remaining of the data
+            self._previous = nb_sample - this_sz
+            for el in self._attr_names:
+                res[el][this_sz:] = self.data[el][self._order[:self._previous], :]
+        return res
