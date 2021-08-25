@@ -120,7 +120,10 @@ class Grid2opSimulator(PhysicalSimulator):
 
     def _reset_simulator(self):
         self._obs = self._simulator.reset()
+        # randomly skip a given number of steps in the first day (to improve the randomness)
+        nb_ff = self._simulator.space_prng.randint(288)
+        if nb_ff > 0:
+            self._simulator.fast_forward_chronics(nb_ff)
+            self._obs = self._simulator.get_obs()
         self._reward = self._simulator.reward_range[0]
         self._info = {}
-
-

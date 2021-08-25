@@ -216,12 +216,13 @@ class FullyConnectedAS(AugmentedSimulator):
             os.mkdir(full_path_out)
             # TODO logger
 
-        with open(os.path.join(full_path_out, f"{self.name}_metadata.json"), "w", encoding="utf-8") as f:
+        with open(os.path.join(full_path_out, "metadata.json"), "w", encoding="utf-8") as f:
             json.dump(obj=res_json, fp=f, indent=4, sort_keys=True)
 
     def load_metadata(self, path):
-        """this is not used for now"""
-        with open(os.path.join(path, f"{self.name}_metadata.json"), "r", encoding="utf-8") as f:
+        """this is used to load the meta parameters from the model"""
+        full_path = os.path.join(path, self.name)
+        with open(os.path.join(full_path, f"metadata.json"), "r", encoding="utf-8") as f:
             res_json = json.load(fp=f)
 
         self._batch_size = int(res_json["batch_size"])
