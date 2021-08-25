@@ -6,12 +6,10 @@
 # SPDX-License-Identifier: MPL-2.0
 # This file is part of LIPS, LIPS is a python platform for power networks benchmarking
 
-__all__ = ["nrmse", "mape", "mape_quantile", "pearson_r", "DEFAULT_METRICS", "metricPercentage"]
+__all__ = ["AugmentedSimulator", "DCApproximationAS", "FullyConnectedAS"]
 
-from leap_net.metrics import nrmse
-from leap_net.metrics import mape
-from leap_net.metrics import mape_quantile
-from leap_net.metrics import pearson_r
-from leap_net.proxy.utils import DEFAULT_METRICS
-from lips.metrics.metricPercentage import metricPercentage
+from lips.augmented_simulators.augmentedSimulator import AugmentedSimulator
+from lips.augmented_simulators.dcApproximationAS import DCApproximationAS
+from lips.augmented_simulators.fullyConnectedAS import FullyConnectedAS
 
+# from lips.augmented_simulators.leapNet import LeapNet

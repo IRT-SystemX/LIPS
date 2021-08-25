@@ -29,8 +29,11 @@ from leap_net.LtauNoAdd import LtauNoAdd
 from lips.simulators import ProxyLeapNet
 from lips.simulators import AugmentedSimulator
 
+
 class LeapNet(ProxyLeapNet, AugmentedSimulator):
     """
+    # TODO merge the two concept better ! And respect new API
+
     This class inherit from both ProxyLeapNet and AugmentedSimulator
     
     ``ProxyLeapNet`` class is an implementation of LeapNet model which is available in leap_net library

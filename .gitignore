@@ -167,3 +167,10 @@ lips/Outputs/Scenario1_old
 lips/Outputs/Scenario2
 lips/Outputs/Scenario5
 
+.idea
+test_generate_data.py
+test_feature/
+test_save/
+test_dc_proxy.py
+test_fully_connected.py
+trained_models/

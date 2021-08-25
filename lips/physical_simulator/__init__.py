@@ -6,7 +6,7 @@
 # SPDX-License-Identifier: MPL-2.0
 # This file is part of LIPS, LIPS is a python platform for power networks benchmarking
 
-__all__ = ["DataSet", "PowerGridDataSet"]
+__all__ = ["PhysicalSimulator", "Grid2opSimulator"]
 
-from lips.dataset.dataSet import DataSet
-from lips.dataset.powergridDataSet import PowerGridDataSet
+from lips.physical_simulator.physicalSimulator import PhysicalSimulator
+from lips.physical_simulator.grid2opSimulator import Grid2opSimulator
