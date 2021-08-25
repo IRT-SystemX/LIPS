@@ -23,7 +23,7 @@ from lips.evaluation.Check_Kirchhoff_current_law import Check_Kirchhoff_current_
 from lips.evaluation.Check_energy_conservation import Check_energy_conservation
 
 
-class Evaluation():
+class Evaluation(object):
     """
     this class can be used to evaluate the designed models from different aspects 
 
@@ -84,7 +84,6 @@ class Evaluation():
 
         self.active_dict = self.get_empty_active_dict()
 
-       
         self.save_path = None 
 
         self.metrics_ML = {}
@@ -133,7 +132,6 @@ class Evaluation():
             self.evaluate_readiness()
 
         return self.metrics_ML, self.metrics_physics, self.metrics_generalization, self.metrics_readiness
-
 
     def evaluate_physic(self,
                         choice="real",
@@ -472,7 +470,6 @@ class Evaluation():
         self.active_dict["evaluate_physic"]["verify_EL"] = True
         self.active_dict["evaluate_physic"]["verify_LCE"] = True
         self.active_dict["evaluate_physic"]["verify_KCL"] = True
-
 
     def visualize_network_state(self):
         """
