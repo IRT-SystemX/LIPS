@@ -32,10 +32,31 @@ class Evaluation():
     Readiness : Is the designed model ready to be deployed in production (scalibility or stability)
     Adaptability : how much robustness and out-of-distribution generalization is necessary ?
 
+    
+    
+    The verification are done on the basis of active_dict member variable which is a dictionary
+        a dictionary indicating to activate or deactivate each of the verifications by indicating `True` or `False`
+        for each verification. An empty dict can be retrieved by calling ``get_active_dict()``
+        
+        The keys should be :
+            `evaluate_ML`
+            `evaluate_physic`
+                # here are nested keys under physics compliances
+                `verify_current_pos` # verifies the positivity of currents
+                `verify_voltage_pos` # verifies the positivity of voltages
+                `verify_loss_pos` # verifies the positivity of electrical loss
+                `verify_predict_disc` # verifies if the predicted flow is null for a corresponding disconnected line
+                `verify_current_eq` # verifies the current equations for each extremity of a power line
+                `verify_EL` # verifies the electrical loss
+                `verify_LCE` # verifies the law of conservation of energy
+                `verify_KCL` # verifies the Kirchhoff's current law
+            `evaluate_adaptability`
+            `evaluate_readiness`
+
     params
     ------
-        model : tensorflow ``Model``
-            the trained model in Benchmark class
+        benchmark: ``object`` of class ``Benchmark``
+            it includes some model specific information such as training and prediction time
 
         observations : ``list``
             list of real observations used during test and evaluation
@@ -43,13 +64,28 @@ class Evaluation():
         predictions : ``list``
             a list of predictions of the model
 
+        save_path : ``str``
+            the path to save the evaluation results
+        
 
     """
 
-    def __init__(self, benchmark, tag):
-        self.benchmark = benchmark
-        self.observations = copy.deepcopy(self.benchmark.observations[tag])
-        self.predictions = copy.deepcopy(self.benchmark.predictions[tag])
+    def __init__(self):
+        
+        #self.benchmark = benchmark
+        #self.observations = copy.deepcopy(self.benchmark.observations[tag])
+        #self.predictions = copy.deepcopy(self.benchmark.predictions[tag])
+
+        self.env = None
+        self.env_name = None
+
+        self.observations = None
+        self.predictions = None
+
+        self.active_dict = self.get_empty_active_dict()
+
+       
+        self.save_path = None 
 
         self.metrics_ML = {}
         self.metrics_physics = {}
@@ -60,11 +96,46 @@ class Evaluation():
         # if self.benchmark.model_path save the evaluations in this directory with the corresponding tag
         # if self.benchmark.dc_path, save the evaluations in this directory with the corresponding tag
 
+    def do_evaluations(self, 
+                       env, 
+                       env_name, 
+                       observations, 
+                       predictions,
+                       choice="predictions",
+                       EL_tolerance=0.04,
+                       LCE_tolerance=1e-3,
+                       KCL_tolerance=1e-2,
+                       active_flow=True,
+                       save_path=None):
+        self.env = env
+        self.env_name = env_name
+        self.observations = copy.deepcopy(observations)
+        self.predictions = copy.deepcopy(predictions)
+        
+        if save_path is not None:
+            if not os.path.exists(save_path):
+                os.mkdir(save_path)
+        
+        if self.active_dict["evaluate_ML"]:
+            self.evaluate_ML()
+
+        if self.active_dict["evaluate_adaptability"]:
+            self.evaluate_adaptability()
+
+        if self.active_dict["evaluate_readiness"]:
+            self.evaluate_readiness()
+
+        self.evaluate_physic(choice=choice, 
+                             EL_tolerance=EL_tolerance, 
+                             LCE_tolerance=LCE_tolerance, 
+                             KCL_tolerance=KCL_tolerance, 
+                             active_flow=active_flow,
+                             save_path=save_path)
+
+        return self.metrics_ML, self.metrics_physics, self.metrics_adaptability, self.metrics_readiness
+
+
     def evaluate_physic(self,
-                        basic_verifier=True,
-                        check_EL=True,
-                        check_LCE=True,
-                        check_KCL=True,
                         choice="real",
                         EL_tolerance=0.04,
                         LCE_tolerance=1e-3,
@@ -113,20 +184,22 @@ class Evaluation():
         ########### observations #########
         ##################################
         if choice == "real":
-            if basic_verifier:
-                self.metrics_physics['BasicVerifications'] = {}
-                verifications = BasicVerifier(a_or=self.observations["a_or"],
-                                              a_ex=self.observations["a_ex"],
-                                              v_or=self.observations["v_or"],
-                                              v_ex=self.observations["v_ex"],
-                                              p_or=self.observations["p_or"],
-                                              p_ex=self.observations["p_ex"],
-                                              q_or=self.observations["q_or"],
-                                              q_ex=self.observations["q_ex"],
-                                              line_status=self.observations["line_status"])
-                self.metrics_physics['BasicVerifications'] = verifications
+            ######### Basic Physics verification
+            self.metrics_physics['BasicVerifications'] = {}
+            verifications = BasicVerifier(a_or=self.observations["a_or"],
+                                          a_ex=self.observations["a_ex"],
+                                          v_or=self.observations["v_or"],
+                                          v_ex=self.observations["v_ex"],
+                                          p_or=self.observations["p_or"],
+                                          p_ex=self.observations["p_ex"],
+                                          q_or=self.observations["q_or"],
+                                          q_ex=self.observations["q_ex"],
+                                          line_status=self.observations["line_status"],
+                                          active_dict=self.active_dict["evaluate_physic"])
+            self.metrics_physics['BasicVerifications'] = verifications
 
-            if check_EL:
+            ######### Electrical loss verifier
+            if self.active_dict["evaluate_physic"]["verify_EL"]:
                 self.metrics_physics['EL'] = {}
                 loss_metrics = Check_loss(p_or=self.observations["p_or"],
                                           p_ex=self.observations["p_ex"],
@@ -136,7 +209,8 @@ class Evaluation():
                 self.metrics_physics['EL']['violation_percentage'] = loss_metrics[1]
                 self.metrics_physics['EL']['EL_values'] = loss_metrics[0]
 
-            if check_LCE:
+            ######### Law of conservation of energy verifier
+            if self.active_dict["evaluate_physic"]["verify_LCE"]:
                 self.metrics_physics['LCE'] = {}
                 lce_metrics = Check_energy_conservation(prod_p=self.observations["prod_p"],
                                                         load_p=self.observations["load_p"],
@@ -146,10 +220,11 @@ class Evaluation():
                 self.metrics_physics['LCE']['violation_percentage'] = lce_metrics[1]
                 self.metrics_physics['LCE']['LCE_values'] = lce_metrics[0]
 
-            if check_KCL:
+            ######### Kirchhoff's current law verifier
+            if self.active_dict["evaluate_physic"]["verify_KCL"]:
                 self.metrics_physics["KCL"] = {}
-                res_kcl = Check_Kirchhoff_current_law(env=self.benchmark.dataset.env,
-                                                      env_name=self.benchmark.dataset.env_name,
+                res_kcl = Check_Kirchhoff_current_law(env=self.env,
+                                                      env_name=self.env_name,
                                                       data=self.observations,
                                                       load_p=self.observations["load_p"],
                                                       load_q=self.observations["load_q"],
@@ -167,20 +242,22 @@ class Evaluation():
         ########### predictions ##########
         ##################################
         elif choice == "predictions":
-            if basic_verifier:
-                self.metrics_physics['BasicVerifications'] = {}
-                verifications = BasicVerifier(a_or=self.predictions["a_or"],
-                                              a_ex=self.predictions["a_ex"],
-                                              v_or=self.predictions["v_or"],
-                                              v_ex=self.predictions["v_ex"],
-                                              p_or=self.predictions["p_or"],
-                                              p_ex=self.predictions["p_ex"],
-                                              q_or=self.predictions["q_or"],
-                                              q_ex=self.predictions["q_ex"],
-                                              line_status=self.observations["line_status"])
-                self.metrics_physics['BasicVerifications'] = verifications
+            ######### Basic physics verifications
+            self.metrics_physics['BasicVerifications'] = {}
+            verifications = BasicVerifier(a_or=self.predictions["a_or"],
+                                          a_ex=self.predictions["a_ex"],
+                                          v_or=self.predictions["v_or"],
+                                          v_ex=self.predictions["v_ex"],
+                                          p_or=self.predictions["p_or"],
+                                          p_ex=self.predictions["p_ex"],
+                                          q_or=self.predictions["q_or"],
+                                          q_ex=self.predictions["q_ex"],
+                                          line_status=self.observations["line_status"],
+                                          active_dict=self.active_dict["evaluate_physic"])
+            self.metrics_physics['BasicVerifications'] = verifications
 
-            if check_EL:
+            ######### Electrical loss verifier
+            if self.active_dict["evaluate_physic"]["verify_EL"]:
                 self.metrics_physics['EL'] = {}
                 loss_metrics = Check_loss(p_or=self.predictions["p_or"],
                                           p_ex=self.predictions["p_ex"],
@@ -190,7 +267,8 @@ class Evaluation():
                 self.metrics_physics['EL']['violation_percentage'] = loss_metrics[1]
                 self.metrics_physics['EL']['EL_values'] = loss_metrics[0]
 
-            if check_LCE:
+            ######### Law of conservation of energy verifier
+            if self.active_dict["evaluate_physic"]["verify_LCE"]:
                 self.metrics_physics['LCE'] = {}
                 lce_metrics = Check_energy_conservation(prod_p=self.observations["prod_p"],
                                                         load_p=self.observations["load_p"],
@@ -200,10 +278,11 @@ class Evaluation():
                 self.metrics_physics['LCE']['violation_percentage'] = lce_metrics[1]
                 self.metrics_physics['LCE']['LCE_values'] = lce_metrics[0]
 
-            if check_KCL:
+            # Kirchhoff's current law verifier
+            if self.active_dict["evaluate_physic"]["verify_KCL"]:
                 self.metrics_physics["KCL"] = {}
-                res_kcl = Check_Kirchhoff_current_law(env=self.benchmark.dataset.env,
-                                                      env_name=self.benchmark.dataset.env_name,
+                res_kcl = Check_Kirchhoff_current_law(env=self.env,
+                                                      env_name=self.env_name,
                                                       data=self.predictions,
                                                       load_p=self.observations["load_p"],
                                                       load_q=self.observations["load_q"],
@@ -218,15 +297,21 @@ class Evaluation():
                 self.metrics_physics["KCL"]["network_values"] = res_kcl[1]
 
         else:
-            raise NotImplementedError
+            raise ValueError
+
+        if save_path:
+            # TODO
+            pass
+
+        return self.metrics_physics
 
     def evaluate_ML(self,
                     metric_names=None,
-                    save_path=None,
                     compute_metricsPercentage=True,
                     metric_percentage=["mape", "MAE"],
                     k=0.1,
-                    verbose=0):
+                    verbose=0,
+                    save_path=None):
         """
         Machine learning evaluation metrics including inference time and prediction accuracy
 
@@ -236,21 +321,21 @@ class Evaluation():
                 a list of metric names which should be computed between predictions and real observations
                 TODO : add MAPE90 among the metrics
 
-            save_path : ```str``
-                if indicated, the evaluation results will be saved in the path
-
             compute_metricsPercentage: ``bool``
                 whether or not to compute the metrics on a percentage of highest current values. 
                 This is important for power network security (a metric as MAPE90 or MAE90)
 
             metric_percentage: ``list``
-                a list of metrics used for evaluation of k% highest values of current
+                a list of metrics used for evaluation on k% highest values of current for each line
 
             k: ``float``
                 indicate the proportion of highest values to be considered in metrics computations
 
             verbose : ```bool``
                 whether to print the results of computed metrics or not
+
+            save: ``bool``
+                whether to save the results
 
 
         """
@@ -259,8 +344,8 @@ class Evaluation():
         else:
             metrics = {nm_: DEFAULT_METRICS[nm_] for nm_ in metric_names}
 
-        self.metrics_ML["train_time"] = self.benchmark.training_time
-        self.metrics_ML["test_time"] = self.benchmark.prediction_time
+        #self.metrics_ML["train_time"] = self.benchmark.training_time
+        #self.metrics_ML["test_time"] = self.benchmark.prediction_time
 
         for metric_name, metric_fun in metrics.items():
             self.metrics_ML[metric_name] = {}
@@ -279,30 +364,96 @@ class Evaluation():
 
         if compute_metricsPercentage:
             metricPercentage(self.metrics_ML,
-                             metric_names=metric_percentage,
                              observations=self.observations,
                              predictions=self.predictions,
                              k=k,
-                             variables=["a_or", "p_or", "v_or", "q_or"])
+                             metric_names=metric_percentage,
+                             variables=["a_or", "p_or", "v_or", "q_or"],
+                             agg_func=np.mean
+                             )
 
         # save the results in a json file
         if save_path is not None:
-            save_path = os.path.join(save_path, self.benchmark.benchmark_name)
-            if not os.path.exists(save_path):
-                os.mkdir(save_path)
-            with open(os.path.join(save_path, "metrics.json"), "w", encoding="utf-8") as f:
+            if not os.path.exists(self.save_path):
+                os.mkdir(self.save_path)
+            with open(os.path.join(self.save_path, "metrics_ML.json"), "w", encoding="utf-8") as f:
                 json.dump(self.metrics_ML, fp=f, indent=4, sort_keys=True)
+
+        return self.metrics_ML
 
     def evaluate_readiness(self):
         pass
 
     def evaluate_adaptability(self):
         pass
-    
-    def do_evaluations(self, todo_dict=None):
+
+    def get_empty_active_dict(self):
         """
-        this function will call all the evaluation functions 
+        it returns an empty active_dict to be parameterized in function of requirement and model outputs
+        
+        The keys of the dictionary are : 
+        ---------------
+        `evaluate_ML`
+        `evaluate_physic`
+            # here are nested keys under physics compliances
+            `verify_current_pos` # verifies the positivity of currents
+            `verify_voltage_pos` # verifies the positivity of voltages
+            `verify_loss_pos` # verifies the positivity of electrical loss
+            `verify_predict_disc` # verifies if the predicted flow is null for a corresponding disconnected line
+            `verify_current_eq` # verifies the current equations for each extremity of a power line
+            `verify_EL` # verifies the electrical loss
+            `verify_LCE` # verifies the law of conservation of energy
+            `verify_KCL` # verifies the Kirchhoff's current law
+        `evaluate_adaptability`
+        `evaluate_readiness`
+
+        Returns
+        --------
+            active_dict: ``dict``
+                a dictionary indicating to verify or not the evaluation criteria
         """
+        
+        active_dict = dict()
+        active_dict["evaluate_ML"] = False
+        
+        active_dict["evaluate_physic"] = dict()
+        active_dict["evaluate_physic"]["verify_current_pos"] = False
+        active_dict["evaluate_physic"]["verify_voltage_pos"] = False
+        active_dict["evaluate_physic"]["verify_loss_pos"] = False
+        active_dict["evaluate_physic"]["verify_predict_disc"] = False
+        active_dict["evaluate_physic"]["verify_current_eq"] = False
+        active_dict["evaluate_physic"]["verify_EL"] = False
+        active_dict["evaluate_physic"]["verify_LCE"] = False
+        active_dict["evaluate_physic"]["verify_KCL"] = False
+
+        active_dict["evaluate_adaptability"] = False
+
+        active_dict["evaluate_readiness"] = False 
+
+        return active_dict
+
+    def get_active_dict(self):
+        return self.active_dict
+
+    def set_active_dict(self, dict):
+        """
+        set the active_dict from user input
+        """
+        self.active_dict = dict
+
+    def activate_physic_compliances(self):
+        """
+        active all the physics compliances verifications
+        """
+        self.active_dict["evaluate_physic"]["verify_current_pos"] = True
+        self.active_dict["evaluate_physic"]["verify_voltage_pos"] = True
+        self.active_dict["evaluate_physic"]["verify_loss_pos"] = True
+        self.active_dict["evaluate_physic"]["verify_predict_disc"] = True
+        self.active_dict["evaluate_physic"]["verify_current_eq"] = True
+        self.active_dict["evaluate_physic"]["verify_EL"] = True
+        self.active_dict["evaluate_physic"]["verify_LCE"] = True
+        self.active_dict["evaluate_physic"]["verify_KCL"] = True
+
 
     def visualize_network_state(self):
         """

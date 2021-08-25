@@ -139,15 +139,23 @@ dmypy.json
 #custom ignore folders
 .vscode
 lips/benchmark/Benchmark copy.py
+lips/benchmark/Benchmark copy 2.py
 lips/dataset/DataSet copy.py
+lips/dataset/DataSet copy 2.py
 lips/models/*
 lips/models
+lips/simulators/DCApproximation copy.py
+
 temporary.ipynb
+temporary1.ipynb
+Notebook_Benchmark2.ipynb
+
 lips/Outputs/Scenario1/Data/super_test
 lips/Outputs/Scenario1/Data/test
 lips/Outputs/Scenario1/Data/training
 lips/Outputs/Scenario1/Data/validation
 
+lips/Outputs
 lips/Outputs/Scenario1/Data/init_obs.npy
 lips/Outputs/Scenario1/Benchmarks/benchmark1/leap_net/test/*
 lips/Outputs/Scenario1/Benchmarks/benchmark1/leap_net/super_test/*
