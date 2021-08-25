@@ -11,7 +11,7 @@ from sklearn.metrics import mean_absolute_error
 import sys
 
 
-def BasicVerifier(a_or, a_ex, v_or, v_ex, p_or, p_ex, q_or, q_ex, line_status):
+def BasicVerifier(a_or, a_ex, v_or, v_ex, p_or, p_ex, q_or, q_ex, line_status, active_dict):
     """
     verify the following elementary physic compliances
 
@@ -64,124 +64,129 @@ def BasicVerifier(a_or, a_ex, v_or, v_ex, p_or, p_ex, q_or, q_ex, line_status):
 
     # VERIFICATION 1
     # verification of currents
-    verifications["currents"] = {}
-    if np.any(a_or < 0):
-        a_or_errors = np.array(np.where(a_or < 0)).T
-        print("{:.3f}% of lines does not respect the positivity of currents (Amp) at origin".format(
-            (len(a_or_errors) / a_or.size)*100))
-        # print the concerned lines with the counting their respectives anomalies
-        counts = Counter(a_or_errors[:, 1])
-        print("Concerned lines with corresponding number of negative current values at their origin:\n",
-              dict(sorted(counts.items(), key=lambda item: item[1], reverse=True)))
-        verifications["currents"]["a_or_errors"] = a_or_errors
-        print("----------------------------------------------")
-    else:
-        print("Current positivity check passed for origin side !")
-        print("----------------------------------------------")
+    if active_dict["verify_current_pos"]:
+        verifications["currents"] = {}
+        if np.any(a_or < 0):
+            a_or_errors = np.array(np.where(a_or < 0)).T
+            print("{:.3f}% of lines does not respect the positivity of currents (Amp) at origin".format(
+                (len(a_or_errors) / a_or.size)*100))
+            # print the concerned lines with the counting their respectives anomalies
+            counts = Counter(a_or_errors[:, 1])
+            print("Concerned lines with corresponding number of negative current values at their origin:\n",
+                dict(sorted(counts.items(), key=lambda item: item[1], reverse=True)))
+            verifications["currents"]["a_or_errors"] = a_or_errors
+            print("----------------------------------------------")
+        else:
+            print("Current positivity check passed for origin side !")
+            print("----------------------------------------------")
 
-    if np.any(a_ex < 0):
-        a_ex_errors = np.array(np.where(a_ex < 0)).T
-        print("{:.3f}% of lines does not respect the positivity of currents (Amp) at extremity".format(
-            (len(a_ex_errors) / a_ex.size)*100))
-        # print the concerned lines with the counting their respectives anomalies
-        counts = Counter(a_ex_errors[:, 1])
-        print("Concerned lines with corresponding number of negative current values at their extremity:\n",
-              dict(sorted(counts.items(), key=lambda item: item[1], reverse=True)))
-        verifications["currents"]["a_ex_errors"] = a_ex_errors
-        print("----------------------------------------------")
-    else:
-        print("Current positivity check passed for extremity side !")
-        print("----------------------------------------------")
+        if np.any(a_ex < 0):
+            a_ex_errors = np.array(np.where(a_ex < 0)).T
+            print("{:.3f}% of lines does not respect the positivity of currents (Amp) at extremity".format(
+                (len(a_ex_errors) / a_ex.size)*100))
+            # print the concerned lines with the counting their respectives anomalies
+            counts = Counter(a_ex_errors[:, 1])
+            print("Concerned lines with corresponding number of negative current values at their extremity:\n",
+                dict(sorted(counts.items(), key=lambda item: item[1], reverse=True)))
+            verifications["currents"]["a_ex_errors"] = a_ex_errors
+            print("----------------------------------------------")
+        else:
+            print("Current positivity check passed for extremity side !")
+            print("----------------------------------------------")
 
     # VERIFICATION 2
     # verification of voltages
-    verifications["voltages"] = {}
-    if np.any(v_or < 0):
-        v_or_errors = np.array(np.where(v_or < 0)).T
-        print("{:.3f}% of lines does not respect the positivity of voltages (Kv) at origin".format(
-            (len(v_or_errors) / v_or.size)*100))
-        # print the concerned lines with the counting their respectives anomalies
-        counts = Counter(v_or_errors[:, 1])
-        print("Concerned lines with corresponding number of negative voltage values at their origin:\n",
-              dict(sorted(counts.items(), key=lambda item: item[1], reverse=True)))
-        verifications["voltages"]["v_or_errors"] = v_or_errors
-        print("----------------------------------------------")
-    else:
-        print("Voltage positivity check passed for origin side !")
-        print("----------------------------------------------")
+    if active_dict["verify_voltage_pos"]:
+        verifications["voltages"] = {}
+        if np.any(v_or < 0):
+            v_or_errors = np.array(np.where(v_or < 0)).T
+            print("{:.3f}% of lines does not respect the positivity of voltages (Kv) at origin".format(
+                (len(v_or_errors) / v_or.size)*100))
+            # print the concerned lines with the counting their respectives anomalies
+            counts = Counter(v_or_errors[:, 1])
+            print("Concerned lines with corresponding number of negative voltage values at their origin:\n",
+                dict(sorted(counts.items(), key=lambda item: item[1], reverse=True)))
+            verifications["voltages"]["v_or_errors"] = v_or_errors
+            print("----------------------------------------------")
+        else:
+            print("Voltage positivity check passed for origin side !")
+            print("----------------------------------------------")
 
-    if np.any(v_ex < 0):
-        v_ex_errors = np.array(np.where(v_ex < 0)).T
-        print("{:.3f}% of lines does not respect the positivity of voltages (Kv) at extremity".format(
-            (len(v_ex_errors) / v_ex.size)*100))
-        # print the concerned lines with the counting their respectives anomalies
-        counts = Counter(v_ex_errors[:, 1])
-        print("Concerned lines with corresponding number of negative voltage values at their extremity:\n",
-              dict(sorted(counts.items(), key=lambda item: item[1], reverse=True)))
-        verifications["voltages"]["v_ex_errors"] = v_ex_errors
-        print("----------------------------------------------")
-    else:
-        print("Voltage positivity check passed for extremity side !")
-        print("----------------------------------------------")
+        if np.any(v_ex < 0):
+            v_ex_errors = np.array(np.where(v_ex < 0)).T
+            print("{:.3f}% of lines does not respect the positivity of voltages (Kv) at extremity".format(
+                (len(v_ex_errors) / v_ex.size)*100))
+            # print the concerned lines with the counting their respectives anomalies
+            counts = Counter(v_ex_errors[:, 1])
+            print("Concerned lines with corresponding number of negative voltage values at their extremity:\n",
+                dict(sorted(counts.items(), key=lambda item: item[1], reverse=True)))
+            verifications["voltages"]["v_ex_errors"] = v_ex_errors
+            print("----------------------------------------------")
+        else:
+            print("Voltage positivity check passed for extremity side !")
+            print("----------------------------------------------")
 
     # VERIFICATION 3
     # Positivity of losses
-    verifications["loss"] = {}
-    loss = p_or + p_ex
+    if active_dict["verify_loss_pos"]:
+        verifications["loss"] = {}
+        loss = p_or + p_ex
 
-    if np.any(loss):
-        verifications["loss"]["loss_criterion"] = -np.sum(np.minimum(loss, 0.))
-        loss_errors = np.array(np.where(loss < 0)).T
-        print("{:.3f}% of lines does not respect the positivity of loss (Mw)".format(
-            (len(loss_errors) / p_or.size)*100))
-        # print the concerned lines with the counting their respectives anomalies
-        counts = Counter(loss_errors[:, 1])
-        print("Concerned lines with corresponding number of negative loss values:\n",
-              dict(sorted(counts.items(), key=lambda item: item[1], reverse=True)))
-        verifications["loss"]["loss_errors"] = loss_errors
-        print("----------------------------------------------")
-    else:
-        print("Loss positivity check passed !")
-        print("----------------------------------------------")
+        if np.any(loss):
+            verifications["loss"]["loss_criterion"] = -np.sum(np.minimum(loss, 0.))
+            loss_errors = np.array(np.where(loss < 0)).T
+            print("{:.3f}% of lines does not respect the positivity of loss (Mw)".format(
+                (len(loss_errors) / p_or.size)*100))
+            # print the concerned lines with the counting their respectives anomalies
+            counts = Counter(loss_errors[:, 1])
+            print("Concerned lines with corresponding number of negative loss values:\n",
+                dict(sorted(counts.items(), key=lambda item: item[1], reverse=True)))
+            verifications["loss"]["loss_errors"] = loss_errors
+            print("----------------------------------------------")
+        else:
+            print("Loss positivity check passed !")
+            print("----------------------------------------------")
 
     # VERIFICATION 4
     # verifying null values for line disconnections
-    verifications["line_status"] = {}
-    sum_disconnected_values = 0
+    if active_dict["verify_predict_disc"]:
+        verifications["line_status"] = {}
+        sum_disconnected_values = 0
 
-    ind_ = line_status != 1
-    if np.any(ind_):
-        verifications["line_status"]["p_or_not_null"] = np.sum(p_or[ind_] > 0)
-        sum_disconnected_values += np.sum(p_or[ind_] > 0)
-        verifications["line_status"]["p_ex_not_null"] = np.sum(p_ex[ind_] > 0)
-        sum_disconnected_values += np.sum(p_ex[ind_] > 0)
-        verifications["line_status"]["q_or_not_null"] = np.sum(q_or[ind_] > 0)
-        sum_disconnected_values += np.sum(q_or[ind_] > 0)
-        verifications["line_status"]["q_ex_not_null"] = np.sum(q_ex[ind_] > 0)
-        sum_disconnected_values += np.sum(q_ex[ind_] > 0)
-        verifications["line_status"]["a_or_not_null"] = np.sum(a_or[ind_] > 0)
-        sum_disconnected_values += np.sum(a_or[ind_] > 0)
-        verifications["line_status"]["a_ex_not_null"] = np.sum(a_ex[ind_] > 0)
-        sum_disconnected_values += np.sum(a_ex[ind_] > 0)
-    if sum_disconnected_values > 0:
-        print("Prediction in presence of line disconnection. Problem encountered !")
-    else:
-        print("Prediction in presence of line disconnection. Check passed !")
-    print("----------------------------------------------")
+        ind_ = line_status != 1
+        if np.any(ind_):
+            verifications["line_status"]["p_or_not_null"] = np.sum(p_or[ind_] > 0)
+            sum_disconnected_values += np.sum(p_or[ind_] > 0)
+            verifications["line_status"]["p_ex_not_null"] = np.sum(p_ex[ind_] > 0)
+            sum_disconnected_values += np.sum(p_ex[ind_] > 0)
+            verifications["line_status"]["q_or_not_null"] = np.sum(q_or[ind_] > 0)
+            sum_disconnected_values += np.sum(q_or[ind_] > 0)
+            verifications["line_status"]["q_ex_not_null"] = np.sum(q_ex[ind_] > 0)
+            sum_disconnected_values += np.sum(q_ex[ind_] > 0)
+            verifications["line_status"]["a_or_not_null"] = np.sum(a_or[ind_] > 0)
+            sum_disconnected_values += np.sum(a_or[ind_] > 0)
+            verifications["line_status"]["a_ex_not_null"] = np.sum(a_ex[ind_] > 0)
+            sum_disconnected_values += np.sum(a_ex[ind_] > 0)
+        if sum_disconnected_values > 0:
+            print("Prediction in presence of line disconnection. Problem encountered !")
+        else:
+            print("Prediction in presence of line disconnection. Check passed !")
+        print("----------------------------------------------")
 
     # VERIFICATION 5 and 6
     # Verify current equations for real and predicted observations
-    verifications["current_equations"] = {}
-    # consider an epsilon value to avoid division by zero
-    eps = sys.float_info.epsilon
-    #a_or = sqrt(p_or**2 + q_or**2) / (sqrt(3).v_or)
-    a_or_comp = (np.sqrt(p_or**2 + q_or**2) / ((np.sqrt(3) * v_or)+eps)) * 1000
-    verifications["current_equations"]["a_or_deviation"] = mean_absolute_error(
-        a_or, a_or_comp, multioutput='raw_values')
+    if active_dict["verify_current_eq"]:
+        verifications["current_equations"] = {}
+        # consider an epsilon value to avoid division by zero
+        eps = sys.float_info.epsilon
+        #a_or = sqrt(p_or**2 + q_or**2) / (sqrt(3).v_or)
+        a_or_comp = (np.sqrt(p_or**2 + q_or**2) / ((np.sqrt(3) * v_or)+eps)) * 1000
+        verifications["current_equations"]["a_or_deviation"] = mean_absolute_error(
+            a_or, a_or_comp, multioutput='raw_values')
 
-    #a_ex = sqrt(p_ex**2 + q_ex**2) / (sqrt(3).v_ex)
-    a_ex_comp = (np.sqrt(p_ex**2 + q_ex**2) / ((np.sqrt(3) * v_ex)+eps)) * 1000
-    verifications["current_equations"]["a_ex_deviation"] = mean_absolute_error(
-        a_ex, a_ex_comp, multioutput='raw_values')
+        #a_ex = sqrt(p_ex**2 + q_ex**2) / (sqrt(3).v_ex)
+        a_ex_comp = (np.sqrt(p_ex**2 + q_ex**2) / ((np.sqrt(3) * v_ex)+eps)) * 1000
+        verifications["current_equations"]["a_ex_deviation"] = mean_absolute_error(
+            a_ex, a_ex_comp, multioutput='raw_values')
 
     return verifications
