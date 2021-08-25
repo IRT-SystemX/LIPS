@@ -235,7 +235,7 @@ class Evaluation():
                                                       active_flow=active_flow,
                                                       tolerance=KCL_tolerance)
                 self.metrics_physics["KCL"]["violation_percentage"] = np.float(res_kcl[3])
-                self.metrics_physics["KCL"]["nodes_values"] = np.vstack(res_kcl[0])
+                self.metrics_physics["KCL"]["nodes_values"] = res_kcl[0]
                 self.metrics_physics["KCL"]["network_values"] = np.array(res_kcl[1])
                 self.metrics_physics["KCL"]["violation_indices"] = np.array(res_kcl[2])
 
@@ -294,7 +294,7 @@ class Evaluation():
                                                       active_flow=active_flow,
                                                       tolerance=KCL_tolerance)
                 self.metrics_physics["KCL"]["violation_percentage"] = np.float(res_kcl[3])
-                self.metrics_physics["KCL"]["nodes_values"] = np.vstack(res_kcl[0])
+                self.metrics_physics["KCL"]["nodes_values"] = res_kcl[0]
                 self.metrics_physics["KCL"]["network_values"] = np.array(res_kcl[1])
                 self.metrics_physics["KCL"]["violation_indices"] = np.array(res_kcl[2])
 
