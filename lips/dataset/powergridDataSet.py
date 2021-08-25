@@ -14,9 +14,10 @@ import shutil
 import copy
 from typing import Union
 
-from grid2op.Environment import Environment
 from grid2op.Agent import BaseAgent, DoNothingAgent
+
 from lips.dataset.dataSet import DataSet
+from lips.physical_simulator import Grid2opSimulator
 
 
 class PowerGridDataSet(DataSet):
@@ -45,13 +46,16 @@ class PowerGridDataSet(DataSet):
         # TODO add a seed for reproducible experiment !
 
     def generate(self,
-                 simulator: Environment,
+                 simulator: Grid2opSimulator,
                  actor: Union[None, BaseAgent],
                  path_out,
                  nb_samples,
-                 simulator_seed: Union[None, int] =None,
-                 actor_seed: Union[None, int] =None):
+                 simulator_seed: Union[None, int] = None,
+                 actor_seed: Union[None, int] = None):
         """
+        For this dataset, we use a Grid2opSimulator and a  grid2op Agent to generate data from a powergrid.
+
+        This implementation can also serve as a reference for other implementation of the `generate` function.
 
         Parameters
         ----------
@@ -79,34 +83,27 @@ class PowerGridDataSet(DataSet):
         self._nb_divergence = 0
         if nb_samples <= 0:
             raise RuntimeError("Impossible to generate a negative number of data.")
-        assert isinstance(simulator, Environment), "simulator should be a grid2op Environment"
-        if actor is None:
-            actor = DoNothingAgent(simulator.action_space)
 
-        assert isinstance(actor, BaseAgent), "actor should be a grid2op Agent (type BaseAgent)"
-        not_enough_data = True
-        obs = simulator.reset()
+        # check that the proper data types are received
+        super().generate(simulator, actor, path_out, nb_samples, simulator_seed, actor_seed)
+
+        if actor is None:
+            # TODO refactoring this, this is weird here
+            actor = DoNothingAgent(simulator._simulator.action_space)
+
+        init_state, init_info = simulator.get_state()
         self.data = {}
         for attr_nm in self._attr_names:
             # this part is only temporary, until a viable way to store the complete resulting state is found
-            array_ = getattr(obs, attr_nm)
+            array_ = getattr(init_state, attr_nm)
             self.data[attr_nm] = np.zeros((nb_samples, array_.shape[0]), dtype=array_.dtype)
 
         from tqdm import tqdm  # TODO remove for final push
         for ds_size in tqdm(range(nb_samples)):
-            done = True
-            reward = simulator.reward_range[0]
-            while done:
-                # simulate data (resimulate in case of divergence of the simulator)
-                act = actor.act(obs, reward, done)
-                obs, reward, done, info = simulator.step(act)
-                if info["is_illegal"]:
-                    raise RuntimeError("Your `actor` should not take illegal action. Please modify the environment "
-                                       "or your actor.")
-                if done:
-                    self._nb_divergence += 1
-                    obs = simulator.reset()  # reset the simulator in case of "divergence"d
-            self._store_obs(ds_size, obs)
+            simulator.modify_state(actor)
+            current_state, extra_info = simulator.get_state()
+            self._store_obs(ds_size, current_state)
+
         self.size = nb_samples
         self._init_sample()
         if path_out is not None:
