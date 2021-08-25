@@ -6,9 +6,10 @@
 # SPDX-License-Identifier: MPL-2.0
 # This file is part of LIPS, LIPS is a python platform for power networks benchmarking
 
-from leap_net.proxy.baseProxy import BaseProxy
-from leap_net.proxy.baseNNProxy import BaseNNProxy
-from leap_net.proxy.proxyLeapNet import ProxyLeapNet
-from leap_net.ResNetLayer import ResNetLayer
-from lips.simulators.augmentedSimulator import AugmentedSimulator
-from lips.simulators.leapNet import LeapNet
+__all__ = ["AugmentedSimulator", "DCApproximationAS", "FullyConnectedAS"]
+
+from lips.augmented_simulators.augmentedSimulator import AugmentedSimulator
+from lips.augmented_simulators.dcApproximationAS import DCApproximationAS
+from lips.augmented_simulators.fullyConnectedAS import FullyConnectedAS
+
+# from lips.augmented_simulators.leapNet import LeapNet

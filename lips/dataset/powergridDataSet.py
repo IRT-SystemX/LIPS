@@ -15,6 +15,7 @@ import copy
 from typing import Union
 
 from grid2op.Agent import BaseAgent, DoNothingAgent
+from grid2op.PlotGrid import PlotMatplot
 
 from lips.dataset.dataSet import DataSet
 from lips.physical_simulator import Grid2opSimulator
@@ -37,7 +38,7 @@ class PowerGridDataSet(DataSet):
         DataSet.__init__(self, experiment_name=experiment_name)
         self._nb_divergence = 0
         self._attr_names = copy.deepcopy(attr_names)
-        self.size = None
+        self.size = 0
 
         # for the sampling
         self._previous = None
@@ -214,4 +215,36 @@ class PowerGridDataSet(DataSet):
             self._previous = nb_sample - this_sz
             for el in self._attr_names:
                 res[el][this_sz:] = self.data[el][self._order[:self._previous], :]
+        return res
+
+    def get_data(self, index):
+        """
+        This function returns the data in the data that match the index `index`
+
+        Parameters
+        ----------
+        index:
+            A list of integer
+
+        Returns
+        -------
+
+        """
+        super().get_data(index)  # check that everything is legit
+
+        # make sure the index are numpy array
+        if isinstance(index, list):
+            index = np.array(index, dtype=int)
+        elif isinstance(index, int):
+            index = np.array([index], dtype=int)
+
+        # init the results
+        res = {}
+        nb_sample = index.size
+        for el in self._attr_names:
+            res[el] = np.zeros((nb_sample, self.data[el].shape[1]), dtype=self.data[el].dtype)
+
+        for el in self._attr_names:
+            res[el][:] = self.data[el][index, :]
+
         return res

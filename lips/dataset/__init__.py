@@ -6,7 +6,7 @@
 # SPDX-License-Identifier: MPL-2.0
 # This file is part of LIPS, LIPS is a python platform for power networks benchmarking
 
-__all__ = ["PowerGridDataSet"]
+__all__ = ["DataSet", "PowerGridDataSet"]
 
+from lips.dataset.dataSet import DataSet
 from lips.dataset.powergridDataSet import PowerGridDataSet
-
