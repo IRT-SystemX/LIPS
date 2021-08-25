@@ -143,7 +143,7 @@ class Benchmark(object):
 
         self.metrics_ML = self.evaluator.metrics_ML
         self.metrics_physics = self.evaluator.metrics_physics
-        self.metrics_adaptability = self.evaluator.metrics_adaptability
+        self.metrics_generalization = self.evaluator.metrics_generalization
         self.metrics_readiness = self.evaluator.metrics_readiness
 
     def save(self):
