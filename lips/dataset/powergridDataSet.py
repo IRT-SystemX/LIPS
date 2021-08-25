@@ -13,6 +13,7 @@ import shutil
 
 import copy
 from typing import Union
+from tqdm import tqdm  # TODO remove for final push
 
 from grid2op.Agent import BaseAgent, DoNothingAgent
 from grid2op.PlotGrid import PlotMatplot
@@ -99,8 +100,7 @@ class PowerGridDataSet(DataSet):
             array_ = getattr(init_state, attr_nm)
             self.data[attr_nm] = np.zeros((nb_samples, array_.shape[0]), dtype=array_.dtype)
 
-        from tqdm import tqdm  # TODO remove for final push
-        for ds_size in tqdm(range(nb_samples)):
+        for ds_size in tqdm(range(nb_samples), desc=self.experiment_name):
             simulator.modify_state(actor)
             current_state, extra_info = simulator.get_state()
             self._store_obs(ds_size, current_state)
@@ -120,17 +120,21 @@ class PowerGridDataSet(DataSet):
     def _save_internal_data(self, path_out):
         """save the self.data in a proper format"""
         full_path_out = os.path.join(os.path.abspath(path_out), self.experiment_name)
+
         if not os.path.exists(os.path.abspath(path_out)):
             os.mkdir(os.path.abspath(path_out))
+            # TODO logger
             print(f"Creating the path {path_out} to store the datasets [data will be stored under {full_path_out}]")
 
         if os.path.exists(full_path_out):
             # deleting previous saved data
+            # TODO logger
             print(f"Deleting previous run at {full_path_out}")
             shutil.rmtree(full_path_out)
 
         os.mkdir(full_path_out)
-        print(f"Creating the path {path_out} to store the dataset")
+        # TODO logger
+        print(f"Creating the path {full_path_out} to store the dataset name {self.experiment_name}")
 
         for attr_nm in self._attr_names:
             np.savez_compressed(f"{os.path.join(full_path_out, attr_nm)}.npz", data=self.data[attr_nm])

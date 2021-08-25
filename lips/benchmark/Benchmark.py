@@ -14,7 +14,8 @@ import json
 
 from matplotlib import pyplot as plt
 
-class Benchmark():
+
+class Benchmark(object):
     """
     Benchmark class that takes a test dataset, a simulator (physical or augmented) and an evaluator object and 
     evaluates the simulator on test dataset with respect to required metrics requested by evaluator
@@ -53,8 +54,8 @@ class Benchmark():
         
         # object of class GenerateData contianing datasets for training and validation
         self.dataset = dataset
-        self.env = self.dataset.env
-        self.env_name = self.dataset.env_name
+        # self.env = self.dataset.env
+        # self.env_name = self.dataset.env_name
 
         # object of class Evaluation used to evaluate the benchmark and the model
         self.evaluator = evaluator
@@ -85,7 +86,7 @@ class Benchmark():
         """
 
         # model and parameters
-        self.model_name = self.simulator.name     
+        # self.model_name = self.simulator.name
 
 
         # create directories
@@ -96,15 +97,14 @@ class Benchmark():
         self.benchmark_path = os.path.join(save_path, benchmark_name)
         if not os.path.exists(self.benchmark_path):
             os.mkdir(self.benchmark_path)
-
     
     def evaluate_simulator(self,
-                          choice="predictions",
-                          EL_tolerance=0.04,
-                          LCE_tolerance=1e-3,
-                          KCL_tolerance=1e-2,
-                          active_flow=True,
-                          save_path=None):
+                           choice="predictions",
+                           EL_tolerance=0.04,
+                           LCE_tolerance=1e-3,
+                           KCL_tolerance=1e-2,
+                           active_flow=True,
+                           save_path=None):
         """
         This function will evalute a simulator (physical or augmented) using various criteria predefined in evaluator object
 
@@ -129,8 +129,6 @@ class Benchmark():
             save_path: ``str`` or ``None``
                 if indicated the evaluation results will be saved to indicated path
         """
-        
-        
 
         self.evaluator.do_evaluations(env=self.env, 
                                       env_name=self.env_name,
@@ -156,7 +154,6 @@ class Benchmark():
         """
         self._save_metadata(path=self.benchmark_path)
 
-    
     def __save_augmentedSimulator(self, path=None, ext=".h5"):
         """
         save the augmented simulator related data on model_path
@@ -211,7 +208,6 @@ class Benchmark():
         res["benchmark_path"] = self.benchmark_path
         return res
 
-
     def load(self, path):
         """
         load the metadata for benchmark and load the model
@@ -230,7 +226,6 @@ class Benchmark():
 
         self.benchmark_name = res["benchmark_name"]
         self.benchmark_path = res["benchmark_path"]
-
 
     def visualize_network_state(self):
         """
