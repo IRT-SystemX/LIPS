@@ -99,12 +99,12 @@ class Benchmark():
 
     
     def evaluate_simulator(self,
-                          choice="predictions",
-                          EL_tolerance=0.04,
-                          LCE_tolerance=1e-3,
-                          KCL_tolerance=1e-2,
-                          active_flow=True,
-                          save_path=None):
+                           choice="predictions",
+                           EL_tolerance=0.04,
+                           LCE_tolerance=1e-3,
+                           KCL_tolerance=1e-2,
+                           active_flow=True,
+                           save_path=None):
         """
         This function will evalute a simulator (physical or augmented) using various criteria predefined in evaluator object
 
@@ -145,7 +145,7 @@ class Benchmark():
 
         self.metrics_ML = self.evaluator.metrics_ML
         self.metrics_physics = self.evaluator.metrics_physics
-        self.metrics_adaptability = self.evaluator.metrics_adaptability
+        self.metrics_generalization = self.evaluator.metrics_generalization
         self.metrics_readiness = self.evaluator.metrics_readiness
 
     def save(self):

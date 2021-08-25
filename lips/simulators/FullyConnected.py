@@ -463,10 +463,6 @@ class FullyConnectedNN(AugmentedSimulator):
 
     def get_metadata(self):
         res = super().get_metadata()
-        # save attribute for the "extra" database
-        res["attr_tau"] = [str(el) for el in self.attr_tau]
-        res["_sz_tau"] = [int(el) for el in self._sz_tau]
-        res["loss"] = self.loss
 
         # save means and standard deviation
         res["_m_x"] = []
@@ -475,18 +471,12 @@ class FullyConnectedNN(AugmentedSimulator):
         res["_m_y"] = []
         for el in self._m_y:
             self._save_dict(res["_m_y"], el)
-        res["_m_tau"] = []
-        for el in self._m_tau:
-            self._save_dict(res["_m_tau"], el)
         res["_sd_x"] = []
         for el in self._sd_x:
             self._save_dict(res["_sd_x"], el)
         res["_sd_y"] = []
         for el in self._sd_y:
             self._save_dict(res["_sd_y"], el)
-        res["_sd_tau"] = []
-        for el in self._sd_tau:
-            self._save_dict(res["_sd_tau"], el)
 
         # store the sizes
         res["sizes_enc"] = [int(el) for el in self.sizes_enc]
@@ -499,12 +489,9 @@ class FullyConnectedNN(AugmentedSimulator):
         """
         load the metadata of this neural network (also called meta parameters) from a dictionary
         """
-        self.attr_tau = tuple([str(el) for el in dict_["attr_tau"]])
-        self._sz_tau = [int(el) for el in dict_["_sz_tau"]]
-        self.loss = dict_["loss"]
         super().load_metadata(dict_)
 
-        for key in ["_m_x", "_m_y", "_m_tau", "_sd_x", "_sd_y", "_sd_tau"]:
+        for key in ["_m_x", "_m_y", "_sd_x", "_sd_y"]:
             setattr(self, key, [])
             for el in dict_[key]:
                 self._add_attr(key, el)
