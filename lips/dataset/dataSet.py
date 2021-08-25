@@ -6,6 +6,8 @@
 # SPDX-License-Identifier: MPL-2.0
 # This file is part of LIPS, LIPS is a python platform for power networks benchmarking
 
+from lips.physical_simulator import PhysicalSimulator
+
 
 class DataSet(object):
     """
@@ -58,7 +60,12 @@ class DataSet(object):
             Seed used to set the actor for reproducible experiments
 
         """
-        pass
+        assert isinstance(simulator, PhysicalSimulator), f"simulator should be a derived type of `PhysicalSimulator` " \
+                                                         f"you provided {type(simulator)}"
+        if actor is not None and not isinstance(actor, simulator.actor_types):
+            raise RuntimeError(f"actor should be compatible with your simulator. You provided an actor of "
+                               f"type {type(actor)} while your simulator accepts only actor from types "
+                               f"{simulator.actor_types}")
 
     def load(self, path):
         """
