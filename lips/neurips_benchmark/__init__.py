@@ -7,7 +7,7 @@
 # This file is part of LIPS, LIPS is a python platform for power networks benchmarking
 
 import grid2op
-from leap_net.agents import RandomRefAct1
+from leap_net.agents import RandomRefAct1, RandomAct1
 from lightsim2grid import LightSimBackend
 
 
@@ -57,8 +57,35 @@ def get_actor_training_scenario1(simulator):
                                "lines_or_id": [(9, 2), (8, 2), (17, 2)],
                                "lines_ex_id": [(6, 2)]}},
                   ]
-    agent_seed = 1
     env = simulator._simulator
     li_act = [env.action_space(el) for el in acts_dict_]
     agent = RandomRefAct1(env.action_space, p=0.5, list_act=li_act)
+    return agent
+
+
+def get_actor_test_scenario1(simulator):
+    acts_dict_ = [{"set_bus": {"loads_id": [(4, 2)], "generators_id": [(2, 2)], "lines_or_id": [(9, 2), (8, 2)]}},
+                  # sub_5_id1
+                  {"set_bus": {"loads_id": [(3, 2)], "lines_or_id": [(17, 2)], "lines_ex_id": [(6, 2)]}},  # sub_4_id1
+                  # {"set_bus": {"lines_or_id": [(17, 2)], "lines_ex_id": [(4, 2)]}},  # sub_4_id2
+                  # {"set_bus": {"lines_or_id": [(15, 2)], "lines_ex_id": [(3, 2)]}},  # "sub3_id1"
+                  # {"set_bus": {"lines_or_id": [(16, 2)], "lines_ex_id": [(3, 2)]}},  # "sub3_id2"
+                  # {"set_bus": {"lines_or_id": [(6, 2), (16, 2)]}},  # "sub3_id3"
+                  # {"set_bus": {"lines_or_id": [(15, 2)], "lines_ex_id": [(3, 2)], "loads_id": [(2, 2)]}},  # "sub3_id4"
+                  # {"set_bus": {"lines_or_id": [(10, 2), (19, 2)], "loads_id": [(5, 2)]}},  # "sub8_id1"
+                  # {"set_bus": {"lines_or_id": [(10, 2), (19, 2)]}},  # "sub8_id2"
+                  # {"set_bus": {"lines_or_id": [(10, 2)], "loads_id": [(5, 2)]}},  # "sub8_id3"
+                  # {"set_bus": {"lines_or_id": [(4, 2), (2, 2)]}},  # "sub1_id1" \n",
+                  # {"set_bus": {"lines_or_id": [(3, 2)], "generators_id": [(0, 2)]}},  # "sub1_id2"
+                  {"set_line_status": [(14, -1)]},  # "powerline_9_10"
+                  {"set_line_status": [(12, -1)]},  # "powerline_12_13"
+                  # composed action
+                  {"set_bus": {"loads_id": [(4, 2), (3, 2)],
+                               "generators_id": [(2, 2)],
+                               "lines_or_id": [(9, 2), (8, 2), (17, 2)],
+                               "lines_ex_id": [(6, 2)]}},
+                  ]
+    env = simulator._simulator
+    li_act = [env.action_space(el) for el in acts_dict_]
+    agent = RandomAct1(env.action_space, list_act=li_act)
     return agent
