@@ -77,12 +77,12 @@ def get_agent(env, agent_name, agent_params):
         res = RandomN1(env.action_space)
     elif agent_name == "random_n2":
         res = RandomN2(env.action_space)
-    elif agent_name == "random_tc_nn1":
+    elif agent_name == "random_tc_n1":
         res = RandomTCN1(env.action_space,
                          agent_params["subsid_list"], agent_params["p"])
-    elif agent_name == "random_tc_n1":
+    elif agent_name == "random_tc1":
         res = RandomTC1(env.action_space, agent_params["subsid_list"])
-    elif agent_name == "random_tc_n2":
+    elif agent_name == "random_tc2":
         res = RandomTC2(env.action_space, agent_params["subsid_list"])
     else:
         raise NotImplementedError()
@@ -127,6 +127,7 @@ def apply_reference_action(env, action=None, reference_number=None, seed=14):
     elif reference_number == 1:
         # Disconnecting the line 1_3_3
         return disconnet_power_line(action, line_id=3, line_name="1_3_3")
+
     elif reference_number == 2:
         # Topology change at node 3
         agent = AgentTC1(env.action_space, subsid_list=[3])
@@ -145,6 +146,16 @@ def apply_reference_action(env, action=None, reference_number=None, seed=14):
         agent.seed(seed)
         act_ref = agent.act(None, None, None)
         return action + act_ref
+
+    elif reference_number == 5:
+        return disconnet_power_line(action, line_id=3, line_name="1_3_3")
+
+    elif reference_number == 6:
+        return disconnet_power_line(action, line_id=4, line_name="1_4_4")
+
+    elif reference_number == 7:
+        return disconnet_power_line(action, line_id=17, line_name="4_5_17")
+        
     else:
         raise NotImplementedError()
 
