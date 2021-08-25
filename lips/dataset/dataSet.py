@@ -22,6 +22,10 @@ class DataSet(object):
     def __init__(self, experiment_name):
         self.experiment_name = experiment_name
         self.data = None
+        self.size = 0
+
+    def __len__(self):
+        return self.size
 
     def generate(self,
                  simulator,
@@ -99,5 +103,23 @@ class DataSet(object):
         """
         if self.data is None:
             raise RuntimeError("Impossible to sample from a non initialized dataset. "
+                               "Have you called `dataset.load(...)` "
+                               "or `dataset.generate(...)` ?")
+
+    def get_data(self, index):
+        """
+        This function returns the data in the data that match the index `index`
+
+        Parameters
+        ----------
+        index:
+            A list of integer
+
+        Returns
+        -------
+
+        """
+        if self.data is None:
+            raise RuntimeError("Impossible to get_data from a non initialized dataset. "
                                "Have you called `dataset.load(...)` "
                                "or `dataset.generate(...)` ?")
