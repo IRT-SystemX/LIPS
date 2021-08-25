@@ -30,7 +30,7 @@ class Evaluation():
     Physics compliance : is the learned model respect the physics laws (at which degree)
     ML-related performance : how the model respect the ML related criteria like accuracy of predictions
     Readiness : Is the designed model ready to be deployed in production (scalibility or stability)
-    Adaptability : how much robustness and out-of-distribution generalization is necessary ?
+    Generalization : how much robustness and out-of-distribution generalization is necessary ?
 
     
     
@@ -89,7 +89,7 @@ class Evaluation():
 
         self.metrics_ML = {}
         self.metrics_physics = {}
-        self.metrics_adaptability = {}
+        self.metrics_generalization = {}
         self.metrics_readiness = {}
 
         # create the paths
@@ -117,13 +117,7 @@ class Evaluation():
                 os.mkdir(save_path)
         
         if self.active_dict["evaluate_ML"]:
-            self.evaluate_ML()
-
-        if self.active_dict["evaluate_adaptability"]:
-            self.evaluate_adaptability()
-
-        if self.active_dict["evaluate_readiness"]:
-            self.evaluate_readiness()
+            self.evaluate_ML(save_path=save_path)
 
         self.evaluate_physic(choice=choice, 
                              EL_tolerance=EL_tolerance, 
@@ -132,7 +126,13 @@ class Evaluation():
                              active_flow=active_flow,
                              save_path=save_path)
 
-        return self.metrics_ML, self.metrics_physics, self.metrics_adaptability, self.metrics_readiness
+        if self.active_dict["evaluate_adaptability"]:
+            self.evaluate_generalization()
+
+        if self.active_dict["evaluate_readiness"]:
+            self.evaluate_readiness()
+
+        return self.metrics_ML, self.metrics_physics, self.metrics_generalization, self.metrics_readiness
 
 
     def evaluate_physic(self,
@@ -206,8 +206,8 @@ class Evaluation():
                                           prod_p=self.observations["prod_p"],
                                           tolerance=EL_tolerance
                                           )
-                self.metrics_physics['EL']['violation_percentage'] = loss_metrics[1]
-                self.metrics_physics['EL']['EL_values'] = loss_metrics[0]
+                self.metrics_physics['EL']['violation_percentage'] = np.float(loss_metrics[1])
+                self.metrics_physics['EL']['EL_values'] = np.array(loss_metrics[0])
 
             ######### Law of conservation of energy verifier
             if self.active_dict["evaluate_physic"]["verify_LCE"]:
@@ -217,8 +217,8 @@ class Evaluation():
                                                         p_or=self.observations["p_or"],
                                                         p_ex=self.observations["p_ex"],
                                                         tolerance=LCE_tolerance)
-                self.metrics_physics['LCE']['violation_percentage'] = lce_metrics[1]
-                self.metrics_physics['LCE']['LCE_values'] = lce_metrics[0]
+                self.metrics_physics['LCE']['violation_percentage'] = np.float(lce_metrics[1])
+                self.metrics_physics['LCE']['LCE_values'] = np.array(lce_metrics[0])
 
             ######### Kirchhoff's current law verifier
             if self.active_dict["evaluate_physic"]["verify_KCL"]:
@@ -234,9 +234,10 @@ class Evaluation():
                                                       topo_vect=self.observations["topo_vect"],
                                                       active_flow=active_flow,
                                                       tolerance=KCL_tolerance)
-                self.metrics_physics["KCL"]["violation_percentage"] = res_kcl[3]
-                self.metrics_physics["KCL"]["nodes_values"] = res_kcl[0]
-                self.metrics_physics["KCL"]["network_values"] = res_kcl[1]
+                self.metrics_physics["KCL"]["violation_percentage"] = np.float(res_kcl[3])
+                self.metrics_physics["KCL"]["nodes_values"] = np.vstack(res_kcl[0])
+                self.metrics_physics["KCL"]["network_values"] = np.array(res_kcl[1])
+                self.metrics_physics["KCL"]["violation_indices"] = np.array(res_kcl[2])
 
         ##################################
         ########### predictions ##########
@@ -264,8 +265,8 @@ class Evaluation():
                                           prod_p=self.observations["prod_p"],
                                           tolerance=EL_tolerance
                                           )
-                self.metrics_physics['EL']['violation_percentage'] = loss_metrics[1]
-                self.metrics_physics['EL']['EL_values'] = loss_metrics[0]
+                self.metrics_physics['EL']['violation_percentage'] = np.float(loss_metrics[1])
+                self.metrics_physics['EL']['EL_values'] = np.array(loss_metrics[0])
 
             ######### Law of conservation of energy verifier
             if self.active_dict["evaluate_physic"]["verify_LCE"]:
@@ -275,8 +276,8 @@ class Evaluation():
                                                         p_or=self.predictions["p_or"],
                                                         p_ex=self.predictions["p_ex"],
                                                         tolerance=LCE_tolerance)
-                self.metrics_physics['LCE']['violation_percentage'] = lce_metrics[1]
-                self.metrics_physics['LCE']['LCE_values'] = lce_metrics[0]
+                self.metrics_physics['LCE']['violation_percentage'] = np.float(lce_metrics[1])
+                self.metrics_physics['LCE']['LCE_values'] = np.array(lce_metrics[0])
 
             # Kirchhoff's current law verifier
             if self.active_dict["evaluate_physic"]["verify_KCL"]:
@@ -292,16 +293,28 @@ class Evaluation():
                                                       topo_vect=self.observations["topo_vect"],
                                                       active_flow=active_flow,
                                                       tolerance=KCL_tolerance)
-                self.metrics_physics["KCL"]["violation_percentage"] = res_kcl[3]
-                self.metrics_physics["KCL"]["nodes_values"] = res_kcl[0]
-                self.metrics_physics["KCL"]["network_values"] = res_kcl[1]
+                self.metrics_physics["KCL"]["violation_percentage"] = np.float(res_kcl[3])
+                self.metrics_physics["KCL"]["nodes_values"] = np.vstack(res_kcl[0])
+                self.metrics_physics["KCL"]["network_values"] = np.array(res_kcl[1])
+                self.metrics_physics["KCL"]["violation_indices"] = np.array(res_kcl[2])
 
         else:
             raise ValueError
 
-        if save_path:
-            # TODO
-            pass
+        if save_path is not None:
+            res = self._save_complex_dict(self.metrics_physics)
+            if not os.path.exists(save_path):
+                os.mkdir(save_path)
+            with open(os.path.join(save_path, "metrics_physic.json"), "w", encoding="utf-8") as f:
+                json.dump(res, fp=f, indent=4, sort_keys=True)
+            self.save_path = save_path
+        elif self.save_path is not None:
+            res = self._save_complex_dict(self.metrics_physics)
+            if not os.path.exists(self.save_path):
+                os.mkdir(self.save_path)
+            with open(os.path.join(self.save_path, "metrics_physic.json"), "w", encoding="utf-8") as f:
+                json.dump(res, fp=f, indent=4, sort_keys=True)
+            self.save_path = save_path
 
         return self.metrics_physics
 
@@ -374,6 +387,12 @@ class Evaluation():
 
         # save the results in a json file
         if save_path is not None:
+            if not os.path.exists(save_path):
+                os.mkdir(save_path)
+            with open(os.path.join(save_path, "metrics_ML.json"), "w", encoding="utf-8") as f:
+                json.dump(self.metrics_ML, fp=f, indent=4, sort_keys=True)
+            self.save_path = save_path
+        elif self.save_path is not None:
             if not os.path.exists(self.save_path):
                 os.mkdir(self.save_path)
             with open(os.path.join(self.save_path, "metrics_ML.json"), "w", encoding="utf-8") as f:
@@ -384,7 +403,7 @@ class Evaluation():
     def evaluate_readiness(self):
         pass
 
-    def evaluate_adaptability(self):
+    def evaluate_generalization(self):
         pass
 
     def get_empty_active_dict(self):
@@ -466,3 +485,63 @@ class Evaluation():
         plot any error in a plot
         """
         pass
+
+    def _save_complex_dict(self, metric):
+        res = dict()
+        for key_, val_ in metric.items():
+            res[key_] = dict()
+            if isinstance(val_, dict):
+                for key__, val__ in val_.items():
+                    if isinstance(val__, Iterable):
+                        res[key_][key__] = []
+                        for el in val__:
+                            self._save_dict(res[key_][key__], el)
+                    else:
+                        res[key_][key__] = np.float(val__)
+                            
+            else:
+                res[key_] = []
+                for el in val_:
+                    self._save_dict(res[key_], el)
+        return res
+
+    def _save_dict(self, li, val):
+        if isinstance(val, Iterable):
+            li.append([float(el) for el in val])
+        else:
+            li.append(float(val))
+
+    def load_results(self, load_path, metrics=["metrics_physics"]):
+        """
+        load the metrics
+        """
+        for metric in metrics:
+            with open(os.path.join(load_path, f"{metric}.json"), "r", encoding="utf-8") as f:
+                dict_serialized = json.load(fp=f) 
+            
+            for key_, val_ in dict_serialized.items():
+                if isinstance(val_, dict):
+                    for key__, val__ in val_.items():
+                        if isinstance(val__, Iterable):
+                            dict_serialized[key_][key__] = np.array(val__)
+                        else:
+                            dict_serialized[key_][key__] = np.float(val__)
+                else:
+                    if isinstance(val_, Iterable):
+                        dict_serialized[key_] = np.array(val_)
+                    else:
+                        dict_serialized[key_] = np.float(val_)
+
+            if metric == "metrics_physics":
+                self.metrics_physics = dict_serialized
+            elif metric == "metrics_ML":
+                self.metrics_ML = dict_serialized
+            elif metric == "metrics_readiness":
+                self.metrics_generalization = dict_serialized
+            elif metric == "metrics_generalization":
+                self.metrics_readiness = dict_serialized
+            else:
+                raise NotImplementedError
+
+            
+
