@@ -71,7 +71,7 @@ class DCApproximationAS(AugmentedSimulator):
 
         nb_sample = len(dataset)
         res = {el: np.zeros((nb_sample, self._get_attr_size(el))) for el in self._attr_y}
-        for ind in tqdm(range(nb_sample)):
+        for ind in tqdm(range(nb_sample), desc="evaluate dc"):
             # extract the current data
             data_this = dataset.get_data(np.array([ind], dtype=int))
 
