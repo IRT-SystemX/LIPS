@@ -364,7 +364,7 @@ class Evaluation(object):
                 if nm == "__prod_p_dc":
                     # fix for the DC approximation
                     continue
-                true_ = self.predictions[nm]
+                true_ = self.observations[nm]
                 tmp = metric_fun(true_, pred_)
                 if isinstance(tmp, Iterable):
                     if verbose >= 2:
