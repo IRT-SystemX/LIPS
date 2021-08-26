@@ -11,5 +11,6 @@ __all__ = ["AugmentedSimulator", "DCApproximationAS", "FullyConnectedAS"]
 from lips.augmented_simulators.augmentedSimulator import AugmentedSimulator
 from lips.augmented_simulators.dcApproximationAS import DCApproximationAS
 from lips.augmented_simulators.fullyConnectedAS import FullyConnectedAS
+from lips.augmented_simulators.hyperParameterTuner import HyperParameterTuner
 
 # from lips.augmented_simulators.leapNet import LeapNet
