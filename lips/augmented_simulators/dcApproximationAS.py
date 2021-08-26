@@ -41,6 +41,7 @@ class DCApproximationAS(AugmentedSimulator):
         self._attr_x = ("prod_p", "prod_v", "load_p", "load_q", "topo_vect")
         # output that we want the proxy to predict
         self._attr_y = ("a_or", "a_ex", "p_or", "p_ex", "q_or", "q_ex", "prod_q", "load_v", "v_or", "v_ex")
+        self._attr_fix_gen_p = "__prod_p_dc"
 
         if grid_path is not None:
             self._raw_grid_simulator = PandaPowerBackend()
@@ -71,6 +72,7 @@ class DCApproximationAS(AugmentedSimulator):
 
         nb_sample = len(dataset)
         res = {el: np.zeros((nb_sample, self._get_attr_size(el))) for el in self._attr_y}
+        res[self._attr_fix_gen_p] = np.zeros((nb_sample, self._get_attr_size("prod_p")))
         for ind in tqdm(range(nb_sample), desc="evaluate dc"):
             # extract the current data
             data_this = dataset.get_data(np.array([ind], dtype=int))
@@ -83,10 +85,10 @@ class DCApproximationAS(AugmentedSimulator):
             tmp["p_or"], tmp["q_or"], tmp["v_or"], tmp["a_or"] = self._raw_grid_simulator.lines_or_info()
             tmp["p_ex"], tmp["q_ex"], tmp["v_ex"], tmp["a_ex"] = self._raw_grid_simulator.lines_ex_info()
             tmp1, tmp2, tmp["load_v"] = self._raw_grid_simulator.loads_info()
-            tmp1, tmp["prod_q"], tmp2 = self._raw_grid_simulator.generators_info()
+            tmp["prod_p"], tmp["prod_q"], tmp2 = self._raw_grid_simulator.generators_info()
             for attr_nm in self._attr_y:
                 res[attr_nm][ind, :] = 1.0 * tmp[attr_nm]
-
+            res[self._attr_fix_gen_p][ind, :] = 1.0 * tmp["prod_p"]
         return res
 
     def _get_attr_size(self, attr_nm):
@@ -110,6 +112,8 @@ class DCApproximationAS(AugmentedSimulator):
             return self._raw_grid_simulator.n_line
         elif attr_nm == "v_ex":
             return self._raw_grid_simulator.n_line
+        elif attr_nm == "prod_p":
+            return self._raw_grid_simulator.n_gen
         else:
             raise RuntimeError(f"Unknown attribute {attr_nm}")
 

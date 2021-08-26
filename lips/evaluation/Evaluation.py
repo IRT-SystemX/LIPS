@@ -319,7 +319,7 @@ class Evaluation(object):
     def evaluate_ML(self,
                     metric_names=None,
                     compute_metricsPercentage=True,
-                    metric_percentage=["mape", "MAE"],
+                    metric_percentage=("mape", "MAE"),
                     k=0.1,
                     verbose=0,
                     save_path=None):
@@ -361,6 +361,9 @@ class Evaluation(object):
         for metric_name, metric_fun in metrics.items():
             self.metrics_ML[metric_name] = {}
             for nm, pred_ in self.predictions.items():
+                if nm == "__prod_p_dc":
+                    # fix for the DC approximation
+                    continue
                 true_ = self.observations[nm]
                 tmp = metric_fun(true_, pred_)
                 if isinstance(tmp, Iterable):
