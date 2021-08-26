@@ -112,6 +112,10 @@ def Check_Kirchhoff_current_law(env=None,
     v_ex = data["v_ex"]
     load_v = data["load_v"]
     prod_q = data["prod_q"]
+    prod_p_init = 1.0 * prod_p
+    if "__prod_p_dc" in data:
+        # specific case of the dc approximation that neglects the loss
+        prod_p = data["__prod_p_dc"]
 
     len_obs = len(a_or)
     current_law_values_at_nodes = list()
@@ -141,12 +145,12 @@ def Check_Kirchhoff_current_law(env=None,
         obs.load_q = load_q[ind]
         obs.gen_p = prod_p[ind]
         obs.gen_v = prod_v[ind]
-        obs.line_status = np.asarray(line_status[ind], dtype=np.bool)
-        obs.topo_vect = np.asarray(topo_vect[ind], dtype=np.int)
+        obs.line_status = np.asarray(line_status[ind], dtype=bool)
+        obs.topo_vect = np.asarray(topo_vect[ind], dtype=int)
 
         # Compute the flow matrix
         flow_mat, _ = obs.flow_bus_matrix(
-            active_flow=active_flow, as_csr_matrix=False)
+            active_flow=active_flow, as_csr_matrix=True)
         # the sum of rows gives an indication of how the Kirchhof's current law is respected
         tmp = flow_mat.sum(axis=1)
         # store the values at the node level
