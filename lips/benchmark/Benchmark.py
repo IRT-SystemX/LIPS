@@ -35,11 +35,9 @@ class Benchmark(object):
             It allows to evaluate the performance of the simulator with respect to various point of views
             It should be parameterized before passing to benchmark class to include appropriate metrics 
 
-        path : ``string``
+        save_path : ``string``
             the root path of Outputs of the benchmark on the basis of which new directories are created
 
-        limit_gpu_memory: ``boolean``
-            whether or not to limit the gpu memory usage
     """
 
     def __init__(self,
@@ -130,8 +128,8 @@ class Benchmark(object):
                 if indicated the evaluation results will be saved to indicated path
         """
 
-        self.evaluator.do_evaluations(env=self.env, 
-                                      env_name=self.env_name,
+        self.evaluator.do_evaluations(env=None, 
+                                      env_name=None,
                                       observations=self.observations, 
                                       predictions=self.predictions, 
                                       choice=choice,

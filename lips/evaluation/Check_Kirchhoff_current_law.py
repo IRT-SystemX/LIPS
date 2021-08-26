@@ -23,10 +23,6 @@ def Check_Kirchhoff_current_law(env=None,
 
     params
     ------
-        path : `string`
-            a path to model predictions directory. The directory should contain the
-            the input and output variables of the model with .npy extension
-
         env : Grid2op `environment`
             the environment used to generate the data
 
@@ -66,26 +62,6 @@ def Check_Kirchhoff_current_law(env=None,
 
         tolerance : `float`
             the current law greater than tolerance will be considered as not verified
-
-        prod_p : `list` of `array`
-            a list of production active powers for different steps. Each item in the list
-            corresponds to a unique sample and each sample has a length of env.n_gen.
-            Not required if obs_list is not None
-
-        prod_v : `list` of `array`
-            a list of production voltages for different steps. Each item in the list
-            corresponds to a unique sample and each sample has a length of env.n_gen
-            Not required if obs_list is not None
-
-        load_p : `list` of `array`
-            a list of load active powers for different steps. Each item in the list
-            corresponds to a unique sample and each sample has a length of env.n_load
-            Not required if obs_list is not None
-
-        load_q : `list` of `array`
-            a list of load reactive powers for different steps. Each item in the list
-            corresponds to a unique sample and each sample has a length of env.n_load
-            Not required if obs_list is not None
 
 
     Returns
@@ -145,8 +121,7 @@ def Check_Kirchhoff_current_law(env=None,
         obs.topo_vect = np.asarray(topo_vect[ind], dtype=np.int)
 
         # Compute the flow matrix
-        flow_mat, _ = obs.flow_bus_matrix(
-            active_flow=active_flow, as_csr_matrix=False)
+        flow_mat, _ = obs.flow_bus_matrix(active_flow=active_flow, as_csr_matrix=False)
         # the sum of rows gives an indication of how the Kirchhof's current law is respected
         tmp = flow_mat.sum(axis=1)
         # store the values at the node level
@@ -162,8 +137,9 @@ def Check_Kirchhoff_current_law(env=None,
         total_buses += len(tmp)
 
     violation_percentage = (violation_counter/total_buses)*100
-    print("{:.2f}% not verify the Kirchhoff's current law at {} tolerance".format(
+    print("{:.2f}% of nodes diverge from the Kirchhoff's current law with a magnitude more than {}MW tolerance".format(
         violation_percentage, tolerance))
+
     #print("{:.2f}% of {} not verify the Kirchhoff's current law at {} tolerance".format((len(current_law_not_verified) / len_obs) * 100, choice, tolerance))
 
     return current_law_values_at_nodes, current_law_values_network, current_law_not_verified, violation_percentage
