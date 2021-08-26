@@ -10,6 +10,7 @@ import os
 import shutil
 import numpy as np
 import warnings
+import copy
 
 from lips.benchmark import Benchmark
 from lips.neurips_benchmark.scen1_utils import (get_kwargs_simulator_scenario1,
@@ -166,7 +167,7 @@ class NeuripsBenchmark1(Benchmark):
                                                        KCL_tolerance=KCL_tolerance,
                                                        active_flow=active_flow
                                                        )
-            res[nm] = tmp
+            res[nm] = copy.deepcopy(tmp)
         return res
 
     def _aux_evaluate_on_single_dataset(self,
