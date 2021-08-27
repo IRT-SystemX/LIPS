@@ -1,4 +1,4 @@
-# Copyright (c) 2021, IRT SystemX (https://www.irt-systemx.fr/en/)
+# Copyright (c) 2021, IRT SystemX and RTE (https://www.irt-systemx.fr/en/)
 # See AUTHORS.txt
 # This Source Code Form is subject to the terms of the Mozilla Public License, version 2.0.
 # If a copy of the Mozilla Public License, version 2.0 was not distributed with this file,

@@ -215,8 +215,10 @@ class Evaluation(object):
                                                         p_or=self.observations["p_or"],
                                                         p_ex=self.observations["p_ex"],
                                                         tolerance=LCE_tolerance)
-                self.metrics_physics['LCE']['violation_percentage'] = np.float(lce_metrics[1])
+                
                 self.metrics_physics['LCE']['LCE_values'] = np.array(lce_metrics[0])
+                self.metrics_physics['LCE']['violation_percentage'] = np.float(lce_metrics[1])
+                self.metrics_physics['LCE']['MAE'] = np.float(lce_metrics[3])
 
             ######### Kirchhoff's current law verifier
             if self.active_dict["evaluate_physic"]["verify_KCL"]:
@@ -274,8 +276,10 @@ class Evaluation(object):
                                                         p_or=self.predictions["p_or"],
                                                         p_ex=self.predictions["p_ex"],
                                                         tolerance=LCE_tolerance)
-                self.metrics_physics['LCE']['violation_percentage'] = np.float(lce_metrics[1])
+                
                 self.metrics_physics['LCE']['LCE_values'] = np.array(lce_metrics[0])
+                self.metrics_physics['LCE']['violation_percentage'] = np.float(lce_metrics[1])
+                self.metrics_physics['LCE']['MAE'] = np.float(lce_metrics[3])
 
             # Kirchhoff's current law verifier
             if self.active_dict["evaluate_physic"]["verify_KCL"]:
@@ -382,7 +386,7 @@ class Evaluation(object):
                              predictions=self.predictions,
                              k=k,
                              metric_names=metric_percentage,
-                             variables=["a_or", "p_or", "v_or", "q_or"],
+                             variables=["a_or", "a_ex", "p_or", "p_ex", "q_or", "q_ex"],
                              agg_func=np.mean
                              )
 
