@@ -46,14 +46,17 @@ class NeuripsBenchmark1(Benchmark):
             # TODO fill that appropriately
             self.evaluation.active_dict["evaluate_ML"] = True
             self.evaluation.activate_physic_compliances()
-            self.evaluation.active_dict["evaluate_adaptability"] = True
-            self.evaluation.active_dict["evaluate_readiness"] = True
-            self.evaluation.active_dict["verify_current_pos"] = True
-            self.evaluation.active_dict["verify_voltage_pos"] = True
-            self.evaluation.active_dict["verify_loss_pos"] = True
-            self.evaluation.active_dict["verify_predict_disc"] = True
-            self.evaluation.active_dict["verify_current_eq"] = True
-            self.evaluation.active_dict["evaluate_physics"] = {}
+            self.evaluation.active_dict["evaluate_adaptability"] = False
+            self.evaluation.active_dict["evaluate_readiness"] = False
+            self.evaluation.active_dict["evaluate_physic"]["verify_current_pos"] = True
+            self.evaluation.active_dict["evaluate_physic"]["verify_voltage_pos"] = False
+            self.evaluation.active_dict["evaluate_physic"]["verify_loss_pos"] = False
+            self.evaluation.active_dict["evaluate_physic"]["verify_predict_disc"] = True
+            self.evaluation.active_dict["evaluate_physic"]["verify_current_eq"] = False
+            self.evaluation.active_dict["evaluate_physic"]["verify_EL"] = False
+            self.evaluation.active_dict["evaluate_physic"]["verify_LCE"] = False
+            self.evaluation.active_dict["evaluate_physic"]["verify_KCL"] = False
+            #self.evaluation.active_dict["evaluate_physics"] = {}
 
         else:
             self.evaluate = evaluation

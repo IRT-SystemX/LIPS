@@ -12,7 +12,10 @@ from sklearn.metrics import mean_absolute_error
 import sys
 
 
-def BasicVerifier(a_or, a_ex, v_or, v_ex, p_or, p_ex, q_or, q_ex, line_status, active_dict):
+def BasicVerifier(active_dict: dict,
+                  predictions=None,
+                  line_status=None 
+                  ):
     """
     verify the following elementary physic compliances
 
@@ -65,6 +68,8 @@ def BasicVerifier(a_or, a_ex, v_or, v_ex, p_or, p_ex, q_or, q_ex, line_status, a
     # VERIFICATION 1
     # verification of currents
     if active_dict["verify_current_pos"]:
+        a_or = predictions["a_or"]
+        a_ex = predictions["a_ex"]
         verifications["currents"] = {}
         if np.any(a_or < 0):
             verifications["currents"]["a_or"] = {}
@@ -105,6 +110,8 @@ def BasicVerifier(a_or, a_ex, v_or, v_ex, p_or, p_ex, q_or, q_ex, line_status, a
     # VERIFICATION 2
     # verification of voltages
     if active_dict["verify_voltage_pos"]:
+        v_or = predictions["v_or"]
+        v_ex = predictions["v_ex"]
         verifications["voltages"] = {}
         if np.any(v_or < 0):
             verifications["voltages"]["v_or"] = {}
@@ -145,6 +152,9 @@ def BasicVerifier(a_or, a_ex, v_or, v_ex, p_or, p_ex, q_or, q_ex, line_status, a
     # VERIFICATION 3
     # Positivity of losses
     if active_dict["verify_loss_pos"]:
+        p_or = predictions["p_or"]
+        p_ex = predictions["p_ex"]
+
         verifications["loss"] = {}
         loss = p_or + p_ex
 
@@ -168,33 +178,43 @@ def BasicVerifier(a_or, a_ex, v_or, v_ex, p_or, p_ex, q_or, q_ex, line_status, a
     # VERIFICATION 4
     # verifying null values for line disconnections
     if active_dict["verify_predict_disc"]:
+
         verifications["line_status"] = {}
         sum_disconnected_values = 0
 
         ind_ = line_status != 1
         len_disc = np.sum(ind_)
         if np.any(ind_):
-            p_or_violations = np.sum(np.abs(p_or[ind_]) > 0)
-            verifications["line_status"]["p_or_not_null"] = p_or_violations
-            sum_disconnected_values += p_or_violations
-            p_ex_violations = np.sum(np.abs(p_ex[ind_]) > 0)
-            verifications["line_status"]["p_ex_not_null"] = p_ex_violations
-            sum_disconnected_values += p_ex_violations
-            verifications["line_status"]["p_violations"] = np.sum((np.abs(p_or[ind_]) + np.abs(p_ex[ind_]))>0) / len_disc
-            q_or_violations = np.sum(np.abs(q_or[ind_]) > 0)
-            verifications["line_status"]["q_or_not_null"] = q_or_violations
-            sum_disconnected_values += q_or_violations
-            q_ex_violations = np.sum(np.abs(q_ex[ind_]) > 0)
-            verifications["line_status"]["q_ex_not_null"] = q_ex_violations
-            sum_disconnected_values += q_ex_violations
-            verifications["line_status"]["q_violations"] = np.sum((np.abs(q_or[ind_]) + np.abs(q_ex[ind_]))>0) / len_disc
-            a_or_violations = np.sum(np.abs(a_or[ind_]) > 0)
-            verifications["line_status"]["a_or_not_null"] = a_or_violations
-            sum_disconnected_values += a_or_violations
-            a_ex_violations = np.sum(np.abs(a_ex[ind_]) > 0)
-            verifications["line_status"]["a_ex_not_null"] = a_ex_violations
-            sum_disconnected_values += a_ex_violations
-            verifications["line_status"]["a_violations"] = np.sum((np.abs(a_or[ind_]) + np.abs(a_ex[ind_]))>0) / len_disc
+            if "p_or" in predictions.keys():
+                p_or = predictions["p_or"]
+                p_ex = predictions["p_ex"]
+                p_or_violations = np.sum(np.abs(p_or[ind_]) > 0)
+                verifications["line_status"]["p_or_not_null"] = p_or_violations
+                sum_disconnected_values += p_or_violations
+                p_ex_violations = np.sum(np.abs(p_ex[ind_]) > 0)
+                verifications["line_status"]["p_ex_not_null"] = p_ex_violations
+                sum_disconnected_values += p_ex_violations
+                verifications["line_status"]["p_violations"] = np.sum((np.abs(p_or[ind_]) + np.abs(p_ex[ind_]))>0) / len_disc
+            if "q_or" in predictions.keys():
+                q_or = predictions["q_or"]
+                q_ex = predictions["q_ex"]
+                q_or_violations = np.sum(np.abs(q_or[ind_]) > 0)
+                verifications["line_status"]["q_or_not_null"] = q_or_violations
+                sum_disconnected_values += q_or_violations
+                q_ex_violations = np.sum(np.abs(q_ex[ind_]) > 0)
+                verifications["line_status"]["q_ex_not_null"] = q_ex_violations
+                sum_disconnected_values += q_ex_violations
+                verifications["line_status"]["q_violations"] = np.sum((np.abs(q_or[ind_]) + np.abs(q_ex[ind_]))>0) / len_disc
+            if "a_or" in predictions.keys():
+                a_or = predictions["a_or"]
+                a_ex = predictions["a_ex"]
+                a_or_violations = np.sum(np.abs(a_or[ind_]) > 0)
+                verifications["line_status"]["a_or_not_null"] = a_or_violations
+                sum_disconnected_values += a_or_violations
+                a_ex_violations = np.sum(np.abs(a_ex[ind_]) > 0)
+                verifications["line_status"]["a_ex_not_null"] = a_ex_violations
+                sum_disconnected_values += a_ex_violations
+                verifications["line_status"]["a_violations"] = np.sum((np.abs(a_or[ind_]) + np.abs(a_ex[ind_]))>0) / len_disc
         if sum_disconnected_values > 0:
             print("Prediction in presence of line disconnection. Problem encountered !")
         else:
@@ -205,6 +225,15 @@ def BasicVerifier(a_or, a_ex, v_or, v_ex, p_or, p_ex, q_or, q_ex, line_status, a
     # Verify current equations for real and predicted observations
     # TODO : update the equations by considering only voltage > 0 cases, hence it does not need eps
     if active_dict["verify_current_eq"]:
+        a_or = predictions["a_or"]
+        a_ex = predictions["a_ex"]
+        p_or = predictions["p_or"]
+        p_ex = predictions["p_ex"]
+        q_or = predictions["q_or"]
+        q_ex = predictions["q_ex"]
+        v_or = predictions["v_or"]
+        v_ex = predictions["v_ex"]
+
         verifications["current_equations"] = {}
         # consider an epsilon value to avoid division by zero
         eps = sys.float_info.epsilon
