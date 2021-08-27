@@ -1,9 +1,10 @@
-# Pour préciser ce qu'entendais Antoine par les derniers points (si on demande aux gens de prédire v_or, v_ex, a_or, a_ex, p_or, p_ex et q_or, q_ex):
-# - sur chaque ligne, v_or >= 0 , v_ex >= 0
-# - sur chaque ligne a_or >= 0 et a_ex >= 0
-# - sur chaque ligne, les pertes doivent être positives: p_or + p_ex >= 0
-# - on a une relation entre les p,q et v à chaque extrémité de ligne connectée : a_or = sqrt(p_or**2 + q_or**2) / (sqrt(3).v_or) et a_ex = sqrt(p_ex**2 + q_ex**2) / (sqrt(3).v_ex)
-# - si une ligne est déconnecté, alors son flux (en p, en q et en a) à chaque bout (donc pour _or et _ex) est nul (6 choses à vérifier)
+# Copyright (c) 2021, IRT SystemX (https://www.irt-systemx.fr/en/)
+# See AUTHORS.txt
+# This Source Code Form is subject to the terms of the Mozilla Public License, version 2.0.
+# If a copy of the Mozilla Public License, version 2.0 was not distributed with this file,
+# you can obtain one at http://mozilla.org/MPL/2.0/.
+# SPDX-License-Identifier: MPL-2.0
+# This file is part of LIPS, LIPS is a python platform for power networks benchmarking
 
 import numpy as np
 from collections import Counter
@@ -68,14 +69,16 @@ def BasicVerifier(a_or, a_ex, v_or, v_ex, p_or, p_ex, q_or, q_ex, line_status, a
         if np.any(a_or < 0):
             verifications["currents"]["a_or"] = {}
             a_or_errors = np.array(np.where(a_or < 0)).T
+            a_or_violation_proportion = len(a_or_errors) / a_or.size
             print("{:.3f}% of lines does not respect the positivity of currents (Amp) at origin".format(
-                (len(a_or_errors) / a_or.size)*100))
+                a_or_violation_proportion*100))
             # print the concerned lines with the counting their respectives anomalies
             counts = Counter(a_or_errors[:, 1])
-            print("Concerned lines with corresponding number of negative current values at their origin:\n",
-                dict(sorted(counts.items(), key=lambda item: item[1], reverse=True)))
+            #print("Concerned lines with corresponding number of negative current values at their origin:\n",
+            #    dict(sorted(counts.items(), key=lambda item: item[1], reverse=True)))
             verifications["currents"]["a_or"]["indices"] = a_or_errors
             verifications["currents"]["a_or"]["Error"] = -np.sum(np.minimum(a_or.flatten(), 0.))
+            verifications["currents"]["a_or"]["Violation_proportion"] = a_or_violation_proportion
             print("----------------------------------------------")
         else:
             print("Current positivity check passed for origin side !")
@@ -84,14 +87,16 @@ def BasicVerifier(a_or, a_ex, v_or, v_ex, p_or, p_ex, q_or, q_ex, line_status, a
         if np.any(a_ex < 0):
             verifications["currents"]["a_ex"] = {}
             a_ex_errors = np.array(np.where(a_ex < 0)).T
+            a_ex_violation_proportion = len(a_ex_errors) / a_ex.size
             print("{:.3f}% of lines does not respect the positivity of currents (Amp) at extremity".format(
-                (len(a_ex_errors) / a_ex.size)*100))
+                a_ex_violation_proportion*100))
             # print the concerned lines with the counting their respectives anomalies
             counts = Counter(a_ex_errors[:, 1])
-            print("Concerned lines with corresponding number of negative current values at their extremity:\n",
-                dict(sorted(counts.items(), key=lambda item: item[1], reverse=True)))
+            #print("Concerned lines with corresponding number of negative current values at their extremity:\n",
+            #    dict(sorted(counts.items(), key=lambda item: item[1], reverse=True)))
             verifications["currents"]["a_ex"]["indices"] = a_ex_errors
             verifications["currents"]["a_ex"]["Error"] = -np.sum(np.minimum(a_ex.flatten(), 0.))
+            verifications["currents"]["a_ex"]["Violation_proportion"] = a_ex_violation_proportion
             print("----------------------------------------------")
         else:
             print("Current positivity check passed for extremity side !")
@@ -104,14 +109,16 @@ def BasicVerifier(a_or, a_ex, v_or, v_ex, p_or, p_ex, q_or, q_ex, line_status, a
         if np.any(v_or < 0):
             verifications["voltages"]["v_or"] = {}
             v_or_errors = np.array(np.where(v_or < 0)).T
+            v_or_violation_proportion = len(v_or_errors) / v_or.size
             print("{:.3f}% of lines does not respect the positivity of voltages (Kv) at origin".format(
-                (len(v_or_errors) / v_or.size)*100))
+                v_or_violation_proportion*100))
             # print the concerned lines with the counting their respectives anomalies
             counts = Counter(v_or_errors[:, 1])
-            print("Concerned lines with corresponding number of negative voltage values at their origin:\n",
-                dict(sorted(counts.items(), key=lambda item: item[1], reverse=True)))
+            #print("Concerned lines with corresponding number of negative voltage values at their origin:\n",
+            #    dict(sorted(counts.items(), key=lambda item: item[1], reverse=True)))
             verifications["voltages"]["v_or"]["indices"] = v_or_errors
             verifications["voltages"]["v_or"]["Error"] = -np.sum(np.minimum(v_or.flatten(), 0.))
+            verifications["voltages"]["v_or"]["Violation_proportion"] = v_or_violation_proportion
             print("----------------------------------------------")
         else:
             print("Voltage positivity check passed for origin side !")
@@ -120,14 +127,16 @@ def BasicVerifier(a_or, a_ex, v_or, v_ex, p_or, p_ex, q_or, q_ex, line_status, a
         if np.any(v_ex < 0):
             verifications["voltages"]["v_ex"] = {}
             v_ex_errors = np.array(np.where(v_ex < 0)).T
+            v_ex_violation_proportion = len(v_ex_errors) / v_ex.size
             print("{:.3f}% of lines does not respect the positivity of voltages (Kv) at extremity".format(
-                (len(v_ex_errors) / v_ex.size)*100))
+                v_ex_violation_proportion*100))
             # print the concerned lines with the counting their respectives anomalies
             counts = Counter(v_ex_errors[:, 1])
-            print("Concerned lines with corresponding number of negative voltage values at their extremity:\n",
-                dict(sorted(counts.items(), key=lambda item: item[1], reverse=True)))
+            #print("Concerned lines with corresponding number of negative voltage values at their extremity:\n",
+            #    dict(sorted(counts.items(), key=lambda item: item[1], reverse=True)))
             verifications["voltages"]["v_ex"]["indices"] = v_ex_errors
             verifications["voltages"]["v_ex"]["Error"] = -np.sum(np.minimum(v_ex.flatten(), 0.))
+            verifications["voltages"]["v_ex"]["Violation_proportion"] = v_ex_violation_proportion
             print("----------------------------------------------")
         else:
             print("Voltage positivity check passed for extremity side !")
@@ -142,13 +151,15 @@ def BasicVerifier(a_or, a_ex, v_or, v_ex, p_or, p_ex, q_or, q_ex, line_status, a
         if np.any(loss):
             verifications["loss"]["loss_criterion"] = -np.sum(np.minimum(loss, 0.))
             loss_errors = np.array(np.where(loss < 0)).T
+            loss_violation_proportion = len(loss_errors) / p_or.size
             print("{:.3f}% of lines does not respect the positivity of loss (Mw)".format(
-                (len(loss_errors) / p_or.size)*100))
+                loss_violation_proportion*100))
             # print the concerned lines with the counting their respectives anomalies
             counts = Counter(loss_errors[:, 1])
-            print("Concerned lines with corresponding number of negative loss values:\n",
-                dict(sorted(counts.items(), key=lambda item: item[1], reverse=True)))
+            #print("Concerned lines with corresponding number of negative loss values:\n",
+            #    dict(sorted(counts.items(), key=lambda item: item[1], reverse=True)))
             verifications["loss"]["loss_errors"] = loss_errors
+            verifications["loss"]["violation_proportion"] = loss_violation_proportion
             print("----------------------------------------------")
         else:
             print("Loss positivity check passed !")
@@ -161,19 +172,29 @@ def BasicVerifier(a_or, a_ex, v_or, v_ex, p_or, p_ex, q_or, q_ex, line_status, a
         sum_disconnected_values = 0
 
         ind_ = line_status != 1
+        len_disc = np.sum(ind_)
         if np.any(ind_):
-            verifications["line_status"]["p_or_not_null"] = np.sum(p_or[ind_] > 0)
-            sum_disconnected_values += np.sum(p_or[ind_] > 0)
-            verifications["line_status"]["p_ex_not_null"] = np.sum(p_ex[ind_] > 0)
-            sum_disconnected_values += np.sum(p_ex[ind_] > 0)
-            verifications["line_status"]["q_or_not_null"] = np.sum(q_or[ind_] > 0)
-            sum_disconnected_values += np.sum(q_or[ind_] > 0)
-            verifications["line_status"]["q_ex_not_null"] = np.sum(q_ex[ind_] > 0)
-            sum_disconnected_values += np.sum(q_ex[ind_] > 0)
-            verifications["line_status"]["a_or_not_null"] = np.sum(a_or[ind_] > 0)
-            sum_disconnected_values += np.sum(a_or[ind_] > 0)
-            verifications["line_status"]["a_ex_not_null"] = np.sum(a_ex[ind_] > 0)
-            sum_disconnected_values += np.sum(a_ex[ind_] > 0)
+            p_or_violations = np.sum(np.abs(p_or[ind_]) > 0)
+            verifications["line_status"]["p_or_not_null"] = p_or_violations
+            sum_disconnected_values += p_or_violations
+            p_ex_violations = np.sum(np.abs(p_ex[ind_]) > 0)
+            verifications["line_status"]["p_ex_not_null"] = p_ex_violations
+            sum_disconnected_values += p_ex_violations
+            verifications["line_status"]["p_violations"] = np.sum((np.abs(p_or[ind_]) + np.abs(p_ex[ind_]))>0) / len_disc
+            q_or_violations = np.sum(np.abs(q_or[ind_]) > 0)
+            verifications["line_status"]["q_or_not_null"] = q_or_violations
+            sum_disconnected_values += q_or_violations
+            q_ex_violations = np.sum(np.abs(q_ex[ind_]) > 0)
+            verifications["line_status"]["q_ex_not_null"] = q_ex_violations
+            sum_disconnected_values += q_ex_violations
+            verifications["line_status"]["q_violations"] = np.sum((np.abs(q_or[ind_]) + np.abs(q_ex[ind_]))>0) / len_disc
+            a_or_violations = np.sum(np.abs(a_or[ind_]) > 0)
+            verifications["line_status"]["a_or_not_null"] = a_or_violations
+            sum_disconnected_values += a_or_violations
+            a_ex_violations = np.sum(np.abs(a_ex[ind_]) > 0)
+            verifications["line_status"]["a_ex_not_null"] = a_ex_violations
+            sum_disconnected_values += a_ex_violations
+            verifications["line_status"]["a_violations"] = np.sum((np.abs(a_or[ind_]) + np.abs(a_ex[ind_]))>0) / len_disc
         if sum_disconnected_values > 0:
             print("Prediction in presence of line disconnection. Problem encountered !")
         else:
@@ -182,6 +203,7 @@ def BasicVerifier(a_or, a_ex, v_or, v_ex, p_or, p_ex, q_or, q_ex, line_status, a
 
     # VERIFICATION 5 and 6
     # Verify current equations for real and predicted observations
+    # TODO : update the equations by considering only voltage > 0 cases, hence it does not need eps
     if active_dict["verify_current_eq"]:
         verifications["current_equations"] = {}
         # consider an epsilon value to avoid division by zero
