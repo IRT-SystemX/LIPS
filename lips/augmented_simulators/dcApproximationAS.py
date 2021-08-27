@@ -10,6 +10,7 @@ import copy
 import numpy as np
 from typing import Union
 from tqdm import tqdm
+import time
 
 from grid2op.Backend import PandaPowerBackend
 from grid2op.Action._BackendAction import _BackendAction
@@ -59,6 +60,8 @@ class DCApproximationAS(AugmentedSimulator):
         self._bk_act_class = _BackendAction.init_grid(self._raw_grid_simulator)
         self._act_class = CompleteAction.init_grid(self._raw_grid_simulator)
 
+        self._predict_time = 0
+
     def train(self, dataset, nb_iter):
         """this model does not need to be trained"""
         pass
@@ -73,6 +76,7 @@ class DCApproximationAS(AugmentedSimulator):
         nb_sample = len(dataset)
         res = {el: np.zeros((nb_sample, self._get_attr_size(el))) for el in self._attr_y}
         res[self._attr_fix_gen_p] = np.zeros((nb_sample, self._get_attr_size("prod_p")))
+        self._predict_time = 0
         for ind in tqdm(range(nb_sample), desc="evaluate dc"):
             # extract the current data
             data_this = dataset.get_data(np.array([ind], dtype=int))
@@ -141,7 +145,9 @@ class DCApproximationAS(AugmentedSimulator):
         self._raw_grid_simulator.apply_action(modifer)
 
         # start the simulator
+        _beg = time.time()
         self._raw_grid_simulator.runpf(is_dc=True)
+        self._predict_time += time.time() - _beg
 
     def save(self, path_out):
         """
