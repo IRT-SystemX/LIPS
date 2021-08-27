@@ -11,6 +11,7 @@ import shutil
 import numpy as np
 import warnings
 import copy
+import logging
 
 from lips.benchmark import Benchmark
 from lips.neurips_benchmark.scen1_utils import (get_kwargs_simulator_scenario1,
@@ -21,6 +22,9 @@ from lips.neurips_benchmark.scen1_utils import (get_kwargs_simulator_scenario1,
 from lips.physical_simulator import Grid2opSimulator
 from lips.dataset import PowerGridDataSet
 from lips.evaluation import Evaluation
+
+logging.basicConfig(filename="logs.log", level=logging.INFO,format="%(levelname)s:%(message)s")
+
 
 
 class NeuripsBenchmark1(Benchmark):
@@ -164,6 +168,7 @@ class NeuripsBenchmark1(Benchmark):
                                      active_flow=True,
                                      save_path=None  # currently unused
                                      ):
+        print("A log file including some verifications is created at root directory with the name logs.log")
         self._create_training_simulator()
         li_dataset = []
         if dataset == "all":
@@ -183,6 +188,7 @@ class NeuripsBenchmark1(Benchmark):
 
         res = {}
         for dataset_, nm in zip(li_dataset, keys):
+            logging.info("Experiment on dataset : {}".format(nm))
             tmp = self._aux_evaluate_on_single_dataset(dataset_,
                                                        augmented_simulator=augmented_simulator,
                                                        EL_tolerance=EL_tolerance,
@@ -203,6 +209,7 @@ class NeuripsBenchmark1(Benchmark):
                                         ):
         predictions = augmented_simulator.evaluate(dataset)
         ref_data = dataset.get_data(np.arange(len(dataset)))
+        logging.info("Experimented simulator : {}".format(augmented_simulator.name))
         res = self.evaluation.do_evaluations(env=self.training_simulator._simulator,  # TODO this is relatively ugly
                                              env_name=None,
                                              predictions=predictions,

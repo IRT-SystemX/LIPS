@@ -1,0 +1,120 @@
+INFO:Experiment on dataset : val
+INFO:Experimented simulator : dc_approximation
+INFO:Machine learning metrics
+INFO:mape90 for a_or is : 0.172
+INFO:mape90 for a_ex is : 0.154
+INFO:MAE90 for a_or is : 114.498
+INFO:MAE90 for a_ex is : 138.627
+INFO:Current positivity check passed for origin side !
+INFO:Current positivity check passed for extremity side !
+INFO:Prediction in presence of line disconnection. Check passed !
+INFO:Experiment on dataset : test
+INFO:Experimented simulator : dc_approximation
+INFO:Machine learning metrics
+INFO:mape90 for a_or is : 0.178
+INFO:mape90 for a_ex is : 0.161
+INFO:MAE90 for a_or is : 130.030
+INFO:MAE90 for a_ex is : 155.867
+INFO:Current positivity check passed for origin side !
+INFO:Current positivity check passed for extremity side !
+INFO:Prediction in presence of line disconnection. Check passed !
+INFO:Experiment on dataset : test_ood_topo
+INFO:Experimented simulator : dc_approximation
+INFO:Machine learning metrics
+INFO:mape90 for a_or is : 0.196
+INFO:mape90 for a_ex is : 0.179
+INFO:MAE90 for a_or is : 170.517
+INFO:MAE90 for a_ex is : 195.524
+INFO:Current positivity check passed for origin side !
+INFO:Current positivity check passed for extremity side !
+INFO:Prediction in presence of line disconnection. Check passed !
+INFO:Experiment on dataset : val
+INFO:Experimented simulator : Baseline_FullyConnected
+INFO:Machine learning metrics
+INFO:mape90 for a_or is : 0.008
+INFO:mape90 for a_ex is : 0.008
+INFO:MAE90 for a_or is : 3.537
+INFO:MAE90 for a_ex is : 4.620
+INFO:the sum of negative current values (A) at origin: 6682.445
+INFO:the sum of negative current values (A) at extremity: 9667.917
+INFO:Prediction in presence of line disconnection. Problem encountered !
+INFO:Experiment on dataset : test
+INFO:Experimented simulator : Baseline_FullyConnected
+INFO:Machine learning metrics
+INFO:mape90 for a_or is : 0.009
+INFO:mape90 for a_ex is : 0.009
+INFO:MAE90 for a_or is : 4.220
+INFO:MAE90 for a_ex is : 5.582
+INFO:the sum of negative current values (A) at origin: 11866.515
+INFO:the sum of negative current values (A) at extremity: 16953.727
+INFO:Prediction in presence of line disconnection. Problem encountered !
+INFO:Experiment on dataset : test_ood_topo
+INFO:Experimented simulator : Baseline_FullyConnected
+INFO:Machine learning metrics
+INFO:mape90 for a_or is : 0.207
+INFO:mape90 for a_ex is : 0.208
+INFO:MAE90 for a_or is : 136.175
+INFO:MAE90 for a_ex is : 194.861
+INFO:the sum of negative current values (A) at origin: 506206.250
+INFO:the sum of negative current values (A) at extremity: 589372.750
+INFO:Prediction in presence of line disconnection. Problem encountered !
+INFO:Experiment on dataset : val
+INFO:Experimented simulator : test_FullyConnectedAS
+INFO:Machine learning metrics
+INFO:mape90 for a_or is : 0.004
+INFO:mape90 for a_ex is : 0.004
+INFO:MAE90 for a_or is : 1.870
+INFO:MAE90 for a_ex is : 2.502
+INFO:the sum of negative current values (A) at origin: 2854.136
+INFO:the sum of negative current values (A) at extremity: 4778.543
+INFO:Prediction in presence of line disconnection. Problem encountered !
+INFO:Experiment on dataset : test
+INFO:Experimented simulator : test_FullyConnectedAS
+INFO:Machine learning metrics
+INFO:mape90 for a_or is : 0.005
+INFO:mape90 for a_ex is : 0.005
+INFO:MAE90 for a_or is : 2.456
+INFO:MAE90 for a_ex is : 3.230
+INFO:the sum of negative current values (A) at origin: 5122.533
+INFO:the sum of negative current values (A) at extremity: 8705.443
+INFO:Prediction in presence of line disconnection. Problem encountered !
+INFO:Experiment on dataset : test_ood_topo
+INFO:Experimented simulator : test_FullyConnectedAS
+INFO:Machine learning metrics
+INFO:mape90 for a_or is : 0.180
+INFO:mape90 for a_ex is : 0.181
+INFO:MAE90 for a_or is : 126.422
+INFO:MAE90 for a_ex is : 168.967
+INFO:the sum of negative current values (A) at origin: 25358.320
+INFO:the sum of negative current values (A) at extremity: 32402.605
+INFO:Prediction in presence of line disconnection. Problem encountered !
+INFO:Experiment on dataset : val
+INFO:Experimented simulator : test_FullyConnectedAS
+INFO:Machine learning metrics
+INFO:mape90 for a_or is : 0.004
+INFO:mape90 for a_ex is : 0.004
+INFO:MAE90 for a_or is : 1.870
+INFO:MAE90 for a_ex is : 2.502
+INFO:the sum of negative current values (A) at origin: 2854.136
+INFO:the sum of negative current values (A) at extremity: 4778.543
+INFO:Prediction in presence of line disconnection. Problem encountered !
+INFO:Experiment on dataset : test
+INFO:Experimented simulator : test_FullyConnectedAS
+INFO:Machine learning metrics
+INFO:mape90 for a_or is : 0.005
+INFO:mape90 for a_ex is : 0.005
+INFO:MAE90 for a_or is : 2.456
+INFO:MAE90 for a_ex is : 3.230
+INFO:the sum of negative current values (A) at origin: 5122.533
+INFO:the sum of negative current values (A) at extremity: 8705.443
+INFO:Prediction in presence of line disconnection. Problem encountered !
+INFO:Experiment on dataset : test_ood_topo
+INFO:Experimented simulator : test_FullyConnectedAS
+INFO:Machine learning metrics
+INFO:mape90 for a_or is : 0.180
+INFO:mape90 for a_ex is : 0.181
+INFO:MAE90 for a_or is : 126.422
+INFO:MAE90 for a_ex is : 168.967
+INFO:the sum of negative current values (A) at origin: 25358.320
+INFO:the sum of negative current values (A) at extremity: 32402.605
+INFO:Prediction in presence of line disconnection. Problem encountered !
