@@ -13,4 +13,10 @@ from lips.augmented_simulators.dcApproximationAS import DCApproximationAS
 from lips.augmented_simulators.fullyConnectedAS import FullyConnectedAS
 from lips.augmented_simulators.hyperParameterTuner import HyperParameterTuner
 
-# from lips.augmented_simulators.leapNet import LeapNet
+try:
+    from lips.augmented_simulators.leapNetAS import LeapNetAS
+
+    __all__.append("LeapNetAS")
+except ImportError:
+    # leap_net package is not installed i cannot used this augmented simulator
+    pass
