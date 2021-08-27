@@ -269,4 +269,5 @@ class LeapNetAS(AugmentedSimulator):
             scale_main_layer=None,  # increase the size of the main layer
             scale_input_dec_layer=None,  # scale the input of the decoder
             scale_input_enc_layer=None,  # scale the input of the encoder
-            layer_act=None,)
+            layer_act=None,
+        )
