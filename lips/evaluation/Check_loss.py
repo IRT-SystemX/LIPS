@@ -9,6 +9,9 @@
 import numpy as np
 import copy
 import os
+import logging
+
+logging.basicConfig(filename="logs.log", level=logging.INFO,format="%(levelname)s:%(message)s")
 
 
 def Check_loss(p_or, p_ex, prod_p, tolerance=0.04):
@@ -41,7 +44,7 @@ def Check_loss(p_or, p_ex, prod_p, tolerance=0.04):
         failed_indices: `list`
             The indices of failed cases
     """
-    print("************* Check loss *************")
+    #print("************* Check loss *************")
     failed_indices = None
     violation_percentage = None
 
@@ -52,10 +55,13 @@ def Check_loss(p_or, p_ex, prod_p, tolerance=0.04):
     if np.any(condition):
         failed_indices = np.array(np.where(condition)).reshape(-1, 1)
         violation_percentage = (len(failed_indices) / len(EL))*100
-        print("Number of failed cases is {} and the proportion is : {:.3f}%".format(len(
+        logging.info("Number of failed cases is {} and the proportion is : {:.3f}%".format(len(
             failed_indices), violation_percentage))
+        #print("Number of failed cases is {} and the proportion is : {:.3f}%".format(len(
+        #    failed_indices), violation_percentage))
     else:
-        print("Verification is done without any violation !")
+        logging.info("Verification is done without any violation !")
+        #print("Verification is done without any violation !")
         violation_percentage = 0.
 
     return EL, violation_percentage, failed_indices

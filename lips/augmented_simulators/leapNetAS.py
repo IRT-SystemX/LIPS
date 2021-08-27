@@ -91,6 +91,8 @@ class LeapNetAS(AugmentedSimulator):
         self._leap_net_model: Union[ProxyLeapNet, None] = None
         self._create_proxy()
 
+        self._predict_time = 0
+
     def init(self, **kwargs):
         """this function will build the neural network"""
         self._leap_net_model.build_model()
@@ -124,10 +126,13 @@ class LeapNetAS(AugmentedSimulator):
         """evaluate the model on the given dataset"""
         # process the dataset
         processed_x, processed_tau, _ = self._process_all_dataset(dataset, training=False)
+        self._predict_time = 0
 
         # and out of speed, i directly used the loaded model to make the predictions and unscale them
         # make the predictions
+        _beg = time.time()
         tmp = self._leap_net_model._model.predict((processed_x, processed_tau))
+        self._predict_time += time.time() - _beg
         res = {}
         proxy = self._leap_net_model
         for attr_nm, arr_, m_, sd_ in zip(self._attr_y, tmp, proxy._m_y, proxy._sd_y):
