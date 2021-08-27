@@ -86,6 +86,8 @@ class FullyConnectedAS(AugmentedSimulator):
         # this is the keras "model"
         self._model: Union[Model, None] = None
 
+        self._predict_time = 0
+
     def init(self, **kwargs):
         """this function will build the neural network"""
         if self._model is not None:
@@ -135,7 +137,9 @@ class FullyConnectedAS(AugmentedSimulator):
         processed_x, _ = self._process_all_dataset(dataset, training=False)
 
         # make the predictions
+        _beg = time.time()
         tmp_res_y = self._model.predict(processed_x)
+        self._predict_time = time.time() - _beg
         # rescale them
         tmp_res_y *= self._std_y
         tmp_res_y += self._m_y
