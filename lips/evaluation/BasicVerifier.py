@@ -10,6 +10,9 @@ import numpy as np
 from collections import Counter
 from sklearn.metrics import mean_absolute_error
 import sys
+import logging
+
+logging.basicConfig(filename="logs.log", level=logging.INFO,format="%(levelname)s:%(message)s")
 
 
 def BasicVerifier(active_dict: dict,
@@ -62,7 +65,7 @@ def BasicVerifier(active_dict: dict,
     a dict with a check list of verified points for each observation
 
     """
-    print("************* Basic verifier *************")
+    #print("************* Basic verifier *************")
     verifications = dict()
 
     # VERIFICATION 1
@@ -75,37 +78,43 @@ def BasicVerifier(active_dict: dict,
             verifications["currents"]["a_or"] = {}
             a_or_errors = np.array(np.where(a_or < 0)).T
             a_or_violation_proportion = len(a_or_errors) / a_or.size
-            print("{:.3f}% of lines does not respect the positivity of currents (Amp) at origin".format(
-                a_or_violation_proportion*100))
+            Error_a_or = -np.sum(np.minimum(a_or.flatten(), 0.))
+            #print("{:.3f}% of lines does not respect the positivity of currents (Amp) at origin".format(
+            #    a_or_violation_proportion*100))
+            logging.info("the sum of negative current values (A) at origin: {:.3f}".format(Error_a_or))
             # print the concerned lines with the counting their respectives anomalies
             counts = Counter(a_or_errors[:, 1])
             #print("Concerned lines with corresponding number of negative current values at their origin:\n",
             #    dict(sorted(counts.items(), key=lambda item: item[1], reverse=True)))
             verifications["currents"]["a_or"]["indices"] = a_or_errors
-            verifications["currents"]["a_or"]["Error"] = -np.sum(np.minimum(a_or.flatten(), 0.))
+            verifications["currents"]["a_or"]["Error"] = Error_a_or
             verifications["currents"]["a_or"]["Violation_proportion"] = a_or_violation_proportion
-            print("----------------------------------------------")
+            #print("----------------------------------------------")
         else:
-            print("Current positivity check passed for origin side !")
-            print("----------------------------------------------")
+            logging.info("Current positivity check passed for origin side !")
+            #print("Current positivity check passed for origin side !")
+            #print("----------------------------------------------")
 
         if np.any(a_ex < 0):
             verifications["currents"]["a_ex"] = {}
             a_ex_errors = np.array(np.where(a_ex < 0)).T
             a_ex_violation_proportion = len(a_ex_errors) / a_ex.size
-            print("{:.3f}% of lines does not respect the positivity of currents (Amp) at extremity".format(
-                a_ex_violation_proportion*100))
+            Error_a_ex = -np.sum(np.minimum(a_ex.flatten(), 0.))
+            #print("{:.3f}% of lines does not respect the positivity of currents (Amp) at extremity".format(
+            #    a_ex_violation_proportion*100))
+            logging.info("the sum of negative current values (A) at extremity: {:.3f}".format(Error_a_ex))
             # print the concerned lines with the counting their respectives anomalies
-            counts = Counter(a_ex_errors[:, 1])
+            counts = Counter(a_ex_errors[:, 1]) 
             #print("Concerned lines with corresponding number of negative current values at their extremity:\n",
             #    dict(sorted(counts.items(), key=lambda item: item[1], reverse=True)))
             verifications["currents"]["a_ex"]["indices"] = a_ex_errors
-            verifications["currents"]["a_ex"]["Error"] = -np.sum(np.minimum(a_ex.flatten(), 0.))
+            verifications["currents"]["a_ex"]["Error"] = Error_a_ex
             verifications["currents"]["a_ex"]["Violation_proportion"] = a_ex_violation_proportion
-            print("----------------------------------------------")
+            #print("----------------------------------------------")
         else:
-            print("Current positivity check passed for extremity side !")
-            print("----------------------------------------------")
+            logging.info("Current positivity check passed for extremity side !")
+            #print("Current positivity check passed for extremity side !")
+            #print("----------------------------------------------")
 
     # VERIFICATION 2
     # verification of voltages
@@ -117,37 +126,43 @@ def BasicVerifier(active_dict: dict,
             verifications["voltages"]["v_or"] = {}
             v_or_errors = np.array(np.where(v_or < 0)).T
             v_or_violation_proportion = len(v_or_errors) / v_or.size
-            print("{:.3f}% of lines does not respect the positivity of voltages (Kv) at origin".format(
-                v_or_violation_proportion*100))
+            Error_v_or = -np.sum(np.minimum(v_or.flatten(), 0.))
+            logging.info("the sum of negative voltage values (kV) at origin: {:.3f}".format(Error_v_or))
+            #print("{:.3f}% of lines does not respect the positivity of voltages (Kv) at origin".format(
+            #    v_or_violation_proportion*100))
             # print the concerned lines with the counting their respectives anomalies
             counts = Counter(v_or_errors[:, 1])
             #print("Concerned lines with corresponding number of negative voltage values at their origin:\n",
             #    dict(sorted(counts.items(), key=lambda item: item[1], reverse=True)))
             verifications["voltages"]["v_or"]["indices"] = v_or_errors
-            verifications["voltages"]["v_or"]["Error"] = -np.sum(np.minimum(v_or.flatten(), 0.))
+            verifications["voltages"]["v_or"]["Error"] = Error_v_or
             verifications["voltages"]["v_or"]["Violation_proportion"] = v_or_violation_proportion
-            print("----------------------------------------------")
+            #print("----------------------------------------------")
         else:
-            print("Voltage positivity check passed for origin side !")
-            print("----------------------------------------------")
+            logging.info("Voltage positivity check passed for origin side !")
+            #print("Voltage positivity check passed for origin side !")
+            #print("----------------------------------------------")
 
         if np.any(v_ex < 0):
             verifications["voltages"]["v_ex"] = {}
             v_ex_errors = np.array(np.where(v_ex < 0)).T
             v_ex_violation_proportion = len(v_ex_errors) / v_ex.size
-            print("{:.3f}% of lines does not respect the positivity of voltages (Kv) at extremity".format(
-                v_ex_violation_proportion*100))
+            Error_v_ex = -np.sum(np.minimum(v_ex.flatten(), 0.))
+            logging.info("the sum of negative voltage values (kV) at extremity: {:.3f}".format(Error_v_ex))
+            #print("{:.3f}% of lines does not respect the positivity of voltages (Kv) at extremity".format(
+            #    v_ex_violation_proportion*100))
             # print the concerned lines with the counting their respectives anomalies
             counts = Counter(v_ex_errors[:, 1])
             #print("Concerned lines with corresponding number of negative voltage values at their extremity:\n",
             #    dict(sorted(counts.items(), key=lambda item: item[1], reverse=True)))
             verifications["voltages"]["v_ex"]["indices"] = v_ex_errors
-            verifications["voltages"]["v_ex"]["Error"] = -np.sum(np.minimum(v_ex.flatten(), 0.))
+            verifications["voltages"]["v_ex"]["Error"] = Error_v_ex
             verifications["voltages"]["v_ex"]["Violation_proportion"] = v_ex_violation_proportion
-            print("----------------------------------------------")
+            #print("----------------------------------------------")
         else:
-            print("Voltage positivity check passed for extremity side !")
-            print("----------------------------------------------")
+            logging.info("Voltage positivity check passed for extremity side !")
+            #print("Voltage positivity check passed for extremity side !")
+            #print("----------------------------------------------")
 
     # VERIFICATION 3
     # Positivity of losses
@@ -159,21 +174,24 @@ def BasicVerifier(active_dict: dict,
         loss = p_or + p_ex
 
         if np.any(loss):
-            verifications["loss"]["loss_criterion"] = -np.sum(np.minimum(loss, 0.))
+            loss_error = -np.sum(np.minimum(loss, 0.))
             loss_errors = np.array(np.where(loss < 0)).T
             loss_violation_proportion = len(loss_errors) / p_or.size
-            print("{:.3f}% of lines does not respect the positivity of loss (Mw)".format(
-                loss_violation_proportion*100))
+            logging.info("the sum of negative losses : {:.3f}".format(loss_error))
+            #print("{:.3f}% of lines does not respect the positivity of loss (Mw)".format(
+            #    loss_violation_proportion*100))
             # print the concerned lines with the counting their respectives anomalies
             counts = Counter(loss_errors[:, 1])
             #print("Concerned lines with corresponding number of negative loss values:\n",
             #    dict(sorted(counts.items(), key=lambda item: item[1], reverse=True)))
+            verifications["loss"]["loss_criterion"] = loss_error
             verifications["loss"]["loss_errors"] = loss_errors
             verifications["loss"]["violation_proportion"] = loss_violation_proportion
-            print("----------------------------------------------")
+            #print("----------------------------------------------")
         else:
-            print("Loss positivity check passed !")
-            print("----------------------------------------------")
+            logging.info("Loss positivity check passed !")
+            #print("Loss positivity check passed !")
+            #print("----------------------------------------------")
 
     # VERIFICATION 4
     # verifying null values for line disconnections
@@ -216,10 +234,12 @@ def BasicVerifier(active_dict: dict,
                 sum_disconnected_values += a_ex_violations
                 verifications["line_status"]["a_violations"] = np.sum((np.abs(a_or[ind_]) + np.abs(a_ex[ind_]))>0) / len_disc
         if sum_disconnected_values > 0:
-            print("Prediction in presence of line disconnection. Problem encountered !")
+            logging.info("Prediction in presence of line disconnection. Problem encountered !")
+            #print("Prediction in presence of line disconnection. Problem encountered !")
         else:
-            print("Prediction in presence of line disconnection. Check passed !")
-        print("----------------------------------------------")
+            #print("Prediction in presence of line disconnection. Check passed !")
+            logging.info("Prediction in presence of line disconnection. Check passed !")    
+        #print("----------------------------------------------")
 
     # VERIFICATION 5 and 6
     # Verify current equations for real and predicted observations

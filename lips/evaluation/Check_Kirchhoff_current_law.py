@@ -8,6 +8,9 @@
 
 import numpy as np
 import grid2op
+import logging
+
+logging.basicConfig(filename="logs.log", level=logging.INFO,format="%(levelname)s:%(message)s")
 
 
 def Check_Kirchhoff_current_law(env=None,
@@ -85,7 +88,7 @@ def Check_Kirchhoff_current_law(env=None,
             Its length corresponds to the number of cases that do not respect the law
 
     """
-    print("************* Check kirchhoff's current law *************")
+    #print("************* Check kirchhoff's current law *************")
     a_or = data["a_or"]
     a_ex = data["a_ex"]
     q_or = data["q_or"]
@@ -151,9 +154,10 @@ def Check_Kirchhoff_current_law(env=None,
         total_buses += len(tmp)
 
     violation_percentage = (violation_counter/total_buses)*100
-    print("{:.2f}% of nodes diverge from the Kirchhoff's current law with a magnitude more than {}MW tolerance".format(
+    #print("{:.2f}% of nodes diverge from the Kirchhoff's current law with a magnitude more than {}MW tolerance".format(
+    #    violation_percentage, tolerance))
+    logging.info("{:.2f}% of nodes diverge from the Kirchhoff's current law with a magnitude more than {}MW tolerance".format(
         violation_percentage, tolerance))
-
     #print("{:.2f}% of {} not verify the Kirchhoff's current law at {} tolerance".format((len(current_law_not_verified) / len_obs) * 100, choice, tolerance))
 
     return current_law_values_at_nodes, current_law_values_network, current_law_not_verified, violation_percentage
