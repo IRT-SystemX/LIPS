@@ -57,6 +57,6 @@ def Check_energy_conservation(prod_p=None, load_p=None, p_or=None, p_ex=None, to
 
     criteria = mean_absolute_error(loads - productions, loss)
 
-    print("Mean Absolute Error (MAE) between (loads - productions) and loss is : {:.3f}", criteria)
+    print("Mean Absolute Error (MAE) between (loads - productions) and loss is : {:.3f}".format( criteria))
 
     return LCE, violation_percentage, failed_indices, criteria
