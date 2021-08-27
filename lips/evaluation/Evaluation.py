@@ -184,14 +184,7 @@ class Evaluation(object):
         if choice == "real":
             ######### Basic Physics verification
             self.metrics_physics['BasicVerifications'] = {}
-            verifications = BasicVerifier(a_or=self.observations["a_or"],
-                                          a_ex=self.observations["a_ex"],
-                                          v_or=self.observations["v_or"],
-                                          v_ex=self.observations["v_ex"],
-                                          p_or=self.observations["p_or"],
-                                          p_ex=self.observations["p_ex"],
-                                          q_or=self.observations["q_or"],
-                                          q_ex=self.observations["q_ex"],
+            verifications = BasicVerifier(predictions=self.observations,
                                           line_status=self.observations["line_status"],
                                           active_dict=self.active_dict["evaluate_physic"])
             self.metrics_physics['BasicVerifications'] = verifications
@@ -245,14 +238,7 @@ class Evaluation(object):
         elif choice == "predictions":
             ######### Basic physics verifications
             self.metrics_physics['BasicVerifications'] = {}
-            verifications = BasicVerifier(a_or=self.predictions["a_or"],
-                                          a_ex=self.predictions["a_ex"],
-                                          v_or=self.predictions["v_or"],
-                                          v_ex=self.predictions["v_ex"],
-                                          p_or=self.predictions["p_or"],
-                                          p_ex=self.predictions["p_ex"],
-                                          q_or=self.predictions["q_or"],
-                                          q_ex=self.predictions["q_ex"],
+            verifications = BasicVerifier(predictions=self.predictions,
                                           line_status=self.observations["line_status"],
                                           active_dict=self.active_dict["evaluate_physic"])
             self.metrics_physics['BasicVerifications'] = verifications
@@ -386,7 +372,7 @@ class Evaluation(object):
                              predictions=self.predictions,
                              k=k,
                              metric_names=metric_percentage,
-                             variables=["a_or", "a_ex", "p_or", "p_ex", "q_or", "q_ex"],
+                             variables=["a_or", "a_ex"],
                              agg_func=np.mean
                              )
 
