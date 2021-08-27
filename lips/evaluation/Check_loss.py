@@ -52,7 +52,7 @@ def Check_loss(p_or, p_ex, prod_p, tolerance=0.04):
     if np.any(condition):
         failed_indices = np.array(np.where(condition)).reshape(-1, 1)
         violation_percentage = (len(failed_indices) / len(EL))*100
-        print("Number of failed cases is {} and the proportion is {:.3f}% : ".format(len(
+        print("Number of failed cases is {} and the proportion is : {:.3f}%".format(len(
             failed_indices), violation_percentage))
     else:
         print("Verification is done without any violation !")
