@@ -6,6 +6,9 @@
 # SPDX-License-Identifier: MPL-2.0
 # This file is part of LIPS, LIPS is a python platform for power networks benchmarking
 
+from typing import Union
+from lips.dataset import DataSet
+
 
 class AugmentedSimulator(object):
     """
@@ -14,16 +17,27 @@ class AugmentedSimulator(object):
 
     They are meant to use data coming from a `DataSet` to learn from it.
     """
-    def __init__(self, name):
+    def __init__(self, name: str):
         self.name = name
 
-    def train(self, dataset, nb_iter):
+    def train(self, nb_iter: int, train_dataset: DataSet, val_dataset: Union[None, DataSet] = None):
         """
-        Train the Augmented simulator using the provided dataset for a given number of iterations
+        Train the Augmented simulator using the provided datasets (parameters `train_dataset` and
+        `val_dataset`) for a given number of iterations (`nb_iter`)
         """
-        pass
+        if not isinstance(train_dataset, DataSet):
+            raise RuntimeError(f"The \"train_dataset\" should be an instance of DataSet. "
+                               f"We found {type(train_dataset)}")
+        if val_dataset is not None:
+            if not isinstance(val_dataset, DataSet):
+                raise RuntimeError(f"The \"val_dataset\" should be an instance of DataSet. "
+                                   f"We found {type(val_dataset)}")
 
-    def evaluate(self, dataset):
+        if nb_iter <= 0:
+            raise RuntimeError("Impossible to train a model for a negative number of iteration. Make sure that "
+                               "`nb_iter` > 0.")
+
+    def evaluate(self, dataset: DataSet):
         """
         evaluate the model on the full dataset
         """
@@ -44,18 +58,18 @@ class AugmentedSimulator(object):
         """
         pass
 
-    def save(self, path_out):
+    def save(self, path_out: str):
         """save the model at a given path"""
         pass
 
-    def restore(self, path):
+    def restore(self, path: str):
         """
         restore the model from the given path. It is expected to raise an error if it cannot be initialized
         by the data located at `path`
         """
         pass
 
-    def save_metadata(self, path_out):
+    def save_metadata(self, path_out: str):
         """
         Saves the "metadata" of the model.
 
@@ -65,6 +79,6 @@ class AugmentedSimulator(object):
         """
         pass
 
-    def load_metadata(self, path):
+    def load_metadata(self, path: str):
         """load the metada from the given path."""
         pass
