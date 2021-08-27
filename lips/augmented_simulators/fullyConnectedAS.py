@@ -29,7 +29,8 @@ with warnings.catch_warnings():
     from tensorflow.keras.layers import Activation
     from tensorflow.keras.layers import Input
 
-from lips.augmented_simulators import AugmentedSimulator
+from lips.dataset import DataSet
+from lips.augmented_simulators.augmentedSimulator import AugmentedSimulator
 
 
 class FullyConnectedAS(AugmentedSimulator):
@@ -109,10 +110,11 @@ class FullyConnectedAS(AugmentedSimulator):
                             outputs=output_,
                             name=f"{self.name}_model")
 
-    def train(self, dataset, nb_iter):
+    def train(self, nb_iter: int, train_dataset: DataSet, val_dataset: Union[None, DataSet] = None):
         """This is an example of a reference implementation of this class. Feel"""
         # extract the input and output suitable for learning (matrices) from the generic dataset
-        processed_x, processed_y = self._process_all_dataset(dataset, training=True)
+        processed_x, processed_y = self._process_all_dataset(train_dataset, training=True)
+        processed_x_val, processed_y_val = self._process_all_dataset(val_dataset, training=False)
 
         # create the neural network (now that I know the sizes)
         self.init()
@@ -124,6 +126,7 @@ class FullyConnectedAS(AugmentedSimulator):
         # train the model
         self._model.fit(x=processed_x,
                         y=processed_y,
+                        validation_data=(processed_x_val, processed_y_val),
                         epochs=nb_iter,
                         batch_size=self._batch_size)
         # NB in this function we use the high level keras method "fit" to fit the data. It does not stricly
@@ -131,7 +134,7 @@ class FullyConnectedAS(AugmentedSimulator):
         # dataset.get_data(indexes) to retrieve the batch of data corresponding to `indexes` and
         # `self.process_dataset` to process the example of this dataset one by one.
 
-    def evaluate(self, dataset):
+    def evaluate(self, dataset: DataSet):
         """evaluate the model on the given dataset"""
         # process the dataset
         processed_x, _ = self._process_all_dataset(dataset, training=False)
@@ -153,7 +156,7 @@ class FullyConnectedAS(AugmentedSimulator):
             prev_ += this_var_size
         return res
 
-    def save(self, path_out):
+    def save(self, path_out: str):
         """
         This saves the weights of the neural network.
         """
@@ -171,7 +174,7 @@ class FullyConnectedAS(AugmentedSimulator):
             # save the weights
             self._model.save(os.path.join(full_path_out, "model.h5"))
 
-    def restore(self, path):
+    def restore(self, path: str):
         """
         Restores the model from a saved one.
 
@@ -190,7 +193,7 @@ class FullyConnectedAS(AugmentedSimulator):
             # load this copy (make sure the proper file is not corrupted even if the loading fails)
             self._model.load_weights(nm_tmp)
 
-    def save_metadata(self, path_out):
+    def save_metadata(self, path_out: str):
         """
         This is used to save the meta data of the augmented simulator.
 
@@ -223,7 +226,7 @@ class FullyConnectedAS(AugmentedSimulator):
         with open(os.path.join(full_path_out, "metadata.json"), "w", encoding="utf-8") as f:
             json.dump(obj=res_json, fp=f, indent=4, sort_keys=True)
 
-    def load_metadata(self, path):
+    def load_metadata(self, path: str):
         """this is used to load the meta parameters from the model"""
         full_path = os.path.join(path, self.name)
         with open(os.path.join(full_path, f"metadata.json"), "r", encoding="utf-8") as f:
@@ -246,7 +249,7 @@ class FullyConnectedAS(AugmentedSimulator):
         self._std_x = np.array(res_json["_std_x"], dtype=np.float32)
         self._std_y = np.array(res_json["_std_y"], dtype=np.float32)
 
-    def _process_all_dataset(self, dataset, training=False):
+    def _process_all_dataset(self, dataset: DataSet, training: bool = False):
         """This function will extract the whole dataset and format it in a way we can train the
         fully connected neural network from it
 
@@ -297,6 +300,3 @@ class FullyConnectedAS(AugmentedSimulator):
         res_y /= self._std_y
 
         return res_x, res_y
-
-
-
