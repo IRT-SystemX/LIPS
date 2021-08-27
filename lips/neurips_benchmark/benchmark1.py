@@ -29,12 +29,14 @@ class NeuripsBenchmark1(Benchmark):
                  benchmark_name="NeuripsBenchmark1",
                  load_data_set=False,
                  train_env_seed: int = 1,
-                 test_env_seed: int = 2,
-                 test_ood_env_seed: int = 3,
+                 val_env_seed: int = 2,
+                 test_env_seed: int = 3,
+                 test_ood_topo_env_seed: int = 4,
                  initial_chronics_id: int = 0,
-                 train_actor_seed: int = 4,
-                 test_actor_seed: int = 5,
-                 test_ood_topo_actor_seed: int = 6,
+                 train_actor_seed: int = 5,
+                 val_actor_seed: int = 6,
+                 test_actor_seed: int = 7,
+                 test_ood_topo_actor_seed: int = 8,
                  evaluation=None
                  ):
         self.benchmark_name = benchmark_name
@@ -62,21 +64,29 @@ class NeuripsBenchmark1(Benchmark):
             self.evaluate = evaluation
 
         self.training_simulator = None
+        self.val_simulator = None
         self.test_simulator = None
         self.test_ood_topo_simulator = None
+
         self.training_actor = None
+        self.val_actor = None
         self.test_actor = None
         self.test_ood_topo_actor = None
 
         self.train_env_seed = train_env_seed
+        self.val_env_seed = val_env_seed
         self.test_env_seed = test_env_seed
-        self.test_ood_env_seed = test_ood_env_seed
-        self.initial_chronics_id = initial_chronics_id
+        self.test_ood_topo_env_seed = test_ood_topo_env_seed
+
         self.train_actor_seed = train_actor_seed
+        self.val_actor_seed = val_actor_seed
         self.test_actor_seed = test_actor_seed
         self.test_ood_topo_actor_seed = test_ood_topo_actor_seed
 
+        self.initial_chronics_id = initial_chronics_id
+
         self.train_dataset = PowerGridDataSet("train")
+        self.val_dataset = PowerGridDataSet("val")
         self._test_dataset = PowerGridDataSet("test")
         self._test_ood_topo_dataset = PowerGridDataSet("test_ood_topo")
         self.path_datasets = None
@@ -103,11 +113,13 @@ class NeuripsBenchmark1(Benchmark):
             raise RuntimeError(f"No data are found in {self.path_datasets}. Have you generated or downloaded "
                                f"some data ?")
         self.train_dataset.load(path=self.path_datasets)
+        self.val_dataset.load(path=self.path_datasets)
         self._test_dataset.load(path=self.path_datasets)
         self._test_ood_topo_dataset.load(path=self.path_datasets)
         self.is_loaded = True
 
-    def generate(self, nb_sample_train, nb_sample_test, nb_sample_test_ood_topo):
+    def generate(self, nb_sample_train, nb_sample_val,
+                 nb_sample_test, nb_sample_test_ood_topo):
         if self.is_loaded:
             print("Previously saved data will be erased by this new generation")
         with warnings.catch_warnings():
@@ -126,6 +138,11 @@ class NeuripsBenchmark1(Benchmark):
                                     path_out=self.path_datasets,
                                     nb_samples=nb_sample_train
                                     )
+        self.val_dataset.generate(simulator=self.training_simulator,
+                                  actor=self.training_actor,
+                                  path_out=self.path_datasets,
+                                  nb_samples=nb_sample_val
+                                  )
         self._test_dataset.generate(simulator=self.test_simulator,
                                     actor=self.test_actor,
                                     path_out=self.path_datasets,
@@ -150,8 +167,11 @@ class NeuripsBenchmark1(Benchmark):
         self._create_training_simulator()
         li_dataset = []
         if dataset == "all":
-            li_dataset = [self._test_dataset, self._test_ood_topo_dataset]
-            keys = ["test", "test_ood_topo"]
+            li_dataset = [self.val_dataset, self._test_dataset, self._test_ood_topo_dataset]
+            keys = ["val", "test", "test_ood_topo"]
+        elif dataset == "val" or dataset == "val_dataset":
+            li_dataset = [self.val_dataset]
+            keys = ["val"]
         elif dataset == "test" or dataset == "test_dataset":
             li_dataset = [self._test_dataset]
             keys = ["test"]
@@ -210,20 +230,29 @@ class NeuripsBenchmark1(Benchmark):
         self._create_training_simulator()
         self.training_simulator.seed(self.train_env_seed)
 
+        self.val_simulator = Grid2opSimulator(get_kwargs_simulator_scenario1(),
+                                              initial_chronics_id=self.initial_chronics_id,
+                                              # i use 50 full chronics for testing
+                                              chronics_selected_regex=".*9[0-4][0-9].*")
+        self.val_simulator.seed(self.val_env_seed)
+
         self.test_simulator = Grid2opSimulator(get_kwargs_simulator_scenario1(),
                                                initial_chronics_id=self.initial_chronics_id,
-                                               # i use 50 full chronics for testing
-                                               chronics_selected_regex=".*9[0-9][0-4].*")
+                                               # i use 25 full chronics for testing
+                                               chronics_selected_regex=".*9[5-9][0-4].*")
         self.test_simulator.seed(self.test_env_seed)
 
         self.test_ood_topo_simulator = Grid2opSimulator(get_kwargs_simulator_scenario1(),
                                                         initial_chronics_id=self.initial_chronics_id,
-                                                        # i use 50 full chronics for testing
-                                                        chronics_selected_regex=".*9[0-9][5-9].*")
-        self.test_ood_topo_simulator.seed(self.test_ood_env_seed)
+                                                        # i use 25 full chronics for testing
+                                                        chronics_selected_regex=".*9[5-9][5-9].*")
+        self.test_ood_topo_simulator.seed(self.test_ood_topo_env_seed)
 
         self.training_actor = get_actor_training_scenario1(self.training_simulator)
         self.training_actor.seed(self.train_actor_seed)
+
+        self.val_actor = get_actor_test_scenario1(self.val_simulator)
+        self.val_actor.seed(self.val_actor_seed)
 
         self.test_actor = get_actor_test_scenario1(self.training_simulator)
         self.test_actor.seed(self.test_actor_seed)
