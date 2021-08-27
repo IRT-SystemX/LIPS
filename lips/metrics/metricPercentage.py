@@ -8,8 +8,11 @@
 
 import numpy as np
 import copy
+import logging
 from collections.abc import Iterable
 from lips.metrics import DEFAULT_METRICS
+
+logging.basicConfig(filename="logs.log", level=logging.INFO,format="%(levelname)s:%(message)s")
 
 
 def metricPercentage(metrics_ML,  
@@ -75,6 +78,7 @@ def metricPercentage(metrics_ML,
                 tmp = metric_func(true_, pred_)
                 metrics_ML_raw[metric_name][var_].append(tmp)
             metrics_ML[metric_name][var_] = float(agg_func(metrics_ML_raw[metric_name][var_]))
+            logging.info("{} for {} is : {:.3f}".format(metric_name, var_, float(agg_func(metrics_ML_raw[metric_name][var_]))))
 
     return copy.deepcopy(metrics_ML), copy.deepcopy(metrics_ML_raw)
 

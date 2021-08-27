@@ -9,7 +9,7 @@
 import os
 import json
 import copy
-
+import logging
 import numpy as np
 
 from collections.abc import Iterable
@@ -21,6 +21,8 @@ from lips.evaluation.BasicVerifier import BasicVerifier
 from lips.evaluation.Check_loss import Check_loss
 from lips.evaluation.Check_Kirchhoff_current_law import Check_Kirchhoff_current_law
 from lips.evaluation.Check_energy_conservation import Check_energy_conservation
+
+logging.basicConfig(filename="logs.log", level=logging.INFO,format="%(levelname)s:%(message)s")
 
 
 class Evaluation(object):
@@ -340,6 +342,7 @@ class Evaluation(object):
 
 
         """
+        logging.info("Machine learning metrics")
         if metric_names is None:
             metrics = DEFAULT_METRICS
         else:
