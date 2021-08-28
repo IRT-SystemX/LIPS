@@ -1,6 +1,9 @@
 # LIPS : Learning Industrial physical simulation benchmark suite: the power grid case
 This repository implements the benchmarking platform called LIPS and provides the necessary utilities to reproduce the generated datasets used in research.
 
+- [] add a readme in each module to explain how it works
+- [] create a folder to add suplementary results like data volume experiment (and other)
+- 
 ## Introduction
 Nowdays, the simulators are used in every domain to emulate a real-world situation or event or to reproduce the critical situations for which further investigation may be required. The simulators are based generally on physics equations and are costly in terms of time complexity. 
 
