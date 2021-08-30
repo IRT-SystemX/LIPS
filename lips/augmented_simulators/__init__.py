@@ -6,16 +6,37 @@
 # SPDX-License-Identifier: MPL-2.0
 # This file is part of LIPS, LIPS is a python platform for power networks benchmarking
 
-__all__ = ["AugmentedSimulator", "DCApproximationAS", "FullyConnectedAS"]
+__all__ = ["AugmentedSimulator"]
 
 from lips.augmented_simulators.augmentedSimulator import AugmentedSimulator
-from lips.augmented_simulators.dcApproximationAS import DCApproximationAS
-from lips.augmented_simulators.fullyConnectedAS import FullyConnectedAS
-from lips.augmented_simulators.hyperParameterTuner import HyperParameterTuner
+
+
+try:
+    from lips.augmented_simulators.dcApproximationAS import DCApproximationAS
+    __all__.append("DCApproximationAS")
+except ImportError:
+    # grid2op or lightsim2grid package is not installed i cannot used this augmented simulator
+    pass
+
+
+try:
+    from lips.augmented_simulators.hyperParameterTuner import HyperParameterTuner
+    __all__.append("HyperParameterTuner")
+except ImportError:
+    # tensorflow or sklearn package is not installed i cannot used this class
+    pass
+
+
+try:
+    from lips.augmented_simulators.fullyConnectedAS import FullyConnectedAS
+    __all__.append("FullyConnectedAS")
+except ImportError:
+    # tensorflow package is not installed i cannot used this augmented simulator
+    pass
+
 
 try:
     from lips.augmented_simulators.leapNetAS import LeapNetAS
-
     __all__.append("LeapNetAS")
 except ImportError:
     # leap_net package is not installed i cannot used this augmented simulator

@@ -10,7 +10,9 @@ import numpy as np
 import grid2op
 import logging
 
-logging.basicConfig(filename="logs.log", level=logging.INFO,format="%(levelname)s:%(message)s")
+logging.basicConfig(filename="logs.log",
+                    level=logging.INFO,
+                    format="%(levelname)s:%(message)s")
 
 
 def Check_Kirchhoff_current_law(env=None,

@@ -6,11 +6,11 @@
 # SPDX-License-Identifier: MPL-2.0
 # This file is part of LIPS, LIPS is a python platform for power networks benchmarking
 
-import tensorflow.keras.optimizers as tfko
 
 class HyperParameterTuner(object):
     """
-    A class providing the functionality to tune the hyper-parameters of an augmented simulator
+    A class providing the functionality to tune the hyper-parameters of the "fullyConnectedAS"
+    augmented simulator.
 
     params
     ------
@@ -19,7 +19,6 @@ class HyperParameterTuner(object):
     """
     def __init__(self, augmented_simulator):
         self.augmented_simulator = augmented_simulator
-
 
     def tune(self,
              dataset, 
@@ -58,8 +57,12 @@ class HyperParameterTuner(object):
 
         return grid_result
 
-
-    def __create_model(self, sizes_layer=(150,150), layer_act="relu", lr=3e-4, loss="mse"):
+    def __create_model(self,
+                       sizes_layer=(150,150),
+                       layer_act="relu",
+                       lr=3e-4,
+                       loss="mse"):
+        import tensorflow.keras.optimizers as tfko
         self.augmented_simulator.sizes_layer = sizes_layer
         self.augmented_simulator.layer_act = layer_act
         
