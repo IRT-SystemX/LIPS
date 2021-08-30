@@ -13,7 +13,6 @@ import warnings
 import grid2op
 
 from lips.neurips_benchmark.actor_utils import ChangeTopoRefN1, ChangeTopoRefN2, ChangeTopoRefN1Ref
-from lightsim2grid import LightSimBackend
 
 # for reference
 REF_ACTION = [# sub_5_id1
@@ -60,6 +59,13 @@ def get_kwargs_simulator_scenario1():
     -------
 
     """
+    try:
+        from lightsim2grid import LightSimBackend
+        BkCls = LightSimBackend
+    except ImportError as exc_:
+        from grid2op.Backend import PandaPowerBackend
+        BkCls = PandaPowerBackend
+
     env_name = "l2rpn_case14_sandbox"
     # create a temporary environment to retrieve the default parameters of this specific environment
     with warnings.catch_warnings():
@@ -75,7 +81,7 @@ def get_kwargs_simulator_scenario1():
     param.NB_TIMESTEP_COOLDOWN_SUB = 0
     return {"dataset": env_name,
             "param": param,
-            "backend": LightSimBackend()}
+            "backend": BkCls()}
 
 
 def _aux_act_scenario1(env):

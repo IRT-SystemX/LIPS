@@ -111,7 +111,10 @@ class FullyConnectedAS(AugmentedSimulator):
                             outputs=output_,
                             name=f"{self.name}_model")
 
-    def train(self, nb_iter: int, train_dataset: DataSet, val_dataset: Union[None, DataSet] = None):
+    def train(self, nb_iter: int,
+              train_dataset: DataSet,
+              val_dataset: Union[None, DataSet] = None,
+              **kwargs):
         """This is an example of a reference implementation of this class. Feel"""
         # extract the input and output suitable for learning (matrices) from the generic dataset
         processed_x, processed_y = self._process_all_dataset(train_dataset, training=True)
@@ -130,15 +133,17 @@ class FullyConnectedAS(AugmentedSimulator):
             validation_data = (processed_x_val, processed_y_val)
         else:
             validation_data = None
-        self._model.fit(x=processed_x,
-                        y=processed_y,
-                        validation_data=validation_data,
-                        epochs=nb_iter,
-                        batch_size=self._batch_size)
+        history_callback = self._model.fit(x=processed_x,
+                                           y=processed_y,
+                                           validation_data=validation_data,
+                                           epochs=nb_iter,
+                                           batch_size=self._batch_size,
+                                           **kwargs)
         # NB in this function we use the high level keras method "fit" to fit the data. It does not stricly
         # uses the `DataSet` interface. For more complicated training loop, one can always use
         # dataset.get_data(indexes) to retrieve the batch of data corresponding to `indexes` and
         # `self.process_dataset` to process the example of this dataset one by one.
+        return history_callback
 
     def evaluate(self, dataset: DataSet):
         """evaluate the model on the given dataset"""

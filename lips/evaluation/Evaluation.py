@@ -211,8 +211,8 @@ class Evaluation(object):
                                           prod_p=self.observations["prod_p"],
                                           tolerance=EL_tolerance
                                           )
-                self.metrics_physics['EL']['violation_percentage'] = np.float(loss_metrics[1])
-                self.metrics_physics['EL']['EL_values'] = np.array(loss_metrics[0])
+                self.metrics_physics['EL']['violation_percentage'] = float(loss_metrics[1])
+                self.metrics_physics['EL']['EL_values'] = [float(el) for el in np.array(loss_metrics[0])]
 
             ######### Law of conservation of energy verifier
             if self.active_dict["evaluate_physic"]["verify_LCE"]:
@@ -223,9 +223,9 @@ class Evaluation(object):
                                                         p_ex=self.observations["p_ex"],
                                                         tolerance=LCE_tolerance)
                 
-                self.metrics_physics['LCE']['LCE_values'] = np.array(lce_metrics[0])
-                self.metrics_physics['LCE']['violation_percentage'] = np.float(lce_metrics[1])
-                self.metrics_physics['LCE']['MAE'] = np.float(lce_metrics[3])
+                self.metrics_physics['LCE']['LCE_values'] = [float(el) for el in np.array(lce_metrics[0])]
+                self.metrics_physics['LCE']['violation_percentage'] = float(lce_metrics[1])
+                self.metrics_physics['LCE']['MAE'] = float(lce_metrics[3])
 
             ######### Kirchhoff's current law verifier
             if self.active_dict["evaluate_physic"]["verify_KCL"]:
@@ -243,10 +243,10 @@ class Evaluation(object):
                                                       topo_vect=self.observations["topo_vect"],
                                                       active_flow=active_flow,
                                                       tolerance=KCL_tolerance)
-                self.metrics_physics["KCL"]["violation_percentage"] = np.float(res_kcl[3])
-                self.metrics_physics["KCL"]["nodes_values"] = res_kcl[0]
-                self.metrics_physics["KCL"]["network_values"] = np.array(res_kcl[1])
-                self.metrics_physics["KCL"]["violation_indices"] = np.array(res_kcl[2])
+                self.metrics_physics["KCL"]["violation_percentage"] = float(res_kcl[3])
+                self.metrics_physics["KCL"]["nodes_values"] = [float(el) for el in res_kcl[0]]
+                self.metrics_physics["KCL"]["network_values"] = [float(el) for el in np.array(res_kcl[1])]
+                self.metrics_physics["KCL"]["violation_indices"] = [float(el) for el in np.array(res_kcl[2])]
 
         ##################################
         ########### predictions ##########
@@ -267,8 +267,8 @@ class Evaluation(object):
                                           prod_p=self.observations["prod_p"],
                                           tolerance=EL_tolerance
                                           )
-                self.metrics_physics['EL']['violation_percentage'] = np.float(loss_metrics[1])
-                self.metrics_physics['EL']['EL_values'] = np.array(loss_metrics[0])
+                self.metrics_physics['EL']['violation_percentage'] = float(loss_metrics[1])
+                self.metrics_physics['EL']['EL_values'] = [float(el) for el in np.array(loss_metrics[0])]
 
             ######### Law of conservation of energy verifier
             if self.active_dict["evaluate_physic"]["verify_LCE"]:
@@ -279,9 +279,9 @@ class Evaluation(object):
                                                         p_ex=self.predictions["p_ex"],
                                                         tolerance=LCE_tolerance)
                 
-                self.metrics_physics['LCE']['LCE_values'] = np.array(lce_metrics[0])
-                self.metrics_physics['LCE']['violation_percentage'] = np.float(lce_metrics[1])
-                self.metrics_physics['LCE']['MAE'] = np.float(lce_metrics[3])
+                self.metrics_physics['LCE']['LCE_values'] = [float(el) for el in np.array(lce_metrics[0])]
+                self.metrics_physics['LCE']['violation_percentage'] = float(lce_metrics[1])
+                self.metrics_physics['LCE']['MAE'] = float(lce_metrics[3])
 
             # Kirchhoff's current law verifier
             if self.active_dict["evaluate_physic"]["verify_KCL"]:
@@ -299,10 +299,10 @@ class Evaluation(object):
                                                       topo_vect=self.observations["topo_vect"],
                                                       active_flow=active_flow,
                                                       tolerance=KCL_tolerance)
-                self.metrics_physics["KCL"]["violation_percentage"] = np.float(res_kcl[3])
-                self.metrics_physics["KCL"]["nodes_values"] = res_kcl[0]
-                self.metrics_physics["KCL"]["network_values"] = np.array(res_kcl[1])
-                self.metrics_physics["KCL"]["violation_indices"] = np.array(res_kcl[2])
+                self.metrics_physics["KCL"]["violation_percentage"] = float(res_kcl[3])
+                self.metrics_physics["KCL"]["nodes_values"] = [float(el) for el in res_kcl[0]]
+                self.metrics_physics["KCL"]["network_values"] = [float(el) for el in np.array(res_kcl[1])]
+                self.metrics_physics["KCL"]["violation_indices"] = [float(el) for el in np.array(res_kcl[2])]
 
         else:
             raise ValueError
