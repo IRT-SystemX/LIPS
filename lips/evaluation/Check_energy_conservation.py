@@ -10,8 +10,9 @@ import numpy as np
 from sklearn.metrics import mean_absolute_error
 import logging
 
-logging.basicConfig(filename="logs.log", level=logging.INFO,format="%(levelname)s:%(message)s")
-
+logging.basicConfig(filename="logs.log",
+                    level=logging.INFO,
+                    format="%(levelname)s:%(message)s")
 
 
 def Check_energy_conservation(prod_p=None, load_p=None, p_or=None, p_ex=None, tolerance=1e-3):

@@ -16,13 +16,25 @@ from collections.abc import Iterable
 
 from lips.metrics import DEFAULT_METRICS
 from lips.metrics import metricPercentage
-#from lips.evaluation import BasicVerifier, Check_loss, Check_Kirchhoff_current_law, Check_energy_conservation
 from lips.evaluation.BasicVerifier import BasicVerifier
 from lips.evaluation.Check_loss import Check_loss
-from lips.evaluation.Check_Kirchhoff_current_law import Check_Kirchhoff_current_law
+try:
+    from lips.evaluation.Check_Kirchhoff_current_law import Check_Kirchhoff_current_law
+    CHECK_KIRCHHOFF_AVAIL = True
+except ImportError as exc_:
+    # grid2op is not installed, but this should work as is
+    CHECK_KIRCHHOFF_AVAIL = False
+
 from lips.evaluation.Check_energy_conservation import Check_energy_conservation
 
-logging.basicConfig(filename="logs.log", level=logging.INFO,format="%(levelname)s:%(message)s")
+
+ERROR_MSG_KCL = "Impossible to check for the Kirchhoff current laws "\
+                "because some requirements are not met (probably a "\
+                "missing dependency)"
+
+logging.basicConfig(filename="logs.log",
+                    level=logging.INFO,
+                    format="%(levelname)s:%(message)s")
 
 
 class Evaluation(object):
@@ -217,6 +229,8 @@ class Evaluation(object):
 
             ######### Kirchhoff's current law verifier
             if self.active_dict["evaluate_physic"]["verify_KCL"]:
+                if not CHECK_KIRCHHOFF_AVAIL:
+                    raise RuntimeError(ERROR_MSG_KCL)
                 self.metrics_physics["KCL"] = {}
                 res_kcl = Check_Kirchhoff_current_law(env=self.env,
                                                       env_name=self.env_name,
@@ -271,6 +285,8 @@ class Evaluation(object):
 
             # Kirchhoff's current law verifier
             if self.active_dict["evaluate_physic"]["verify_KCL"]:
+                if not CHECK_KIRCHHOFF_AVAIL:
+                    raise RuntimeError(ERROR_MSG_KCL)
                 self.metrics_physics["KCL"] = {}
                 res_kcl = Check_Kirchhoff_current_law(env=self.env,
                                                       env_name=self.env_name,
@@ -535,6 +551,3 @@ class Evaluation(object):
                 self.metrics_readiness = dict_serialized
             else:
                 raise NotImplementedError
-
-            
-

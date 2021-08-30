@@ -10,6 +10,7 @@ import copy
 import numpy as np
 from typing import Union
 from tqdm import tqdm
+from lips.dataset import DataSet
 import time
 
 from grid2op.Backend import PandaPowerBackend
@@ -62,7 +63,7 @@ class DCApproximationAS(AugmentedSimulator):
 
         self._predict_time = 0
 
-    def train(self, dataset, nb_iter):
+    def train(self, nb_iter: int, train_dataset: DataSet, val_dataset: Union[None, DataSet] = None):
         """this model does not need to be trained"""
         pass
 

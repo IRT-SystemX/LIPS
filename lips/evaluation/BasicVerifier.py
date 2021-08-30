@@ -12,7 +12,10 @@ from sklearn.metrics import mean_absolute_error
 import sys
 import logging
 
-logging.basicConfig(filename="logs.log", level=logging.INFO,format="%(levelname)s:%(message)s")
+# TODO make a proper class there and that inside ! It's super ugly not to be able to customize this
+logging.basicConfig(filename="logs.log",
+                    level=logging.INFO,
+                    format="%(levelname)s:%(message)s")
 
 
 def BasicVerifier(active_dict: dict,
