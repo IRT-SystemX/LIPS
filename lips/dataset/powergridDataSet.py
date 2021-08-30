@@ -15,11 +15,7 @@ import copy
 from typing import Union
 from tqdm import tqdm  # TODO remove for final push
 
-from grid2op.Agent import BaseAgent, DoNothingAgent
-from grid2op.PlotGrid import PlotMatplot
-
 from lips.dataset.dataSet import DataSet
-from lips.physical_simulator import Grid2opSimulator
 
 
 class PowerGridDataSet(DataSet):
@@ -48,8 +44,8 @@ class PowerGridDataSet(DataSet):
         # TODO add a seed for reproducible experiment !
 
     def generate(self,
-                 simulator: Grid2opSimulator,
-                 actor: Union[None, BaseAgent],
+                 simulator: "Grid2opSimulator",
+                 actor: Union[None, "BaseAgent"],
                  path_out,
                  nb_samples,
                  simulator_seed: Union[None, int] = None,
@@ -82,6 +78,11 @@ class PowerGridDataSet(DataSet):
         -------
 
         """
+        try:
+            from grid2op.Agent import DoNothingAgent
+        except ImportError as exc_:
+            raise RuntimeError("Impossible to `generate` powergrid datet if you don't have "
+                               "the grid2Op package installed") from exc_
         self._nb_divergence = 0
         if nb_samples <= 0:
             raise RuntimeError("Impossible to generate a negative number of data.")

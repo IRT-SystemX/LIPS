@@ -7,18 +7,18 @@
 # This file is part of LIPS, LIPS is a python platform for power networks benchmarking
 
 import numpy as np
-import copy
-import os
 import logging
 
-logging.basicConfig(filename="logs.log", level=logging.INFO,format="%(levelname)s:%(message)s")
+logging.basicConfig(filename="logs.log",
+                    level=logging.INFO,
+                    format="%(levelname)s:%(message)s")
 
 
 def Check_loss(p_or, p_ex, prod_p, tolerance=0.04):
     """
     Verifies the energy loss. The loss should be between 1 and 4 % of production at each step.
 
-    2 possible way to call the function with two set of informations : 
+    2 possible way to call the function with two set of information:
         1) indicating only the path to the stored arrays by using the `path` parameter
         2) indicating explicitly the required variables for computing the law which are (prod_p, p_or and p_ex)
 
