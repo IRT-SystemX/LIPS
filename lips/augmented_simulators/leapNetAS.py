@@ -11,13 +11,8 @@ import time
 import json
 import numpy as np
 import copy
-import warnings
 from typing import Union, Dict
-import tempfile
-from tqdm import tqdm
-import shutil
 
-import tensorflow as tf
 from tensorflow.keras.layers import Layer
 from tensorflow.keras.layers import Dense
 from tensorflow.keras.optimizers import Optimizer
@@ -101,7 +96,8 @@ class LeapNetAS(AugmentedSimulator):
         """This is an example of a reference implementation of this class. Feel"""
         # extract the input and output suitable for learning (matrices) from the generic dataset
         processed_x, processed_tau, processed_y = self._process_all_dataset(train_dataset, training=True)
-        processed_x_val, processed_tau_val, processed_y_val = self._process_all_dataset(val_dataset, training=False)
+        if val_dataset is not None:
+            processed_x_val, processed_tau_val, processed_y_val = self._process_all_dataset(val_dataset, training=False)
 
         # create the neural network (now that I know the sizes)
         self.init()
@@ -112,9 +108,13 @@ class LeapNetAS(AugmentedSimulator):
                                             loss=self._loss)
 
         # train the model
+        if val_dataset is not None:
+            validation_data = ((processed_x_val, processed_tau_val), processed_y_val)
+        else:
+            validation_data = None
         self._leap_net_model._model.fit(x=(processed_x, processed_tau),
                                         y=processed_y,
-                                        validation_data=((processed_x_val, processed_tau_val), processed_y_val),
+                                        validation_data=validation_data,
                                         epochs=nb_iter,
                                         batch_size=self._batch_size)
         # NB in this function we use the high level keras method "fit" to fit the data. It does not stricly
