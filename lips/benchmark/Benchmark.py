@@ -7,12 +7,7 @@
 # This file is part of LIPS, LIPS is a python platform for power networks benchmarking
 
 import os
-import numpy as np
-import copy
 import json
-
-
-from matplotlib import pyplot as plt
 
 
 class Benchmark(object):
