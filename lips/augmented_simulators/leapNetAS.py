@@ -11,13 +11,8 @@ import time
 import json
 import numpy as np
 import copy
-import warnings
 from typing import Union, Dict
-import tempfile
-from tqdm import tqdm
-import shutil
 
-import tensorflow as tf
 from tensorflow.keras.layers import Layer
 from tensorflow.keras.layers import Dense
 from tensorflow.keras.optimizers import Optimizer
@@ -97,11 +92,16 @@ class LeapNetAS(AugmentedSimulator):
         """this function will build the neural network"""
         self._leap_net_model.build_model()
 
-    def train(self, nb_iter: int, train_dataset: DataSet, val_dataset: Union[None, DataSet] = None):
+    def train(self,
+              nb_iter: int,
+              train_dataset: DataSet,
+              val_dataset: Union[None, DataSet] = None,
+              **kwargs):
         """This is an example of a reference implementation of this class. Feel"""
         # extract the input and output suitable for learning (matrices) from the generic dataset
         processed_x, processed_tau, processed_y = self._process_all_dataset(train_dataset, training=True)
-        processed_x_val, processed_tau_val, processed_y_val = self._process_all_dataset(val_dataset, training=False)
+        if val_dataset is not None:
+            processed_x_val, processed_tau_val, processed_y_val = self._process_all_dataset(val_dataset, training=False)
 
         # create the neural network (now that I know the sizes)
         self.init()
@@ -112,15 +112,21 @@ class LeapNetAS(AugmentedSimulator):
                                             loss=self._loss)
 
         # train the model
-        self._leap_net_model._model.fit(x=(processed_x, processed_tau),
-                                        y=processed_y,
-                                        validation_data=((processed_x_val, processed_tau_val), processed_y_val),
-                                        epochs=nb_iter,
-                                        batch_size=self._batch_size)
+        if val_dataset is not None:
+            validation_data = ((processed_x_val, processed_tau_val), processed_y_val)
+        else:
+            validation_data = None
+        history_callback = self._leap_net_model._model.fit(x=(processed_x, processed_tau),
+                                                           y=processed_y,
+                                                           validation_data=validation_data,
+                                                           epochs=nb_iter,
+                                                           batch_size=self._batch_size,
+                                                           **kwargs)
         # NB in this function we use the high level keras method "fit" to fit the data. It does not stricly
         # uses the `DataSet` interface. For more complicated training loop, one can always use
         # dataset.get_data(indexes) to retrieve the batch of data corresponding to `indexes` and
         # `self.process_dataset` to process the example of this dataset one by one.
+        return history_callback
 
     def evaluate(self, dataset: DataSet):
         """evaluate the model on the given dataset"""
@@ -215,6 +221,7 @@ class LeapNetAS(AugmentedSimulator):
         And the size of the dataset self._size_x and self._size_y
         """
         all_data = dataset.get_data(np.arange(len(dataset)))
+        obss = None
         if training:
             obss = self._make_fake_obs(all_data)
             self._leap_net_model.init(obss)
@@ -226,7 +233,16 @@ class LeapNetAS(AugmentedSimulator):
         for attr_nm, m_, sd_ in zip(self._attr_x, proxy._m_x, proxy._sd_x):
             res_x.append((all_data[attr_nm] - m_) / sd_)
         for attr_nm, m_, sd_ in zip(self._attr_tau, proxy._m_tau, proxy._sd_tau):
-            res_tau.append((all_data[attr_nm] - m_) / sd_)
+            if attr_nm == "line_status":
+                res_tau.append((all_data[attr_nm] - m_) / sd_)
+            elif attr_nm == "topo_vect":
+                if obss is None:
+                    obss = self._make_fake_obs(all_data)
+                res_tau.append(np.array([self._leap_net_model.topo_vect_handler(obs)
+                                         for obs in obss],
+                                        dtype=np.float32))
+            else:
+                raise RuntimeError(f"Unknown tau attribute : {attr_nm}")
         for attr_nm, m_, sd_ in zip(self._attr_y, proxy._m_y, proxy._sd_y):
             res_y.append((all_data[attr_nm] - m_) / sd_)
         return res_x, res_tau, res_y
@@ -243,6 +259,11 @@ class LeapNetAS(AugmentedSimulator):
 
         if "topo_vect" in all_data:
             setattr(FakeObs, "dim_topo", all_data["topo_vect"].shape[1])
+
+        # TODO find a way to retrieve that from data...
+        # TODO maybe the "dataset" class should have some "static data" somewhere
+        setattr(FakeObs, "n_sub", 14)
+        setattr(FakeObs, "sub_info", [3, 6, 4, 6, 5, 7, 3, 2, 5, 3, 3, 3, 4, 3])
 
         nb_row = all_data[next(iter(all_data.keys()))].shape[0]
         obss = [FakeObs() for k in range(nb_row)]
