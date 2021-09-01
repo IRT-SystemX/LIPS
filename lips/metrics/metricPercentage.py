@@ -9,10 +9,11 @@
 import numpy as np
 import copy
 import logging
-from collections.abc import Iterable
 from lips.metrics import DEFAULT_METRICS
 
-logging.basicConfig(filename="logs.log", level=logging.INFO,format="%(levelname)s:%(message)s")
+logging.basicConfig(filename="logs.log",
+                    level=logging.INFO,
+                    format="%(levelname)s:%(message)s")
 
 
 def metricPercentage(metrics_ML,  
@@ -81,25 +82,3 @@ def metricPercentage(metrics_ML,
             logging.info("{} for {} is : {:.3f}".format(metric_name, var_, float(agg_func(metrics_ML_raw[metric_name][var_]))))
 
     return copy.deepcopy(metrics_ML), copy.deepcopy(metrics_ML_raw)
-
-
-    """
-    k_percent = np.int(k * predictions["a_or"].size)
-    indices = np.argsort(observations["a_or"].flatten())[-k_percent:]
-
-    for metric_name, metric_fun in metrics.items():
-        metric_name = metric_name + str(int(k*100))
-        metrics_ML[metric_name] = {}
-        for nm in variables:
-            true_ = observations[nm]
-            pred_ = predictions[nm]
-            tmp = metric_fun(
-                true_.flatten()[indices], pred_.flatten()[indices])
-            if isinstance(tmp, Iterable):
-                metrics_ML[metric_name][nm] = [
-                    float(el) for el in tmp]
-            else:
-                metrics_ML[metric_name][nm] = float(tmp)
-
-    # return metrics_ML
-    """
