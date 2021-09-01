@@ -12,7 +12,10 @@ from sklearn.metrics import mean_absolute_error
 import sys
 import logging
 
-logging.basicConfig(filename="logs.log", level=logging.INFO,format="%(levelname)s:%(message)s")
+# TODO make a proper class there and that inside ! It's super ugly not to be able to customize this
+logging.basicConfig(filename="logs.log",
+                    level=logging.INFO,
+                    format="%(levelname)s:%(message)s")
 
 
 def BasicVerifier(active_dict: dict,
@@ -77,7 +80,7 @@ def BasicVerifier(active_dict: dict,
         if np.any(a_or < 0):
             verifications["currents"]["a_or"] = {}
             a_or_errors = np.array(np.where(a_or < 0)).T
-            a_or_violation_proportion = len(a_or_errors) / a_or.size
+            a_or_violation_proportion = (1.0 * len(a_or_errors)) / a_or.size
             Error_a_or = -np.sum(np.minimum(a_or.flatten(), 0.))
             #print("{:.3f}% of lines does not respect the positivity of currents (Amp) at origin".format(
             #    a_or_violation_proportion*100))
@@ -86,9 +89,9 @@ def BasicVerifier(active_dict: dict,
             counts = Counter(a_or_errors[:, 1])
             #print("Concerned lines with corresponding number of negative current values at their origin:\n",
             #    dict(sorted(counts.items(), key=lambda item: item[1], reverse=True)))
-            verifications["currents"]["a_or"]["indices"] = a_or_errors
-            verifications["currents"]["a_or"]["Error"] = Error_a_or
-            verifications["currents"]["a_or"]["Violation_proportion"] = a_or_violation_proportion
+            verifications["currents"]["a_or"]["indices"] = [(int(el[0]), int(el[1])) for el in a_or_errors]
+            verifications["currents"]["a_or"]["Error"] = float(Error_a_or)
+            verifications["currents"]["a_or"]["Violation_proportion"] = float(a_or_violation_proportion)
             #print("----------------------------------------------")
         else:
             logging.info("Current positivity check passed for origin side !")
@@ -98,7 +101,7 @@ def BasicVerifier(active_dict: dict,
         if np.any(a_ex < 0):
             verifications["currents"]["a_ex"] = {}
             a_ex_errors = np.array(np.where(a_ex < 0)).T
-            a_ex_violation_proportion = len(a_ex_errors) / a_ex.size
+            a_ex_violation_proportion = (1.0 * len(a_ex_errors)) / a_ex.size
             Error_a_ex = -np.sum(np.minimum(a_ex.flatten(), 0.))
             #print("{:.3f}% of lines does not respect the positivity of currents (Amp) at extremity".format(
             #    a_ex_violation_proportion*100))
@@ -107,9 +110,9 @@ def BasicVerifier(active_dict: dict,
             counts = Counter(a_ex_errors[:, 1]) 
             #print("Concerned lines with corresponding number of negative current values at their extremity:\n",
             #    dict(sorted(counts.items(), key=lambda item: item[1], reverse=True)))
-            verifications["currents"]["a_ex"]["indices"] = a_ex_errors
-            verifications["currents"]["a_ex"]["Error"] = Error_a_ex
-            verifications["currents"]["a_ex"]["Violation_proportion"] = a_ex_violation_proportion
+            verifications["currents"]["a_ex"]["indices"] = [(int(el[0]), int(el[1]))for el in a_ex_errors]
+            verifications["currents"]["a_ex"]["Error"] = float(Error_a_ex)
+            verifications["currents"]["a_ex"]["Violation_proportion"] = float(a_ex_violation_proportion)
             #print("----------------------------------------------")
         else:
             logging.info("Current positivity check passed for extremity side !")
@@ -134,9 +137,9 @@ def BasicVerifier(active_dict: dict,
             counts = Counter(v_or_errors[:, 1])
             #print("Concerned lines with corresponding number of negative voltage values at their origin:\n",
             #    dict(sorted(counts.items(), key=lambda item: item[1], reverse=True)))
-            verifications["voltages"]["v_or"]["indices"] = v_or_errors
-            verifications["voltages"]["v_or"]["Error"] = Error_v_or
-            verifications["voltages"]["v_or"]["Violation_proportion"] = v_or_violation_proportion
+            verifications["voltages"]["v_or"]["indices"] = [(int(el[0]), int(el[1])) for el in v_or_errors]
+            verifications["voltages"]["v_or"]["Error"] = float(Error_v_or)
+            verifications["voltages"]["v_or"]["Violation_proportion"] = float(v_or_violation_proportion)
             #print("----------------------------------------------")
         else:
             logging.info("Voltage positivity check passed for origin side !")
@@ -155,9 +158,9 @@ def BasicVerifier(active_dict: dict,
             counts = Counter(v_ex_errors[:, 1])
             #print("Concerned lines with corresponding number of negative voltage values at their extremity:\n",
             #    dict(sorted(counts.items(), key=lambda item: item[1], reverse=True)))
-            verifications["voltages"]["v_ex"]["indices"] = v_ex_errors
-            verifications["voltages"]["v_ex"]["Error"] = Error_v_ex
-            verifications["voltages"]["v_ex"]["Violation_proportion"] = v_ex_violation_proportion
+            verifications["voltages"]["v_ex"]["indices"] = [(int(el[0]), int(el[1])) for el in v_ex_errors]
+            verifications["voltages"]["v_ex"]["Error"] = float(Error_v_ex)
+            verifications["voltages"]["v_ex"]["Violation_proportion"] = float(v_ex_violation_proportion)
             #print("----------------------------------------------")
         else:
             logging.info("Voltage positivity check passed for extremity side !")
@@ -184,9 +187,9 @@ def BasicVerifier(active_dict: dict,
             counts = Counter(loss_errors[:, 1])
             #print("Concerned lines with corresponding number of negative loss values:\n",
             #    dict(sorted(counts.items(), key=lambda item: item[1], reverse=True)))
-            verifications["loss"]["loss_criterion"] = loss_error
-            verifications["loss"]["loss_errors"] = loss_errors
-            verifications["loss"]["violation_proportion"] = loss_violation_proportion
+            verifications["loss"]["loss_criterion"] = [(int(el[0]), int(el[1])) for el in loss_error]
+            verifications["loss"]["loss_errors"] = float(loss_errors)
+            verifications["loss"]["violation_proportion"] = float(loss_violation_proportion)
             #print("----------------------------------------------")
         else:
             logging.info("Loss positivity check passed !")
@@ -207,32 +210,32 @@ def BasicVerifier(active_dict: dict,
                 p_or = predictions["p_or"]
                 p_ex = predictions["p_ex"]
                 p_or_violations = np.sum(np.abs(p_or[ind_]) > 0)
-                verifications["line_status"]["p_or_not_null"] = p_or_violations
+                verifications["line_status"]["p_or_not_null"] = int(p_or_violations)
                 sum_disconnected_values += p_or_violations
                 p_ex_violations = np.sum(np.abs(p_ex[ind_]) > 0)
-                verifications["line_status"]["p_ex_not_null"] = p_ex_violations
+                verifications["line_status"]["p_ex_not_null"] = float(p_ex_violations)
                 sum_disconnected_values += p_ex_violations
-                verifications["line_status"]["p_violations"] = np.sum((np.abs(p_or[ind_]) + np.abs(p_ex[ind_]))>0) / len_disc
+                verifications["line_status"]["p_violations"] = float(np.sum((np.abs(p_or[ind_]) + np.abs(p_ex[ind_]))>0) / len_disc)
             if "q_or" in predictions.keys():
                 q_or = predictions["q_or"]
                 q_ex = predictions["q_ex"]
                 q_or_violations = np.sum(np.abs(q_or[ind_]) > 0)
-                verifications["line_status"]["q_or_not_null"] = q_or_violations
+                verifications["line_status"]["q_or_not_null"] = float(q_or_violations)
                 sum_disconnected_values += q_or_violations
                 q_ex_violations = np.sum(np.abs(q_ex[ind_]) > 0)
-                verifications["line_status"]["q_ex_not_null"] = q_ex_violations
+                verifications["line_status"]["q_ex_not_null"] = float(q_ex_violations)
                 sum_disconnected_values += q_ex_violations
-                verifications["line_status"]["q_violations"] = np.sum((np.abs(q_or[ind_]) + np.abs(q_ex[ind_]))>0) / len_disc
+                verifications["line_status"]["q_violations"] = float(np.sum((np.abs(q_or[ind_]) + np.abs(q_ex[ind_]))>0) / len_disc)
             if "a_or" in predictions.keys():
                 a_or = predictions["a_or"]
                 a_ex = predictions["a_ex"]
                 a_or_violations = np.sum(np.abs(a_or[ind_]) > 0)
-                verifications["line_status"]["a_or_not_null"] = a_or_violations
+                verifications["line_status"]["a_or_not_null"] = float(a_or_violations)
                 sum_disconnected_values += a_or_violations
                 a_ex_violations = np.sum(np.abs(a_ex[ind_]) > 0)
-                verifications["line_status"]["a_ex_not_null"] = a_ex_violations
+                verifications["line_status"]["a_ex_not_null"] = float(a_ex_violations)
                 sum_disconnected_values += a_ex_violations
-                verifications["line_status"]["a_violations"] = np.sum((np.abs(a_or[ind_]) + np.abs(a_ex[ind_]))>0) / len_disc
+                verifications["line_status"]["a_violations"] = float(np.sum((np.abs(a_or[ind_]) + np.abs(a_ex[ind_]))>0) / len_disc)
         if sum_disconnected_values > 0:
             logging.info("Prediction in presence of line disconnection. Problem encountered !")
             #print("Prediction in presence of line disconnection. Problem encountered !")
@@ -259,12 +262,12 @@ def BasicVerifier(active_dict: dict,
         eps = sys.float_info.epsilon
         #a_or = sqrt(p_or**2 + q_or**2) / (sqrt(3).v_or)
         a_or_comp = (np.sqrt(p_or**2 + q_or**2) / ((np.sqrt(3) * v_or)+eps)) * 1000
-        verifications["current_equations"]["a_or_deviation"] = mean_absolute_error(
-            a_or, a_or_comp, multioutput='raw_values')
+        verifications["current_equations"]["a_or_deviation"] = [float(el) for el in
+            mean_absolute_error(a_or, a_or_comp, multioutput='raw_values')]
 
         #a_ex = sqrt(p_ex**2 + q_ex**2) / (sqrt(3).v_ex)
         a_ex_comp = (np.sqrt(p_ex**2 + q_ex**2) / ((np.sqrt(3) * v_ex)+eps)) * 1000
-        verifications["current_equations"]["a_ex_deviation"] = mean_absolute_error(
-            a_ex, a_ex_comp, multioutput='raw_values')
+        verifications["current_equations"]["a_ex_deviation"] =  [float(el) for el in
+           mean_absolute_error(a_ex, a_ex_comp, multioutput='raw_values')]
 
     return verifications

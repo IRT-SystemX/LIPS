@@ -14,7 +14,6 @@ import copy
 import warnings
 from typing import Union
 import tempfile
-from tqdm import tqdm
 import shutil
 
 import tensorflow as tf
@@ -47,8 +46,10 @@ class FullyConnectedAS(AugmentedSimulator):
     """
     def __init__(self, 
                  name: str = "FullyConnected",
-                 attr_x=("prod_p", "prod_v", "load_p", "load_q", "line_status", "topo_vect"),
-                 attr_y=("a_or", "a_ex", "p_or", "p_ex", "q_or", "q_ex", "prod_q", "load_v", "v_or", "v_ex"),
+                 attr_x=("prod_p", "prod_v", "load_p",
+                         "load_q", "line_status", "topo_vect"),
+                 attr_y=("a_or", "a_ex", "p_or", "p_ex", "q_or",
+                         "q_ex", "prod_q", "load_v", "v_or", "v_ex"),
                  sizes_layer=(150, 150),
                  lr: float = 3e-4,  # only used if "optimizer" is not None
                  layer: Layer = Dense,
@@ -110,11 +111,15 @@ class FullyConnectedAS(AugmentedSimulator):
                             outputs=output_,
                             name=f"{self.name}_model")
 
-    def train(self, nb_iter: int, train_dataset: DataSet, val_dataset: Union[None, DataSet] = None):
+    def train(self, nb_iter: int,
+              train_dataset: DataSet,
+              val_dataset: Union[None, DataSet] = None,
+              **kwargs):
         """This is an example of a reference implementation of this class. Feel"""
         # extract the input and output suitable for learning (matrices) from the generic dataset
         processed_x, processed_y = self._process_all_dataset(train_dataset, training=True)
-        processed_x_val, processed_y_val = self._process_all_dataset(val_dataset, training=False)
+        if val_dataset is not None:
+            processed_x_val, processed_y_val = self._process_all_dataset(val_dataset, training=False)
 
         # create the neural network (now that I know the sizes)
         self.init()
@@ -124,15 +129,21 @@ class FullyConnectedAS(AugmentedSimulator):
                             loss=self._loss)
 
         # train the model
-        self._model.fit(x=processed_x,
-                        y=processed_y,
-                        validation_data=(processed_x_val, processed_y_val),
-                        epochs=nb_iter,
-                        batch_size=self._batch_size)
+        if val_dataset is not None:
+            validation_data = (processed_x_val, processed_y_val)
+        else:
+            validation_data = None
+        history_callback = self._model.fit(x=processed_x,
+                                           y=processed_y,
+                                           validation_data=validation_data,
+                                           epochs=nb_iter,
+                                           batch_size=self._batch_size,
+                                           **kwargs)
         # NB in this function we use the high level keras method "fit" to fit the data. It does not stricly
         # uses the `DataSet` interface. For more complicated training loop, one can always use
         # dataset.get_data(indexes) to retrieve the batch of data corresponding to `indexes` and
         # `self.process_dataset` to process the example of this dataset one by one.
+        return history_callback
 
     def evaluate(self, dataset: DataSet):
         """evaluate the model on the given dataset"""
