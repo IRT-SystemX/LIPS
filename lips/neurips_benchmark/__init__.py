@@ -6,6 +6,7 @@
 # SPDX-License-Identifier: MPL-2.0
 # This file is part of LIPS, LIPS is a python platform for power networks benchmarking
 
-__all_ = ['NeuripsBenchmark1']
+__all_ = ['NeuripsBenchmark1', 'NeuripsBenchmark2']
 
 from lips.neurips_benchmark.benchmark1 import NeuripsBenchmark1
+from lips.neurips_benchmark.benchmark2 import NeuripsBenchmark2
