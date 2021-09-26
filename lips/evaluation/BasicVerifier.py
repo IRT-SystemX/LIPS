@@ -187,8 +187,8 @@ def BasicVerifier(active_dict: dict,
             counts = Counter(loss_errors[:, 1])
             #print("Concerned lines with corresponding number of negative loss values:\n",
             #    dict(sorted(counts.items(), key=lambda item: item[1], reverse=True)))
-            verifications["loss"]["loss_criterion"] = [(int(el[0]), int(el[1])) for el in loss_error]
-            verifications["loss"]["loss_errors"] = float(loss_errors)
+            verifications["loss"]["loss_criterion"] = loss_error#[(int(el[0]), int(el[1])) for el in loss_error]
+            verifications["loss"]["loss_errors"] = [(int(el[0]), int(el[1])) for el in loss_errors]#float(loss_errors)
             verifications["loss"]["violation_proportion"] = float(loss_violation_proportion)
             #print("----------------------------------------------")
         else:
