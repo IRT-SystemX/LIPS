@@ -224,6 +224,7 @@ class LeapNetAS(AugmentedSimulator):
         obss = None
         if training:
             obss = self._make_fake_obs(all_data)
+            # print(2**obss[0].sub_info) # TODO : to remove
             self._leap_net_model.init(obss)
 
         proxy = self._leap_net_model
@@ -263,7 +264,7 @@ class LeapNetAS(AugmentedSimulator):
         # TODO find a way to retrieve that from data...
         # TODO maybe the "dataset" class should have some "static data" somewhere
         setattr(FakeObs, "n_sub", 14)
-        setattr(FakeObs, "sub_info", [3, 6, 4, 6, 5, 7, 3, 2, 5, 3, 3, 3, 4, 3])
+        setattr(FakeObs, "sub_info", np.array([3, 6, 4, 6, 5, 7, 3, 2, 5, 3, 3, 3, 4, 3]))
 
         nb_row = all_data[next(iter(all_data.keys()))].shape[0]
         obss = [FakeObs() for k in range(nb_row)]

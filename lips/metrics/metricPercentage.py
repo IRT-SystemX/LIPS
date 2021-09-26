@@ -53,6 +53,10 @@ def metricPercentage(metrics_ML,
 
         
     """
+    FLOW_VARIABLES = ['a_or', 'a_ex', 'p_or', 'p_ex', 'q_or', 'q_ex', 'v_or', 'v_ex']
+    variables = [var for var in variables if var in FLOW_VARIABLES]
+
+
     metrics_ML_raw = dict()
 
     if metric_names is None:
