@@ -391,7 +391,7 @@ class Evaluation(object):
                              predictions=self.predictions,
                              k=k,
                              metric_names=metric_percentage,
-                             variables=["a_or", "a_ex"],
+                             variables=self.predictions.keys(),
                              agg_func=np.mean
                              )
 

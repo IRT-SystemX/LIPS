@@ -137,6 +137,9 @@ dmypy.json
 
 #custom ignore folders
 .vscode
+
+ActorTest.ipynb
+
 lips/benchmark/Benchmark copy.py
 lips/benchmark/Benchmark copy 2.py
 lips/dataset/DataSet copy.py

@@ -49,6 +49,10 @@ REF_ACTION = [# sub_5_id1
               {"set_bus": {"loads_id": [(3, 2), (5, 2)],
                            "lines_or_id": [(17, 2), (10, 2), (19, 2)],
                            "lines_ex_id": [(6, 2)]}},
+              # composed action sub_1_id1 + sub_3_id4
+              {"set_bus": {"loads_id": [(2, 2)],
+                           "lines_or_id": [(15, 2), (4, 2), (2, 2)],
+                           "lines_ex_id": [(3, 2)]}},
               ]
 
 
@@ -90,7 +94,6 @@ def _aux_act_scenario1(env):
     li_ref_topo = [env.action_space(el) for el in li_ref_topo]
     li_act_n1 = [env.action_space(el) for el in li_act_n1]
     return li_ref_topo, li_act_n1
-
 
 def get_actor_training_scenario1(simulator):
     env = simulator._simulator

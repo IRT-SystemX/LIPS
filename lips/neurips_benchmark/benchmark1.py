@@ -261,8 +261,8 @@ class NeuripsBenchmark1(Benchmark):
         self.val_actor = get_actor_test_scenario1(self.val_simulator)
         self.val_actor.seed(self.val_actor_seed)
 
-        self.test_actor = get_actor_test_scenario1(self.training_simulator)
+        self.test_actor = get_actor_test_scenario1(self.test_simulator)
         self.test_actor.seed(self.test_actor_seed)
 
-        self.test_ood_topo_actor = get_actor_test_ood_topo_scenario1(self.training_simulator)
+        self.test_ood_topo_actor = get_actor_test_ood_topo_scenario1(self.test_ood_topo_simulator)
         self.test_ood_topo_actor.seed(self.test_ood_topo_actor_seed)
