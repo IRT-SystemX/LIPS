@@ -128,7 +128,7 @@ class LeapNetAS(AugmentedSimulator):
         # `self.process_dataset` to process the example of this dataset one by one.
         return history_callback
 
-    def evaluate(self, dataset: DataSet):
+    def evaluate(self, dataset: DataSet, batch_size: int=32):
         """evaluate the model on the given dataset"""
         # process the dataset
         processed_x, processed_tau, _ = self._process_all_dataset(dataset, training=False)
@@ -137,7 +137,7 @@ class LeapNetAS(AugmentedSimulator):
         # and out of speed, i directly used the loaded model to make the predictions and unscale them
         # make the predictions
         _beg = time.time()
-        tmp = self._leap_net_model._model.predict((processed_x, processed_tau))
+        tmp = self._leap_net_model._model.predict((processed_x, processed_tau), batch_size=batch_size)
         self._predict_time += time.time() - _beg
         res = {}
         proxy = self._leap_net_model

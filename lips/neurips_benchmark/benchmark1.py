@@ -160,6 +160,7 @@ class NeuripsBenchmark1(Benchmark):
 
     def evaluate_augmented_simulator(self,
                                      augmented_simulator,
+                                     batch_size=32,
                                      # "all" or the list of dataset name on which to perform the evaluation
                                      dataset: str = "all",  # TODO
                                      EL_tolerance=0.04,
@@ -191,6 +192,7 @@ class NeuripsBenchmark1(Benchmark):
             logging.info("Experiment on dataset : {}".format(nm))
             tmp = self._aux_evaluate_on_single_dataset(dataset_,
                                                        augmented_simulator=augmented_simulator,
+                                                       batch_size=batch_size,
                                                        EL_tolerance=EL_tolerance,
                                                        LCE_tolerance=LCE_tolerance,
                                                        KCL_tolerance=KCL_tolerance,
@@ -202,12 +204,13 @@ class NeuripsBenchmark1(Benchmark):
     def _aux_evaluate_on_single_dataset(self,
                                         dataset,
                                         augmented_simulator,
+                                        batch_size,
                                         EL_tolerance=0.04,
                                         LCE_tolerance=1e-3,
                                         KCL_tolerance=1e-2,
                                         active_flow=True
                                         ):
-        predictions = augmented_simulator.evaluate(dataset)
+        predictions = augmented_simulator.evaluate(dataset, batch_size)
         ref_data = dataset.get_data(np.arange(len(dataset)))
         logging.info("Experimented simulator : {}".format(augmented_simulator.name))
         res = self.evaluation.do_evaluations(env=self.training_simulator._simulator,  # TODO this is relatively ugly
