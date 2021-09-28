@@ -145,14 +145,14 @@ class FullyConnectedAS(AugmentedSimulator):
         # `self.process_dataset` to process the example of this dataset one by one.
         return history_callback
 
-    def evaluate(self, dataset: DataSet):
+    def evaluate(self, dataset: DataSet, batch_size: int=32):
         """evaluate the model on the given dataset"""
         # process the dataset
         processed_x, _ = self._process_all_dataset(dataset, training=False)
 
         # make the predictions
         _beg = time.time()
-        tmp_res_y = self._model.predict(processed_x)
+        tmp_res_y = self._model.predict(processed_x, batch_size=batch_size)
         self._predict_time = time.time() - _beg
         # rescale them
         tmp_res_y *= self._std_y
