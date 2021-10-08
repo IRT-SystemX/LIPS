@@ -49,11 +49,13 @@ class Grid2opSimulator(PhysicalSimulator):
         self._info = None
         self._reset_simulator()
         self._plot_helper = None
+        
 
         self._nb_divergence = 0  # number of failures of modify_state
         self._nb_output = 0  # number of time get_state is called
 
         self._time_powerflow = 0
+        self.comp_time = 0
 
     def seed(self, seed: int):
         """
@@ -76,10 +78,10 @@ class Grid2opSimulator(PhysicalSimulator):
 
         """
         self._nb_output += 1
-        return self._obs, self._info
+        return self._obs, self._info, self._simulator.backend.get_theta()
 
     def _get_time_powerflow(self):
-        return self._time_powerflow
+        return self._time_powerflow, self.comp_time
 
     def modify_state(self, actor):
         """
@@ -90,21 +92,28 @@ class Grid2opSimulator(PhysicalSimulator):
         while done:
             # simulate data (resimulate in case of divergence of the simulator)
             act = actor.act(self._obs, self._reward, done)
-            _beg_time = self._simulator._time_powerflow
+            _beg_time_pf = self._simulator._time_powerflow
+            _beg_time_cp = self._simulator.backend.comp_time
             self._obs, self._reward, done, self._info = self._simulator.step(act)
-            _end_time = self._simulator._time_powerflow - _beg_time
-            self._time_powerflow += _end_time
+            _end_time_cp = self._simulator.backend.comp_time
+            _end_time_pf = self._simulator._time_powerflow
+            _diff_time_pf = _end_time_pf - _beg_time_pf
+            _diff_time_cp = _end_time_cp - _beg_time_cp
+            
+            self._time_powerflow += _diff_time_pf
+            self.comp_time += _diff_time_cp
 
             if self._info["is_illegal"]:
-                self._time_powerflow -= _end_time
+                self._time_powerflow -= _diff_time_pf
+                self.comp_time -= _diff_time_cp
                 raise RuntimeError("Your `actor` should not take illegal action. Please modify the environment "
                                    "or your actor.")
 
             if done:
                 self._nb_divergence += 1
                 self._reset_simulator()
-                # self._time_powerflow -= _end_time # TODO: to analyze in more depth if we should reduce it or not
-                # because, in _reset_simulator we reinitialize the network and it is considered as a new obs
+                self._time_powerflow -= _diff_time_pf
+                self.comp_time -= _diff_time_cp
 
     def visualize_network(self):
         """
