@@ -73,7 +73,7 @@ class NeuripsBenchmark3(NeuripsBenchmark1):
             self.evaluation.active_dict["evaluate_physic"]["verify_current_eq"] = True
             self.evaluation.active_dict["evaluate_physic"]["verify_EL"] = True
             self.evaluation.active_dict["evaluate_physic"]["verify_LCE"] = True
-            self.evaluation.active_dict["evaluate_physic"]["verify_KCL"] = False
+            self.evaluation.active_dict["evaluate_physic"]["verify_KCL"] = True
             #self.evaluation.active_dict["evaluate_physics"] = {}
 
         else:
