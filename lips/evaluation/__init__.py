@@ -7,16 +7,17 @@
 # This file is part of LIPS, LIPS is a python platform for power networks benchmarking
 
 __all__ = ["Evaluation", "Check_loss", "BasicVerifier",
-           "Check_energy_conservation"]
+           "Check_energy_conservation", "check_kcl"]
 
 
 from lips.evaluation.Evaluation import Evaluation
 from lips.evaluation.Check_loss import Check_loss
 from lips.evaluation.BasicVerifier import BasicVerifier
 from lips.evaluation.Check_energy_conservation import Check_energy_conservation
+from lips.evaluation.Check_KCL import check_kcl
 try:
     from lips.evaluation.Check_Kirchhoff_current_law import Check_Kirchhoff_current_law
-    __all__ = ["Check_Kirchhoff_current_law"]
+    __all__.append("Check_Kirchhoff_current_law")
 except ImportError:
     # grid2Op is not installed
     pass
