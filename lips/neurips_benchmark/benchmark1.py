@@ -89,10 +89,30 @@ class NeuripsBenchmark1(Benchmark):
 
         self.initial_chronics_id = initial_chronics_id
 
-        self.train_dataset = PowerGridDataSet("train")
-        self.val_dataset = PowerGridDataSet("val")
-        self._test_dataset = PowerGridDataSet("test")
-        self._test_ood_topo_dataset = PowerGridDataSet("test_ood_topo")
+        self.train_dataset = PowerGridDataSet("train",
+                                              attr_names=("prod_p", "prod_v", "load_p", "load_q", 
+                                                          "line_status", "topo_vect",
+                                                          "a_or", "a_ex"), # consider only currents as the variables
+                                              theta_attr_names=()) # set the theta to empty, not used for benchmark 1
+                                              
+        self.val_dataset = PowerGridDataSet("val", 
+                                            attr_names=("prod_p", "prod_v", "load_p", "load_q", 
+                                                         "line_status", "topo_vect",
+                                                         "a_or", "a_ex"),
+                                            theta_attr_names=())
+
+        self._test_dataset = PowerGridDataSet("test", 
+                                              attr_names=("prod_p", "prod_v", "load_p", "load_q", 
+                                                          "line_status", "topo_vect",
+                                                          "a_or", "a_ex"),
+                                              theta_attr_names=())
+
+        self._test_ood_topo_dataset = PowerGridDataSet("test_ood_topo", 
+                                                       attr_names=("prod_p", "prod_v", "load_p", "load_q", 
+                                                                   "line_status", "topo_vect",
+                                                                   "a_or", "a_ex"), 
+                                                       theta_attr_names=())
+        self.predictions = dict()
         self.path_datasets = None
         if load_data_set:
             self.load()
@@ -190,15 +210,16 @@ class NeuripsBenchmark1(Benchmark):
         res = {}
         for dataset_, nm in zip(li_dataset, keys):
             logging.info("Experiment on dataset : {}".format(nm))
-            tmp = self._aux_evaluate_on_single_dataset(dataset_,
-                                                       augmented_simulator=augmented_simulator,
-                                                       batch_size=batch_size,
-                                                       EL_tolerance=EL_tolerance,
-                                                       LCE_tolerance=LCE_tolerance,
-                                                       KCL_tolerance=KCL_tolerance,
-                                                       active_flow=active_flow
-                                                       )
+            tmp, predictions = self._aux_evaluate_on_single_dataset(dataset_,
+                                                                    augmented_simulator=augmented_simulator,
+                                                                    batch_size=batch_size,
+                                                                    EL_tolerance=EL_tolerance,
+                                                                    LCE_tolerance=LCE_tolerance,
+                                                                    KCL_tolerance=KCL_tolerance,
+                                                                    active_flow=active_flow
+                                                                    )
             res[nm] = copy.deepcopy(tmp)
+            self.predictions[nm] = copy.deepcopy(predictions)
         return res
 
     def _aux_evaluate_on_single_dataset(self,
@@ -224,7 +245,7 @@ class NeuripsBenchmark1(Benchmark):
                                              active_flow=active_flow,
                                              save_path=None  # TODO currently not used
                                              )
-        return res
+        return res, predictions
 
     def _create_training_simulator(self):
         """"""

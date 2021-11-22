@@ -59,16 +59,34 @@ def check_kcl(env, ref_obs, predictions, tol=1e-3):
 
     idx_list = list()
     nodes_violation_count = list()
-
+    # a set of attributes available in ref_obs but not in predictions (injections + topology)
+    # it concerns the attributs which are used as predictors
+    ref_obs_keys = ref_obs.keys() - predictions.keys()
     # loop over the observations
     for id_ in range(n_obs):
-        # replacing the obs variables first by reference data
-        for key_ in ref_obs.keys():
-            setattr(obs, key_, ref_obs.get(key_)[id_, :])
+        # replacing the `obs` attributes using the injections + topology (real data)
+        for key_ in ref_obs_keys:
+            if key_ == "prod_p":
+                key_1 = "gen_p"
+            elif key_ == "prod_q":
+                key_1 = "gen_q"
+            elif key_ == "prod_v":
+                key_1 = "gen_v"
+            else:
+                key_1 = key_
+            setattr(obs, key_1, ref_obs.get(key_)[id_, :])
 
-        # replacing the obs variables finally by predictions
+        # replacing the remaining attributes using the predictions
         for key_ in predictions.keys():
-            setattr(obs, key_, predictions.get(key_)[id_, :])
+            if key_ == "prod_p":
+                key_1 = "gen_p"
+            elif key_ == "prod_q":
+                key_1 = "gen_q"
+            elif key_ == "prod_v":
+                key_1 = "gen_v"
+            else:
+                key_1 = key_
+            setattr(obs, key_1, predictions.get(key_)[id_, :])
 
         # the indices help to extract the V at substation level
         mat, (load_bus, gen_bus, stor_bus, lor_bus, lex_bus) = obs.flow_bus_matrix(active_flow=True, as_csr_matrix=False)

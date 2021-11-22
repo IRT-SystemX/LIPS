@@ -25,6 +25,8 @@ except ImportError as exc_:
     # grid2op is not installed, but this should work as is
     CHECK_KIRCHHOFF_AVAIL = False
 
+from lips.evaluation.Check_KCL import check_kcl
+
 from lips.evaluation.Check_energy_conservation import Check_energy_conservation
 
 
@@ -288,6 +290,7 @@ class Evaluation(object):
                 if not CHECK_KIRCHHOFF_AVAIL:
                     raise RuntimeError(ERROR_MSG_KCL)
                 self.metrics_physics["KCL"] = {}
+                self.metrics_physics["KCL_new"] = {}
                 res_kcl = Check_Kirchhoff_current_law(env=self.env,
                                                       env_name=self.env_name,
                                                       data=self.predictions,
@@ -303,6 +306,15 @@ class Evaluation(object):
                 self.metrics_physics["KCL"]["nodes_values"] = res_kcl[0]
                 self.metrics_physics["KCL"]["network_values"] = [float(el) for el in np.array(res_kcl[1])]
                 self.metrics_physics["KCL"]["violation_indices"] = [int(el) for el in np.array(res_kcl[2])]
+
+                res_kcl_new = check_kcl(env=self.env,
+                                        ref_obs=self.observations,
+                                        predictions=self.predictions,
+                                        tol=KCL_tolerance
+                                        )
+
+                self.metrics_physics["KCL_new"]["violation_prop_obs_level"] = float(res_kcl_new[0])
+                self.metrics_physics["KCL_new"]["violation_prop_sub_level"] = float(res_kcl_new[1])
 
         else:
             raise ValueError
