@@ -89,6 +89,7 @@ class FullyConnectedAS(AugmentedSimulator):
         self._model: Union[Model, None] = None
 
         self._predict_time = 0
+        self.predictions = {}
 
     def init(self, **kwargs):
         """this function will build the neural network"""
@@ -159,13 +160,13 @@ class FullyConnectedAS(AugmentedSimulator):
         tmp_res_y += self._m_y
 
         # and now output data as a dictionary
-        res = {}
+        self.predictions = {}
         prev_ = 0
         for var_id, this_var_size in enumerate(self._sizes_y):
             attr_nm = self._attr_y[var_id]
-            res[attr_nm] = tmp_res_y[:, prev_:(prev_ + this_var_size)]
+            self.predictions[attr_nm] = tmp_res_y[:, prev_:(prev_ + this_var_size)]
             prev_ += this_var_size
-        return res
+        return self.predictions
 
     def save(self, path_out: str):
         """
