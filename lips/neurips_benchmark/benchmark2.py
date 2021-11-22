@@ -79,6 +79,39 @@ class NeuripsBenchmark2(NeuripsBenchmark1):
         else:
             self.evaluate = evaluation
 
+        self.train_dataset = PowerGridDataSet("train",
+                                              attr_names=("prod_p", "prod_v", "load_p", "load_q", 
+                                                          "line_status", "topo_vect",
+                                                          "a_or", "a_ex", "p_or", "p_ex", "q_or", "q_ex", "prod_q", "load_v",
+                                                          "v_or", "v_ex"), # consider only currents as the variables
+                                              theta_attr_names=()) # set the theta to empty, not used for benchmark 1
+                                              
+        self.val_dataset = PowerGridDataSet("val", 
+                                            attr_names=("prod_p", "prod_v", "load_p", "load_q", 
+                                                         "line_status", "topo_vect",
+                                                         "a_or", "a_ex", "p_or", "p_ex", "q_or", "q_ex", "prod_q", "load_v",
+                                                         "v_or", "v_ex"),
+                                            theta_attr_names=())
+
+        self._test_dataset = PowerGridDataSet("test", 
+                                              attr_names=("prod_p", "prod_v", "load_p", "load_q", 
+                                                          "line_status", "topo_vect",
+                                                          "a_or", "a_ex", "p_or", "p_ex", "q_or", "q_ex", "prod_q", "load_v",
+                                                          "v_or", "v_ex"),
+                                              theta_attr_names=())
+
+        self._test_ood_topo_dataset = PowerGridDataSet("test_ood_topo", 
+                                                       attr_names=("prod_p", "prod_v", "load_p", "load_q", 
+                                                                   "line_status", "topo_vect",
+                                                                   "a_or", "a_ex",  "p_or", "p_ex", "q_or", "q_ex", "prod_q", "load_v",
+                                                                   "v_or", "v_ex"), 
+                                                       theta_attr_names=())
+        self.path_datasets = None
+        if load_data_set:
+            self.load()
+        else:
+            self.is_loaded = False
+
     def _create_training_simulator(self):
         """"""
         if self.training_simulator is None:

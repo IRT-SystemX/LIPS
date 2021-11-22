@@ -139,6 +139,12 @@ dmypy.json
 .vscode
 
 ActorTest.ipynb
+temporary.ipynb
+temporary1.ipynb
+Notebook_Benchmark2.ipynb
+2_TrainAnAugmentedSimulator-Copy1.ipynb
+Temp_AnalyzeActions.ipynb
+Temp_PhysicsLaw.ipynb
 
 lips/benchmark/Benchmark copy.py
 lips/benchmark/Benchmark copy 2.py
@@ -150,9 +156,7 @@ lips/models
 lips/simulators/augmentedSimulator copy.py
 lips/simulators/DCApproximation copy.py
 
-temporary.ipynb
-temporary1.ipynb
-Notebook_Benchmark2.ipynb
+
 
 lips/Outputs/Scenario1/Data/super_test
 lips/Outputs/Scenario1/Data/test

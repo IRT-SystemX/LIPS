@@ -75,6 +75,16 @@ class NeuripsBenchmark3(NeuripsBenchmark1):
             self.evaluation.active_dict["evaluate_physic"]["verify_LCE"] = True
             self.evaluation.active_dict["evaluate_physic"]["verify_KCL"] = True
             #self.evaluation.active_dict["evaluate_physics"] = {}
-
         else:
             self.evaluate = evaluation
+
+        self.train_dataset = PowerGridDataSet("train") # Integrate the theta variables in the analysis
+        self.val_dataset = PowerGridDataSet("val")
+        self._test_dataset = PowerGridDataSet("test")
+        self._test_ood_topo_dataset = PowerGridDataSet("test_ood_topo")
+        
+        self.path_datasets = None
+        if load_data_set:
+            self.load()
+        else:
+            self.is_loaded = False
