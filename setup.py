@@ -12,15 +12,17 @@ from setuptools import setup
 pkgs = {
     "required": [
         "numpy",
-        "sklearn",
-        "tqdm"
+        "scikit_learn",
+        "tqdm",
+        "matplotlib"
     ],
     "extras": {
         "recommended": [
-            "grid2op",
-            "lightsim2grid",
-            "tqdm",
-            "git+https://github.com/bdonnot/leap_net.git"
+            "grid2op>=1.6.2",
+            "lightsim2grid>=0.5.3",
+            "leap_net @ https://github.com/BDonnot/leap_net/tarball/master#egg=leap_net",
+            "numba",
+            "jupyter"
         ]
     }
 }
