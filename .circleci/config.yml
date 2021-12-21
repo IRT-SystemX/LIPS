@@ -6,11 +6,19 @@ jobs:
       - image: circleci/python:3.8.1
     steps:
       - checkout
+      - restore_cache:
+          key: python-requirements-V1-{{ checksum "requirements.txt" }}
       - run:
           name: Install Python Dependencies
           command: |
             pip install --upgrade pip
             pip install --user -r requirements.txt
+      - save_cache:
+          key: python-requirements-V1-{{ checksum "requirements.txt" }}
+          paths:
+            - "~/.cache/pip"
+            - "/usr/local/lib/python3.8/site-packages"
+            - "/usr/local/lib/site-python"
       - run:
           name: Run Unit Tests
           command: |
