@@ -6,22 +6,24 @@ jobs:
       - image: circleci/python:3.8.1
     steps:
       - checkout
+      - run: mkdir test-reports
       - restore_cache:
-          key: python-requirements-V1-{{ checksum "requirements.txt" }}
+          key: deps1-{{ .Branch }}-{{ checksum "requirements.txt" }}
       - run:
-          name: Install Python Dependencies
+          name: Install Python Dependencies in a venv
           command: |
+            python3 -m venv venv
+            . venv/bin/activate
             pip install --upgrade pip
-            pip install --user -r requirements.txt
+            pip install -r requirements.txt
       - save_cache:
-          key: python-requirements-V1-{{ checksum "requirements.txt" }}
+          key: deps1-{{ .Branch }}-{{ checksum "requirements.txt" }}
           paths:
-            - "~/.cache/pip"
-            - "/usr/local/lib/python3.8/site-packages"
-            - "/usr/local/lib/site-python"
+            - "venv"
       - run:
           name: Run Unit Tests
           command: |
+            . venv/bin/activate
             python -m pytest  --html=test-reports/pytest_report.html --self-contained-html
       - store_test_results:
           path: test-reports
