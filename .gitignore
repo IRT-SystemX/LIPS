@@ -187,3 +187,4 @@ logs.log
 # test files
 pytest_report.html
 assets/
+requirements copy.txt
