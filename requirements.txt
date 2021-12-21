@@ -29,7 +29,7 @@ jupyter-client==7.1.0
 jupyter-core==4.9.1
 Keras-Preprocessing==1.1.2
 kiwisolver==1.3.2
-leap-net @ https://github.com/BDonnot/leap_net/tarball/master#egg=leap_net"
+leap-net @ https://github.com/BDonnot/leap_net/tarball/master#egg=leap_net
 lightsim2grid>=0.5.3
 llvmlite==0.37.0
 Markdown==3.3.6
@@ -37,8 +37,8 @@ matplotlib==3.5.0
 matplotlib-inline==0.1.3
 nest-asyncio==1.5.4
 networkx==2.6.3
-numba==0.54.1
 numpy==1.18.5
+numba==0.54.1
 oauthlib==3.1.1
 openpyxl==3.0.9
 opt-einsum==3.3.0
