@@ -1,16 +1,15 @@
 version: 2.1
-orbs:
-    python: circleci/python@1.4.0
 
 jobs:
   run_tests:
     docker:
-      - image: cimg/python:3.8.1
+      - image: circleci/python:3.8.1
     steps:
       - checkout
       - run:
           name: Install Python Dependencies
           command: |
+            pip install --upgrade pip
             pip install --user -r requirements.txt
       - run:
           name: Run Unit Tests
@@ -23,4 +22,4 @@ jobs:
 workflows:
     build_test:
       jobs:
-        -run_tests
+        - run_tests
