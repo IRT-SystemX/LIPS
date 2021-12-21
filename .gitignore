@@ -143,6 +143,7 @@ temporary.ipynb
 temporary1.ipynb
 Notebook_Benchmark2.ipynb
 2_TrainAnAugmentedSimulator-Copy1.ipynb
+Analyzing_Benchmark_class.ipynb
 Temp_AnalyzeActions.ipynb
 Temp_PhysicsLaw.ipynb
 
@@ -182,3 +183,7 @@ test_fully_connected.py
 trained_models/
 test_leap_net.py
 logs.log
+
+# test files
+pytest_report.html
+assets/
