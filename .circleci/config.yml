@@ -1,0 +1,24 @@
+version: 2.1
+
+jobs:
+  run_tests:
+    docker:
+      - image: circleci/python:3.8.10
+    steps:
+      - checkout
+      - run:
+          name: Install Python Dependencies
+          command: |
+            pip install --user -r requirements.txt
+      - run:
+          name: Run Unit Tests
+          command: |
+            pytest  --html=test-reports/pytest_report.html
+      - store_test_results:
+          path: test-reports
+      - store_artifacts:
+          path: test-reports
+workflows:
+    build_test:
+      jobs:
+        -run_tests
