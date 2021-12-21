@@ -1,9 +1,11 @@
 version: 2.1
+orbs:
+    python: circleci/python@1.4.0
 
 jobs:
   run_tests:
     docker:
-      - image: circleci/python:3.8.10
+      - image: cimg/python:3.8.1
     steps:
       - checkout
       - run:
@@ -13,7 +15,7 @@ jobs:
       - run:
           name: Run Unit Tests
           command: |
-            pytest  --html=test-reports/pytest_report.html
+            python -m pytest  --html=test-reports/pytest_report.html --self-contained-html
       - store_test_results:
           path: test-reports
       - store_artifacts:
