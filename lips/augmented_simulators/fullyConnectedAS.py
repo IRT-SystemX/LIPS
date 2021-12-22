@@ -88,8 +88,7 @@ class FullyConnectedAS(AugmentedSimulator):
         # this is the keras "model"
         self._model: Union[Model, None] = None
 
-        self._predict_time = 0
-        self.predictions = {}
+        self.predict_time = None        
 
     def init(self, **kwargs):
         """this function will build the neural network"""
@@ -146,15 +145,21 @@ class FullyConnectedAS(AugmentedSimulator):
         # `self.process_dataset` to process the example of this dataset one by one.
         return history_callback
 
-    def evaluate(self, dataset: DataSet, batch_size: int=32):
+    def evaluate(self, dataset: DataSet, batch_size: int=32, save_values: bool=False):
         """evaluate the model on the given dataset"""
+        # the observations used for evaluation
+        tmp_obs = dataset.get_data(np.arange(len(dataset)))
+        #for attr_nm in self._attr_y:
+        #    self.observations[attr_nm] = tmp_obs = 
+        self.observations = tmp_obs
+        
         # process the dataset
         processed_x, _ = self._process_all_dataset(dataset, training=False)
 
         # make the predictions
         _beg = time.time()
         tmp_res_y = self._model.predict(processed_x, batch_size=batch_size)
-        self._predict_time = time.time() - _beg
+        self.predict_time = time.time() - _beg
         # rescale them
         tmp_res_y *= self._std_y
         tmp_res_y += self._m_y
@@ -166,6 +171,11 @@ class FullyConnectedAS(AugmentedSimulator):
             attr_nm = self._attr_y[var_id]
             self.predictions[attr_nm] = tmp_res_y[:, prev_:(prev_ + this_var_size)]
             prev_ += this_var_size
+
+        #TODO : save the predictions and observations to files np
+        if save_values:
+            pass
+
         return self.predictions
 
     def save(self, path_out: str):
@@ -312,3 +322,9 @@ class FullyConnectedAS(AugmentedSimulator):
         res_y /= self._std_y
 
         return res_x, res_y
+
+    def data_to_dict(self):
+        """
+        This functions return the observations and corresponding predictions of the last evaluation
+        """
+        return self.observations, self.predictions
