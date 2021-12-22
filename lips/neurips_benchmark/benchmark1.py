@@ -65,7 +65,7 @@ class NeuripsBenchmark1(Benchmark):
             #self.evaluation.active_dict["evaluate_physics"] = {}
 
         else:
-            self.evaluate = evaluation
+            self.evaluation = evaluation
 
         self.training_simulator = None
         self.val_simulator = None
@@ -112,7 +112,7 @@ class NeuripsBenchmark1(Benchmark):
                                                                    "line_status", "topo_vect",
                                                                    "a_or", "a_ex"), 
                                                        theta_attr_names=())
-        self.predictions = dict()
+
         self.path_datasets = None
         if load_data_set:
             self.load()
@@ -131,7 +131,7 @@ class NeuripsBenchmark1(Benchmark):
     def load(self):
         if self.is_loaded:
             print("Previously saved data will be erased and new data will be reloaded")
-
+        # TODO: set this attribute in class constructor
         self.path_datasets = os.path.join(self.path_benchmark, self.benchmark_name)
         if not os.path.exists(self.path_datasets):
             raise RuntimeError(f"No data are found in {self.path_datasets}. Have you generated or downloaded "
@@ -149,6 +149,7 @@ class NeuripsBenchmark1(Benchmark):
         with warnings.catch_warnings():
             warnings.filterwarnings("ignore")
             self._fills_actor_simulator()
+        # TODO : to set this variable in constructor
         self.path_datasets = os.path.join(self.path_benchmark, self.benchmark_name)
         if os.path.exists(self.path_datasets):
             print(f"Deleting path {self.path_datasets} that might contain previous runs")  # TODO logger
@@ -210,15 +211,16 @@ class NeuripsBenchmark1(Benchmark):
         res = {}
         for dataset_, nm in zip(li_dataset, keys):
             logging.info("Experiment on dataset : {}".format(nm))
-            tmp, predictions = self._aux_evaluate_on_single_dataset(dataset_,
-                                                                    augmented_simulator=augmented_simulator,
-                                                                    batch_size=batch_size,
-                                                                    EL_tolerance=EL_tolerance,
-                                                                    LCE_tolerance=LCE_tolerance,
-                                                                    KCL_tolerance=KCL_tolerance,
-                                                                    active_flow=active_flow
-                                                                    )
+            tmp, ref_data, predictions = self._aux_evaluate_on_single_dataset(dataset_,
+                                                                              augmented_simulator=augmented_simulator,
+                                                                              batch_size=batch_size,
+                                                                              EL_tolerance=EL_tolerance,
+                                                                              LCE_tolerance=LCE_tolerance,
+                                                                              KCL_tolerance=KCL_tolerance,
+                                                                              active_flow=active_flow
+                                                                             )
             res[nm] = copy.deepcopy(tmp)
+            self.observations[nm] = copy.deepcopy(ref_data)
             self.predictions[nm] = copy.deepcopy(predictions)
         return res
 
@@ -245,7 +247,7 @@ class NeuripsBenchmark1(Benchmark):
                                              active_flow=active_flow,
                                              save_path=None  # TODO currently not used
                                              )
-        return res, predictions
+        return res, ref_data, predictions
 
     def _create_training_simulator(self):
         """"""

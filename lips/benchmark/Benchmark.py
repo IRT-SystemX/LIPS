@@ -60,9 +60,10 @@ class Benchmark(object):
         # object of class AugmentedSimulator allowing to train a neural net and to predict, load and save it 
         self.simulator = simulator
 
-        self.observations, self.predictions = self.simulator.data_to_dict()
-        self.prediction_time = self.simulator.predict_time
-
+        #self.observations, self.predictions = self.simulator.data_to_dict()
+        #self.prediction_time = self.simulator.predict_time
+        self.observations = dict()
+        self.predictions = dict()
         
         """
         # attributes used for input and outputs of a model
@@ -219,9 +220,3 @@ class Benchmark(object):
 
         self.benchmark_name = res["benchmark_name"]
         self.benchmark_path = res["benchmark_path"]
-
-    def visualize_network_state(self):
-        """
-        TODO : integrate the visualisation tools allowing to visualize the network state over different observations
-        """
-        pass
