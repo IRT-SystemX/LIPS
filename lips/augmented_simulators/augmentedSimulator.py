@@ -19,6 +19,9 @@ class AugmentedSimulator(object):
     """
     def __init__(self, name: str):
         self.name = name
+        
+        self.observations = None
+        self.predictions = None
 
     def train(self, nb_iter: int, train_dataset: DataSet, val_dataset: Union[None, DataSet] = None):
         """
@@ -55,6 +58,14 @@ class AugmentedSimulator(object):
         """
         This function transforms one state of a dataset (one row if you want) into something that can be used by
         the neural network (for example)
+        """
+        pass
+
+    def data_to_dict(self):
+        """
+        This function should return two dictionaries in the following order 
+            - the observations used for evaluation 
+            - corresponding predictions
         """
         pass
 
