@@ -43,6 +43,10 @@ class NeuripsBenchmark1(Benchmark):
                  test_ood_topo_actor_seed: int = 8,
                  evaluation=None
                  ):
+        # FIXME: [JP] these properties were not correctly initialized, on call super constructor somehow
+        self.observations = dict()
+        self.predictions = dict()
+
         self.benchmark_name = benchmark_name
         self.path_benchmark = path_benchmark
         self.is_loaded = False
