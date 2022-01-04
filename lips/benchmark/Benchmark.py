@@ -8,7 +8,9 @@
 
 import os
 import json
+import numpy as np
 
+from lips.evaluation import Evaluation
 
 class Benchmark(object):
     """
@@ -23,130 +25,96 @@ class Benchmark(object):
         dataset: ``DataSet`` object
             an object of DataSet class which containing the data for training, validation and testing
 
-        Simulator: An object of a sub class of ``Simulator`` class
+        Simulator: An object from an augmented simulator
             This is an object of Physical or Augmneted simulator including the prediction results
 
-        evaluator: ``object`` of ``Evaluation`` class
+        evaluation: ``object`` of ``Evaluation`` class
             It allows to evaluate the performance of the simulator with respect to various point of views
-            It should be parameterized before passing to benchmark class to include appropriate metrics 
+            It should be parameterized before passing to benchmark class to include appropriate metrics
+            otherwise, it is initialized using an empty dictionary 
 
-        save_path : ``string``
-            the root path of Outputs of the benchmark on the basis of which new directories are created
+        path_benchmark : ``string``
+            the path used to save the benchmark results
 
     """
-
     def __init__(self,
                  benchmark_name,
-                 dataset,
-                 simulator=None,
-                 evaluator=None,
-                 save_path=None,
+                 dataset=None,
+                 augmented_simulator=None,
+                 evaluation=None,
+                 path_benchmark=None,
                  ):
-
         self.benchmark_name = benchmark_name
-        
-        # object of class GenerateData contianing datasets for training and validation
+        self.path_benchmark = path_benchmark
+        self.path_datasets = os.path.join(path_benchmark, self.benchmark_name)
+
+        # object of class DataSet contianing datasets for testing
         self.dataset = dataset
-        # self.env = self.dataset.env
-        # self.env_name = self.dataset.env_name
 
-        # object of class Evaluation used to evaluate the benchmark and the model
-        self.evaluator = evaluator
-        self.metrics_ML = None
-        self.metrics_physics = None
-        self.metrics_adaptability = None
-        self.metrics_readiness = None
-
-        # object of class AugmentedSimulator allowing to train a neural net and to predict, load and save it 
-        self.simulator = simulator
-
-        #self.observations, self.predictions = self.simulator.data_to_dict()
-        #self.prediction_time = self.simulator.predict_time
+        # store the test data sets and simulator predictions for further investigations
+        # for each test dataset a key is added to the dictionary
         self.observations = dict()
         self.predictions = dict()
-        
-        """
-        # attributes used for input and outputs of a model
-        if self.augmentedSimulator:
-            self.attr_x = self.augmentedSimulator.attr_x
-            self.attr_y = self.augmentedSimulator.attr_y
-            self.attr_tau = self.augmentedSimulator.attr_tau
+
+        # object of class Evaluation used to evaluate the augmented simulator on test data
+        if evaluation is None:
+            self.evaluation = Evaluation()
+            # initialize it with empty dictionary, to be modified for a desired benchmark
+            self.evaluation.set_active_dict(self.evaluation.get_empty_active_dict())
         else:
-            self.attr_x = attr_x
-            self.attr_y = attr_y
-            self.attr_tau = attr_tau
+            # otherwise, use the evaluation object with initialized dictionary values
+            self.evaluation = evaluation
 
-        self.attr_names = (*self.attr_x, *self.attr_tau, *self.attr_y)
-        """
+        # object of class AugmentedSimulator allowing to train a neural net and to predict, load and save it 
+        self.augmented_simulator = augmented_simulator
 
-        # model and parameters
-        # self.model_name = self.simulator.name
+        
+        # create directories for benchmark TODO : not necessary, to be removed
+        #if path_benchmark is not None:
+        #    if not os.path.exists(path_benchmark):
+        #        os.mkdir(path_benchmark)
 
-
-        # create directories
-        if save_path is not None:
-            if not os.path.exists(save_path):
-                os.mkdir(save_path)
-
-        self.benchmark_path = os.path.join(save_path, benchmark_name)
-        if not os.path.exists(self.benchmark_path):
-            os.mkdir(self.benchmark_path)
+        #if not os.path.exists(self.path_datasets):
+        #    os.mkdir(self.benchmark_path)
     
     def evaluate_simulator(self,
-                           choice="predictions",
-                           EL_tolerance=0.04,
-                           LCE_tolerance=1e-3,
-                           KCL_tolerance=1e-2,
-                           active_flow=True,
+                           dataset,
+                           augmented_simulator,
+                           batch_size=32,
                            save_path=None):
         """
         This function will evalute a simulator (physical or augmented) using various criteria predefined in evaluator object
-
+        on a ``single test dataset``. It can be overloaded or called to evaluate the performance on multiple datasets
+        
         params
         ------
-            choice: ``str``
-                to compute physic compliances on predictions or on real observations 
-                the choices are `predictions` or `observations`
-            
-            EL_tolerance: ``float``
-                the tolerance used for electrical loss verification
-            
-            LCE_tolerance: ``float``
-                the tolerance used for Law of Conservation of Energy
+            dataset: ``DataSet`` object
+                a test dataset on which the augmented simulator should be performed and evaluated by
 
-            KLC_tolerance: ``float``
-                the tolerance used for Kirchhoff's current law
+            augmented_simulator: ``AugmentedSimulator`` object 
+                a trained augmented simulator which should be evaluated
 
-            active_flow: ``bool``
-                whether to compute KCL on active (True) or reactive (False) powers
+            batch_size: ``int``
+                evaluation batch size
 
             save_path: ``str`` or ``None``
                 if indicated the evaluation results will be saved to indicated path
         """
+        self.augmented_simulator = augmented_simulator
+        self.dataset = dataset
+        predictions = self.augmented_simulator.evaluate(dataset, batch_size)
+        observations = self.dataset.get_data(np.arange(len(dataset)))
+        # TODO : the ``do_evaluation`` function should have a more general interface in future
+        # TODO : the ``Evaluation`` module should be refactored in near future
+        res = self.evaluation.do_evaluations(predictions=predictions,
+                                             observations=observations,
+                                             choice="predictions",  # we want to evaluate only the predictions here
+                                             save_path=save_path  # TODO currently not used
+                                             )
+        self.predictions[dataset.name] = predictions
+        self.observations[dataset.name] = observations
 
-        self.evaluator.do_evaluations(env=None, 
-                                      env_name=None,
-                                      observations=self.observations, 
-                                      predictions=self.predictions, 
-                                      choice=choice,
-                                      EL_tolerance=EL_tolerance,
-                                      LCE_tolerance=LCE_tolerance,
-                                      KCL_tolerance=KCL_tolerance,
-                                      active_flow=active_flow,
-                                      save_path=save_path)
-
-        self.metrics_ML = self.evaluator.metrics_ML
-        self.metrics_physics = self.evaluator.metrics_physics
-        self.metrics_generalization = self.evaluator.metrics_generalization
-        self.metrics_readiness = self.evaluator.metrics_readiness
-
-    def save(self):
-        """
-        save the benchmark metadata and the trained model parameters for a further use
-
-        It creates automatically a path using experiment name, benchmark name and model name to save the model
-        """
-        self._save_metadata(path=self.benchmark_path)
+        return res
 
     def __save_augmentedSimulator(self, path=None, ext=".h5"):
         """
@@ -164,59 +132,12 @@ class Benchmark(object):
         if path:
             if not os.path.exists(path):
                 os.mkdir(path)
-            self.simulator._save_metadata(path)
-            self.simulator.save_data(path=path, ext=ext)
+            self.augmented_simulator._save_metadata(path)
+            self.augmented_simulator.save_data(path=path, ext=ext)
         
-        elif self.simulator.model_path:
-            self.simulator._save_metadata(self.simulator.model_path)
-            self.simulator.save_data(path=self.simulator.model_path, ext=ext)
+        elif self.augmented_simulator.model_path:
+            self.augmented_simulator._save_metadata(self.augmented_simulator.model_path)
+            self.augmented_simulator.save_data(path=self.augmented_simulator.model_path, ext=ext)
         
         else:
             print("the augmented simulator could not be saved")
-
-    def _save_metadata(self, path=None):
-        """
-        Save the benchmark class metadata
-        # TODO : save the training losses
-        params
-        ------
-            path : ``str``
-                the path where the benchmark metadata should be stored
-        """
-        res = self._get_metadata()
-        json_nm = "metadata_Benchmark.json"
-        with open(os.path.join(path, json_nm), "w", encoding="utf-8") as f:
-            json.dump(obj=res, fp=f)
-
-    def _get_metadata(self):
-        """
-        get the benchmark metadata in json serializable form
-        TODO : save also the loss dicts : loss_metric_dict_train and loss_metric_dict_valid
-        returns
-        -------
-            res : ``dict``
-                a dictionary of benchmark metadata
-        """
-        res = dict()
-        res["benchmark_name"] = self.benchmark_name
-        res["benchmark_path"] = self.benchmark_path
-        return res
-
-    def load(self, path):
-        """
-        load the metadata for benchmark and load the model
-        TODO : consider a special case for DC approximator
-        """
-        self._load_metadata(path)
-
-    def _load_metadata(self, path=None):
-        """
-        load metadata for the benchmark
-        TODO : consider a special case for DC approximator
-        """
-        json_nm = "metadata_Benchmark.json"
-        with open(os.path.join(path, json_nm), "r", encoding="utf-8") as f:
-            res = json.load(f)
-
-        self.benchmark_name = res["benchmark_name"]
-        self.benchmark_path = res["benchmark_path"]
