@@ -105,7 +105,7 @@ def get_actor_training_scenario(simulator):
     return agent
 
 
-def get_actor_test_scenario1(simulator):
+def get_actor_test_scenario(simulator):
     env = simulator._simulator
     li_ref_topo, li_act_n1 = _aux_act_scenario(env)
     agent = ChangeTopoRefN1(env.action_space,
