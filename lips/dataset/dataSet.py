@@ -19,8 +19,8 @@ class DataSet(object):
 
     This is the base class of all DataSet in LIPS repository
     """
-    def __init__(self, experiment_name):
-        self.experiment_name = experiment_name
+    def __init__(self, name):
+        self.name = name
         self.data = None
         self.size = 0
 

@@ -428,7 +428,8 @@ class Evaluation(object):
     def evaluate_generalization(self):
         pass
 
-    def get_empty_active_dict(self):
+    @staticmethod    
+    def get_empty_active_dict():
         """
         it returns an empty active_dict to be parameterized in function of requirement and model outputs
         
@@ -453,10 +454,10 @@ class Evaluation(object):
             active_dict: ``dict``
                 a dictionary indicating to verify or not the evaluation criteria
         """
-        
         active_dict = dict()
         active_dict["evaluate_ML"] = False
-        
+        active_dict["evaluate_adaptability"] = False
+        active_dict["evaluate_readiness"] = False
         active_dict["evaluate_physic"] = dict()
         active_dict["evaluate_physic"]["verify_current_pos"] = False
         active_dict["evaluate_physic"]["verify_voltage_pos"] = False
@@ -466,11 +467,6 @@ class Evaluation(object):
         active_dict["evaluate_physic"]["verify_EL"] = False
         active_dict["evaluate_physic"]["verify_LCE"] = False
         active_dict["evaluate_physic"]["verify_KCL"] = False
-
-        active_dict["evaluate_adaptability"] = False
-
-        active_dict["evaluate_readiness"] = False 
-
         return active_dict
 
     def get_active_dict(self):
