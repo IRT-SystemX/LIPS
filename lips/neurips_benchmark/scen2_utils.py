@@ -56,7 +56,7 @@ REF_ACTION = [# sub_5_id1
               ]
 
 
-def get_kwargs_simulator_scenario2():
+def get_kwargs_simulator_scenario():
     """
     This function return the
     Returns
@@ -88,7 +88,7 @@ def get_kwargs_simulator_scenario2():
             "backend": BkCls()}
 
 
-def _aux_act_scenario2(env):
+def _aux_act_scenario(env):
     """
     It returns singular topo actions (acting on one sub)
     """
@@ -98,7 +98,7 @@ def _aux_act_scenario2(env):
     li_act_n1 = [env.action_space(el) for el in li_act_n1]
     return li_ref_topo, li_act_n1
 
-def _aux_act_scenario2_ood(env):
+def _aux_act_scenario_ood(env):
     """
     It returns composed topo actions (acting on two subs) to test the out-of-distribution
     """
@@ -108,9 +108,9 @@ def _aux_act_scenario2_ood(env):
     li_act_n1 = [env.action_space(el) for el in li_act_n1]
     return li_ref_topo, li_act_n1
 
-def get_actor_training_scenario2(simulator):
+def get_actor_training_scenario(simulator):
     env = simulator._simulator
-    li_ref_topo, li_act_n1 = _aux_act_scenario2(env)
+    li_ref_topo, li_act_n1 = _aux_act_scenario(env)
     agent = ChangeTopoRefN1Ref(env.action_space,
                                p=0.5,
                                ref_topo=li_ref_topo,
@@ -118,18 +118,18 @@ def get_actor_training_scenario2(simulator):
     return agent
 
 
-def get_actor_test_scenario2(simulator):
+def get_actor_test_scenario(simulator):
     env = simulator._simulator
-    li_ref_topo, li_act_n1 = _aux_act_scenario2(env)
+    li_ref_topo, li_act_n1 = _aux_act_scenario(env)
     agent = ChangeTopoRefN1(env.action_space,
                             ref_topo=li_ref_topo,
                             list_act=li_act_n1)
     return agent
 
 
-def get_actor_test_ood_topo_scenario2(simulator):
+def get_actor_test_ood_topo_scenario(simulator):
     env = simulator._simulator
-    li_ref_topo, li_act_n1 = _aux_act_scenario2_ood(env)
+    li_ref_topo, li_act_n1 = _aux_act_scenario_ood(env)
     agent = ChangeTopoRefN1(env.action_space,
                             ref_topo=li_ref_topo,
                             list_act=li_act_n1)
