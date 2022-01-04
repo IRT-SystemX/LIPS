@@ -24,7 +24,7 @@ class PowerGridDataSet(DataSet):
     """
 
     def __init__(self,
-                 experiment_name="Scenario",
+                 name="train",
                  # for compatibility with existing code this will be removed in future version
                  # (and serialize directly the output of the simulator)
                  attr_names=("prod_p", "prod_v", "load_p", "load_q", "line_status", "topo_vect",
@@ -32,7 +32,7 @@ class PowerGridDataSet(DataSet):
                              "v_or", "v_ex"),
                  theta_attr_names=("theta_or", "theta_ex", "load_theta", "gen_theta", "storage_theta")
                  ):
-        DataSet.__init__(self, experiment_name=experiment_name)
+        DataSet.__init__(self, name=name)
         self._nb_divergence = 0
         self._attr_names = copy.deepcopy(attr_names)
         self.size = 0
@@ -107,7 +107,7 @@ class PowerGridDataSet(DataSet):
             array_ = init_theta[idx_]
             self.data[attr_nm] = np.zeros((nb_samples, array_.shape[0]), dtype=array_.dtype)
 
-        for ds_size in tqdm(range(nb_samples), desc=self.experiment_name):
+        for ds_size in tqdm(range(nb_samples), desc=self.name):
             simulator.modify_state(actor)
             current_state, extra_info, current_theta = simulator.get_state()
             self._store_obs(ds_size, current_state)
@@ -132,7 +132,7 @@ class PowerGridDataSet(DataSet):
 
     def _save_internal_data(self, path_out):
         """save the self.data in a proper format"""
-        full_path_out = os.path.join(os.path.abspath(path_out), self.experiment_name)
+        full_path_out = os.path.join(os.path.abspath(path_out), self.name)
 
         if not os.path.exists(os.path.abspath(path_out)):
             os.mkdir(os.path.abspath(path_out))
@@ -147,7 +147,7 @@ class PowerGridDataSet(DataSet):
 
         os.mkdir(full_path_out)
         # TODO logger
-        print(f"Creating the path {full_path_out} to store the dataset name {self.experiment_name}")
+        print(f"Creating the path {full_path_out} to store the dataset name {self.name}")
 
         for attr_nm in (*self._attr_names, *self._theta_attr_names):
             np.savez_compressed(f"{os.path.join(full_path_out, attr_nm)}.npz", data=self.data[attr_nm])
@@ -157,7 +157,7 @@ class PowerGridDataSet(DataSet):
             raise RuntimeError(f"{path} cannot be found on your computer")
         if not os.path.isdir(path):
             raise RuntimeError(f"{path} is not a valid directory")
-        full_path = os.path.join(path, self.experiment_name)
+        full_path = os.path.join(path, self.name)
         if not os.path.exists(full_path):
             raise RuntimeError(f"There is no data saved in {full_path}. Have you called `dataset.generate()` with "
                                f"a given `path_out` ?")
