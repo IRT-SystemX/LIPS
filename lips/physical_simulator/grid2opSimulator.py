@@ -19,6 +19,11 @@ from grid2op.PlotGrid import PlotMatplot
 from lips.physical_simulator.physicalSimulator import PhysicalSimulator
 
 
+def get_env(env_kwargs: dict):
+    env = grid2op.make(**env_kwargs)
+    env.deactivate_forecast()
+    return env
+
 class Grid2opSimulator(PhysicalSimulator):
     """
     This simulator uses the `grid2op` package to implement a physical simulator.
@@ -31,8 +36,9 @@ class Grid2opSimulator(PhysicalSimulator):
                  chronics_selected_regex: str = None,  # the chronics to keep for this simulator
                  ):
         PhysicalSimulator.__init__(self, actor_types=(BaseAction, BaseAgent))
-        self._simulator = grid2op.make(**env_kwargs)
-        self._simulator.deactivate_forecast()
+        #self._simulator = grid2op.make(**env_kwargs)
+        #self._simulator.deactivate_forecast()
+        self._simulator = get_env(env_kwargs)
         if chronics_selected_regex is not None:
             # special case of the grid2Op environment: data are read from chronics that should be part of the dataset
             # here i keep only certain chronics for the training, and the other for the test
@@ -64,7 +70,6 @@ class Grid2opSimulator(PhysicalSimulator):
         ----------
         seed:
             An integer representing the seed.
-
         """
         seeds = self._simulator.seed(seed)
         self._reset_simulator()
