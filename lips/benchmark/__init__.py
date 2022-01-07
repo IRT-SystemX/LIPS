@@ -3,6 +3,9 @@
 # See AUTHORS.txt
 # This file is part of LIPS, LIPS is a python platform for power networks benchmarking
 
-__all__ = ["Benchmark"]
+__all__ = ["Benchmark", "PowerGridBenchmark", "ConfigManager"]
 
 from lips.benchmark.Benchmark import Benchmark
+from lips.benchmark.powergridBenchmark import PowerGridBenchmark
+from lips.benchmark.configmanager import ConfigManager
+
