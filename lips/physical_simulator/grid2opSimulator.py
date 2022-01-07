@@ -83,7 +83,7 @@ class Grid2opSimulator(PhysicalSimulator):
 
         """
         self._nb_output += 1
-        return self._obs, self._info, self._simulator.backend.get_theta()
+        return self._obs, self._info#, self._simulator.backend.get_theta()
 
     def _get_time_powerflow(self):
         return self._time_powerflow, self.comp_time
