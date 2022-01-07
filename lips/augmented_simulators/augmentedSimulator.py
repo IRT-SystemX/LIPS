@@ -20,8 +20,8 @@ class AugmentedSimulator(object):
     def __init__(self, name: str):
         self.name = name
         
-        self.observations = None
-        self.predictions = None
+        self._observations = dict()
+        self._predictions = dict()
 
     def train(self, nb_iter: int, train_dataset: DataSet, val_dataset: Union[None, DataSet] = None):
         """
