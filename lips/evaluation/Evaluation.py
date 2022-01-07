@@ -9,10 +9,12 @@
 import os
 import json
 import copy
-import logging
+from typing import Union
 import numpy as np
 
 from collections.abc import Iterable
+
+from lips.logger import CustomLogger
 
 from lips.metrics import DEFAULT_METRICS
 from lips.metrics import metricPercentage
@@ -34,9 +36,9 @@ ERROR_MSG_KCL = "Impossible to check for the Kirchhoff current laws "\
                 "because some requirements are not met (probably a "\
                 "missing dependency)"
 
-logging.basicConfig(filename="logs.log",
-                    level=logging.INFO,
-                    format="%(levelname)s:%(message)s")
+#logging.basicConfig(filename="logs.log",
+#                    level=logging.INFO,
+#                    format="%(levelname)s:%(message)s")
 
 
 class Evaluation(object):
@@ -86,7 +88,9 @@ class Evaluation(object):
 
     """
 
-    def __init__(self):
+    def __init__(self,
+                 log_path: Union[str, None]=None
+                ):
         
         #self.benchmark = benchmark
         #self.observations = copy.deepcopy(self.benchmark.observations[tag])
@@ -106,6 +110,10 @@ class Evaluation(object):
         self.metrics_physics = {}
         self.metrics_generalization = {}
         self.metrics_readiness = {}
+
+        # logger
+        self.log_path = log_path
+        self.logger = CustomLogger(__class__.__name__, self.log_path).logger
 
         # create the paths
         # if self.benchmark.model_path save the evaluations in this directory with the corresponding tag
@@ -134,10 +142,10 @@ class Evaluation(object):
         if self.active_dict["evaluate_ML"]:
             self.evaluate_ML(save_path=save_path)
 
-        self.evaluate_physic(choice=choice, 
-                             EL_tolerance=EL_tolerance, 
-                             LCE_tolerance=LCE_tolerance, 
-                             KCL_tolerance=KCL_tolerance, 
+        self.evaluate_physic(choice=choice,
+                             EL_tolerance=EL_tolerance,
+                             LCE_tolerance=LCE_tolerance,
+                             KCL_tolerance=KCL_tolerance,
                              active_flow=active_flow,
                              save_path=save_path)
 
@@ -202,7 +210,9 @@ class Evaluation(object):
             self.metrics_physics['BasicVerifications'] = {}
             verifications = BasicVerifier(predictions=self.observations,
                                           line_status=self.observations["line_status"],
-                                          active_dict=self.active_dict["evaluate_physic"])
+                                          active_dict=self.active_dict["evaluate_physic"],
+                                          log_path=self.log_path
+                                          )
             self.metrics_physics['BasicVerifications'] = verifications
 
             ######### Electrical loss verifier
@@ -211,7 +221,8 @@ class Evaluation(object):
                 loss_metrics = Check_loss(p_or=self.observations["p_or"],
                                           p_ex=self.observations["p_ex"],
                                           prod_p=self.observations["prod_p"],
-                                          tolerance=EL_tolerance
+                                          tolerance=EL_tolerance,
+                                          log_path=self.log_path
                                           )
                 self.metrics_physics['EL']['violation_percentage'] = float(loss_metrics[1])
                 self.metrics_physics['EL']['EL_values'] = [float(el) for el in np.array(loss_metrics[0])]
@@ -223,7 +234,9 @@ class Evaluation(object):
                                                         load_p=self.observations["load_p"],
                                                         p_or=self.observations["p_or"],
                                                         p_ex=self.observations["p_ex"],
-                                                        tolerance=LCE_tolerance)
+                                                        tolerance=LCE_tolerance,
+                                                        log_path=self.log_path
+                                                        )
                 
                 self.metrics_physics['LCE']['LCE_values'] = [float(el) for el in np.array(lce_metrics[0])]
                 self.metrics_physics['LCE']['violation_percentage'] = float(lce_metrics[1])
@@ -244,7 +257,9 @@ class Evaluation(object):
                                                       line_status=self.observations["line_status"],
                                                       topo_vect=self.observations["topo_vect"],
                                                       active_flow=active_flow,
-                                                      tolerance=KCL_tolerance)
+                                                      tolerance=KCL_tolerance,
+                                                      log_path=self.log_path
+                                                      )
                 self.metrics_physics["KCL"]["violation_percentage"] = float(res_kcl[3])
                 self.metrics_physics["KCL"]["nodes_values"] = res_kcl[0]#[float(el) for el in res_kcl[0]]
                 self.metrics_physics["KCL"]["network_values"] = [float(el) for el in np.array(res_kcl[1])]
@@ -258,7 +273,9 @@ class Evaluation(object):
             self.metrics_physics['BasicVerifications'] = {}
             verifications = BasicVerifier(predictions=self.predictions,
                                           line_status=self.observations["line_status"],
-                                          active_dict=self.active_dict["evaluate_physic"])
+                                          active_dict=self.active_dict["evaluate_physic"],
+                                          log_path=self.log_path
+                                          )
             self.metrics_physics['BasicVerifications'] = verifications
 
             ######### Electrical loss verifier
@@ -267,7 +284,8 @@ class Evaluation(object):
                 loss_metrics = Check_loss(p_or=self.predictions["p_or"],
                                           p_ex=self.predictions["p_ex"],
                                           prod_p=self.observations["prod_p"],
-                                          tolerance=EL_tolerance
+                                          tolerance=EL_tolerance,
+                                          log_path=self.log_path
                                           )
                 self.metrics_physics['EL']['violation_percentage'] = float(loss_metrics[1])
                 self.metrics_physics['EL']['EL_values'] = [float(el) for el in np.array(loss_metrics[0])]
@@ -279,7 +297,9 @@ class Evaluation(object):
                                                         load_p=self.observations["load_p"],
                                                         p_or=self.predictions["p_or"],
                                                         p_ex=self.predictions["p_ex"],
-                                                        tolerance=LCE_tolerance)
+                                                        tolerance=LCE_tolerance,
+                                                        log_path=self.log_path
+                                                        )
                 
                 self.metrics_physics['LCE']['LCE_values'] = [float(el) for el in np.array(lce_metrics[0])]
                 self.metrics_physics['LCE']['violation_percentage'] = float(lce_metrics[1])
@@ -301,7 +321,9 @@ class Evaluation(object):
                                                       line_status=self.observations["line_status"],
                                                       topo_vect=self.observations["topo_vect"],
                                                       active_flow=active_flow,
-                                                      tolerance=KCL_tolerance)
+                                                      tolerance=KCL_tolerance,
+                                                      log_path=self.log_path
+                                                      )
                 self.metrics_physics["KCL"]["violation_percentage"] = float(res_kcl[3])
                 self.metrics_physics["KCL"]["nodes_values"] = res_kcl[0]
                 self.metrics_physics["KCL"]["network_values"] = [float(el) for el in np.array(res_kcl[1])]
@@ -370,7 +392,7 @@ class Evaluation(object):
 
 
         """
-        logging.info("Machine learning metrics")
+        self.logger.info("Machine learning metrics")
         if metric_names is None:
             metrics = DEFAULT_METRICS
         else:
@@ -403,8 +425,9 @@ class Evaluation(object):
                              predictions=self.predictions,
                              k=k,
                              metric_names=metric_percentage,
-                             variables=self.predictions.keys(),
-                             agg_func=np.mean
+                             variables=self.observations.keys(),
+                             agg_func=np.mean,
+                             log_path=self.log_path
                              )
 
         # save the results in a json file

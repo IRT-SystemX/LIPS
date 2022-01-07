@@ -6,15 +6,13 @@
 # SPDX-License-Identifier: MPL-2.0
 # This file is part of LIPS, LIPS is a python platform for power networks benchmarking
 
+from typing import Union
 import numpy as np
-import logging
 
-logging.basicConfig(filename="logs.log",
-                    level=logging.INFO,
-                    format="%(levelname)s:%(message)s")
+from lips.logger import CustomLogger
 
 
-def Check_loss(p_or, p_ex, prod_p, tolerance=0.04):
+def Check_loss(p_or, p_ex, prod_p, tolerance=0.04, log_path: Union[str, None]=None):
     """
     Verifies the energy loss. The loss should be between 1 and 4 % of production at each step.
 
@@ -44,6 +42,8 @@ def Check_loss(p_or, p_ex, prod_p, tolerance=0.04):
         failed_indices: `list`
             The indices of failed cases
     """
+    # logger
+    logger = CustomLogger("BasicVerifier", log_path).logger
     #print("************* Check loss *************")
     failed_indices = None
     violation_percentage = None
@@ -55,12 +55,12 @@ def Check_loss(p_or, p_ex, prod_p, tolerance=0.04):
     if np.any(condition):
         failed_indices = np.array(np.where(condition)).reshape(-1, 1)
         violation_percentage = (len(failed_indices) / len(EL))*100
-        logging.info("Number of failed cases is {} and the proportion is : {:.3f}%".format(len(
+        logger.info("Number of failed cases is {} and the proportion is : {:.3f}%".format(len(
             failed_indices), violation_percentage))
         #print("Number of failed cases is {} and the proportion is : {:.3f}%".format(len(
         #    failed_indices), violation_percentage))
     else:
-        logging.info("Verification is done without any violation !")
+        logger.info("Verification is done without any violation !")
         #print("Verification is done without any violation !")
         violation_percentage = 0.
 

@@ -6,16 +6,22 @@
 # SPDX-License-Identifier: MPL-2.0
 # This file is part of LIPS, LIPS is a python platform for power networks benchmarking
 
+from typing import Union
 import numpy as np
+
 from sklearn.metrics import mean_absolute_error
-import logging
 
-logging.basicConfig(filename="logs.log",
-                    level=logging.INFO,
-                    format="%(levelname)s:%(message)s")
+from lips.logger import CustomLogger
 
 
-def Check_energy_conservation(prod_p=None, load_p=None, p_or=None, p_ex=None, tolerance=1e-3):
+
+def Check_energy_conservation(prod_p=None, 
+                              load_p=None, 
+                              p_or=None, 
+                              p_ex=None, 
+                              tolerance=1e-3,
+                              log_path: Union[str, None]=None
+                              ):
     """
     this function verifies the law of conservation of energy (LCE) that says : productions = load + loss
 
@@ -48,6 +54,8 @@ def Check_energy_conservation(prod_p=None, load_p=None, p_or=None, p_ex=None, to
             an array giving the indices of observations that not verify the law given the indicated tolerance
 
     """
+    # logger
+    logger = CustomLogger("BasicVerifier", log_path).logger
     #print("************* Check Energy Conservation *************")
 
     productions = np.sum(prod_p, axis=1)
@@ -63,6 +71,6 @@ def Check_energy_conservation(prod_p=None, load_p=None, p_or=None, p_ex=None, to
     criteria = mean_absolute_error(loads - productions, loss)
 
     #print("Mean Absolute Error (MAE) between (loads - productions) and loss is : {:.3f}".format( criteria))
-    logging.info("Mean Absolute Error (MAE) between (loads - productions) and loss is : {:.3f}".format( criteria))
+    logger.info("Mean Absolute Error (MAE) between (loads - productions) and loss is : {:.3f}".format( criteria))
 
     return LCE, violation_percentage, failed_indices, criteria
