@@ -6,11 +6,9 @@
 # SPDX-License-Identifier: MPL-2.0
 # This file is part of LIPS, LIPS is a python platform for power networks benchmarking
 
-__all_ = ['PowerGridBenchmark']#, 'NeuripsBenchmark1', 'NeuripsBenchmark2', 'NeuripsBenchmark3']
+__all_ = ['NeuripsBenchmark1', 'NeuripsBenchmark2', 'NeuripsBenchmark3']
 
 
-from lips.neurips_benchmark.powergridBenchmark import PowerGridBenchmark
-from lips.neurips_benchmark.configmanager import ConfigManager
-#from lips.neurips_benchmark.benchmark1 import NeuripsBenchmark1
-#from lips.neurips_benchmark.benchmark2 import NeuripsBenchmark2
-#from lips.neurips_benchmark.benchmark3 import NeuripsBenchmark3
+from lips.neurips_benchmark.benchmark1 import NeuripsBenchmark1
+from lips.neurips_benchmark.benchmark2 import NeuripsBenchmark2
+from lips.neurips_benchmark.benchmark3 import NeuripsBenchmark3
