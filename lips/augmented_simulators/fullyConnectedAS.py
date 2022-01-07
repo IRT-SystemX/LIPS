@@ -29,6 +29,7 @@ with warnings.catch_warnings():
     from tensorflow.keras.layers import Input
 
 from lips.dataset import DataSet
+from lips.benchmark import ConfigManager
 from lips.augmented_simulators.augmentedSimulator import AugmentedSimulator
 
 
@@ -46,10 +47,12 @@ class FullyConnectedAS(AugmentedSimulator):
     """
     def __init__(self, 
                  name: str = "FullyConnected",
-                 attr_x=("prod_p", "prod_v", "load_p",
-                         "load_q", "line_status", "topo_vect"),
-                 attr_y=("a_or", "a_ex", "p_or", "p_ex", "q_or",
-                         "q_ex", "prod_q", "load_v", "v_or", "v_ex"),
+                 benchmark_name: str = "Benchmark1",
+                 path_config: Union[str, None] = None,
+                 #attr_x=("prod_p", "prod_v", "load_p",
+                 #        "load_q", "line_status", "topo_vect"),
+                 #attr_y=("a_or", "a_ex", "p_or", "p_ex", "q_or",
+                 #        "q_ex", "prod_q", "load_v", "v_or", "v_ex"),
                  sizes_layer=(150, 150),
                  lr: float = 3e-4,  # only used if "optimizer" is not None
                  layer: Layer = Dense,
@@ -60,8 +63,11 @@ class FullyConnectedAS(AugmentedSimulator):
                 ):
 
         AugmentedSimulator.__init__(self, name)
-        self._attr_x = copy.deepcopy(attr_x)
-        self._attr_y = copy.deepcopy(attr_y)
+        self.config_manager = ConfigManager(benchmark_name, path_config)
+        self._attr_x = self.config_manager.get_option("attr_x") + self.config_manager.get_option("attr_tau")
+        self._attr_y = self.config_manager.get_option("attr_y")
+        #self._attr_x = copy.deepcopy(attr_x)
+        #self._attr_y = copy.deepcopy(attr_y)
         self.sizes_layer = copy.deepcopy(sizes_layer)
         self._lr = lr
         self.layer = layer
@@ -116,6 +122,7 @@ class FullyConnectedAS(AugmentedSimulator):
               val_dataset: Union[None, DataSet] = None,
               **kwargs):
         """This is an example of a reference implementation of this class. Feel"""
+        self._observations[train_dataset.name] = train_dataset.data
         # extract the input and output suitable for learning (matrices) from the generic dataset
         processed_x, processed_y = self._process_all_dataset(train_dataset, training=True)
         if val_dataset is not None:
@@ -151,7 +158,7 @@ class FullyConnectedAS(AugmentedSimulator):
         tmp_obs = dataset.get_data(np.arange(len(dataset)))
         #for attr_nm in self._attr_y:
         #    self.observations[attr_nm] = tmp_obs = 
-        self.observations = tmp_obs
+        self._observations[dataset.name] = tmp_obs
         
         # process the dataset
         processed_x, _ = self._process_all_dataset(dataset, training=False)
@@ -165,18 +172,19 @@ class FullyConnectedAS(AugmentedSimulator):
         tmp_res_y += self._m_y
 
         # and now output data as a dictionary
-        self.predictions = {}
+        predictions = {}
         prev_ = 0
         for var_id, this_var_size in enumerate(self._sizes_y):
             attr_nm = self._attr_y[var_id]
-            self.predictions[attr_nm] = tmp_res_y[:, prev_:(prev_ + this_var_size)]
+            predictions[attr_nm] = tmp_res_y[:, prev_:(prev_ + this_var_size)]
             prev_ += this_var_size
-
+        self._predictions[dataset.name] = predictions
+        
         #TODO : save the predictions and observations to files np
         if save_values:
             pass
 
-        return self.predictions
+        return predictions
 
     def save(self, path_out: str):
         """
@@ -327,4 +335,4 @@ class FullyConnectedAS(AugmentedSimulator):
         """
         This functions return the observations and corresponding predictions of the last evaluation
         """
-        return self.observations, self.predictions
+        return self._observations, self._predictions
