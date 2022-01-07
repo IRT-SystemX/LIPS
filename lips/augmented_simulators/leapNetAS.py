@@ -23,6 +23,7 @@ from leap_net.proxy import ProxyLeapNet
 from lips.dataset import DataSet
 from lips.augmented_simulators.augmentedSimulator import AugmentedSimulator
 from lips.benchmark import ConfigManager
+from lips.logger import CustomLogger
 
 
 class LeapNetAS(AugmentedSimulator):
@@ -37,9 +38,9 @@ class LeapNetAS(AugmentedSimulator):
                  name: str = "LeapNetAS",
                  benchmark_name: str = "Benchmark1",
                  path_config: Union[str, None] = None,
-                 #attr_x=("prod_p", "prod_v", "load_p", "load_q"),
-                 #attr_tau=("line_status", "topo_vect"),
-                 #attr_y=("a_or", "a_ex", "p_or", "p_ex", "q_or", "q_ex", "prod_q", "load_v", "v_or", "v_ex"),
+                 attr_x: Union[tuple, None] = None,
+                 attr_tau: Union[tuple, None] = None,
+                 attr_y: Union[tuple, None] = None,
                  sizes_layer=(150, 150),
                  sizes_enc=(20, 20, 20),
                  sizes_out=(100, 40),
@@ -52,13 +53,26 @@ class LeapNetAS(AugmentedSimulator):
                  topo_vect_to_tau="raw",  # see code for now
                  #kwargs_tau: optional kwargs depending on the method chosen for building tau from the observation
                  kwargs_tau=None,
-                 mult_by_zero_lines_pred=True
+                 mult_by_zero_lines_pred=True,
+                 log_path: Union[str, None] = None
                 ):
         AugmentedSimulator.__init__(self, name)
         self.config_manager = ConfigManager(benchmark_name, path_config)
-        self._attr_x = self.config_manager.get_option("attr_x")
-        self._attr_tau = self.config_manager.get_option("attr_tau")
-        self._attr_y = self.config_manager.get_option("attr_y")
+        if attr_x is not None:
+            self._attr_x = attr_x
+        # TODO : add try except to verify if neither attr_x and config could be found and print out a runtime error
+        else:            
+            self._attr_x = self.config_manager.get_option("attr_x")
+        
+        if attr_tau is not None:
+            self._attr_tau = attr_tau
+        else:
+            self._attr_tau = self.config_manager.get_option("attr_tau")
+
+        if attr_y is not None:
+            self._attr_y = attr_y
+        else:
+            self._attr_y = self.config_manager.get_option("attr_y")
         # TODO : to remove these 3 lines once above lines confirmed
         #self._attr_x = copy.deepcopy(attr_x)
         #self._attr_tau = copy.deepcopy(attr_tau)
@@ -95,6 +109,9 @@ class LeapNetAS(AugmentedSimulator):
 
         self._predict_time = 0
 
+        # create a logger instance
+        self.logger = CustomLogger(__class__.__name__, log_path).logger
+
     def init(self, **kwargs):
         """this function will build the neural network"""
         self._leap_net_model.build_model()
@@ -105,6 +122,7 @@ class LeapNetAS(AugmentedSimulator):
               val_dataset: Union[None, DataSet] = None,
               **kwargs):
         """This is an example of a reference implementation of this class. Feel"""
+        self.logger.info(f"Training of {self.name} started")
         self._observations[train_dataset.name] = train_dataset.data
         # extract the input and output suitable for learning (matrices) from the generic dataset
         processed_x, processed_tau, processed_y = self._process_all_dataset(train_dataset, training=True)
@@ -130,6 +148,7 @@ class LeapNetAS(AugmentedSimulator):
                                                            epochs=nb_iter,
                                                            batch_size=self._batch_size,
                                                            **kwargs)
+        self.logger.info(f"Training of {self.name} finished")
         # NB in this function we use the high level keras method "fit" to fit the data. It does not stricly
         # uses the `DataSet` interface. For more complicated training loop, one can always use
         # dataset.get_data(indexes) to retrieve the batch of data corresponding to `indexes` and
