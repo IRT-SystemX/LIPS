@@ -16,11 +16,12 @@ from typing import Union
 from tqdm import tqdm  # TODO remove for final push
 
 from lips.dataset.dataSet import DataSet
-
+from lips.logger import CustomLogger
 
 class PowerGridDataSet(DataSet):
     """
     This specific DataSet uses grid2op framework to simulate data coming from a powergrid.
+    # TODO : to remove all the comments lines corresponding to theta attributes
     """
 
     def __init__(self,
@@ -29,14 +30,18 @@ class PowerGridDataSet(DataSet):
                  # (and serialize directly the output of the simulator)
                  attr_names=("prod_p", "prod_v", "load_p", "load_q", "line_status", "topo_vect",
                              "a_or", "a_ex", "p_or", "p_ex", "q_or", "q_ex", "prod_q", "load_v",
-                             "v_or", "v_ex"),
-                 theta_attr_names=("theta_or", "theta_ex", "load_theta", "gen_theta", "storage_theta")
+                             "v_or", "v_ex", "theta_or", "theta_ex"),
+                 #theta_attr_names=("theta_or", "theta_ex", "load_theta", "gen_theta", "storage_theta"),
+                 log_path: Union[str, None]=None
                  ):
         DataSet.__init__(self, name=name)
         self._nb_divergence = 0
         self._attr_names = copy.deepcopy(attr_names)
         self.size = 0
-        self._theta_attr_names = copy.deepcopy(theta_attr_names)
+        #self._theta_attr_names = copy.deepcopy(theta_attr_names)
+
+        # logger
+        self.logger = CustomLogger(__class__.__name__, log_path).logger
 
         # for the sampling
         self._previous = None
@@ -95,23 +100,25 @@ class PowerGridDataSet(DataSet):
             # TODO refactoring this, this is weird here
             actor = DoNothingAgent(simulator._simulator.action_space)
 
-        init_state, init_info, init_theta = simulator.get_state()
+        init_state, init_info = simulator.get_state()
         self.data = {}
         for attr_nm in self._attr_names:
             # this part is only temporary, until a viable way to store the complete resulting state is found
             array_ = getattr(init_state, attr_nm)
             self.data[attr_nm] = np.zeros((nb_samples, array_.shape[0]), dtype=array_.dtype)
 
+        # TODO : to be removed after verification
+        """
         for idx_, attr_nm in enumerate(self._theta_attr_names):
             # this part is added to report the theta values
             array_ = init_theta[idx_]
             self.data[attr_nm] = np.zeros((nb_samples, array_.shape[0]), dtype=array_.dtype)
-
+        """
         for ds_size in tqdm(range(nb_samples), desc=self.name):
             simulator.modify_state(actor)
-            current_state, extra_info, current_theta = simulator.get_state()
+            current_state, extra_info = simulator.get_state()
             self._store_obs(ds_size, current_state)
-            self._store_theta(ds_size, current_theta)
+            #self._store_theta(ds_size, current_theta)
 
         self.size = nb_samples
         self._init_sample()
@@ -124,12 +131,13 @@ class PowerGridDataSet(DataSet):
         for attr_nm in self._attr_names:
             array_ = getattr(obs, attr_nm)
             self.data[attr_nm][current_size, :] = array_
-
+    # TODO to be remove after verification
+    """
     def _store_theta(self, current_size, theta):
-        """store the theta (angles) in self.data"""
+        # store the theta (angles) in self.data
         for idx_, attr_nm in enumerate(self._theta_attr_names):
             self.data[attr_nm][current_size, :] = theta[idx_]
-
+    """
     def _save_internal_data(self, path_out):
         """save the self.data in a proper format"""
         full_path_out = os.path.join(os.path.abspath(path_out), self.name)
@@ -137,19 +145,23 @@ class PowerGridDataSet(DataSet):
         if not os.path.exists(os.path.abspath(path_out)):
             os.mkdir(os.path.abspath(path_out))
             # TODO logger
-            print(f"Creating the path {path_out} to store the datasets [data will be stored under {full_path_out}]")
+            #print(f"Creating the path {path_out} to store the datasets [data will be stored under {full_path_out}]")
+            self.logger.info(f"Creating the path {path_out} to store the datasets [data will be stored under {full_path_out}]")
 
         if os.path.exists(full_path_out):
             # deleting previous saved data
             # TODO logger
-            print(f"Deleting previous run at {full_path_out}")
+            #print(f"Deleting previous run at {full_path_out}")
+            self.logger.warning(f"Deleting previous run at {full_path_out}")
             shutil.rmtree(full_path_out)
 
         os.mkdir(full_path_out)
         # TODO logger
-        print(f"Creating the path {full_path_out} to store the dataset name {self.name}")
+        #print(f"Creating the path {full_path_out} to store the dataset name {self.name}")
+        self.logger.info(f"Creating the path {full_path_out} to store the dataset name {self.name}")
 
-        for attr_nm in (*self._attr_names, *self._theta_attr_names):
+        #for attr_nm in (*self._attr_names, *self._theta_attr_names):
+        for attr_nm in self._attr_names:
             np.savez_compressed(f"{os.path.join(full_path_out, attr_nm)}.npz", data=self.data[attr_nm])
 
     def load(self, path):
@@ -161,7 +173,8 @@ class PowerGridDataSet(DataSet):
         if not os.path.exists(full_path):
             raise RuntimeError(f"There is no data saved in {full_path}. Have you called `dataset.generate()` with "
                                f"a given `path_out` ?")
-        for attr_nm in (*self._attr_names, *self._theta_attr_names):
+        #for attr_nm in (*self._attr_names, *self._theta_attr_names):
+        for attr_nm in self._attr_names:
             path_this_array = f"{os.path.join(full_path, attr_nm)}.npz"
             if not os.path.exists(path_this_array):
                 raise RuntimeError(f"Impossible to load data {attr_nm}. Have you called `dataset.generate()` with "
@@ -171,7 +184,8 @@ class PowerGridDataSet(DataSet):
             warnings.warn(f"Deleting previous run in attempting to load the new one located at {path}")
         self.data = {}
         self.size = None
-        for attr_nm in (*self._attr_names, *self._theta_attr_names):
+        #for attr_nm in (*self._attr_names, *self._theta_attr_names):
+        for attr_nm in self._attr_names:
             path_this_array = f"{os.path.join(full_path, attr_nm)}.npz"
             self.data[attr_nm] = np.load(path_this_array)["data"]
             self.size = self.data[attr_nm].shape[0]
@@ -214,23 +228,27 @@ class PowerGridDataSet(DataSet):
         res = {}
         if nb_sample + self._previous < self.size:
             # i just sample the next batch of data
-            for el in (*self._attr_names, *self._theta_attr_names):
+            #for el in (*self._attr_names, *self._theta_attr_names):
+            for el in self._attr_names:
                 res[el] = self.data[el][self._order[self._previous:(self._previous+nb_sample)], :]
             self._previous += nb_sample
         else:
             this_sz = self.size - self._previous
             # init the results
-            for el in (*self._attr_names, *self._theta_attr_names):
+            #for el in (*self._attr_names, *self._theta_attr_names):
+            for el in self._attr_names:
                 res[el] = np.zeros((nb_sample, self.data[el].shape[1]), dtype=self.data[el].dtype)
             # fill with the remaining of the data
-            for el in (*self._attr_names, *self._theta_attr_names):
+            #for el in (*self._attr_names, *self._theta_attr_names):
+            for el in self._attr_names:
                 res[el][:this_sz] = self.data[el][self._order[self._previous:], :]
 
             # sample another order to see the data
             self._init_sample()
             # fill with the remaining of the data
             self._previous = nb_sample - this_sz
-            for el in (*self._attr_names, *self._theta_attr_names):
+            #for el in (*self._attr_names, *self._theta_attr_names):
+            for el in self._attr_names:
                 res[el][this_sz:] = self.data[el][self._order[:self._previous], :]
         return res
 
@@ -258,10 +276,12 @@ class PowerGridDataSet(DataSet):
         # init the results
         res = {}
         nb_sample = index.size
-        for el in (*self._attr_names, *self._theta_attr_names):
+        #for el in (*self._attr_names, *self._theta_attr_names):
+        for el in self._attr_names:
             res[el] = np.zeros((nb_sample, self.data[el].shape[1]), dtype=self.data[el].dtype)
 
-        for el in (*self._attr_names, *self._theta_attr_names):
+        #for el in (*self._attr_names, *self._theta_attr_names):
+        for el in self._attr_names:
             res[el][:] = self.data[el][index, :]
 
         return res
