@@ -6,13 +6,11 @@
 # SPDX-License-Identifier: MPL-2.0
 # This file is part of LIPS, LIPS is a python platform for power networks benchmarking
 
+from typing import Union
 import numpy as np
 import grid2op
-import logging
 
-logging.basicConfig(filename="logs.log",
-                    level=logging.INFO,
-                    format="%(levelname)s:%(message)s")
+from lips.logger import CustomLogger
 
 
 def Check_Kirchhoff_current_law(env=None,
@@ -25,7 +23,9 @@ def Check_Kirchhoff_current_law(env=None,
                                 line_status=None,
                                 topo_vect=None,
                                 active_flow=True,
-                                tolerance=1e-2):
+                                tolerance=1e-2,
+                                log_path: Union[str, None]=None
+                                ):
     """
     Verify the Kirchhoff's current law for the predicted observations
     It can be integrated as a function in Benchmark class, in this case,
@@ -90,6 +90,8 @@ def Check_Kirchhoff_current_law(env=None,
             Its length corresponds to the number of cases that do not respect the law
 
     """
+    # logger
+    logger = CustomLogger("BasicVerifier", log_path).logger
     #print("************* Check kirchhoff's current law *************")
     a_or = data["a_or"]
     a_ex = data["a_ex"]
@@ -158,7 +160,7 @@ def Check_Kirchhoff_current_law(env=None,
     violation_percentage = (violation_counter/total_buses)*100
     #print("{:.2f}% of nodes diverge from the Kirchhoff's current law with a magnitude more than {}MW tolerance".format(
     #    violation_percentage, tolerance))
-    logging.info("{:.2f}% of nodes diverge from the Kirchhoff's current law with a magnitude more than {}MW tolerance".format(
+    logger.info("{:.2f}% of nodes diverge from the Kirchhoff's current law with a magnitude more than {}MW tolerance".format(
         violation_percentage, tolerance))
     #print("{:.2f}% of {} not verify the Kirchhoff's current law at {} tolerance".format((len(current_law_not_verified) / len_obs) * 100, choice, tolerance))
 

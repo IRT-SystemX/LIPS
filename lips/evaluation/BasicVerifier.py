@@ -6,21 +6,21 @@
 # SPDX-License-Identifier: MPL-2.0
 # This file is part of LIPS, LIPS is a python platform for power networks benchmarking
 
-import numpy as np
-from collections import Counter
-from sklearn.metrics import mean_absolute_error
 import sys
-import logging
+from typing import Union
+from collections import Counter
 
-# TODO make a proper class there and that inside ! It's super ugly not to be able to customize this
-logging.basicConfig(filename="logs.log",
-                    level=logging.INFO,
-                    format="%(levelname)s:%(message)s")
+import numpy as np
+
+from sklearn.metrics import mean_absolute_error
+
+from lips.logger import CustomLogger
 
 
 def BasicVerifier(active_dict: dict,
                   predictions=None,
-                  line_status=None 
+                  line_status=None,
+                  log_path: Union[str, None]=None
                   ):
     """
     verify the following elementary physic compliances
@@ -68,6 +68,8 @@ def BasicVerifier(active_dict: dict,
     a dict with a check list of verified points for each observation
 
     """
+    # logger
+    logger = CustomLogger("BasicVerifier", log_path).logger
     #print("************* Basic verifier *************")
     verifications = dict()
 
@@ -84,7 +86,7 @@ def BasicVerifier(active_dict: dict,
             Error_a_or = -np.sum(np.minimum(a_or.flatten(), 0.))
             #print("{:.3f}% of lines does not respect the positivity of currents (Amp) at origin".format(
             #    a_or_violation_proportion*100))
-            logging.info("the sum of negative current values (A) at origin: {:.3f}".format(Error_a_or))
+            logger.info("the sum of negative current values (A) at origin: {:.3f}".format(Error_a_or))
             # print the concerned lines with the counting their respectives anomalies
             counts = Counter(a_or_errors[:, 1])
             #print("Concerned lines with corresponding number of negative current values at their origin:\n",
@@ -94,7 +96,7 @@ def BasicVerifier(active_dict: dict,
             verifications["currents"]["a_or"]["Violation_proportion"] = float(a_or_violation_proportion)
             #print("----------------------------------------------")
         else:
-            logging.info("Current positivity check passed for origin side !")
+            logger.info("Current positivity check passed for origin side !")
             #print("Current positivity check passed for origin side !")
             #print("----------------------------------------------")
 
@@ -105,7 +107,7 @@ def BasicVerifier(active_dict: dict,
             Error_a_ex = -np.sum(np.minimum(a_ex.flatten(), 0.))
             #print("{:.3f}% of lines does not respect the positivity of currents (Amp) at extremity".format(
             #    a_ex_violation_proportion*100))
-            logging.info("the sum of negative current values (A) at extremity: {:.3f}".format(Error_a_ex))
+            logger.info("the sum of negative current values (A) at extremity: {:.3f}".format(Error_a_ex))
             # print the concerned lines with the counting their respectives anomalies
             counts = Counter(a_ex_errors[:, 1]) 
             #print("Concerned lines with corresponding number of negative current values at their extremity:\n",
@@ -115,7 +117,7 @@ def BasicVerifier(active_dict: dict,
             verifications["currents"]["a_ex"]["Violation_proportion"] = float(a_ex_violation_proportion)
             #print("----------------------------------------------")
         else:
-            logging.info("Current positivity check passed for extremity side !")
+            logger.info("Current positivity check passed for extremity side !")
             #print("Current positivity check passed for extremity side !")
             #print("----------------------------------------------")
 
@@ -130,7 +132,7 @@ def BasicVerifier(active_dict: dict,
             v_or_errors = np.array(np.where(v_or < 0)).T
             v_or_violation_proportion = len(v_or_errors) / v_or.size
             Error_v_or = -np.sum(np.minimum(v_or.flatten(), 0.))
-            logging.info("the sum of negative voltage values (kV) at origin: {:.3f}".format(Error_v_or))
+            logger.info("the sum of negative voltage values (kV) at origin: {:.3f}".format(Error_v_or))
             #print("{:.3f}% of lines does not respect the positivity of voltages (Kv) at origin".format(
             #    v_or_violation_proportion*100))
             # print the concerned lines with the counting their respectives anomalies
@@ -142,7 +144,7 @@ def BasicVerifier(active_dict: dict,
             verifications["voltages"]["v_or"]["Violation_proportion"] = float(v_or_violation_proportion)
             #print("----------------------------------------------")
         else:
-            logging.info("Voltage positivity check passed for origin side !")
+            logger.info("Voltage positivity check passed for origin side !")
             #print("Voltage positivity check passed for origin side !")
             #print("----------------------------------------------")
 
@@ -151,7 +153,7 @@ def BasicVerifier(active_dict: dict,
             v_ex_errors = np.array(np.where(v_ex < 0)).T
             v_ex_violation_proportion = len(v_ex_errors) / v_ex.size
             Error_v_ex = -np.sum(np.minimum(v_ex.flatten(), 0.))
-            logging.info("the sum of negative voltage values (kV) at extremity: {:.3f}".format(Error_v_ex))
+            logger.info("the sum of negative voltage values (kV) at extremity: {:.3f}".format(Error_v_ex))
             #print("{:.3f}% of lines does not respect the positivity of voltages (Kv) at extremity".format(
             #    v_ex_violation_proportion*100))
             # print the concerned lines with the counting their respectives anomalies
@@ -163,7 +165,7 @@ def BasicVerifier(active_dict: dict,
             verifications["voltages"]["v_ex"]["Violation_proportion"] = float(v_ex_violation_proportion)
             #print("----------------------------------------------")
         else:
-            logging.info("Voltage positivity check passed for extremity side !")
+            logger.info("Voltage positivity check passed for extremity side !")
             #print("Voltage positivity check passed for extremity side !")
             #print("----------------------------------------------")
 
@@ -180,7 +182,7 @@ def BasicVerifier(active_dict: dict,
             loss_error = -np.sum(np.minimum(loss, 0.))
             loss_errors = np.array(np.where(loss < 0)).T
             loss_violation_proportion = len(loss_errors) / p_or.size
-            logging.info("the sum of negative losses : {:.3f}".format(loss_error))
+            logger.info("the sum of negative losses : {:.3f}".format(loss_error))
             #print("{:.3f}% of lines does not respect the positivity of loss (Mw)".format(
             #    loss_violation_proportion*100))
             # print the concerned lines with the counting their respectives anomalies
@@ -192,7 +194,7 @@ def BasicVerifier(active_dict: dict,
             verifications["loss"]["violation_proportion"] = float(loss_violation_proportion)
             #print("----------------------------------------------")
         else:
-            logging.info("Loss positivity check passed !")
+            logger.info("Loss positivity check passed !")
             #print("Loss positivity check passed !")
             #print("----------------------------------------------")
 
@@ -237,11 +239,11 @@ def BasicVerifier(active_dict: dict,
                 sum_disconnected_values += a_ex_violations
                 verifications["line_status"]["a_violations"] = float(np.sum((np.abs(a_or[ind_]) + np.abs(a_ex[ind_]))>0) / len_disc)
         if sum_disconnected_values > 0:
-            logging.info("Prediction in presence of line disconnection. Problem encountered !")
+            logger.info("Prediction in presence of line disconnection. Problem encountered !")
             #print("Prediction in presence of line disconnection. Problem encountered !")
         else:
             #print("Prediction in presence of line disconnection. Check passed !")
-            logging.info("Prediction in presence of line disconnection. Check passed !")    
+            logger.info("Prediction in presence of line disconnection. Check passed !")
         #print("----------------------------------------------")
 
     # VERIFICATION 5 and 6
