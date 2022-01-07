@@ -31,6 +31,7 @@ with warnings.catch_warnings():
 from lips.dataset import DataSet
 from lips.benchmark import ConfigManager
 from lips.augmented_simulators.augmentedSimulator import AugmentedSimulator
+from lips.logger import CustomLogger
 
 
 class FullyConnectedAS(AugmentedSimulator):
@@ -49,10 +50,8 @@ class FullyConnectedAS(AugmentedSimulator):
                  name: str = "FullyConnected",
                  benchmark_name: str = "Benchmark1",
                  path_config: Union[str, None] = None,
-                 #attr_x=("prod_p", "prod_v", "load_p",
-                 #        "load_q", "line_status", "topo_vect"),
-                 #attr_y=("a_or", "a_ex", "p_or", "p_ex", "q_or",
-                 #        "q_ex", "prod_q", "load_v", "v_or", "v_ex"),
+                 attr_x: Union[tuple, None] = None,
+                 attr_y: Union[tuple, None] = None,
                  sizes_layer=(150, 150),
                  lr: float = 3e-4,  # only used if "optimizer" is not None
                  layer: Layer = Dense,
@@ -60,12 +59,20 @@ class FullyConnectedAS(AugmentedSimulator):
                  optimizer: Union[Optimizer, None] = None,
                  loss: str = "mse",  # loss used to train the model
                  batch_size: int = 128,
+                 log_path: Union[str, None] = None
                 ):
 
         AugmentedSimulator.__init__(self, name)
         self.config_manager = ConfigManager(benchmark_name, path_config)
-        self._attr_x = self.config_manager.get_option("attr_x") + self.config_manager.get_option("attr_tau")
-        self._attr_y = self.config_manager.get_option("attr_y")
+        if attr_x is not None:
+            self._attr_x = attr_x
+        else:
+            self._attr_x = self.config_manager.get_option("attr_x") + self.config_manager.get_option("attr_tau")
+
+        if attr_y is not None:
+            self._attr_y = attr_y
+        else:
+            self._attr_y = self.config_manager.get_option("attr_y")
         #self._attr_x = copy.deepcopy(attr_x)
         #self._attr_y = copy.deepcopy(attr_y)
         self.sizes_layer = copy.deepcopy(sizes_layer)
@@ -96,6 +103,9 @@ class FullyConnectedAS(AugmentedSimulator):
 
         self.predict_time = None        
 
+        # create a logger instance
+        self.logger = CustomLogger(__class__.__name__, log_path).logger
+
     def init(self, **kwargs):
         """this function will build the neural network"""
         if self._model is not None:
@@ -122,6 +132,7 @@ class FullyConnectedAS(AugmentedSimulator):
               val_dataset: Union[None, DataSet] = None,
               **kwargs):
         """This is an example of a reference implementation of this class. Feel"""
+        self.logger.info(f"Training of {self.name} started")
         self._observations[train_dataset.name] = train_dataset.data
         # extract the input and output suitable for learning (matrices) from the generic dataset
         processed_x, processed_y = self._process_all_dataset(train_dataset, training=True)
@@ -146,6 +157,7 @@ class FullyConnectedAS(AugmentedSimulator):
                                            epochs=nb_iter,
                                            batch_size=self._batch_size,
                                            **kwargs)
+        self.logger.info(f"Training of {self.name} finished")
         # NB in this function we use the high level keras method "fit" to fit the data. It does not stricly
         # uses the `DataSet` interface. For more complicated training loop, one can always use
         # dataset.get_data(indexes) to retrieve the batch of data corresponding to `indexes` and
@@ -198,7 +210,7 @@ class FullyConnectedAS(AugmentedSimulator):
         full_path_out = os.path.join(path_out, self.name)
         if not os.path.exists(full_path_out):
             os.mkdir(full_path_out)
-            # TODO logger
+            self.logger.info(f"Model {self.name} is saved at {full_path_out}")
 
         if self._model is not None:
             # save the weights
@@ -251,7 +263,7 @@ class FullyConnectedAS(AugmentedSimulator):
         full_path_out = os.path.join(path_out, self.name)
         if not os.path.exists(full_path_out):
             os.mkdir(full_path_out)
-            # TODO logger
+            self.logger.info(f"Model {self.name} is saved at {full_path_out}")
 
         with open(os.path.join(full_path_out, "metadata.json"), "w", encoding="utf-8") as f:
             json.dump(obj=res_json, fp=f, indent=4, sort_keys=True)
