@@ -6,14 +6,16 @@
 # SPDX-License-Identifier: MPL-2.0
 # This file is part of LIPS, LIPS is a python platform for power networks benchmarking
 
-import numpy as np
 import copy
-import logging
-from lips.metrics import DEFAULT_METRICS
+from typing import Union
+import numpy as np
 
-logging.basicConfig(filename="logs.log",
-                    level=logging.INFO,
-                    format="%(levelname)s:%(message)s")
+from lips.metrics import DEFAULT_METRICS
+from lips.logger import CustomLogger
+
+#logging.basicConfig(filename="logs.log",
+#                    level=logging.INFO,
+#                    format="%(levelname)s:%(message)s")
 
 
 def metricPercentage(metrics_ML,  
@@ -22,7 +24,9 @@ def metricPercentage(metrics_ML,
                      k=0.1, 
                      metric_names=["mape", "MAE"], 
                      variables=["a_or", "p_or", "v_or"], 
-                     agg_func=np.mean):
+                     agg_func=np.mean,
+                     log_path: Union[str, None]=None
+                     ):
     """
     take a metric and compute it on a percentage of data with highest values of voltages
 
@@ -53,6 +57,9 @@ def metricPercentage(metrics_ML,
 
         
     """
+    # logger  
+    logger = CustomLogger("metric_percentage", log_path).logger
+
     FLOW_VARIABLES = ['a_or', 'a_ex', 'p_or', 'p_ex', 'q_or', 'q_ex', 'v_or', 'v_ex', 'theta_or', 'theta_ex']
     variables = [var for var in variables if var in FLOW_VARIABLES]
 
@@ -83,6 +90,6 @@ def metricPercentage(metrics_ML,
                 tmp = metric_func(true_, pred_)
                 metrics_ML_raw[metric_name][var_].append(tmp)
             metrics_ML[metric_name][var_] = float(agg_func(metrics_ML_raw[metric_name][var_]))
-            logging.info("{} for {} is : {:.3f}".format(metric_name, var_, float(agg_func(metrics_ML_raw[metric_name][var_]))))
+            logger.info("{} for {} is : {:.3f}".format(metric_name, var_, float(agg_func(metrics_ML_raw[metric_name][var_]))))
 
     return copy.deepcopy(metrics_ML), copy.deepcopy(metrics_ML_raw)
