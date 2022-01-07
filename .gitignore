@@ -138,24 +138,12 @@ dmypy.json
 #custom ignore folders
 .vscode
 
-ActorTest.ipynb
-temporary.ipynb
-temporary1.ipynb
-Notebook_Benchmark2.ipynb
-2_TrainAnAugmentedSimulator-Copy1.ipynb
-Analyzing_Benchmark_class.ipynb
-Temp_AnalyzeActions.ipynb
-Temp_PhysicsLaw.ipynb
+getting_started/Analyzing_Benchmark_class.ipynb
+getting_started/03_TrainAnAugmentedSimulator-Copy1.ipynb
+getting_started/3_EvaluateBenchmark2.ipynb
+getting_started/4_EvaluateBenchmark3.ipynb
 
-lips/benchmark/Benchmark copy.py
-lips/benchmark/Benchmark copy 2.py
-lips/dataset/DataSet copy.py
-lips/dataset/DataSet copy 2.py
-lips/models/*
-lips/models
 
-lips/simulators/augmentedSimulator copy.py
-lips/simulators/DCApproximation copy.py
 
 
 
@@ -182,7 +170,7 @@ test_dc_proxy.py
 test_fully_connected.py
 trained_models/
 test_leap_net.py
-logs.log
+
 
 # test files
 pytest_report.html
