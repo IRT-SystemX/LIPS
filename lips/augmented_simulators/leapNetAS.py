@@ -22,6 +22,7 @@ from leap_net.proxy import ProxyLeapNet
 
 from lips.dataset import DataSet
 from lips.augmented_simulators.augmentedSimulator import AugmentedSimulator
+from lips.benchmark import ConfigManager
 
 
 class LeapNetAS(AugmentedSimulator):
@@ -34,9 +35,11 @@ class LeapNetAS(AugmentedSimulator):
     """
     def __init__(self,
                  name: str = "LeapNetAS",
-                 attr_x=("prod_p", "prod_v", "load_p", "load_q"),
-                 attr_tau=("line_status", "topo_vect"),
-                 attr_y=("a_or", "a_ex", "p_or", "p_ex", "q_or", "q_ex", "prod_q", "load_v", "v_or", "v_ex"),
+                 benchmark_name: str = "Benchmark1",
+                 path_config: Union[str, None] = None,
+                 #attr_x=("prod_p", "prod_v", "load_p", "load_q"),
+                 #attr_tau=("line_status", "topo_vect"),
+                 #attr_y=("a_or", "a_ex", "p_or", "p_ex", "q_or", "q_ex", "prod_q", "load_v", "v_or", "v_ex"),
                  sizes_layer=(150, 150),
                  sizes_enc=(20, 20, 20),
                  sizes_out=(100, 40),
@@ -51,11 +54,15 @@ class LeapNetAS(AugmentedSimulator):
                  kwargs_tau=None,
                  mult_by_zero_lines_pred=True
                 ):
-
         AugmentedSimulator.__init__(self, name)
-        self._attr_x = copy.deepcopy(attr_x)
-        self._attr_tau = copy.deepcopy(attr_tau)
-        self._attr_y = copy.deepcopy(attr_y)
+        self.config_manager = ConfigManager(benchmark_name, path_config)
+        self._attr_x = self.config_manager.get_option("attr_x")
+        self._attr_tau = self.config_manager.get_option("attr_tau")
+        self._attr_y = self.config_manager.get_option("attr_y")
+        # TODO : to remove these 3 lines once above lines confirmed
+        #self._attr_x = copy.deepcopy(attr_x)
+        #self._attr_tau = copy.deepcopy(attr_tau)
+        #self._attr_y = copy.deepcopy(attr_y)
 
         self.sizes_layer = copy.deepcopy(sizes_layer)
         self.sizes_enc = copy.deepcopy(sizes_enc)
@@ -98,6 +105,7 @@ class LeapNetAS(AugmentedSimulator):
               val_dataset: Union[None, DataSet] = None,
               **kwargs):
         """This is an example of a reference implementation of this class. Feel"""
+        self._observations[train_dataset.name] = train_dataset.data
         # extract the input and output suitable for learning (matrices) from the generic dataset
         processed_x, processed_tau, processed_y = self._process_all_dataset(train_dataset, training=True)
         if val_dataset is not None:
@@ -131,6 +139,7 @@ class LeapNetAS(AugmentedSimulator):
     def evaluate(self, dataset: DataSet, batch_size: int=32):
         """evaluate the model on the given dataset"""
         # process the dataset
+        self._observations[dataset.name] = dataset.data
         processed_x, processed_tau, _ = self._process_all_dataset(dataset, training=False)
         self._predict_time = 0
 
@@ -143,6 +152,7 @@ class LeapNetAS(AugmentedSimulator):
         proxy = self._leap_net_model
         for attr_nm, arr_, m_, sd_ in zip(self._attr_y, tmp, proxy._m_y, proxy._sd_y):
             res[attr_nm] = (arr_ * sd_) + m_
+        self._predictions[dataset.name] = res
         return res
 
     def save(self, path_out: str):

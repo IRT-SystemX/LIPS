@@ -12,14 +12,6 @@ from lips.augmented_simulators.augmentedSimulator import AugmentedSimulator
 
 
 try:
-    from lips.augmented_simulators.dcApproximationAS import DCApproximationAS
-    __all__.append("DCApproximationAS")
-except ImportError:
-    # grid2op or lightsim2grid package is not installed i cannot used this augmented simulator
-    pass
-
-
-try:
     from lips.augmented_simulators.hyperParameterTuner import HyperParameterTuner
     __all__.append("HyperParameterTuner")
 except ImportError:
