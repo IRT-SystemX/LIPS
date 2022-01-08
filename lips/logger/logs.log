@@ -5,98 +5,57 @@
 2022-01-07 15:32:09 - PowerGridDataSet          - INFO    : Creating the path /mnt/c/Users/milad.leyli-abadi/Documents/PythonScripts/RTE/NeurIPS/LIPS/reference_data/Benchmark1/val to store the dataset name val
 2022-01-07 15:34:49 - PowerGridDataSet          - INFO    : Creating the path /mnt/c/Users/milad.leyli-abadi/Documents/PythonScripts/RTE/NeurIPS/LIPS/reference_data/Benchmark1/test to store the dataset name test
 2022-01-07 15:42:04 - PowerGridDataSet          - INFO    : Creating the path /mnt/c/Users/milad.leyli-abadi/Documents/PythonScripts/RTE/NeurIPS/LIPS/reference_data/Benchmark1/test_ood_topo to store the dataset name test_ood_topo
-2022-01-07 15:48:27 - PowerGridBenchmark        - INFO    : Evaluation using dc_approximation on val dataset!
-2022-01-07 15:54:09 - Evaluation                - INFO    : Machine learning metrics
-2022-01-07 15:54:09 - metric_percentage         - INFO    : mape90 for a_or is : 0.618
-2022-01-07 15:54:09 - metric_percentage         - INFO    : mape90 for a_ex is : 0.608
-2022-01-07 15:54:09 - metric_percentage         - INFO    : MAE90 for a_or is : 327.225
-2022-01-07 15:54:09 - metric_percentage         - INFO    : MAE90 for a_ex is : 448.835
-2022-01-07 15:54:09 - BasicVerifier             - INFO    : Current positivity check passed for origin side !
-2022-01-07 15:54:09 - BasicVerifier             - INFO    : Current positivity check passed for extremity side !
-2022-01-07 15:54:09 - BasicVerifier             - INFO    : Prediction in presence of line disconnection. Problem encountered !
-2022-01-07 15:54:09 - PowerGridBenchmark        - INFO    : Evaluation on val dataset was successful!
-2022-01-07 15:54:09 - PowerGridBenchmark        - INFO    : Evaluation using dc_approximation on test dataset!
-2022-01-07 16:00:03 - Evaluation                - INFO    : Machine learning metrics
-2022-01-07 16:00:04 - metric_percentage         - INFO    : mape90 for a_or is : 0.163
-2022-01-07 16:00:04 - metric_percentage         - INFO    : mape90 for a_ex is : 0.146
-2022-01-07 16:00:04 - metric_percentage         - INFO    : MAE90 for a_or is : 118.481
-2022-01-07 16:00:04 - metric_percentage         - INFO    : MAE90 for a_ex is : 146.937
-2022-01-07 16:00:04 - BasicVerifier             - INFO    : Current positivity check passed for origin side !
-2022-01-07 16:00:04 - BasicVerifier             - INFO    : Current positivity check passed for extremity side !
-2022-01-07 16:00:04 - BasicVerifier             - INFO    : Prediction in presence of line disconnection. Check passed !
-2022-01-07 16:00:04 - PowerGridBenchmark        - INFO    : Evaluation on test dataset was successful!
-2022-01-07 16:00:04 - PowerGridBenchmark        - INFO    : Evaluation using dc_approximation on test_ood_topo dataset!
-2022-01-07 16:05:32 - Evaluation                - INFO    : Machine learning metrics
-2022-01-07 16:05:32 - metric_percentage         - INFO    : mape90 for a_or is : 0.620
-2022-01-07 16:05:32 - metric_percentage         - INFO    : mape90 for a_ex is : 0.613
-2022-01-07 16:05:32 - metric_percentage         - INFO    : MAE90 for a_or is : 327.585
-2022-01-07 16:05:32 - metric_percentage         - INFO    : MAE90 for a_ex is : 451.235
-2022-01-07 16:05:32 - BasicVerifier             - INFO    : Current positivity check passed for origin side !
-2022-01-07 16:05:32 - BasicVerifier             - INFO    : Current positivity check passed for extremity side !
-2022-01-07 16:05:32 - BasicVerifier             - INFO    : Prediction in presence of line disconnection. Problem encountered !
-2022-01-07 16:05:32 - PowerGridBenchmark        - INFO    : Evaluation on test_ood_topo dataset was successful!
-2022-01-07 16:58:20 - FullyConnectedAS          - INFO    : Training of FullyConnectedAS_baseline started
-2022-01-07 17:16:17 - FullyConnectedAS          - INFO    : Training of FullyConnectedAS_baseline finished
-2022-01-07 17:17:56 - FullyConnectedAS          - INFO    : Model FullyConnectedAS_baseline is saved at trained_models/FullyConnectedAS_baseline
-2022-01-07 17:19:50 - PowerGridBenchmark        - INFO    : Evaluation using FullyConnectedAS_baseline on val dataset
-2022-01-07 17:19:52 - Evaluation                - INFO    : Machine learning metrics
-2022-01-07 17:19:52 - metric_percentage         - INFO    : mape90 for a_or is : 0.524
-2022-01-07 17:19:52 - metric_percentage         - INFO    : mape90 for a_ex is : 0.524
-2022-01-07 17:19:52 - metric_percentage         - INFO    : MAE90 for a_or is : 253.750
-2022-01-07 17:19:52 - metric_percentage         - INFO    : MAE90 for a_ex is : 358.306
-2022-01-07 17:19:52 - BasicVerifier             - INFO    : the sum of negative current values (A) at origin: 4742.631
-2022-01-07 17:19:52 - BasicVerifier             - INFO    : the sum of negative current values (A) at extremity: 7755.417
-2022-01-07 17:19:52 - BasicVerifier             - INFO    : Prediction in presence of line disconnection. Problem encountered !
-2022-01-07 17:19:52 - PowerGridBenchmark        - INFO    : Evaluation on val dataset was successful!
-2022-01-07 17:19:52 - PowerGridBenchmark        - INFO    : Evaluation using FullyConnectedAS_baseline on test dataset
-2022-01-07 17:19:53 - Evaluation                - INFO    : Machine learning metrics
-2022-01-07 17:19:54 - metric_percentage         - INFO    : mape90 for a_or is : 0.007
-2022-01-07 17:19:54 - metric_percentage         - INFO    : mape90 for a_ex is : 0.007
-2022-01-07 17:19:54 - metric_percentage         - INFO    : MAE90 for a_or is : 3.527
-2022-01-07 17:19:54 - metric_percentage         - INFO    : MAE90 for a_ex is : 4.998
-2022-01-07 17:19:54 - BasicVerifier             - INFO    : the sum of negative current values (A) at origin: 8368.778
-2022-01-07 17:19:54 - BasicVerifier             - INFO    : the sum of negative current values (A) at extremity: 13404.011
-2022-01-07 17:19:54 - BasicVerifier             - INFO    : Prediction in presence of line disconnection. Problem encountered !
-2022-01-07 17:19:54 - PowerGridBenchmark        - INFO    : Evaluation on test dataset was successful!
-2022-01-07 17:19:54 - PowerGridBenchmark        - INFO    : Evaluation using FullyConnectedAS_baseline on test_ood_topo dataset
-2022-01-07 17:19:55 - Evaluation                - INFO    : Machine learning metrics
-2022-01-07 17:19:55 - metric_percentage         - INFO    : mape90 for a_or is : 0.509
-2022-01-07 17:19:55 - metric_percentage         - INFO    : mape90 for a_ex is : 0.509
-2022-01-07 17:19:55 - metric_percentage         - INFO    : MAE90 for a_or is : 246.028
-2022-01-07 17:19:55 - metric_percentage         - INFO    : MAE90 for a_ex is : 346.985
-2022-01-07 17:19:55 - BasicVerifier             - INFO    : the sum of negative current values (A) at origin: 37405.684
-2022-01-07 17:19:55 - BasicVerifier             - INFO    : the sum of negative current values (A) at extremity: 47710.871
-2022-01-07 17:19:55 - BasicVerifier             - INFO    : Prediction in presence of line disconnection. Problem encountered !
-2022-01-07 17:19:55 - PowerGridBenchmark        - INFO    : Evaluation on test_ood_topo dataset was successful!
-2022-01-07 17:29:48 - LeapNetAS                 - INFO    : Training of leapNetAS_baseline started
-2022-01-07 17:47:47 - LeapNetAS                 - INFO    : Training of leapNetAS_baseline finished
-2022-01-07 18:14:11 - PowerGridBenchmark        - INFO    : Evaluation using leapNetAS_baseline on val dataset
-2022-01-07 18:14:13 - Evaluation                - INFO    : Machine learning metrics
-2022-01-07 18:14:14 - metric_percentage         - INFO    : mape90 for a_or is : 0.524
-2022-01-07 18:14:14 - metric_percentage         - INFO    : mape90 for a_ex is : 0.526
-2022-01-07 18:14:14 - metric_percentage         - INFO    : MAE90 for a_or is : 253.573
-2022-01-07 18:14:14 - metric_percentage         - INFO    : MAE90 for a_ex is : 359.177
-2022-01-07 18:14:14 - BasicVerifier             - INFO    : the sum of negative current values (A) at origin: 151.282
-2022-01-07 18:14:14 - BasicVerifier             - INFO    : the sum of negative current values (A) at extremity: 124.028
-2022-01-07 18:14:14 - BasicVerifier             - INFO    : Prediction in presence of line disconnection. Problem encountered !
-2022-01-07 18:14:14 - PowerGridBenchmark        - INFO    : Evaluation on val dataset was successful!
-2022-01-07 18:14:14 - PowerGridBenchmark        - INFO    : Evaluation using leapNetAS_baseline on test dataset
-2022-01-07 18:14:16 - Evaluation                - INFO    : Machine learning metrics
-2022-01-07 18:14:16 - metric_percentage         - INFO    : mape90 for a_or is : 0.007
-2022-01-07 18:14:16 - metric_percentage         - INFO    : mape90 for a_ex is : 0.008
-2022-01-07 18:14:16 - metric_percentage         - INFO    : MAE90 for a_or is : 3.537
-2022-01-07 18:14:16 - metric_percentage         - INFO    : MAE90 for a_ex is : 5.271
-2022-01-07 18:14:16 - BasicVerifier             - INFO    : the sum of negative current values (A) at origin: 269.555
-2022-01-07 18:14:16 - BasicVerifier             - INFO    : the sum of negative current values (A) at extremity: 287.603
-2022-01-07 18:14:16 - BasicVerifier             - INFO    : Prediction in presence of line disconnection. Check passed !
-2022-01-07 18:14:16 - PowerGridBenchmark        - INFO    : Evaluation on test dataset was successful!
-2022-01-07 18:14:16 - PowerGridBenchmark        - INFO    : Evaluation using leapNetAS_baseline on test_ood_topo dataset
-2022-01-07 18:14:19 - Evaluation                - INFO    : Machine learning metrics
-2022-01-07 18:14:19 - metric_percentage         - INFO    : mape90 for a_or is : 0.519
-2022-01-07 18:14:19 - metric_percentage         - INFO    : mape90 for a_ex is : 0.522
-2022-01-07 18:14:19 - metric_percentage         - INFO    : MAE90 for a_or is : 248.077
-2022-01-07 18:14:19 - metric_percentage         - INFO    : MAE90 for a_ex is : 353.997
-2022-01-07 18:14:19 - BasicVerifier             - INFO    : the sum of negative current values (A) at origin: 9267.257
-2022-01-07 18:14:19 - BasicVerifier             - INFO    : the sum of negative current values (A) at extremity: 14613.036
-2022-01-07 18:14:19 - BasicVerifier             - INFO    : Prediction in presence of line disconnection. Problem encountered !
-2022-01-07 18:14:19 - PowerGridBenchmark        - INFO    : Evaluation on test_ood_topo dataset was successful!
+2022-01-08 12:38:53 - PowerGridBenchmark        - INFO    : Benchmark Benchmark1, evaluation using dc_approximation on val dataset
+2022-01-08 12:44:51 - metric_percentage         - INFO    : mape90 for a_or is : 0.161
+2022-01-08 12:44:51 - metric_percentage         - INFO    : mape90 for a_ex is : 0.144
+2022-01-08 12:44:51 - metric_percentage         - INFO    : MAE90 for a_or is : 103.822
+2022-01-08 12:44:51 - metric_percentage         - INFO    : MAE90 for a_ex is : 131.972
+2022-01-08 12:44:51 - BasicVerifier             - INFO    : Current positivity check passed for origin side !
+2022-01-08 12:44:51 - BasicVerifier             - INFO    : Current positivity check passed for extremity side !
+2022-01-08 12:44:51 - BasicVerifier             - INFO    : Prediction in presence of line disconnection. Check passed !
+2022-01-08 12:44:51 - PowerGridBenchmark        - INFO    : Evaluation on val dataset was successful!
+2022-01-08 12:44:51 - PowerGridBenchmark        - INFO    : Benchmark Benchmark1, evaluation using dc_approximation on test dataset
+2022-01-08 12:50:23 - metric_percentage         - INFO    : mape90 for a_or is : 0.163
+2022-01-08 12:50:23 - metric_percentage         - INFO    : mape90 for a_ex is : 0.146
+2022-01-08 12:50:23 - metric_percentage         - INFO    : MAE90 for a_or is : 118.481
+2022-01-08 12:50:23 - metric_percentage         - INFO    : MAE90 for a_ex is : 146.937
+2022-01-08 12:50:23 - BasicVerifier             - INFO    : Current positivity check passed for origin side !
+2022-01-08 12:50:23 - BasicVerifier             - INFO    : Current positivity check passed for extremity side !
+2022-01-08 12:50:23 - BasicVerifier             - INFO    : Prediction in presence of line disconnection. Check passed !
+2022-01-08 12:50:23 - PowerGridBenchmark        - INFO    : Evaluation on test dataset was successful!
+2022-01-08 12:50:23 - PowerGridBenchmark        - INFO    : Benchmark Benchmark1, evaluation using dc_approximation on test_ood_topo dataset
+2022-01-08 12:56:14 - metric_percentage         - INFO    : mape90 for a_or is : 0.179
+2022-01-08 12:56:14 - metric_percentage         - INFO    : mape90 for a_ex is : 0.162
+2022-01-08 12:56:14 - metric_percentage         - INFO    : MAE90 for a_or is : 157.941
+2022-01-08 12:56:14 - metric_percentage         - INFO    : MAE90 for a_ex is : 186.850
+2022-01-08 12:56:14 - BasicVerifier             - INFO    : Current positivity check passed for origin side !
+2022-01-08 12:56:14 - BasicVerifier             - INFO    : Current positivity check passed for extremity side !
+2022-01-08 12:56:14 - BasicVerifier             - INFO    : Prediction in presence of line disconnection. Check passed !
+2022-01-08 12:56:14 - PowerGridBenchmark        - INFO    : Evaluation on test_ood_topo dataset was successful!
+2022-01-08 13:00:41 - PowerGridBenchmark        - INFO    : Benchmark Benchmark1, evaluation using FullyConnectedAS on val dataset
+2022-01-08 13:00:42 - metric_percentage         - INFO    : mape90 for a_or is : 0.006
+2022-01-08 13:00:42 - metric_percentage         - INFO    : mape90 for a_ex is : 0.006
+2022-01-08 13:00:42 - metric_percentage         - INFO    : MAE90 for a_or is : 2.623
+2022-01-08 13:00:42 - metric_percentage         - INFO    : MAE90 for a_ex is : 3.710
+2022-01-08 13:00:42 - BasicVerifier             - INFO    : the sum of negative current values (A) at origin: 4742.634
+2022-01-08 13:00:42 - BasicVerifier             - INFO    : the sum of negative current values (A) at extremity: 7755.413
+2022-01-08 13:00:42 - BasicVerifier             - INFO    : Prediction in presence of line disconnection. Problem encountered !
+2022-01-08 13:00:42 - PowerGridBenchmark        - INFO    : Evaluation on val dataset was successful!
+2022-01-08 13:00:42 - PowerGridBenchmark        - INFO    : Benchmark Benchmark1, evaluation using FullyConnectedAS on test dataset
+2022-01-08 13:00:43 - metric_percentage         - INFO    : mape90 for a_or is : 0.007
+2022-01-08 13:00:43 - metric_percentage         - INFO    : mape90 for a_ex is : 0.007
+2022-01-08 13:00:43 - metric_percentage         - INFO    : MAE90 for a_or is : 3.527
+2022-01-08 13:00:43 - metric_percentage         - INFO    : MAE90 for a_ex is : 4.998
+2022-01-08 13:00:43 - BasicVerifier             - INFO    : the sum of negative current values (A) at origin: 8368.779
+2022-01-08 13:00:43 - BasicVerifier             - INFO    : the sum of negative current values (A) at extremity: 13404.016
+2022-01-08 13:00:43 - BasicVerifier             - INFO    : Prediction in presence of line disconnection. Problem encountered !
+2022-01-08 13:00:43 - PowerGridBenchmark        - INFO    : Evaluation on test dataset was successful!
+2022-01-08 13:00:43 - PowerGridBenchmark        - INFO    : Benchmark Benchmark1, evaluation using FullyConnectedAS on test_ood_topo dataset
+2022-01-08 13:00:44 - metric_percentage         - INFO    : mape90 for a_or is : 0.195
+2022-01-08 13:00:44 - metric_percentage         - INFO    : mape90 for a_ex is : 0.194
+2022-01-08 13:00:44 - metric_percentage         - INFO    : MAE90 for a_or is : 137.149
+2022-01-08 13:00:44 - metric_percentage         - INFO    : MAE90 for a_ex is : 183.679
+2022-01-08 13:00:44 - BasicVerifier             - INFO    : the sum of negative current values (A) at origin: 37405.691
+2022-01-08 13:00:44 - BasicVerifier             - INFO    : the sum of negative current values (A) at extremity: 47710.871
+2022-01-08 13:00:44 - BasicVerifier             - INFO    : Prediction in presence of line disconnection. Problem encountered !
+2022-01-08 13:00:44 - PowerGridBenchmark        - INFO    : Evaluation on test_ood_topo dataset was successful!
