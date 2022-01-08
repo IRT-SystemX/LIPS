@@ -89,10 +89,22 @@ class NeuripsBenchmark1(Benchmark):
 
         self.initial_chronics_id = initial_chronics_id
 
-        self.train_dataset = PowerGridDataSet("train")
-        self.val_dataset = PowerGridDataSet("val")
-        self._test_dataset = PowerGridDataSet("test")
-        self._test_ood_topo_dataset = PowerGridDataSet("test_ood_topo")
+        self.train_dataset = PowerGridDataSet("train", 
+                #attr_names=("prod_p", "prod_v", "load_p", "load_q", "line_status", "topo_vect", "a_or", "a_ex"),
+                theta_attr_names=()
+                )
+        self.val_dataset = PowerGridDataSet("val",
+                #attr_names=("prod_p", "prod_v", "load_p", "load_q", "line_status", "topo_vect", "a_or", "a_ex"),
+                theta_attr_names=()
+                )
+        self._test_dataset = PowerGridDataSet("test",
+                #attr_names=("prod_p", "prod_v", "load_p", "load_q", "line_status", "topo_vect", "a_or", "a_ex"),
+                theta_attr_names=()  
+                )
+        self._test_ood_topo_dataset = PowerGridDataSet("test_ood_topo",
+                #attr_names=("prod_p", "prod_v", "load_p", "load_q", "line_status", "topo_vect", "a_or", "a_ex"),
+                theta_attr_names=()
+                )
         self.path_datasets = None
         if load_data_set:
             self.load()
@@ -210,7 +222,10 @@ class NeuripsBenchmark1(Benchmark):
                                         KCL_tolerance=1e-2,
                                         active_flow=True
                                         ):
-        predictions = augmented_simulator.evaluate(dataset, batch_size)
+        if augmented_simulator.__class__.__name__ == "DCApproximationAS":
+            predictions = augmented_simulator.evaluate(dataset)
+        else:
+            predictions = augmented_simulator.evaluate(dataset, batch_size)    
         ref_data = dataset.get_data(np.arange(len(dataset)))
         logging.info("Experimented simulator : {}".format(augmented_simulator.name))
         res = self.evaluation.do_evaluations(env=self.training_simulator._simulator,  # TODO this is relatively ugly
