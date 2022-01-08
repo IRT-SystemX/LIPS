@@ -13,7 +13,6 @@ import re
 
 from grid2op.Action import BaseAction
 from grid2op.Agent import BaseAgent
-from grid2op.Runner import Runner
 from grid2op.PlotGrid import PlotMatplot
 
 from lips.physical_simulator.physicalSimulator import PhysicalSimulator
@@ -36,8 +35,6 @@ class Grid2opSimulator(PhysicalSimulator):
                  chronics_selected_regex: str = None,  # the chronics to keep for this simulator
                  ):
         PhysicalSimulator.__init__(self, actor_types=(BaseAction, BaseAgent))
-        #self._simulator = grid2op.make(**env_kwargs)
-        #self._simulator.deactivate_forecast()
         self._simulator = get_env(env_kwargs)
         if chronics_selected_regex is not None:
             # special case of the grid2Op environment: data are read from chronics that should be part of the dataset
