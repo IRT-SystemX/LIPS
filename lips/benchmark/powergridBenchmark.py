@@ -45,9 +45,15 @@ class PowerGridBenchmark(Benchmark):
                  evaluation=None,
                  log_path: Union[str, None]=None
                  ):
-        self.benchmark_name = benchmark_name
-        self.path_benchmark = path_benchmark
-        self.config_manager = ConfigManager(benchmark_name, path_config)
+        # init the super class
+        super().__init__(benchmark_name=benchmark_name,
+                         dataset=None,
+                         augmented_simulator=None,
+                         evaluation=evaluation,
+                         path_benchmark=path_benchmark,
+                         log_path=log_path
+                        )
+        self.config_manager = ConfigManager(self.benchmark_name, path_config)
         self.is_loaded=False
         # create a logger instance
         self.logger = CustomLogger(__class__.__name__, log_path).logger
@@ -57,11 +63,15 @@ class PowerGridBenchmark(Benchmark):
         if evaluation is None:
             self.evaluation = Evaluation(log_path=log_path)
             self.evaluation.set_active_dict(self.config_manager.get_option("eval_dict"))
-        else:
-            self.evaluation = evaluation
+            
         # importing the right module from which the scenarios and actors could be used
         if self.config_manager.get_option("utils_lib"):
-            self.utils = importlib.import_module(".".join(("lips", "benchmark", "utils", self.config_manager.get_option("utils_lib"))))
+            try:
+                module_name = self.config_manager.get_option("utils_lib")
+                module = ".".join(("lips", "benchmark", "utils", module_name))
+                self.utils = importlib.import_module(module)
+            except ImportError as error:
+                self.logger.error(f"The module {module_name} could not be accessed! {error}")
 
         self.training_simulator = None
         self.val_simulator = None
@@ -109,20 +119,9 @@ class PowerGridBenchmark(Benchmark):
                                                        attr_names=attr_names,
                                                        log_path=log_path
                                                        )
-
-        super().__init__(benchmark_name=benchmark_name,
-                         dataset=self._test_dataset,
-                         augmented_simulator=None,
-                         evaluation=self.evaluation,
-                         path_benchmark=path_benchmark
-                        )
         
         if load_data_set:
-            self.load()
-        else:
-            self.is_loaded = False
-
-        
+            self.load()     
 
     def load(self):
         """
@@ -147,16 +146,13 @@ class PowerGridBenchmark(Benchmark):
         """
         if self.is_loaded:
             self.logger.warning("Previously saved data will be erased by this new generation")
-            #print("Previously saved data will be erased by this new generation")
         with warnings.catch_warnings():
             warnings.filterwarnings("ignore")
             self._fills_actor_simulator()
         if os.path.exists(self.path_datasets):
             self.logger.warning(f"Deleting path {self.path_datasets} that might contain previous runs")
-            #print(f"Deleting path {self.path_datasets} that might contain previous runs")  # TODO logger
             shutil.rmtree(self.path_datasets)
 
-        #print(f"Creating path {self.path_datasets} to save the current data")  # TODO logger
         self.logger.info(f"Creating path {self.path_datasets} to save the current data")
         os.mkdir(self.path_datasets)
 
@@ -165,8 +161,8 @@ class PowerGridBenchmark(Benchmark):
                                     path_out=self.path_datasets,
                                     nb_samples=nb_sample_train
                                     )
-        self.val_dataset.generate(simulator=self.training_simulator,
-                                  actor=self.training_actor,
+        self.val_dataset.generate(simulator=self.val_simulator,
+                                  actor=self.val_actor,
                                   path_out=self.path_datasets,
                                   nb_samples=nb_sample_val
                                   )
@@ -262,18 +258,17 @@ class PowerGridBenchmark(Benchmark):
             save_path: ``str`` or ``None``
                 if indicated the evaluation results will be saved to indicated path
         """
-        self.logger.info(f"Evaluation using {augmented_simulator.name} on {dataset.name} dataset")
+        self.logger.info(f"Benchmark {self.benchmark_name}, evaluation using {augmented_simulator.name} on {dataset.name} dataset")
         self.augmented_simulator = augmented_simulator
-        #TODO: to separate augmented simulator base class from DC approximator in future
-        # It does not require a train function and the prediction does not take batch size
         # TODO: however, we can introduce the batch concept in DC, to have equitable comparison for time complexity
-        if self.augmented_simulator.name == "dc_approximation":
+        if self.augmented_simulator.__class__.__name__ == "DCApproximationAS":
             predictions = self.augmented_simulator.evaluate(dataset)
         else:
             predictions = self.augmented_simulator.evaluate(dataset, batch_size)
-        observations = self.dataset.get_data(np.arange(len(dataset)))
+        observations = dataset.get_data(np.arange(len(dataset)))
         self.predictions[dataset.name] = predictions
         self.observations[dataset.name] = observations
+        self.dataset = dataset
         res = self.evaluation.do_evaluations(env=get_env(self.utils.get_kwargs_simulator_scenario()),
                                              env_name=None,
                                              predictions=predictions,
