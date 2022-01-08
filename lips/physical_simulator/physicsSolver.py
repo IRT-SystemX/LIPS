@@ -7,7 +7,7 @@
 # This file is part of LIPS, LIPS is a python platform for power networks benchmarking
 
 from typing import Union
-from lips.dataset import DataSet
+#from lips.dataset import DataSet
 
 
 class PhysicsSolver(object):
@@ -23,7 +23,7 @@ class PhysicsSolver(object):
         self._observations = dict()
         self._flow = dict()
 
-    def evaluate(self, dataset: DataSet):
+    def evaluate(self, dataset: "DataSet"):
         """
         evaluate the model on the full dataset
         """
