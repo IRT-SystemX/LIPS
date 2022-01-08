@@ -7,10 +7,12 @@
 # This file is part of LIPS, LIPS is a python platform for power networks benchmarking
 
 import os
-import json
+from typing import Union
 import numpy as np
 
 from lips.evaluation import Evaluation
+from lips.augmented_simulators import AugmentedSimulator
+from lips.physical_simulator import PhysicsSolver
 
 class Benchmark(object):
     """
@@ -38,27 +40,29 @@ class Benchmark(object):
 
     """
     def __init__(self,
-                 benchmark_name,
-                 dataset=None,
-                 augmented_simulator=None,
-                 evaluation=None,
-                 path_benchmark=None,
+                 benchmark_name: str,
+                 dataset: Union["DataSet", None]=None,
+                 augmented_simulator: Union[AugmentedSimulator, PhysicsSolver, None]=None,
+                 evaluation: Union[Evaluation, None]=None,
+                 path_benchmark: Union[str, None]=None,
+                 log_path: Union[str, None]=None
                  ):
         self.benchmark_name = benchmark_name
         self.path_benchmark = path_benchmark
         self.path_datasets = os.path.join(path_benchmark, self.benchmark_name)
 
-        # object of class DataSet contianing datasets for testing
+        # Object of class DataSet contianing datasets for testing
+        # It contains the last dataset used for evaluation
         self.dataset = dataset
 
-        # store the test data sets and simulator predictions for further investigations
-        # for each test dataset a key is added to the dictionary
+        # Store the test data sets and simulator predictions for further investigations
+        # Each evaluated dataset added to the dictionary (key=dataset.name)
         self.observations = dict()
         self.predictions = dict()
 
         # object of class Evaluation used to evaluate the augmented simulator on test data
         if evaluation is None:
-            self.evaluation = Evaluation()
+            self.evaluation = Evaluation(log_path=log_path)
             # initialize it with empty dictionary, to be modified for a desired benchmark
             self.evaluation.set_active_dict(self.evaluation.get_empty_active_dict())
         else:
