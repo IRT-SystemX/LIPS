@@ -34,3 +34,6 @@ class CustomLogger:
     
     def warning(self, message):
         self.logger.warning("{}".format(message))
+
+    def error(self, message):
+        self.logger.error("{}".format(message))
