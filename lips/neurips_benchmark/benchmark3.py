@@ -14,7 +14,7 @@ import copy
 import logging
 
 from lips.neurips_benchmark import NeuripsBenchmark1
-from lips.neurips_benchmark.scen1_utils import (get_kwargs_simulator_scenario,
+from lips.benchmark.utils.scen1_utils import (get_kwargs_simulator_scenario,
                                                 get_actor_training_scenario,
                                                 get_actor_test_ood_topo_scenario,
                                                 get_actor_test_scenario)
