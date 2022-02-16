@@ -359,12 +359,14 @@ class Evaluation(object):
         return self.metrics_physics
 
     def evaluate_ML(self,
-                    metric_names=None,
-                    compute_metricsPercentage=True,
-                    metric_percentage=("mape", "MAE"),
-                    k=0.1,
-                    verbose=0,
-                    save_path=None):
+                    observations: Union[dict, None]=None,
+                    predictions: Union[dict, None]=None,
+                    metric_names: Union[list, None]=None,
+                    compute_metricsPercentage: bool=True,
+                    metric_percentage: set=("mape", "MAE"),
+                    k: float=0.1,
+                    verbose: int=0,
+                    save_path: Union[str, None]=None):
         """
         Machine learning evaluation metrics including inference time and prediction accuracy
 
@@ -393,6 +395,10 @@ class Evaluation(object):
 
         """
         self.logger.info("Machine learning metrics")
+        if observations: 
+            self.observations = observations
+        if predictions:
+            self.predictions = predictions
         if metric_names is None:
             metrics = DEFAULT_METRICS
         else:
