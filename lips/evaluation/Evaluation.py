@@ -418,8 +418,7 @@ class Evaluation(object):
                 if isinstance(tmp, Iterable):
                     if verbose >= 2:
                         print(f"{metric_name} for {nm}: {tmp}")
-                    self.metrics_ML[metric_name][nm] = [
-                        float(el) for el in tmp]
+                    self.metrics_ML[metric_name][nm] = [float(el) for el in tmp]
                 else:
                     if verbose >= 1:
                         print(f"{metric_name} for {nm}: {tmp:.2f}")
