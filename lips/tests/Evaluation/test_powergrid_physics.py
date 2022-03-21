@@ -4,10 +4,11 @@ Usage :
 """
 import os
 import pickle
+import pathlib
 from pprint import pprint
 from collections.abc import Iterable
 
-from lips.benchmark.configmanager import ConfigManager
+from lips.config import ConfigManager
 from lips.metrics.power_grid import physics_compliances
 
 
@@ -17,12 +18,16 @@ def load_data():
     """
     # load some data
     # test data observations
-    a_file = open(os.path.join(os.path.pardir, "data", "ref_obs.pkl"), "rb")
+    obs_path = pathlib.Path(__file__).parent.parent.absolute().joinpath("data", "ref_obs.pkl")
+    # os.path.join(os.path.pardir, "data", "ref_obs.pkl")
+    a_file = open(obs_path, "rb")
     observations = pickle.load(a_file)
     a_file.close()
 
     # predictions
-    a_file = open(os.path.join(os.path.pardir, "data", "predictions_FC_test.pkl"), "rb")
+    pred_path = pathlib.Path(__file__).parent.parent.absolute().joinpath("data", "predictions_FC_test.pkl")
+    # os.path.join(os.path.pardir, "data", "predictions_FC_test.pkl")
+    a_file = open(pred_path, "rb")
     predictions = pickle.load(a_file)
     a_file.close()
 
