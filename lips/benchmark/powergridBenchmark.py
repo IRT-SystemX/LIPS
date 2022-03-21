@@ -13,15 +13,14 @@ from typing import Union
 import importlib
 import numpy as np
 
+from . import Benchmark
+from ..config import ConfigManager
+from ..logger import CustomLogger
 
-from lips.benchmark import Benchmark
-from lips.benchmark.configmanager import ConfigManager
-from lips.logger import CustomLogger
-
-from lips.physical_simulator import Grid2opSimulator
-from lips.physical_simulator.grid2opSimulator import get_env
-from lips.dataset import PowerGridDataSet
-from lips.evaluation import Evaluation
+from ..physical_simulator import Grid2opSimulator
+from ..physical_simulator.grid2opSimulator import get_env
+from ..dataset import PowerGridDataSet
+from ..evaluation import PowerGridEvaluation
 
 
 class PowerGridBenchmark(Benchmark):
@@ -60,8 +59,9 @@ class PowerGridBenchmark(Benchmark):
         #self.config = self.config_manager._read_config()
         #self.config_dict = self.config_manager.get_options_dict()
         # TODO : it should be reset if the config file is modified on the fly
+        # TODO : create it directly in evaluate_simulator function
         if evaluation is None:
-            self.evaluation = Evaluation(log_path=log_path)
+            self.evaluation = PowerGridEvaluation(log_path=log_path)
             self.evaluation.set_active_dict(self.config_manager.get_option("eval_dict"))
             
         # importing the right module from which the scenarios and actors could be used
@@ -71,7 +71,7 @@ class PowerGridBenchmark(Benchmark):
                 module = ".".join(("lips", "benchmark", "utils", module_name))
                 self.utils = importlib.import_module(module)
             except ImportError as error:
-                self.logger.error(f"The module {module_name} could not be accessed! {error}")
+                self.logger.error("The module %s could not be accessed! %s", module_name, error)
 
         self.training_simulator = None
         self.val_simulator = None
@@ -258,7 +258,10 @@ class PowerGridBenchmark(Benchmark):
             save_path: ``str`` or ``None``
                 if indicated the evaluation results will be saved to indicated path
         """
-        self.logger.info(f"Benchmark {self.benchmark_name}, evaluation using {augmented_simulator.name} on {dataset.name} dataset")
+        self.logger.info("Benchmark %s, evaluation using %s on %s dataset", self.benchmark_name,
+                                                                            augmented_simulator.name,
+                                                                            dataset.name
+                                                                            )
         self.augmented_simulator = augmented_simulator
         # TODO: however, we can introduce the batch concept in DC, to have equitable comparison for time complexity
         if self.augmented_simulator.__class__.__name__ == "DCApproximationAS":
@@ -280,7 +283,7 @@ class PowerGridBenchmark(Benchmark):
                                              active_flow=active_flow,
                                              save_path=save_path  # TODO currently not used
                                              )
-        self.logger.info(f"Evaluation on {dataset.name} dataset was successful!")
+        self.logger.info("Evaluation on %s dataset was successful!", dataset.name)
         return res
 
     def _create_training_simulator(self):
