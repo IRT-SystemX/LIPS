@@ -154,6 +154,7 @@ lips/metrics/power_grid/metric_percentage.py
 
 # evaluation
 lips/evaluation/Evaluation.py.bkp
+lips/evaluation/Evaluation_new.py.bkp
 lips/evaluation/conf.ini
 lips/evaluation/__init__.py.bkp
 
