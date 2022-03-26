@@ -13,10 +13,12 @@ from typing import Union
 import importlib
 import numpy as np
 
-from . import Benchmark
-from ..config import ConfigManager
-from ..logger import CustomLogger
+from lips.physical_simulator.dcApproximationAS import DCApproximationAS
 
+from . import Benchmark
+
+from ..augmented_simulators import AugmentedSimulator
+from ..physical_simulator import PhysicalSimulator
 from ..physical_simulator import Grid2opSimulator
 from ..physical_simulator.grid2opSimulator import get_env
 from ..dataset import PowerGridDataSet
@@ -28,10 +30,12 @@ class PowerGridBenchmark(Benchmark):
     This class allows to benchmark a power grid scenario which are defined in a config file.
     """
     def __init__(self,
-                 path_benchmark,
-                 path_config: Union[str, None]=None,
+                 benchmark_path: str,
+                 config_path: Union[str, None]=None,
                  benchmark_name="Benchmark1",
                  load_data_set=False,
+                 evaluation=None,
+                 log_path: Union[str, None]=None,
                  train_env_seed: int = 1,
                  val_env_seed: int = 2,
                  test_env_seed: int = 3,
@@ -41,33 +45,27 @@ class PowerGridBenchmark(Benchmark):
                  val_actor_seed: int = 6,
                  test_actor_seed: int = 7,
                  test_ood_topo_actor_seed: int = 8,
-                 evaluation=None,
-                 log_path: Union[str, None]=None
+
                  ):
         # init the super class
         super().__init__(benchmark_name=benchmark_name,
                          dataset=None,
                          augmented_simulator=None,
                          evaluation=evaluation,
-                         path_benchmark=path_benchmark,
-                         log_path=log_path
+                         benchmark_path=benchmark_path,
+                         log_path=log_path,
+                         config_path=config_path
                         )
-        self.config_manager = ConfigManager(self.benchmark_name, path_config)
+
         self.is_loaded=False
-        # create a logger instance
-        self.logger = CustomLogger(__class__.__name__, log_path).logger
-        #self.config = self.config_manager._read_config()
-        #self.config_dict = self.config_manager.get_options_dict()
         # TODO : it should be reset if the config file is modified on the fly
-        # TODO : create it directly in evaluate_simulator function
         if evaluation is None:
-            self.evaluation = PowerGridEvaluation(log_path=log_path)
-            self.evaluation.set_active_dict(self.config_manager.get_option("eval_dict"))
-            
+            self.evaluation = PowerGridEvaluation.from_benchmark(self)
+
         # importing the right module from which the scenarios and actors could be used
-        if self.config_manager.get_option("utils_lib"):
+        if self.config.get_option("utils_lib") is not None:
             try:
-                module_name = self.config_manager.get_option("utils_lib")
+                module_name = self.config.get_option("utils_lib")
                 module = ".".join(("lips", "benchmark", "utils", module_name))
                 self.utils = importlib.import_module(module)
             except ImportError as error:
@@ -95,16 +93,16 @@ class PowerGridBenchmark(Benchmark):
 
         self.initial_chronics_id = initial_chronics_id
         # concatenate all the variables for data generation
-        attr_names = self.config_manager.get_option("attr_x") + \
-                     self.config_manager.get_option("attr_tau") + \
-                     self.config_manager.get_option("attr_y")
+        attr_names = self.config.get_option("attr_x") + \
+                     self.config.get_option("attr_tau") + \
+                     self.config.get_option("attr_y")
 
 
         self.train_dataset = PowerGridDataSet("train",
                                               attr_names=attr_names,
                                               log_path=log_path
                                               )
-                                              
+
         self.val_dataset = PowerGridDataSet("val",
                                             attr_names=attr_names,
                                             log_path=log_path
@@ -119,9 +117,9 @@ class PowerGridBenchmark(Benchmark):
                                                        attr_names=attr_names,
                                                        log_path=log_path
                                                        )
-        
+
         if load_data_set:
-            self.load()     
+            self.load()
 
     def load(self):
         """
@@ -150,10 +148,10 @@ class PowerGridBenchmark(Benchmark):
             warnings.filterwarnings("ignore")
             self._fills_actor_simulator()
         if os.path.exists(self.path_datasets):
-            self.logger.warning(f"Deleting path {self.path_datasets} that might contain previous runs")
+            self.logger.warning("Deleting path %s that might contain previous runs", self.path_datasets)
             shutil.rmtree(self.path_datasets)
 
-        self.logger.info(f"Creating path {self.path_datasets} to save the current data")
+        self.logger.info("Creating path %s to save the current data", self.path_datasets)
         os.mkdir(self.path_datasets)
 
         self.train_dataset.generate(simulator=self.training_simulator,
@@ -178,20 +176,34 @@ class PowerGridBenchmark(Benchmark):
                                              )
 
     def evaluate_simulator(self,
-                           augmented_simulator,
-                           batch_size=32,
-                           # "all" or the list of dataset name on which to perform the evaluation
                            dataset: str = "all",  # TODO
-                           EL_tolerance=0.04,
-                           LCE_tolerance=1e-3,
-                           KCL_tolerance=1e-2,
-                           active_flow=True,
-                           save_path=None  # currently unused
+                           augmented_simulator: Union[PhysicalSimulator, AugmentedSimulator, None] = None,
+                           batch_size: int=32,
+                           save_path: Union[str, None]=None,
+                           active_flow: bool=True
                            ):
+        """evaluate a trained augmented simulator on one or multiple test datasets
+
+        Parameters
+        ----------
+        dataset, optional
+            _description_, by default "all"
+        batch_size, optional
+            _description_, by default 32
+        save_path, optional
+            _description_, by default None
+        active_flow, optional
+            _description_, by default True
+
+        Returns
+        -------
+            evaluation_results: dict
+
+        Raises
+        ------
+        RuntimeError
+            _description_
         """
-        evaluate a trained augmented simulator on one or multiple test datasets
-        """
-        #print("A log file including some verifications is created at root directory with the name logs.log") # TODO: remove this line
         self._create_training_simulator()
         li_dataset = []
         if dataset == "all":
@@ -210,48 +222,29 @@ class PowerGridBenchmark(Benchmark):
             raise RuntimeError(f"Unknown dataset {dataset}")
 
         res = {}
-        for dataset_, nm in zip(li_dataset, keys):
+        for dataset_, nm_ in zip(li_dataset, keys):
             # call the evaluate simulator function of Benchmark class
             tmp = self._aux_evaluate_on_single_dataset(dataset=dataset_,
                                                        augmented_simulator=augmented_simulator,
                                                        batch_size=batch_size,
-                                                       EL_tolerance=EL_tolerance,
-                                                       LCE_tolerance=LCE_tolerance,
-                                                       KCL_tolerance=KCL_tolerance,
                                                        active_flow=active_flow,
                                                        save_path=save_path
                                                       )
-            res[nm] = copy.deepcopy(tmp)
+            res[nm_] = copy.deepcopy(tmp)
         return res
 
     def _aux_evaluate_on_single_dataset(self,
-                                        dataset,
-                                        augmented_simulator,
-                                        batch_size=32,
-                                        EL_tolerance=0.04,
-                                        LCE_tolerance=1e-3,
-                                        KCL_tolerance=1e-2,
-                                        active_flow=True,
-                                        save_path=None):
+                                        dataset: str,
+                                        augmented_simulator: Union[PhysicalSimulator, AugmentedSimulator, None] = None,
+                                        batch_size: int=32,
+                                        active_flow: bool=True,
+                                        save_path: Union[str, None]=None):
         """
         This function will evalute a simulator (physical or augmented) using various criteria predefined in evaluator object
         on a ``single test dataset``. It can be overloaded or called to evaluate the performance on multiple datasets
-        
+
         params
         ------
-            choice: ``str``
-                to compute physic compliances on predictions or on real observations 
-                the choices are `predictions` or `observations`
-            
-            EL_tolerance: ``float``
-                the tolerance used for electrical loss verification
-            
-            LCE_tolerance: ``float``
-                the tolerance used for Law of Conservation of Energy
-
-            KLC_tolerance: ``float``
-                the tolerance used for Kirchhoff's current law
-
             active_flow: ``bool``
                 whether to compute KCL on active (True) or reactive (False) powers
 
@@ -264,7 +257,7 @@ class PowerGridBenchmark(Benchmark):
                                                                             )
         self.augmented_simulator = augmented_simulator
         # TODO: however, we can introduce the batch concept in DC, to have equitable comparison for time complexity
-        if self.augmented_simulator.__class__.__name__ == "DCApproximationAS":
+        if isinstance(self.augmented_simulator, DCApproximationAS):
             predictions = self.augmented_simulator.evaluate(dataset)
         else:
             predictions = self.augmented_simulator.evaluate(dataset, batch_size)
@@ -272,17 +265,20 @@ class PowerGridBenchmark(Benchmark):
         self.predictions[dataset.name] = predictions
         self.observations[dataset.name] = observations
         self.dataset = dataset
-        res = self.evaluation.do_evaluations(env=get_env(self.utils.get_kwargs_simulator_scenario()),
-                                             env_name=None,
-                                             predictions=predictions,
-                                             observations=observations,
-                                             choice="predictions",  # we want to evaluate only the predictions here
-                                             EL_tolerance=EL_tolerance,
-                                             LCE_tolerance=LCE_tolerance,
-                                             KCL_tolerance=KCL_tolerance,
-                                             active_flow=active_flow,
-                                             save_path=save_path  # TODO currently not used
-                                             )
+
+        res = self.evaluation.evaluate(observations=observations,
+                                       predictions=predictions,
+                                       save_path=save_path
+                                       )
+
+        # res = self.evaluation.do_evaluations(env=get_env(self.utils.get_kwargs_simulator_scenario()),
+        #                                      env_name=None,
+        #                                      predictions=predictions,
+        #                                      observations=observations,
+        #                                      choice="predictions",  # we want to evaluate only the predictions here
+        #                                      active_flow=active_flow,
+        #                                      save_path=save_path  # TODO currently not used
+        #                                      )
         self.logger.info("Evaluation on %s dataset was successful!", dataset.name)
         return res
 
