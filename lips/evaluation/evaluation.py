@@ -6,35 +6,31 @@
 # SPDX-License-Identifier: MPL-2.0
 # This file is part of LIPS, LIPS is a python platform for power networks benchmarking
 
-from abc import ABC, abstractmethod
+#from abc import ABC, abstractmethod
 from collections.abc import Iterable
 from typing import Union
 
 from .utils import Mapper
 from ..logger import CustomLogger
 from ..config import ConfigManager
+from ..dataset import DataSet
+from ..benchmark import Benchmark
 
-class Evaluation(ABC):
-    """
+class Evaluation(object):
+    """Evaluation base class
+
     Evaluation class to be implemented for evaluation of an augmented simulator
 
     Examples of such classes are provided in `PowerGridEvaluation` and `TransportEvaluation`
 
-    Functions highlighted by @abstractmethod should be implemented
-
-    Parameters
-    ==========
-    observations: `dict`
-        a dictionary of observations including the key value pairs for test dataset observations
-
-    predictions: `dict`
-        a dictionary of predictions made by an augmented simulator
-
-    config: `ConfigParser` section
-        a section of ConfigParser class giving some parameters for evaluation (thresholds, etc.)
-
-    log_path: `str`
-        the path where the logs should be stored or path to an existing log file
+    Attributes
+    ----------
+    config_path, optional
+        the path where config file could be found, by default None
+    config_section, optional
+        the section of config file to be used for evaluation, by default None
+    log_path, optional
+        the path where the logs should be stored or path to an existing log file, by default None
     """
     MACHINE_LEARNING = "ML"
     PHYSICS_COMPLIANCES = "Physics"
@@ -42,17 +38,19 @@ class Evaluation(ABC):
     OOD_GENERALIZATION = "OOD"
 
     def __init__(self,
-                 observations: Union[dict, None]=None,
-                 predictions: Union[dict, None]=None,
+                 config: Union[ConfigManager, None]=None,
                  config_path: Union[str, None]=None,
                  config_section: Union[str, None]=None,
-                 log_path: Union[str, None]=None):
-        # generic init class to be able evaluate external results
-        self.observations = observations
-        self.predictions = predictions
-        self.config_path = config_path
-        self.config_section = config_section
-        self.config = ConfigManager(self.config_section, path=self.config_path)
+                 log_path: Union[str, None]=None
+                 ):
+
+        if config is None:
+            self.config = ConfigManager(section_name=config_section, path=config_path)
+        else:
+            self.config = config
+
+        self.observations = dict()
+        self.predictions = dict()
         # logger
         self.log_path = log_path
         self.logger = CustomLogger(__class__.__name__, self.log_path).logger
@@ -61,8 +59,10 @@ class Evaluation(ABC):
         self._init_metric_dict()
 
     @classmethod
-    @abstractmethod
-    def from_benchmark(cls, benchmark, config_path, config_section, log_path):
+    #@abstractmethod
+    def from_benchmark(cls,
+                       benchmark: Benchmark,
+                       ):
         """
         Class method to intialize the evaluation from Benchmark instance
 
@@ -71,7 +71,11 @@ class Evaluation(ABC):
         pass
 
     @classmethod
-    def from_dataset(cls, dataset, config_path, config_section, log_path: Union[str, None]=None):
+    def from_dataset(cls,
+                     dataset: DataSet,
+                     config_path: Union[str, None]=None,
+                     config_section: Union[str, None]=None,
+                     log_path: Union[str, None]=None):
         """
         Class method to initialize the evaluation from DataSet instance
         """
@@ -91,8 +95,12 @@ class Evaluation(ABC):
 
         return self.metrics
 
-    def evaluate(self, save_path: Union[str, None]=None) -> dict:
-        """
+    def evaluate(self,
+                 observations: dict,
+                 predictions: dict,
+                 save_path: Union[str, None]=None):
+        """The main function which evaluates all the required criteria provided in config file
+
         This function should be overridden to do all the required evaluations for each category
 
         - ML evaluation
@@ -105,12 +113,22 @@ class Evaluation(ABC):
         - TransportEvaluation
 
         > Notice that, the already minimalist code compute two metrics which are `MSE` and `MAE` from scikit-learn package
-        
+
+        Parameters
+        ----------
+        observations
+            true observations used to evaluate the predictions
+        predictions
+            predictions obtained from augmented simulators
+        save_path, optional
+            path where the results should be saved, by default None
         """
+        self.observations = observations
+        self.predictions = predictions
         self.logger.info("General metrics")
         generic_functions = self.mapper.map_generic_criteria()
         metric_dict = self.metrics[self.MACHINE_LEARNING]
-        
+
         for metric_name, metric_fun in generic_functions.items():
             metric_dict[metric_name] = {}
             for nm_, pred_ in self.predictions.items():
@@ -135,10 +153,10 @@ class Evaluation(ABC):
         It evaluates machine learning specific criteria
         """
         pass
-    
+
     def evaluate_physics(self):
         """
-        It should evaluate Physics Compliances 
+        It should evaluate Physics Compliances
         """
         pass
 
@@ -147,7 +165,7 @@ class Evaluation(ABC):
         It should evaluate the industrial readiness of augmented simulators
         """
         pass
-    
+
     def evaluate_ood(self):
         """
         It should evaluate out-of-distribution capacity of augmented simulators
@@ -158,11 +176,7 @@ class Evaluation(ABC):
         """
         Bonus function
 
-        It taks multiple trained simulators and evaluates them on test datasets and finally it reports the results side by side
+        It taks multiple trained simulators and evaluates them on test datasets
+        and finally it reports the results side by side
         """
         pass
-
-
-
-
-

@@ -11,7 +11,7 @@ Licence:
     This file is part of LIPS, LIPS is a python platform for power networks benchmarking
 """
 
-from typing import Union, Callable
+from typing import Union
 from collections.abc import Iterable
 
 from lips.benchmark import Benchmark
@@ -20,79 +20,73 @@ from ..logger import CustomLogger
 from ..config import ConfigManager
 
 class PowerGridEvaluation(Evaluation):
-    """This class allows the evaluation of augmented simulators applied to power grids cases
+    """Evaluation of the power grid specific metrics
 
     It is a subclass of the Evaluation class
 
     Parameters
     ----------
-    observations
-        _description_, by default None
-    predictions
-        _description_, by default None
+    config, optional
+        an object of `ConfigManager` class
     config_path, optional
         _description_, by default None
-    config_section, optional
-        _description_, by default None
+    scenario, optional
+        one of the Power Grid Scenario names, by default None
     log_path, optional
-        _description_, by default None
+        path where the log should be maintained, by default None
     """
     def __init__(self,
-                 observations: dict,
-                 predictions: dict,
+                 config: Union[ConfigManager, None]=None,
                  config_path: Union[str, None]=None,
-                 config_section: Union[str, None]=None,
+                 scenario: Union[str, None]=None,
                  log_path: Union[str, None]=None
                  ):
-        super().__init__(observations=observations,
-                         predictions=predictions,
+        super().__init__(config=config,
                          config_path=config_path,
-                         config_section=config_section,
+                         config_section=scenario,
                          log_path=log_path
                          )
-        if self.config_section:
-            self.eval_dict = self.config.get_option("eval_dict")
-            self.eval_params = self.config.get_option("eval_params")
-        else:
-            # load the default section
-            self.config = ConfigManager(path=self.config_path)
-            self.eval_dict = self.config.get_option("eval_dict")
-            self.eval_params = self.config.get_option("eval_params")
+        self.eval_dict = self.config.get_option("eval_dict")
+        self.eval_params = self.config.get_option("eval_params")
+
         self.logger = CustomLogger(__class__.__name__, self.log_path).logger
         # read the criteria and their mapped functions for power grid
         self.criteria = self.mapper.map_powergrid_criteria()
 
     @classmethod
     def from_benchmark(cls,
-                       benchmark:Benchmark,
-                       config_path: Union[str, None]=None,
-                       config_section: Union[str, None]=None,
-                       log_path: Union[str, None]=None):
+                       benchmark:Benchmark
+                      ):
         """ Intialize the evaluation class from a benchmark object
 
         Parameters
         ----------
         benchmark
             a benchmark object
-        config_path, optional
-            same as the config_path in the constructor, by default None
-        config_section, optional
-            same as the config_section in the constructor, by default None
-        log_path, optional
-            same as the log_path in the constructor, by default None
 
         Returns
         -------
         PowerGridEvaluation
         """
-        return cls(benchmark.observations, benchmark.predictions, config_path, config_section, log_path)
+        return cls(config=benchmark.config, log_path=benchmark.log_path)
 
-    def evaluate(self, save_path: Union[str, None]=None):
-        """
-        The main function which evaluates all the required criteria noted in config file
+    def evaluate(self,
+                 observations: dict,
+                 predictions: dict,
+                 save_path: Union[str, None]=None):
+        """The main function which evaluates all the required criteria noted in config file
+
+        Parameters
+        ----------
+        observations
+            true observations used to evaluate the predictions
+        predictions
+            predictions obtained from augmented simulators
+        save_path, optional
+            path where the results should be saved, by default None
         """
         # call the base class for generic evaluations
-        super().evaluate()
+        super().evaluate(observations, predictions, save_path)
 
         # evaluate powergrid specific evaluations based on config
         for cat in self.eval_dict.keys():
@@ -106,8 +100,8 @@ class PowerGridEvaluation(Evaluation):
         """
         This helper function select the evaluation function with respect to the category
 
-        params
-        ======
+        Parameters
+        ----------
         category: `str`
             the evaluation criteria category, the values could be one of the [`ML`, `Physics`, `IndRed`, `OOD`]
         """
