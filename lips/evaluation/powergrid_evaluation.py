@@ -11,21 +11,35 @@ Licence:
     This file is part of LIPS, LIPS is a python platform for power networks benchmarking
 """
 
-from typing import Union
+from typing import Union, Callable
 from collections.abc import Iterable
-from pprint import pprint # TODO: to remove (for debugging purpose)
 
+from lips.benchmark import Benchmark
 from .evaluation import Evaluation
 from ..logger import CustomLogger
 from ..config import ConfigManager
 
 class PowerGridEvaluation(Evaluation):
-    """
-    This class allows the evaluation of augmented simulators applied to power grids cases
+    """This class allows the evaluation of augmented simulators applied to power grids cases
+
+    It is a subclass of the Evaluation class
+
+    Parameters
+    ----------
+    observations
+        _description_, by default None
+    predictions
+        _description_, by default None
+    config_path, optional
+        _description_, by default None
+    config_section, optional
+        _description_, by default None
+    log_path, optional
+        _description_, by default None
     """
     def __init__(self,
-                 observations: Union[dict, None]=None,
-                 predictions: Union[dict, None]=None,
+                 observations: dict,
+                 predictions: dict,
                  config_path: Union[str, None]=None,
                  config_section: Union[str, None]=None,
                  log_path: Union[str, None]=None
@@ -41,19 +55,37 @@ class PowerGridEvaluation(Evaluation):
             self.eval_params = self.config.get_option("eval_params")
         else:
             # load the default section
-            self.config = ConfigManager(benchmark_name="DEFAULT", path=self.config_path)
+            self.config = ConfigManager(path=self.config_path)
             self.eval_dict = self.config.get_option("eval_dict")
             self.eval_params = self.config.get_option("eval_params")
         self.logger = CustomLogger(__class__.__name__, self.log_path).logger
         # read the criteria and their mapped functions for power grid
         self.criteria = self.mapper.map_powergrid_criteria()
-        
+
     @classmethod
-    def from_benchmark(cls, benchmark, config=None, log_path=None):
+    def from_benchmark(cls,
+                       benchmark:Benchmark,
+                       config_path: Union[str, None]=None,
+                       config_section: Union[str, None]=None,
+                       log_path: Union[str, None]=None):
+        """ Intialize the evaluation class from a benchmark object
+
+        Parameters
+        ----------
+        benchmark
+            a benchmark object
+        config_path, optional
+            same as the config_path in the constructor, by default None
+        config_section, optional
+            same as the config_section in the constructor, by default None
+        log_path, optional
+            same as the log_path in the constructor, by default None
+
+        Returns
+        -------
+        PowerGridEvaluation
         """
-        Initialize the class from benchmark object
-        """
-        return cls(benchmark.observations, benchmark.predictions, config, log_path)
+        return cls(benchmark.observations, benchmark.predictions, config_path, config_section, log_path)
 
     def evaluate(self, save_path: Union[str, None]=None):
         """
@@ -65,7 +97,7 @@ class PowerGridEvaluation(Evaluation):
         # evaluate powergrid specific evaluations based on config
         for cat in self.eval_dict.keys():
             self._dispatch_evaluation(cat)
-                
+
         # TODO: save the self.metrics variable
         if save_path:
             pass
@@ -118,11 +150,12 @@ class PowerGridEvaluation(Evaluation):
         """
         function that evaluates the physics compliances on given observations
         It comprises various verifications which are:
-            - Basic verifications (current/voltage/loss positivity, current eq, disc_lines)
-            - Verification of law of conservation of energy
-            - Verification of electrical loss
-            - Verification of Kirchhoff's current law
-            - Verification of Joule's law
+
+        - Basic verifications (current/voltage/loss positivity, current eq, disc_lines)
+        - Verification of law of conservation of energy
+        - Verification of electrical loss
+        - Verification of Kirchhoff's current law
+        - Verification of Joule's law
         """
         # an example of how to call the physics compliances
         # physics_compliances.basic_verifier()
