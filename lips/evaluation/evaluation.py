@@ -52,7 +52,7 @@ class Evaluation(ABC):
         self.predictions = predictions
         self.config_path = config_path
         self.config_section = config_section
-        self.config = ConfigManager(benchmark_name=self.config_section, path=self.config_path)
+        self.config = ConfigManager(self.config_section, path=self.config_path)
         # logger
         self.log_path = log_path
         self.logger = CustomLogger(__class__.__name__, self.log_path).logger
@@ -62,7 +62,7 @@ class Evaluation(ABC):
 
     @classmethod
     @abstractmethod
-    def from_benchmark(cls, benchmark, config, log_path: Union[str, None]=None):
+    def from_benchmark(cls, benchmark, config_path, config_section, log_path):
         """
         Class method to intialize the evaluation from Benchmark instance
 
@@ -71,7 +71,7 @@ class Evaluation(ABC):
         pass
 
     @classmethod
-    def from_dataset(cls, dataset, config, log_path: Union[str, None]=None):
+    def from_dataset(cls, dataset, config_path, config_section, log_path: Union[str, None]=None):
         """
         Class method to initialize the evaluation from DataSet instance
         """
@@ -161,7 +161,6 @@ class Evaluation(ABC):
         It taks multiple trained simulators and evaluates them on test datasets and finally it reports the results side by side
         """
         pass
-
 
 
 
