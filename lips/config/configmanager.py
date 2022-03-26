@@ -22,11 +22,11 @@ class ConfigManager(object):
     This class ease the use of config parser for the framework
     """
     def __init__(self,
-                 benchmark_name: str,
+                 section_name: str="DEFAULT",
                  path: Union[str, None] = None
                 ):
         
-        self.benchmark_name = benchmark_name
+        self.section_name = section_name
         self.path_config = None
         if path is None:
             self.path_config = pathlib.Path(__file__).parent.absolute().joinpath("conf.ini")
@@ -43,7 +43,7 @@ class ConfigManager(object):
         function to create a config file if it does not exist already
         """
         if scenario_name is None:
-            scenario_name = self.benchmark_name
+            scenario_name = self.section_name
 
         if path is None:
             path = self.path_config
@@ -64,20 +64,20 @@ class ConfigManager(object):
         """
         return the value for an option under a list format
         """
-        return self._str_to_list(self.config[self.benchmark_name].get(option, fallback=None))
+        return self._str_to_list(self.config[self.section_name].get(option, fallback=None))
 
     def get_options_dict(self):
         """
         retrun a dictionary of all the config options
         """
-        return dict(self.config[self.benchmark_name].items())
+        return dict(self.config[self.section_name].items())
 
     def edit_config_option(self, option: str, value: Union[str, None]=None, scenario_name: Union[str, None]=None):
         """
         to add or edit an option for a scenario
         """
         if scenario_name is None:
-            scenario_name = self.benchmark_name
+            scenario_name = self.section_name
 
         if value is None:
             value = ""
@@ -89,7 +89,7 @@ class ConfigManager(object):
         to remove an option from a config
         """
         if scenario_name is None:
-            scenario_name = self.benchmark_name
+            scenario_name = self.section_name
         if option is None:
             self.config.remove_section(scenario_name)
         else:

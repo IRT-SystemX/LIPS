@@ -21,7 +21,7 @@ from grid2op.Action import CompleteAction
 from lips.physical_simulator import Grid2opSimulator
 from lips.physical_simulator import PhysicsSolver
 from lips.dataset import PowerGridDataSet
-from lips.benchmark import ConfigManager
+from lips.config import ConfigManager
 
 
 class DCApproximationAS(PhysicsSolver):
@@ -40,7 +40,7 @@ class DCApproximationAS(PhysicsSolver):
     def __init__(self,
                  name: str = "dc_approximation",
                  benchmark_name: str = "Benchmark1",
-                 path_config: Union[str, None] = None, 
+                 path_config: Union[str, None] = None,
                  grid_path: Union[str, None] = None,
                  simulator: Union[Grid2opSimulator, None] = None,
                  ):
