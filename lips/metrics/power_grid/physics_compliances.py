@@ -20,11 +20,12 @@ from lips.logger import CustomLogger
 def verify_current_pos(predictions: dict,
                        log_path: Union[str, None]=None,
                        **kwargs):
-    """
+    """current positivity check
+
     Verifies the electrical current positivity at both extremity of power lines a_or >= 0 , a_ex >= 0
 
     Parameters
-    ==========
+    ----------
     predictions: `dict`
         dictionary of predictions made by an augmented simulator
     log_path: `str`
@@ -33,7 +34,7 @@ def verify_current_pos(predictions: dict,
         supplementary arguments (may be required in future)
 
     Returns
-    =======
+    -------
     verifications: `dict`
         a dictionary reporting the evaluation results for both line extremities
     """
@@ -63,11 +64,12 @@ def verify_current_pos(predictions: dict,
 def verify_voltage_pos(predictions:dict,
                        log_path: Union[str, None]=None,
                        **kwargs):
-    """
+    """Voltage positivity check
+
     Verifies the electrical voltage positivity at both extremity of power lines v_or >= 0 , v_ex >= 0
 
     Parameters
-    ==========
+    ----------
     predictions: `dict`
         dictionary of predictions made by an augmented simulator
     log_path: `str`
@@ -95,7 +97,7 @@ def verify_voltage_pos(predictions:dict,
             v_or_errors = np.array(np.where(v_arr < 0)).T
             v_or_violation_proportion = len(v_or_errors) / v_arr.size
             error_v_or = -np.sum(np.minimum(v_arr.flatten(), 0.))
-            logger.info("the sum of negative voltage values (kV) at origin: %.3f", error_v_or)
+            logger.info("the sum of negative voltage values (kV) for %s: %.3f", key_, error_v_or)
             verifications[key_]["indices"] = [(int(el[0]), int(el[1])) for el in v_or_errors]
             verifications[key_]["Error"] = float(error_v_or)
             verifications[key_]["Violation_proportion"] = float(v_or_violation_proportion)
@@ -106,11 +108,12 @@ def verify_voltage_pos(predictions:dict,
 def verify_loss_pos(predictions: dict,
                     log_path: Union[str, None]=None,
                     **kwargs):
-    """
+    """loss positivity check
+
     Verify that the electrical losses are greater than zero at each power line p_or + p_ex >= 0
 
     Parameters
-    ==========
+    ----------
     predictions: `dict`
         dictionary of predictions made by an augmented simulator
     log_path: `str`
@@ -119,8 +122,7 @@ def verify_loss_pos(predictions: dict,
         supplementary arguments (may be required in future)
 
     Returns
-    =======
-    verifications: `dict`
+    -------
         a dictionary reporting the evaluation results
     """
     # logger
@@ -149,11 +151,10 @@ def verify_loss_pos(predictions: dict,
 def verify_disc_lines(predictions: dict,
                       log_path: Union[str, None]=None,
                       **kwargs):
-    """
-    Verifies if the predictions are null for disconnected lines
+    """Verifies if the predictions are null for disconnected lines
 
     Parameters
-    ==========
+    ----------
     predictions: `dict`
         dictionary of predictions made by an augmented simulator
     log_path: `str`
@@ -162,7 +163,7 @@ def verify_disc_lines(predictions: dict,
         supplementary arguments
 
     Returns
-    =======
+    -------
     verifications: `dict`
         a dictionary reporting the evaluation results
     """
@@ -184,7 +185,7 @@ def verify_disc_lines(predictions: dict,
 
     ind_disc = line_status != 1
     len_disc = np.sum(ind_disc)
-    
+
     if np.any(ind_disc):
         for g, key_pairs in zip(("p", "q", "a"), FLOW_VARIABLES):
             if key_pairs[0] in predictions.keys():
@@ -203,18 +204,18 @@ def verify_disc_lines(predictions: dict,
         logger.info("Prediction in presence of line disconnection. Check passed !")
     return verifications
 
-def verify_current_eq(predictions: dict, 
+def verify_current_eq(predictions: dict,
                       log_path: Union[str, None]=None,
                       **kwargs):
     """
-    verify the following relation between p, q and v : 
-        * a_or = sqrt(p_or**2 + q_or**2) / (sqrt(3).v_or) 
+    verify the following relation between p, q and v :
+        * a_or = sqrt(p_or**2 + q_or**2) / (sqrt(3).v_or)
         * a_ex = sqrt(p_ex**2 + q_ex**2) / (sqrt(3).v_ex)
-    
+
     # TODO : update the equations by considering only voltage > 0 cases, hence it does not need eps
 
     Parameters
-    ==========
+    ----------
     predictions: `dict`
         dictionary of predictions made by an augmented simulator
     log_path: `str`
@@ -223,8 +224,7 @@ def verify_current_eq(predictions: dict,
         supplementary parameters (may be required in future)
 
     Returns
-    =======
-    verifications: `dict`
+    -------
         a dictionary reporting the evaluation results
     """
     # logger
@@ -251,33 +251,33 @@ def verify_current_eq(predictions: dict,
 def verify_loss(predictions,
                 log_path: Union[str, None]=None,
                 **kwargs):
-    """
-    Verifies the energy loss. The loss should be between 1 and 4 % of production at each step.
+    """Verify the energy loss
+
+    The loss should be between 1 and 4 % of production at each step.
 
     2 possible way to call the function with two set of information:
         1) indicating only the path to the stored arrays by using the `path` parameter
         2) indicating explicitly the required variables for computing the law which are (prod_p, p_or and p_ex)
 
     Parameters
-    ==========
+    ----------
     predictions: `dict`
         Predictions made by an augmented simulator
     log_path: `str`
         the path where the logs should be saved
-    **kwargs: 
+    **kwargs:
         It should contain `observations` and `config` to load the tolerance
 
     Returns
-    =======
-    verifications: `dict` 
-        It include following keys:
-    
-        EL: `array`
-            array of energy losses for each iteration
-        violation_percentage: `float`
-            percentage of violation of loss
-        failed_indices: `list`
-            The indices of failed cases
+    -------
+    A dictionary comprising following keys:
+
+    - EL: `array`
+        array of energy losses for each iteration
+    - violation_percentage: `float`
+        percentage of violation of loss
+    - failed_indices: `list`
+        The indices of failed cases
     """
     # logger
     logger = CustomLogger("Verify Loss Eq", log_path).logger
@@ -298,12 +298,12 @@ def verify_loss(predictions,
             tolerance = float(tolerance)
     else:
         tolerance = float(config.get_option("eval_params")["EL_tolerance"])
-    
+
 
     verifications = dict()
     failed_indices = None
     violation_percentage = None
-    
+
 
     try:
         prod_p = observations["prod_p"]
@@ -324,7 +324,7 @@ def verify_loss(predictions,
     else:
         logger.info("Verification is done without any violation")
         violation_percentage = 0.
-    
+
     verifications["Law_values"] = el_
     verifications["violation_percentage"] = violation_percentage
     verifications["failed_indices"] = failed_indices
@@ -334,31 +334,30 @@ def verify_energy_conservation(predictions: dict,
                                log_path: Union[str, None]=None,
                                **kwargs
                               ):
-    """
-    This function verifies the law of conservation of energy (LCE) that says : productions = load + loss
+    """This function verifies the law of conservation of energy (LCE)
+
+    productions = load + loss
 
     Parameters
-    ==========
-    predictions: `dict`
+    ----------
+    predictions
         Predictions made by an augmented simulator
-    log_path: `str`
-        the path where the logs should be saved
+    log_path, optional
+        the path where the logs should be saved, by default None
     **kwargs:
         It should contain `observations` and `config` to load the tolerance
 
     Returns
-    =======
-    verifications: `dict`
-        a dictionary with following keys: 
-        - LCE: `array`
-            an array including the law of conservation of energy values stored for each step (observation)
+    -------
+    a dictionary with following keys:
+    - LCE: `array`
+        an array including the law of conservation of energy values stored for each step (observation)
 
-        - violation_percentage: `scalar`
-            a value expressed in percentage to indicate the percentage of 
+    - violation_percentage: `scalar`
+        a value expressed in percentage to indicate the percentage of
 
-        - failed_indices: `array`
-            an array giving the indices of observations that not verify the law given the indicated tolerance
-
+    - failed_indices: `array`
+        an array giving the indices of observations that not verify the law given the indicated tolerance
     """
     # logger
     logger = CustomLogger("Energy Conservation", log_path).logger
@@ -381,7 +380,7 @@ def verify_energy_conservation(predictions: dict,
             tolerance = float(tolerance)
     else:
         tolerance = float(config.get_option("eval_params")["EL_tolerance"])
-    
+
 
     try:
         prod_p = observations["prod_p"]
@@ -411,7 +410,7 @@ def verify_energy_conservation(predictions: dict,
 
 def verify_kcl(env, ref_obs, predictions, tol=1e-3):
     """
-    This function used the check_solution function offered by lightsim2grid package, to 
+    This function used the check_solution function offered by lightsim2grid package, to
     verify the Kirchhoff's current law
 
     params
@@ -422,7 +421,7 @@ def verify_kcl(env, ref_obs, predictions, tol=1e-3):
         ref_obs: `dict`
             the reference data used as ground truth
 
-        predictions: `dict` 
+        predictions: `dict`
             it should include the voltages (V) and the voltage angles (theta)
 
         tol: `float`
@@ -432,7 +431,7 @@ def verify_kcl(env, ref_obs, predictions, tol=1e-3):
     _______
         KCL_value: `float`
             a global float value averaged over all the observations
-        
+
         violation_prop_obs_level: `list`
             violation proportion at observation level
 
@@ -508,7 +507,7 @@ def verify_kcl(env, ref_obs, predictions, tol=1e-3):
             v_list.append(tmp_v)
             tmp_theta = math.radians(np.mean(np.concatenate((theta_or[lor_bus==sub_], theta_ex[lex_bus==sub_]))))
             theta_list.append(tmp_theta)
-        
+
         # computing the complex voltage at each sub station
         Va = np.array(theta_list) # voltage angles
         Vm = np.array(v_list) # voltage magnitudes
@@ -517,16 +516,16 @@ def verify_kcl(env, ref_obs, predictions, tol=1e-3):
         V = Vm * np.exp(1j*Va)
         v[:n_sub] = V
         v[n_sub:] += 100 # TODO: maybe should be adapted when introducing topology changes
-        # as it activates new bus bars. 
+        # as it activates new bus bars.
 
         mismatch = checker.check_solution(v, obs)
-        
+
         # a case which does not respect the selected tolerance
         if np.any(mismatch > tol):
             idx_list.append(id_)
             nodes_violation_count.append(np.sum(mismatch > tol))
 
-    # the proportion of observations including at least one violation at any node 
+    # the proportion of observations including at least one violation at any node
     violation_prop_obs_level = len(idx_list) / n_obs
     # the proportion of substations violating the KCL over all the observations
     violation_prop_node_level = sum(nodes_violation_count) / (n_obs*n_sub)
