@@ -1,6 +1,6 @@
 """
 Usage:
-    ConfigManager ease the use of config files adding extra functionalities above of 
+    ConfigManager ease the use of config files adding extra functionalities above of
     ConfigParser functions
 Licence:
     Copyright (c) 2021, IRT SystemX (https://www.irt-systemx.fr/en/)
@@ -25,14 +25,14 @@ class ConfigManager(object):
                  section_name: str="DEFAULT",
                  path: Union[str, None] = None
                 ):
-        
+
         self.section_name = section_name
         self.path_config = None
         if path is None:
             self.path_config = pathlib.Path(__file__).parent.absolute().joinpath("conf.ini")
         else:
             self.path_config = path
-       
+
         self.config = ConfigParser()
         # if a config file exists already try to load it
         if os.path.exists(self.path_config):
@@ -64,7 +64,10 @@ class ConfigManager(object):
         """
         return the value for an option under a list format
         """
-        return self._str_to_list(self.config[self.section_name].get(option, fallback=None))
+        option = self.config[self.section_name].get(option, fallback=None)
+        if option is not None:
+            option = self._str_to_list(option)
+        return option
 
     def get_options_dict(self):
         """
