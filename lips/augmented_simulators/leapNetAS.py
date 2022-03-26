@@ -21,8 +21,8 @@ import tensorflow.keras.optimizers as tfko
 from leap_net.proxy import ProxyLeapNet
 
 from lips.dataset import DataSet
-from lips.augmented_simulators.augmentedSimulator import AugmentedSimulator
-from lips.benchmark import ConfigManager
+from lips.augmented_simulators import AugmentedSimulator
+from lips.config import ConfigManager
 from lips.logger import CustomLogger
 
 
@@ -61,9 +61,9 @@ class LeapNetAS(AugmentedSimulator):
         if attr_x is not None:
             self._attr_x = attr_x
         # TODO : add try except to verify if neither attr_x and config could be found and print out a runtime error
-        else:            
+        else:
             self._attr_x = self.config_manager.get_option("attr_x")
-        
+
         if attr_tau is not None:
             self._attr_tau = attr_tau
         else:
