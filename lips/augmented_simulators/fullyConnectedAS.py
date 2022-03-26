@@ -29,8 +29,8 @@ with warnings.catch_warnings():
     from tensorflow.keras.layers import Input
 
 from lips.dataset import DataSet
-from lips.benchmark import ConfigManager
-from lips.augmented_simulators.augmentedSimulator import AugmentedSimulator
+from lips.config import ConfigManager
+from lips.augmented_simulators import AugmentedSimulator
 from lips.logger import CustomLogger
 
 
@@ -46,7 +46,7 @@ class FullyConnectedAS(AugmentedSimulator):
 
     "FullyConnectedAS" stands for "Fully Connected neural network used as an Agumented Simulator"
     """
-    def __init__(self, 
+    def __init__(self,
                  name: str = "FullyConnected",
                  benchmark_name: str = "Benchmark1",
                  path_config: Union[str, None] = None,
@@ -101,7 +101,7 @@ class FullyConnectedAS(AugmentedSimulator):
         # this is the keras "model"
         self._model: Union[Model, None] = None
 
-        self.predict_time = None        
+        self.predict_time = None
 
         # create a logger instance
         self.logger = CustomLogger(__class__.__name__, log_path).logger
@@ -169,9 +169,9 @@ class FullyConnectedAS(AugmentedSimulator):
         # the observations used for evaluation
         tmp_obs = dataset.get_data(np.arange(len(dataset)))
         #for attr_nm in self._attr_y:
-        #    self.observations[attr_nm] = tmp_obs = 
+        #    self.observations[attr_nm] = tmp_obs =
         self._observations[dataset.name] = tmp_obs
-        
+
         # process the dataset
         processed_x, _ = self._process_all_dataset(dataset, training=False)
 
@@ -191,7 +191,7 @@ class FullyConnectedAS(AugmentedSimulator):
             predictions[attr_nm] = tmp_res_y[:, prev_:(prev_ + this_var_size)]
             prev_ += this_var_size
         self._predictions[dataset.name] = predictions
-        
+
         #TODO : save the predictions and observations to files np
         if save_values:
             pass
