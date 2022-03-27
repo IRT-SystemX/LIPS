@@ -14,8 +14,8 @@ Licence:
 from typing import Union
 from collections.abc import Iterable
 
-from lips.benchmark import Benchmark
 from .evaluation import Evaluation
+from ..benchmark import Benchmark
 from ..logger import CustomLogger
 from ..config import ConfigManager
 
@@ -73,13 +73,13 @@ class PowerGridEvaluation(Evaluation):
     def evaluate(self,
                  observations: dict,
                  predictions: dict,
-                 save_path: Union[str, None]=None):
+                 save_path: Union[str, None]=None) -> dict:
         """The main function which evaluates all the required criteria noted in config file
 
         Parameters
         ----------
-        observations
-            true observations used to evaluate the predictions
+        dataset
+            DataSet object including true observations used to evaluate the predictions
         predictions
             predictions obtained from augmented simulators
         save_path, optional
@@ -96,9 +96,14 @@ class PowerGridEvaluation(Evaluation):
         if save_path:
             pass
 
+        return self.metrics
+
     def _dispatch_evaluation(self, category: str):
         """
         This helper function select the evaluation function with respect to the category
+
+        In PowerGrid case, the OOD generalization evaluation is performed using `Benchmark` class
+        by iterating over all the datasets
 
         Parameters
         ----------
@@ -106,7 +111,6 @@ class PowerGridEvaluation(Evaluation):
             the evaluation criteria category, the values could be one of the [`ML`, `Physics`, `IndRed`, `OOD`]
         """
         if category == self.MACHINE_LEARNING:
-            # verify if the list is not empty
             if self.eval_dict[category]:
                 self.evaluate_ml()
         if category == self.PHYSICS_COMPLIANCES:
@@ -115,9 +119,6 @@ class PowerGridEvaluation(Evaluation):
         if category == self.INDUSTRIAL_READINESS:
             if self.eval_dict[category]:
                 self.evaluate_industrial_readiness()
-        if category == self.OOD_GENERALIZATION:
-            if self.eval_dict[category]:
-                self.evaluate_ood()
 
     def evaluate_ml(self):
         """
@@ -151,8 +152,6 @@ class PowerGridEvaluation(Evaluation):
         - Verification of Kirchhoff's current law
         - Verification of Joule's law
         """
-        # an example of how to call the physics compliances
-        # physics_compliances.basic_verifier()
         metric_dict = self.metrics[self.PHYSICS_COMPLIANCES]
         for metric_name in self.eval_dict[self.PHYSICS_COMPLIANCES]:
             metric_fun = self.criteria.get(metric_name)
@@ -172,14 +171,3 @@ class PowerGridEvaluation(Evaluation):
 
         """
         metric_dict = self.metrics[self.INDUSTRIAL_READINESS]
-
-    def evaluate_ood(self):
-        """
-        Evaluate the augmented simulators from Out-Of-Distribution Generalization point of view
-
-        It considers a test dataset differently distributed than the learning dataset
-
-        It operates on dataset with name `test_ood_topo_dataset`
-        """
-        metric_dict = self.metrics[self.OOD_GENERALIZATION]
-
