@@ -11,14 +11,6 @@ Licence:
     This file is part of LIPS, LIPS is a python platform for power networks benchmarking
 """
 
-from __future__ import absolute_import
+__all__ = ["ConfigManager"]
 
-from .evaluation import Evaluation
-from .powergrid_evaluation import PowerGridEvaluation
-from .utils import Mapper
-
-__all__ = [
-    "Evaluation",
-    "PowerGridEvaluation",
-    "Mapper"
-]
+from lips.config.configmanager import ConfigManager
