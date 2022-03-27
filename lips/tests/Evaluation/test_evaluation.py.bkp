@@ -1,0 +1,81 @@
+"""
+Usage :
+    Unitary testing of evaluation module
+"""
+import os
+import pickle
+from pprint import pprint
+
+from lips.evaluation import PowerGridEvaluation
+from lips.config import ConfigManager
+
+
+def load_data():
+    """
+    load some data for test
+    """
+    # load some data
+    # test data observations
+    a_file = open(os.path.join(os.path.pardir, "data", "ref_obs.pkl"), "rb")
+    observations = pickle.load(a_file)
+    a_file.close()
+
+    # predictions 
+    a_file = open(os.path.join(os.path.pardir, "data", "predictions_FC_test.pkl"), "rb")
+    predictions = pickle.load(a_file)
+    a_file.close()
+
+    return observations, predictions
+
+def test_evaluation():
+    """
+    test the evaluation class using some test data
+    """
+    observations, predictions = load_data()
+    evaluator = PowerGridEvaluation(observations, predictions)
+    evaluator.evaluate()
+
+    pprint(evaluator.metrics)
+
+def test_evaluation_from_benchmark():
+    """
+    test the evaluation class using from benchmark init class method
+    """
+    class Benchmark:
+        """
+        quick Benchmark class
+        """
+        def __init__(self):
+            self.observations = None
+            self.predictions = None
+    
+    observations, predictions = load_data()
+    benchmark = Benchmark()
+    benchmark.observations = observations
+    benchmark.predictions = predictions
+    evaluator = PowerGridEvaluation.from_benchmark(benchmark)
+    evaluator.evaluate()
+
+    pprint(evaluator.metrics)
+
+def test_evaluation_using_config():
+    """
+    Using config to init the PowerGridEvaluation
+    """
+    #config = ConfigManager(benchmark_name="Benchmark1", path=None)
+    #pprint(config.get_option("eval_dict"))
+    #pprint(config.get_option("eval_params"))
+
+    observations, predictions = load_data()
+    evaluator = PowerGridEvaluation(observations, predictions, config_path=None, config_section="Benchmark1")
+
+    #pprint(evaluator.eval_dict)
+    #pprint(evaluator.eval_params)
+    evaluator.evaluate()
+    pprint(evaluator.metrics.keys())
+    
+
+if __name__ == "__main__":
+    #test_evaluation()
+    #test_evaluation_from_benchmark()
+    test_evaluation_using_config()

@@ -21,9 +21,15 @@ This platform serves as guide for Learning Industrial Physical Simulation (LIPS)
    :maxdepth: 2
    :caption: TECHNICAL DOCUMENTATION
 
-   DataSet
-   Benchmark
-   Evaluation
+   lips.augmented_simulators
+   lips.benchmark
+   lips.config
+   lips.dataset
+   lips.evaluation
+   lips.logger
+   lips.metrics.power_grid
+   lips.metrics
+   lips.physical_simulator
 
 .. toctree::
    :maxdepth: 1
