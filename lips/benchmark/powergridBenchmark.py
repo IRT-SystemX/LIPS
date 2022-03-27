@@ -234,7 +234,7 @@ class PowerGridBenchmark(Benchmark):
         return res
 
     def _aux_evaluate_on_single_dataset(self,
-                                        dataset: str,
+                                        dataset: PowerGridDataSet,
                                         augmented_simulator: Union[PhysicalSimulator, AugmentedSimulator, None] = None,
                                         batch_size: int=32,
                                         active_flow: bool=True,
@@ -261,12 +261,12 @@ class PowerGridBenchmark(Benchmark):
             predictions = self.augmented_simulator.evaluate(dataset)
         else:
             predictions = self.augmented_simulator.evaluate(dataset, batch_size)
-        observations = dataset.get_data(np.arange(len(dataset)))
+
         self.predictions[dataset.name] = predictions
-        self.observations[dataset.name] = observations
+        self.observations[dataset.name] = dataset.data
         self.dataset = dataset
 
-        res = self.evaluation.evaluate(observations=observations,
+        res = self.evaluation.evaluate(observations=dataset.data,
                                        predictions=predictions,
                                        save_path=save_path
                                        )
@@ -279,7 +279,6 @@ class PowerGridBenchmark(Benchmark):
         #                                      active_flow=active_flow,
         #                                      save_path=save_path  # TODO currently not used
         #                                      )
-        self.logger.info("Evaluation on %s dataset was successful!", dataset.name)
         return res
 
     def _create_training_simulator(self):
