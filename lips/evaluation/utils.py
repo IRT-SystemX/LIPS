@@ -39,10 +39,10 @@ class Mapper(object):
         Get a list of generic evaluation functions
         """
         tmp_criteria = {}
-        tmp_criteria.update(MSE=mean_squared_error)
-        tmp_criteria.update(MAE=mean_absolute_error)
+        tmp_criteria.update(MSE_avg=mean_squared_error)
+        tmp_criteria.update(MAE_avg=mean_absolute_error)
         self.criteria.update(copy.deepcopy(tmp_criteria))
-        
+
         return copy.deepcopy(tmp_criteria)
 
     def map_powergrid_criteria(self):
