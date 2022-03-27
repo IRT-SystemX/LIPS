@@ -38,7 +38,10 @@ class ConfigManager(object):
         if os.path.exists(self.path_config):
             self.config = self._read_config(self.path_config)
 
-    def create_config(self, scenario_name: Union[str, None] = None, path: Union[str, None] = None, **kwargs):
+    def create_config(self,
+                      scenario_name: Union[str, None] = None,
+                      path: Union[str, None] = None,
+                      **kwargs):
         """
         function to create a config file if it does not exist already
         """
@@ -52,7 +55,8 @@ class ConfigManager(object):
         try:
             self.config[scenario_name] = {}
         except KeyError as err:
-            raise RuntimeError(f"Invalid scenario_name {scenario_name}. A configuration with this name is already exists in config file.") from err
+            raise RuntimeError(f"Invalid scenario_name {scenario_name}. \
+                     A configuration with this name is already exists in config file.") from err
 
         for key, value in kwargs.items():
             self.config[scenario_name][key] = str(value)
@@ -75,7 +79,10 @@ class ConfigManager(object):
         """
         return dict(self.config[self.section_name].items())
 
-    def edit_config_option(self, option: str, value: Union[str, None]=None, scenario_name: Union[str, None]=None):
+    def edit_config_option(self,
+                           option: str,
+                           value: Union[str, None]=None,
+                           scenario_name: Union[str, None]=None):
         """
         to add or edit an option for a scenario
         """
@@ -87,7 +94,21 @@ class ConfigManager(object):
         self.config.set(scenario_name, option, value)
         return self.config
 
-    def remove_config_option(self, option: Union[str, None], scenario_name: Union[str, None] = None):
+    def remove_section(self, section_name: str):
+        """
+        remove a section from the config file
+
+        Parameters
+        ----------
+        section_name : str
+            the section to remove
+        """
+        self.config.remove_section(section_name)
+        return self.config
+
+    def remove_config_option(self,
+                             option: Union[str, None],
+                             scenario_name: Union[str, None] = None):
         """
         to remove an option from a config
         """
@@ -106,7 +127,7 @@ class ConfigManager(object):
         if path is None:
             path = self.path_config
 
-        with open(path, "wb") as configfile:
+        with open(path, "w", encoding="utf-8") as configfile:
             self.config.write(configfile)
 
     def _read_config(self, path: Union[str, None] = None):
