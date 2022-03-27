@@ -138,14 +138,32 @@ dmypy.json
 #custom ignore folders
 .vscode
 
+# getting started
 getting_started/Analyzing_Benchmark_class.ipynb
 getting_started/03_TrainAnAugmentedSimulator-Copy1.ipynb
 getting_started/3_EvaluateBenchmark2.ipynb
 getting_started/4_EvaluateBenchmark3.ipynb
+getting_started/Untitled.ipynb
 
+# metrics
+lips/metrics/power_grid/BasicVerifier.py.bkp
+lips/metrics/power_grid/Check_energy_conservation.py.bkp
+lips/metrics/power_grid/Check_KCL.py.bkp
+lips/metrics/power_grid/Check_Kirchhoff_current_law.py.bkp
+lips/metrics/power_grid/Check_loss.py.bkp
+lips/metrics/power_grid/metric_percentage.py
 
+# evaluation
+lips/evaluation/Evaluation.py.bkp
+lips/evaluation/Evaluation_new.py.bkp
+lips/evaluation/conf.ini
+lips/evaluation/__init__.py.bkp
 
+# tests
+lips/tests/Evaluation/test_evaluation.py
 
+# LIPS
+logs.log
 
 lips/Outputs/Scenario1/Data/super_test
 lips/Outputs/Scenario1/Data/test
