@@ -35,7 +35,7 @@ class Evaluation(object):
     MACHINE_LEARNING = "ML"
     PHYSICS_COMPLIANCES = "Physics"
     INDUSTRIAL_READINESS = "IndRed"
-    OOD_GENERALIZATION = "OOD"
+    # OOD_GENERALIZATION = "OOD"
 
     def __init__(self,
                  config: Union[ConfigManager, None]=None,
@@ -55,8 +55,7 @@ class Evaluation(object):
         self.log_path = log_path
         self.logger = CustomLogger(__class__.__name__, self.log_path).logger
         self.mapper = Mapper()
-        self.metrics = None
-        self._init_metric_dict()
+        self.metrics = {}
 
     @classmethod
     #@abstractmethod
@@ -81,19 +80,19 @@ class Evaluation(object):
         """
         pass
 
-    def _init_metric_dict(self) -> dict:
+    def __init_metric_dict(self) -> dict:
         """
         Initialize the metrics dictionary structure
 
         It should be called if any modification to default category names
         """
-        self.metrics = {}
-        self.metrics[self.MACHINE_LEARNING] = {}
-        self.metrics[self.PHYSICS_COMPLIANCES] = {}
-        self.metrics[self.INDUSTRIAL_READINESS] = {}
-        self.metrics[self.OOD_GENERALIZATION] = {}
+        metrics_cat = {}
+        metrics_cat[self.MACHINE_LEARNING] = {}
+        metrics_cat[self.PHYSICS_COMPLIANCES] = {}
+        metrics_cat[self.INDUSTRIAL_READINESS] = {}
+        # metrics_cat[self.OOD_GENERALIZATION] = {}
 
-        return self.metrics
+        return metrics_cat
 
     def evaluate(self,
                  observations: dict,
@@ -116,17 +115,19 @@ class Evaluation(object):
 
         Parameters
         ----------
-        observations
-            true observations used to evaluate the predictions
+        dataset
+            DataSet object including true observations used to evaluate the predictions
         predictions
             predictions obtained from augmented simulators
         save_path, optional
             path where the results should be saved, by default None
         """
-        self.observations = observations
+        self.observations = observations #dataset.data
         self.predictions = predictions
-        self.logger.info("General metrics")
+        #self.logger.info("General metrics")
         generic_functions = self.mapper.map_generic_criteria()
+        # create metrics dictionary
+        self.metrics.update(self.__init_metric_dict())
         metric_dict = self.metrics[self.MACHINE_LEARNING]
 
         for metric_name, metric_fun in generic_functions.items():
@@ -139,10 +140,10 @@ class Evaluation(object):
                 tmp = metric_fun(true_, pred_)
                 if isinstance(tmp, Iterable):
                     metric_dict[metric_name][nm_] = [float(el) for el in tmp]
-                    self.logger.info("%s for %s: %s", metric_name, nm_, tmp)
+                    # self.logger.info("%s for %s: %s", metric_name, nm_, tmp)
                 else:
                     metric_dict[metric_name][nm_] = float(tmp)
-                    self.logger.info("%s for %s: %.2f", metric_name, nm_, tmp)
+                    # self.logger.info("%s for %s: %.2f", metric_name, nm_, tmp)
 
         # TODO : don't forget to save the results
         if save_path:
