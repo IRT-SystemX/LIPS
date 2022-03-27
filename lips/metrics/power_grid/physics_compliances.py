@@ -39,7 +39,7 @@ def verify_current_pos(predictions: dict,
         a dictionary reporting the evaluation results for both line extremities
     """
     # logger
-    logger = CustomLogger("Verify Current Positivity", log_path).logger
+    logger = CustomLogger("PhysicsCompliances", log_path).logger
     verifications = dict()
 
     for key_ in ["a_or", "a_ex"]:
@@ -78,12 +78,12 @@ def verify_voltage_pos(predictions:dict,
         supplementary arguments (may be required in future)
 
     Returns
-    =======
+    -------
     verifications: `dict`
         a dictionary reporting the evaluation results for both line extremities
     """
     # logger
-    logger = CustomLogger("verify_voltage_pos", log_path).logger
+    logger = CustomLogger("PhysicsCompliances", log_path).logger
     verifications = dict()
 
     for key_ in ["v_or", "v_ex"]:
@@ -126,7 +126,7 @@ def verify_loss_pos(predictions: dict,
         a dictionary reporting the evaluation results
     """
     # logger
-    logger = CustomLogger("verify_loss_pos", log_path).logger
+    logger = CustomLogger("PhysicsCompliances", log_path).logger
     verifications = dict()
     try:
         p_or = predictions["p_or"]
@@ -169,7 +169,7 @@ def verify_disc_lines(predictions: dict,
     """
     FLOW_VARIABLES = ("p_or", "p_ex", "q_or", "q_ex", "a_or", "a_ex")
     # logger
-    logger = CustomLogger("verify_disc_lines", log_path).logger
+    logger = CustomLogger("PhysicsCompliances", log_path).logger
     try:
         observations = kwargs["observations"]
     except KeyError:
@@ -228,7 +228,7 @@ def verify_current_eq(predictions: dict,
         a dictionary reporting the evaluation results
     """
     # logger
-    logger = CustomLogger("verify_current_eq", log_path).logger
+    logger = CustomLogger("PhysicsCompliances", log_path).logger
     verifications = dict()
     # consider an epsilon value to avoid division by zero
     eps = sys.float_info.epsilon
@@ -246,6 +246,7 @@ def verify_current_eq(predictions: dict,
         a_comp = (np.sqrt(p_arr**2 + q_arr**2) / ((np.sqrt(3) * v_arr)+eps)) * 1000
         verifications["a"+key_+"_deviation"] = [float(el) for el in
             mean_absolute_error(a_arr, a_comp, multioutput='raw_values')]
+        logger.info("Mean absolute error of a"+key_+" : %.3f", verifications["a"+key_+"_deviation"])
     return verifications
 
 def verify_loss(predictions,
@@ -280,7 +281,7 @@ def verify_loss(predictions,
         The indices of failed cases
     """
     # logger
-    logger = CustomLogger("Verify Loss Eq", log_path).logger
+    logger = CustomLogger("PhysicsCompliances(Loss)", log_path).logger
     try:
         observations = kwargs["observations"]
     except KeyError:
@@ -360,7 +361,7 @@ def verify_energy_conservation(predictions: dict,
         an array giving the indices of observations that not verify the law given the indicated tolerance
     """
     # logger
-    logger = CustomLogger("Energy Conservation", log_path).logger
+    logger = CustomLogger("PhysicsCompliances(LCE)", log_path).logger
 
     try:
         observations = kwargs["observations"]
@@ -412,6 +413,8 @@ def verify_kcl(env, ref_obs, predictions, tol=1e-3):
     """
     This function used the check_solution function offered by lightsim2grid package, to
     verify the Kirchhoff's current law
+
+    TODO: how to include environment in the function ?
 
     params
     ------
