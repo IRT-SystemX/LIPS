@@ -1,35 +1,153 @@
 version: 2.1
 
-jobs:
-  run_tests:
+references:
+  dep_key: &dep_key
+              deps4-{{ .Branch }}-{{ checksum "requirements.txt" }}
+
+executors:
+  docker-executor:
     docker:
-      - image: circleci/python:3.8.1
+      - image: cimg/python:3.8.1
+
+commands:
+
+  build:
+    description: "build all the dependencies"
     steps:
       - checkout
-      - run: mkdir test-reports
-      - restore_cache:
-          key: deps1-{{ .Branch }}-{{ checksum "requirements.txt" }}
+      - run: sudo chown -R circleci:circleci /usr/local/bin
+      - restore_cache_dep
       - run:
-          name: Install Python Dependencies in a venv
+          name: Install and activate virtual environment with pip
           command: |
             python3 -m venv venv
             . venv/bin/activate
             pip install --upgrade pip
             pip install -r requirements.txt
+            pip install pytest
+            pip install nbmake pytest-xdist
+            pip install ipykernel
+            python -m ipykernel install --user --name "venv"
+            pip install pylint
+            pip install pylint-exit
+            pip install jupytext --upgrade
+      - change_owner
+      - save_cache_dep
+
+  activate_venv:
+    description: "activate virtual environment"
+    steps:
+      - run: . venv/bin/activate
+
+  restore_cache_dep:
+    description: "restore build caches"
+    steps:
+      - restore_cache:
+          key: *dep_key
+
+  save_cache_dep:
+    description: "save build caches"
+    steps:
       - save_cache:
-          key: deps1-{{ .Branch }}-{{ checksum "requirements.txt" }}
+          key: *dep_key
           paths:
             - "venv"
+
+  store_artifacts_test_results:
+    description: "Upload test summary for display"
+    steps:
+      - store_test_results:
+          path: test-results
+      - store_artifacts:
+          path: test-results
+          destination: tr1
+
+  change_owner:
+    description: "change owner before saving cache"
+    steps:
+      - run: sudo chown -R circleci:circleci ./venv/bin
+      - run: sudo chown -R circleci:circleci ./venv/lib/python3.8/site-packages
+
+jobs:
+  build_dep:
+    executor: docker-executor
+    steps:
+      - build
+
+  run_python_tests:
+    executor: docker-executor
+    steps:
+      - checkout
+      - restore_cache_dep
       - run:
-          name: Run Unit Tests
+          name: "run pytest"
           command: |
             . venv/bin/activate
-            python -m pytest  --html=test-reports/pytest_report.html --self-contained-html
-      - store_test_results:
-          path: test-reports
-      - store_artifacts:
-          path: test-reports
+            python -m pytest ./lips --html=test-results/pytest_report.html --self-contained-html
+      - store_artifacts_test_results
+
+  run_notebook_test:
+    executor: docker-executor
+    steps:
+      - checkout
+      - restore_cache_dep
+      - run:
+          name: "run pytest"
+          command: |
+            . venv/bin/activate
+            pip install -U .
+            jupytext ./getting_started/*.ipynb --update-metadata '{"kernelspec":null}'
+            jupytext ./getting_started/*.ipynb --update-metadata '{"kernelspec":{}}'
+            python -m pytest --nbmake -n=auto ./getting_started --ignore=./getting_started/01_GenerateData.ipynb \
+                                                                --ignore=./getting_started/02_EvaluateBaseline.ipynb \
+                                                                --ignore=./getting_started/03_TrainAnAugmentedSimulator.ipynb \
+                                                                --ignore=./getting_started/04_HyperParameterTuning.ipynb
+      - store_artifacts_test_results
+
+  run_pylint:
+    executor: docker-executor
+    steps:
+      - checkout
+      - restore_cache_dep
+      - run:
+          command: |
+            . venv/bin/activate
+            pylint $(git ls-files '*.py')  || pylint-exit $?
+            if [ $? -ne 0 ]; then
+              echo "An error occurred while running pylint." >&2
+              exit 1
+            fi
+
+  run_tmp:
+    description: "TO BE REMOVED, FOR DEBUGGING"
+    executor: docker-executor
+    steps:
+      - checkout
+      - run:
+          command: |
+            python3 -m venv venv
+            . venv/bin/activate
+            pip list
+            which python
+      - run: pip list
+      - run: which python
+
+
 workflows:
-    build_test:
-      jobs:
-        - run_tests
+  build_and_test:
+    jobs:
+      - build_dep
+
+      - run_python_tests:
+          requires:
+            - build_dep
+
+      - run_notebook_test:
+          requires:
+            - build_dep
+
+      - run_pylint:
+          requires:
+            - build_dep
+
+
