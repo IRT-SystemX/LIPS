@@ -1,0 +1,317 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>lips.physical_simulator package &mdash; LIPS 0.1 documentation</title>
+      <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+      <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
+  <!--[if lt IE 9]>
+    <script src="_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script data-url_root="./" id="documentation_options" src="_static/documentation_options.js"></script>
+        <script src="_static/jquery.js"></script>
+        <script src="_static/underscore.js"></script>
+        <script src="_static/doctools.js"></script>
+    <script src="_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="License" href="license.html" />
+    <link rel="prev" title="lips.metrics package" href="lips.metrics.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+            <a href="index.html" class="icon icon-home"> LIPS
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">GETTING STARTED</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="quickstart.html">Getting started</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">TECHNICAL DOCUMENTATION</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="lips.augmented_simulators.html">augmented_simulators package</a></li>
+<li class="toctree-l1"><a class="reference internal" href="lips.benchmark.html">benchmark package</a></li>
+<li class="toctree-l1"><a class="reference internal" href="lips.config.html">lips.config package</a></li>
+<li class="toctree-l1"><a class="reference internal" href="lips.dataset.html">lips.dataset package</a></li>
+<li class="toctree-l1"><a class="reference internal" href="lips.evaluation.html">lips.evaluation package</a></li>
+<li class="toctree-l1"><a class="reference internal" href="lips.logger.html">lips.logger package</a></li>
+<li class="toctree-l1"><a class="reference internal" href="lips.metrics.power_grid.html">metrics.power_grid package</a></li>
+<li class="toctree-l1"><a class="reference internal" href="lips.metrics.html">lips.metrics package</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">lips.physical_simulator package</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#submodules">Submodules</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#module-lips.physical_simulator.dcApproximationAS">lips.physical_simulator.dcApproximationAS module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#module-lips.physical_simulator.grid2opSimulator">lips.physical_simulator.grid2opSimulator module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#module-lips.physical_simulator.physicalSimulator">lips.physical_simulator.physicalSimulator module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#module-lips.physical_simulator.physicsSolver">lips.physical_simulator.physicsSolver module</a></li>
+</ul>
+</li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">GUIDE</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="license.html">License</a></li>
+<li class="toctree-l1"><a class="reference internal" href="help.html">Help</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="index.html">LIPS</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="index.html" class="icon icon-home"></a> &raquo;</li>
+      <li>lips.physical_simulator package</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="_sources/lips.physical_simulator.rst.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="lips-physical-simulator-package">
+<h1>lips.physical_simulator package<a class="headerlink" href="#lips-physical-simulator-package" title="Permalink to this headline"></a></h1>
+<section id="submodules">
+<h2>Submodules<a class="headerlink" href="#submodules" title="Permalink to this headline"></a></h2>
+</section>
+<section id="module-lips.physical_simulator.dcApproximationAS">
+<span id="lips-physical-simulator-dcapproximationas-module"></span><h2>lips.physical_simulator.dcApproximationAS module<a class="headerlink" href="#module-lips.physical_simulator.dcApproximationAS" title="Permalink to this headline"></a></h2>
+<dl class="py class">
+<dt class="sig sig-object py" id="lips.physical_simulator.dcApproximationAS.DCApproximationAS">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">lips.physical_simulator.dcApproximationAS.</span></span><span class="sig-name descname"><span class="pre">DCApproximationAS</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">name</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'dc_approximation'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">benchmark_name</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'Benchmark1'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">path_config</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">grid_path</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">simulator</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><a class="reference internal" href="#lips.physical_simulator.grid2opSimulator.Grid2opSimulator" title="lips.physical_simulator.grid2opSimulator.Grid2opSimulator"><span class="pre">lips.physical_simulator.grid2opSimulator.Grid2opSimulator</span></a><span class="p"><span class="pre">]</span></span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/lips/physical_simulator/dcApproximationAS.html#DCApproximationAS"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#lips.physical_simulator.dcApproximationAS.DCApproximationAS" title="Permalink to this definition"></a></dt>
+<dd><p>Bases: <a class="reference internal" href="#lips.physical_simulator.physicsSolver.PhysicsSolver" title="lips.physical_simulator.physicsSolver.PhysicsSolver"><code class="xref py py-class docutils literal notranslate"><span class="pre">lips.physical_simulator.physicsSolver.PhysicsSolver</span></code></a></p>
+<p>This class presents a physics solver used for power system flow computation.</p>
+<p>It is based on a physical solver that linearized the powergrid equations and solve this linearization.</p>
+<p># TODO : to remove this description
+The goal of this file is double. First it illustrates that there is no strict difference between an
+“AugmentedSimulator” and a “PhysicalSimulator” (one can be transformed into another). And secondly it serves
+as a example implementation for a specific <cite>AugmentedSimulator</cite>.</p>
+<dl class="py method">
+<dt class="sig sig-object py" id="lips.physical_simulator.dcApproximationAS.DCApproximationAS.evaluate">
+<span class="sig-name descname"><span class="pre">evaluate</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">dataset</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="lips.dataset.html#lips.dataset.powergridDataSet.PowerGridDataSet" title="lips.dataset.powergridDataSet.PowerGridDataSet"><span class="pre">lips.dataset.powergridDataSet.PowerGridDataSet</span></a></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/lips/physical_simulator/dcApproximationAS.html#DCApproximationAS.evaluate"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#lips.physical_simulator.dcApproximationAS.DCApproximationAS.evaluate" title="Permalink to this definition"></a></dt>
+<dd><p>evaluate the model on the whole dataset. It returns a dictionnary with the keys in self._attr_y</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="lips.physical_simulator.dcApproximationAS.DCApproximationAS.init">
+<span class="sig-name descname"><span class="pre">init</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/lips/physical_simulator/dcApproximationAS.html#DCApproximationAS.init"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#lips.physical_simulator.dcApproximationAS.DCApproximationAS.init" title="Permalink to this definition"></a></dt>
+<dd><p>Initialization is done in the constructor for now</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="lips.physical_simulator.dcApproximationAS.DCApproximationAS.process_dataset">
+<span class="sig-name descname"><span class="pre">process_dataset</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">one_example</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/lips/physical_simulator/dcApproximationAS.html#DCApproximationAS.process_dataset"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#lips.physical_simulator.dcApproximationAS.DCApproximationAS.process_dataset" title="Permalink to this definition"></a></dt>
+<dd><p>this function process one data, by setting the solver of this class to the state observed
+in “one_example”</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="lips.physical_simulator.dcApproximationAS.DCApproximationAS.restore">
+<span class="sig-name descname"><span class="pre">restore</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">path</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/lips/physical_simulator/dcApproximationAS.html#DCApproximationAS.restore"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#lips.physical_simulator.dcApproximationAS.DCApproximationAS.restore" title="Permalink to this definition"></a></dt>
+<dd><p>This is not used for now</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="lips.physical_simulator.dcApproximationAS.DCApproximationAS.save">
+<span class="sig-name descname"><span class="pre">save</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">path_out</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/lips/physical_simulator/dcApproximationAS.html#DCApproximationAS.save"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#lips.physical_simulator.dcApproximationAS.DCApproximationAS.save" title="Permalink to this definition"></a></dt>
+<dd><p>this is not used for now.
+Ideally it should save the grid</p>
+</dd></dl>
+
+</dd></dl>
+
+</section>
+<section id="module-lips.physical_simulator.grid2opSimulator">
+<span id="lips-physical-simulator-grid2opsimulator-module"></span><h2>lips.physical_simulator.grid2opSimulator module<a class="headerlink" href="#module-lips.physical_simulator.grid2opSimulator" title="Permalink to this headline"></a></h2>
+<dl class="py class">
+<dt class="sig sig-object py" id="lips.physical_simulator.grid2opSimulator.Grid2opSimulator">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">lips.physical_simulator.grid2opSimulator.</span></span><span class="sig-name descname"><span class="pre">Grid2opSimulator</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">env_kwargs</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">dict</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">initial_chronics_id</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><span class="pre">int</span><span class="p"><span class="pre">]</span></span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">chronics_selected_regex</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/lips/physical_simulator/grid2opSimulator.html#Grid2opSimulator"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#lips.physical_simulator.grid2opSimulator.Grid2opSimulator" title="Permalink to this definition"></a></dt>
+<dd><p>Bases: <a class="reference internal" href="#lips.physical_simulator.physicalSimulator.PhysicalSimulator" title="lips.physical_simulator.physicalSimulator.PhysicalSimulator"><code class="xref py py-class docutils literal notranslate"><span class="pre">lips.physical_simulator.physicalSimulator.PhysicalSimulator</span></code></a></p>
+<p>This simulator uses the <cite>grid2op</cite> package to implement a physical simulator.</p>
+<p>It accepts both grid2op BaseAction and grid2op BaseAgent to modify the internal state of the simulator</p>
+<dl class="py method">
+<dt class="sig sig-object py" id="lips.physical_simulator.grid2opSimulator.Grid2opSimulator.get_state">
+<span class="sig-name descname"><span class="pre">get_state</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/lips/physical_simulator/grid2opSimulator.html#Grid2opSimulator.get_state"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#lips.physical_simulator.grid2opSimulator.Grid2opSimulator.get_state" title="Permalink to this definition"></a></dt>
+<dd><p>The state of the powergrid is, for this class, represented by a tuple:
+- grid2op observation.
+- extra information (can be empty)</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="lips.physical_simulator.grid2opSimulator.Grid2opSimulator.modify_state">
+<span class="sig-name descname"><span class="pre">modify_state</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">actor</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/lips/physical_simulator/grid2opSimulator.html#Grid2opSimulator.modify_state"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#lips.physical_simulator.grid2opSimulator.Grid2opSimulator.modify_state" title="Permalink to this definition"></a></dt>
+<dd><p>It calls <cite>env.step</cite> until a convergence is obtained.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="lips.physical_simulator.grid2opSimulator.Grid2opSimulator.seed">
+<span class="sig-name descname"><span class="pre">seed</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">seed</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/lips/physical_simulator/grid2opSimulator.html#Grid2opSimulator.seed"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#lips.physical_simulator.grid2opSimulator.Grid2opSimulator.seed" title="Permalink to this definition"></a></dt>
+<dd><p>It seeds the environment, for reproducible experiments.
+:param seed: An integer representing the seed.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="lips.physical_simulator.grid2opSimulator.Grid2opSimulator.visualize_network">
+<span class="sig-name descname"><span class="pre">visualize_network</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/lips/physical_simulator/grid2opSimulator.html#Grid2opSimulator.visualize_network"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#lips.physical_simulator.grid2opSimulator.Grid2opSimulator.visualize_network" title="Permalink to this definition"></a></dt>
+<dd><p>This functions shows the network state evolution over time for a given dataset</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="lips.physical_simulator.grid2opSimulator.Grid2opSimulator.visualize_network_reference_topology">
+<span class="sig-name descname"><span class="pre">visualize_network_reference_topology</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">action</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><span class="pre">grid2op.Action.BaseAction.BaseAction</span><span class="p"><span class="pre">]</span></span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">plot_kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/lips/physical_simulator/grid2opSimulator.html#Grid2opSimulator.visualize_network_reference_topology"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#lips.physical_simulator.grid2opSimulator.Grid2opSimulator.visualize_network_reference_topology" title="Permalink to this definition"></a></dt>
+<dd><p>visualize the power network’s reference topology</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="lips.physical_simulator.grid2opSimulator.get_env">
+<span class="sig-prename descclassname"><span class="pre">lips.physical_simulator.grid2opSimulator.</span></span><span class="sig-name descname"><span class="pre">get_env</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">env_kwargs</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">dict</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/lips/physical_simulator/grid2opSimulator.html#get_env"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#lips.physical_simulator.grid2opSimulator.get_env" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+</section>
+<section id="module-lips.physical_simulator.physicalSimulator">
+<span id="lips-physical-simulator-physicalsimulator-module"></span><h2>lips.physical_simulator.physicalSimulator module<a class="headerlink" href="#module-lips.physical_simulator.physicalSimulator" title="Permalink to this headline"></a></h2>
+<dl class="py class">
+<dt class="sig sig-object py" id="lips.physical_simulator.physicalSimulator.PhysicalSimulator">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">lips.physical_simulator.physicalSimulator.</span></span><span class="sig-name descname"><span class="pre">PhysicalSimulator</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">actor_types</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/lips/physical_simulator/physicalSimulator.html#PhysicalSimulator"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#lips.physical_simulator.physicalSimulator.PhysicalSimulator" title="Permalink to this definition"></a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<p>This is the base class representing a physical simulator.</p>
+<p>A physical simulator is an abstraction that is able to perform some computation for
+a given domain, for example powergrid.</p>
+<p>It should have two main functions:</p>
+<ul class="simple">
+<li><p><cite>get_state()</cite> that returns the results of the simulation</p></li>
+<li><p><cite>modify_state(actor)</cite> that modifies its internal state. This one is optional.</p></li>
+</ul>
+<p>In order to use <cite>modify_state</cite> the <cite>actor</cite> should be compatible with
+the simulator <cite>actor_types</cite>.</p>
+<dl class="py method">
+<dt class="sig sig-object py" id="lips.physical_simulator.physicalSimulator.PhysicalSimulator.get_state">
+<span class="sig-name descname"><span class="pre">get_state</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/lips/physical_simulator/physicalSimulator.html#PhysicalSimulator.get_state"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#lips.physical_simulator.physicalSimulator.PhysicalSimulator.get_state" title="Permalink to this definition"></a></dt>
+<dd><p>This function return the state of the simulator.</p>
+<p>It should be implemented for all <cite>PhysicalSimulator</cite> subclasses.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="lips.physical_simulator.physicalSimulator.PhysicalSimulator.modify_state">
+<span class="sig-name descname"><span class="pre">modify_state</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">actor</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/lips/physical_simulator/physicalSimulator.html#PhysicalSimulator.modify_state"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#lips.physical_simulator.physicalSimulator.PhysicalSimulator.modify_state" title="Permalink to this definition"></a></dt>
+<dd><p>This function allows to modify the internal state of the simulator. It is optional.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>actor</strong> – Something that is able to modify the internal state of the simulator. Once modified, another
+call to <cite>physical_simulator.get_results()</cite> might give another results.</p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+</section>
+<section id="module-lips.physical_simulator.physicsSolver">
+<span id="lips-physical-simulator-physicssolver-module"></span><h2>lips.physical_simulator.physicsSolver module<a class="headerlink" href="#module-lips.physical_simulator.physicsSolver" title="Permalink to this headline"></a></h2>
+<dl class="py class">
+<dt class="sig sig-object py" id="lips.physical_simulator.physicsSolver.PhysicsSolver">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">lips.physical_simulator.physicsSolver.</span></span><span class="sig-name descname"><span class="pre">PhysicsSolver</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">name</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/lips/physical_simulator/physicsSolver.html#PhysicsSolver"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#lips.physical_simulator.physicsSolver.PhysicsSolver" title="Permalink to this definition"></a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<p>This class is the Base class that is used to create some “augmented simulator”. These “augmented simulator” can be
+anything that emulates the behaviour of some “simulator”.</p>
+<p>They are meant to use data coming from a <cite>DataSet</cite> to learn from it.</p>
+<dl class="py method">
+<dt class="sig sig-object py" id="lips.physical_simulator.physicsSolver.PhysicsSolver.data_to_dict">
+<span class="sig-name descname"><span class="pre">data_to_dict</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/lips/physical_simulator/physicsSolver.html#PhysicsSolver.data_to_dict"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#lips.physical_simulator.physicsSolver.PhysicsSolver.data_to_dict" title="Permalink to this definition"></a></dt>
+<dd><p>This function should return two dictionaries in the following order
+- the observations used for evaluation
+- corresponding predictions</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="lips.physical_simulator.physicsSolver.PhysicsSolver.evaluate">
+<span class="sig-name descname"><span class="pre">evaluate</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">dataset</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="lips.dataset.html#lips.dataset.dataSet.DataSet" title="lips.dataset.dataSet.DataSet"><span class="pre">DataSet</span></a></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/lips/physical_simulator/physicsSolver.html#PhysicsSolver.evaluate"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#lips.physical_simulator.physicsSolver.PhysicsSolver.evaluate" title="Permalink to this definition"></a></dt>
+<dd><p>evaluate the model on the full dataset</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="lips.physical_simulator.physicsSolver.PhysicsSolver.init">
+<span class="sig-name descname"><span class="pre">init</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/lips/physical_simulator/physicsSolver.html#PhysicsSolver.init"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#lips.physical_simulator.physicsSolver.PhysicsSolver.init" title="Permalink to this definition"></a></dt>
+<dd><p>initialize the “physics simulator”.</p>
+<p>For example, this is where the model should be built in case the augmented simulator used a neural network.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="lips.physical_simulator.physicsSolver.PhysicsSolver.process_dataset">
+<span class="sig-name descname"><span class="pre">process_dataset</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">one_example</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/lips/physical_simulator/physicsSolver.html#PhysicsSolver.process_dataset"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#lips.physical_simulator.physicsSolver.PhysicsSolver.process_dataset" title="Permalink to this definition"></a></dt>
+<dd><p>This function transforms one state of a dataset (one row if you want) into something that can be used by
+the neural network (for example)</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="lips.physical_simulator.physicsSolver.PhysicsSolver.restore">
+<span class="sig-name descname"><span class="pre">restore</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">path</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/lips/physical_simulator/physicsSolver.html#PhysicsSolver.restore"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#lips.physical_simulator.physicsSolver.PhysicsSolver.restore" title="Permalink to this definition"></a></dt>
+<dd><p>restore the grid from the path</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="lips.physical_simulator.physicsSolver.PhysicsSolver.save">
+<span class="sig-name descname"><span class="pre">save</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">path_out</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/lips/physical_simulator/physicsSolver.html#PhysicsSolver.save"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#lips.physical_simulator.physicsSolver.PhysicsSolver.save" title="Permalink to this definition"></a></dt>
+<dd><p>Ideally it should save the grid</p>
+</dd></dl>
+
+</dd></dl>
+
+</section>
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="lips.metrics.html" class="btn btn-neutral float-left" title="lips.metrics package" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="license.html" class="btn btn-neutral float-right" title="License" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2021, IRT SystemX.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

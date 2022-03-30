@@ -1,0 +1,439 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>lips.benchmark.powergridBenchmark &mdash; LIPS 0.1 documentation</title>
+      <link rel="stylesheet" href="../../../_static/pygments.css" type="text/css" />
+      <link rel="stylesheet" href="../../../_static/css/theme.css" type="text/css" />
+  <!--[if lt IE 9]>
+    <script src="../../../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script data-url_root="../../../" id="documentation_options" src="../../../_static/documentation_options.js"></script>
+        <script src="../../../_static/jquery.js"></script>
+        <script src="../../../_static/underscore.js"></script>
+        <script src="../../../_static/doctools.js"></script>
+    <script src="../../../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+            <a href="../../../index.html" class="icon icon-home"> LIPS
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">GETTING STARTED</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../quickstart.html">Getting started</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">TECHNICAL DOCUMENTATION</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../lips.augmented_simulators.html">augmented_simulators package</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../lips.benchmark.html">benchmark package</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../lips.config.html">lips.config package</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../lips.dataset.html">lips.dataset package</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../lips.evaluation.html">lips.evaluation package</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../lips.logger.html">lips.logger package</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../lips.metrics.power_grid.html">metrics.power_grid package</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../lips.metrics.html">lips.metrics package</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../lips.physical_simulator.html">lips.physical_simulator package</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">GUIDE</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../license.html">License</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../help.html">Help</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../../index.html">LIPS</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../../../index.html" class="icon icon-home"></a> &raquo;</li>
+          <li><a href="../../index.html">Module code</a> &raquo;</li>
+      <li>lips.benchmark.powergridBenchmark</li>
+      <li class="wy-breadcrumbs-aside">
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <h1>Source code for lips.benchmark.powergridBenchmark</h1><div class="highlight"><pre>
+<span></span><span class="c1"># Copyright (c) 2021, IRT SystemX (https://www.irt-systemx.fr/en/)</span>
+<span class="c1"># See AUTHORS.txt</span>
+<span class="c1"># This Source Code Form is subject to the terms of the Mozilla Public License, version 2.0.</span>
+<span class="c1"># If a copy of the Mozilla Public License, version 2.0 was not distributed with this file,</span>
+<span class="c1"># you can obtain one at http://mozilla.org/MPL/2.0/.</span>
+<span class="c1"># SPDX-License-Identifier: MPL-2.0</span>
+<span class="c1"># This file is part of LIPS, LIPS is a python platform for power networks benchmarking</span>
+<span class="kn">import</span> <span class="nn">os</span>
+<span class="kn">import</span> <span class="nn">shutil</span>
+<span class="kn">import</span> <span class="nn">warnings</span>
+<span class="kn">import</span> <span class="nn">copy</span>
+<span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Union</span>
+<span class="kn">import</span> <span class="nn">importlib</span>
+<span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+
+<span class="kn">from</span> <span class="nn">lips.physical_simulator.dcApproximationAS</span> <span class="kn">import</span> <span class="n">DCApproximationAS</span>
+
+<span class="kn">from</span> <span class="nn">.</span> <span class="kn">import</span> <span class="n">Benchmark</span>
+
+<span class="kn">from</span> <span class="nn">..augmented_simulators</span> <span class="kn">import</span> <span class="n">AugmentedSimulator</span>
+<span class="kn">from</span> <span class="nn">..physical_simulator</span> <span class="kn">import</span> <span class="n">PhysicalSimulator</span>
+<span class="kn">from</span> <span class="nn">..physical_simulator</span> <span class="kn">import</span> <span class="n">Grid2opSimulator</span>
+<span class="kn">from</span> <span class="nn">..physical_simulator.grid2opSimulator</span> <span class="kn">import</span> <span class="n">get_env</span>
+<span class="kn">from</span> <span class="nn">..dataset</span> <span class="kn">import</span> <span class="n">PowerGridDataSet</span>
+<span class="kn">from</span> <span class="nn">..evaluation</span> <span class="kn">import</span> <span class="n">PowerGridEvaluation</span>
+
+
+<div class="viewcode-block" id="PowerGridBenchmark"><a class="viewcode-back" href="../../../lips.benchmark.html#lips.benchmark.powergridBenchmark.PowerGridBenchmark">[docs]</a><span class="k">class</span> <span class="nc">PowerGridBenchmark</span><span class="p">(</span><span class="n">Benchmark</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    This class allows to benchmark a power grid scenario which are defined in a config file.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span>
+                 <span class="n">benchmark_path</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
+                 <span class="n">config_path</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="kc">None</span><span class="p">]</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+                 <span class="n">benchmark_name</span><span class="o">=</span><span class="s2">&quot;Benchmark1&quot;</span><span class="p">,</span>
+                 <span class="n">load_data_set</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+                 <span class="n">evaluation</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+                 <span class="n">log_path</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="kc">None</span><span class="p">]</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+                 <span class="n">train_env_seed</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">1</span><span class="p">,</span>
+                 <span class="n">val_env_seed</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">2</span><span class="p">,</span>
+                 <span class="n">test_env_seed</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">3</span><span class="p">,</span>
+                 <span class="n">test_ood_topo_env_seed</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">4</span><span class="p">,</span>
+                 <span class="n">initial_chronics_id</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">0</span><span class="p">,</span>
+                 <span class="n">train_actor_seed</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">5</span><span class="p">,</span>
+                 <span class="n">val_actor_seed</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">6</span><span class="p">,</span>
+                 <span class="n">test_actor_seed</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">7</span><span class="p">,</span>
+                 <span class="n">test_ood_topo_actor_seed</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">8</span><span class="p">,</span>
+
+                 <span class="p">):</span>
+        <span class="c1"># init the super class</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">benchmark_name</span><span class="o">=</span><span class="n">benchmark_name</span><span class="p">,</span>
+                         <span class="n">dataset</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+                         <span class="n">augmented_simulator</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+                         <span class="n">evaluation</span><span class="o">=</span><span class="n">evaluation</span><span class="p">,</span>
+                         <span class="n">benchmark_path</span><span class="o">=</span><span class="n">benchmark_path</span><span class="p">,</span>
+                         <span class="n">log_path</span><span class="o">=</span><span class="n">log_path</span><span class="p">,</span>
+                         <span class="n">config_path</span><span class="o">=</span><span class="n">config_path</span>
+                        <span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">is_loaded</span><span class="o">=</span><span class="kc">False</span>
+        <span class="c1"># TODO : it should be reset if the config file is modified on the fly</span>
+        <span class="k">if</span> <span class="n">evaluation</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">evaluation</span> <span class="o">=</span> <span class="n">PowerGridEvaluation</span><span class="o">.</span><span class="n">from_benchmark</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span>
+
+        <span class="c1"># importing the right module from which the scenarios and actors could be used</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">config</span><span class="o">.</span><span class="n">get_option</span><span class="p">(</span><span class="s2">&quot;utils_lib&quot;</span><span class="p">)</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="k">try</span><span class="p">:</span>
+                <span class="n">module_name</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">config</span><span class="o">.</span><span class="n">get_option</span><span class="p">(</span><span class="s2">&quot;utils_lib&quot;</span><span class="p">)</span>
+                <span class="n">module</span> <span class="o">=</span> <span class="s2">&quot;.&quot;</span><span class="o">.</span><span class="n">join</span><span class="p">((</span><span class="s2">&quot;lips&quot;</span><span class="p">,</span> <span class="s2">&quot;benchmark&quot;</span><span class="p">,</span> <span class="s2">&quot;utils&quot;</span><span class="p">,</span> <span class="n">module_name</span><span class="p">))</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">utils</span> <span class="o">=</span> <span class="n">importlib</span><span class="o">.</span><span class="n">import_module</span><span class="p">(</span><span class="n">module</span><span class="p">)</span>
+            <span class="k">except</span> <span class="ne">ImportError</span> <span class="k">as</span> <span class="n">error</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="s2">&quot;The module </span><span class="si">%s</span><span class="s2"> could not be accessed! </span><span class="si">%s</span><span class="s2">&quot;</span><span class="p">,</span> <span class="n">module_name</span><span class="p">,</span> <span class="n">error</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">training_simulator</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">val_simulator</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">test_simulator</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">test_ood_topo_simulator</span> <span class="o">=</span> <span class="kc">None</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">training_actor</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">val_actor</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">test_actor</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">test_ood_topo_actor</span> <span class="o">=</span> <span class="kc">None</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">train_env_seed</span> <span class="o">=</span> <span class="n">train_env_seed</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">val_env_seed</span> <span class="o">=</span> <span class="n">val_env_seed</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">test_env_seed</span> <span class="o">=</span> <span class="n">test_env_seed</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">test_ood_topo_env_seed</span> <span class="o">=</span> <span class="n">test_ood_topo_env_seed</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">train_actor_seed</span> <span class="o">=</span> <span class="n">train_actor_seed</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">val_actor_seed</span> <span class="o">=</span> <span class="n">val_actor_seed</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">test_actor_seed</span> <span class="o">=</span> <span class="n">test_actor_seed</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">test_ood_topo_actor_seed</span> <span class="o">=</span> <span class="n">test_ood_topo_actor_seed</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">initial_chronics_id</span> <span class="o">=</span> <span class="n">initial_chronics_id</span>
+        <span class="c1"># concatenate all the variables for data generation</span>
+        <span class="n">attr_names</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">config</span><span class="o">.</span><span class="n">get_option</span><span class="p">(</span><span class="s2">&quot;attr_x&quot;</span><span class="p">)</span> <span class="o">+</span> \
+                     <span class="bp">self</span><span class="o">.</span><span class="n">config</span><span class="o">.</span><span class="n">get_option</span><span class="p">(</span><span class="s2">&quot;attr_tau&quot;</span><span class="p">)</span> <span class="o">+</span> \
+                     <span class="bp">self</span><span class="o">.</span><span class="n">config</span><span class="o">.</span><span class="n">get_option</span><span class="p">(</span><span class="s2">&quot;attr_y&quot;</span><span class="p">)</span>
+
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">train_dataset</span> <span class="o">=</span> <span class="n">PowerGridDataSet</span><span class="p">(</span><span class="s2">&quot;train&quot;</span><span class="p">,</span>
+                                              <span class="n">attr_names</span><span class="o">=</span><span class="n">attr_names</span><span class="p">,</span>
+                                              <span class="n">log_path</span><span class="o">=</span><span class="n">log_path</span>
+                                              <span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">val_dataset</span> <span class="o">=</span> <span class="n">PowerGridDataSet</span><span class="p">(</span><span class="s2">&quot;val&quot;</span><span class="p">,</span>
+                                            <span class="n">attr_names</span><span class="o">=</span><span class="n">attr_names</span><span class="p">,</span>
+                                            <span class="n">log_path</span><span class="o">=</span><span class="n">log_path</span>
+                                            <span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">_test_dataset</span> <span class="o">=</span> <span class="n">PowerGridDataSet</span><span class="p">(</span><span class="s2">&quot;test&quot;</span><span class="p">,</span>
+                                              <span class="n">attr_names</span><span class="o">=</span><span class="n">attr_names</span><span class="p">,</span>
+                                              <span class="n">log_path</span><span class="o">=</span><span class="n">log_path</span>
+                                              <span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">_test_ood_topo_dataset</span> <span class="o">=</span> <span class="n">PowerGridDataSet</span><span class="p">(</span><span class="s2">&quot;test_ood_topo&quot;</span><span class="p">,</span>
+                                                       <span class="n">attr_names</span><span class="o">=</span><span class="n">attr_names</span><span class="p">,</span>
+                                                       <span class="n">log_path</span><span class="o">=</span><span class="n">log_path</span>
+                                                       <span class="p">)</span>
+
+        <span class="k">if</span> <span class="n">load_data_set</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">load</span><span class="p">()</span>
+
+<div class="viewcode-block" id="PowerGridBenchmark.load"><a class="viewcode-back" href="../../../lips.benchmark.html#lips.benchmark.powergridBenchmark.PowerGridBenchmark.load">[docs]</a>    <span class="k">def</span> <span class="nf">load</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        load the already generated datasets</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">is_loaded</span><span class="p">:</span>
+            <span class="c1">#print(&quot;Previously saved data will be freed and new data will be reloaded&quot;)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;Previously saved data will be freed and new data will be reloaded&quot;</span><span class="p">)</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">exists</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">path_datasets</span><span class="p">):</span>
+            <span class="k">raise</span> <span class="ne">RuntimeError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;No data are found in </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">path_datasets</span><span class="si">}</span><span class="s2">. Have you generated or downloaded &quot;</span>
+                               <span class="sa">f</span><span class="s2">&quot;some data ?&quot;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">train_dataset</span><span class="o">.</span><span class="n">load</span><span class="p">(</span><span class="n">path</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">path_datasets</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">val_dataset</span><span class="o">.</span><span class="n">load</span><span class="p">(</span><span class="n">path</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">path_datasets</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_test_dataset</span><span class="o">.</span><span class="n">load</span><span class="p">(</span><span class="n">path</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">path_datasets</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_test_ood_topo_dataset</span><span class="o">.</span><span class="n">load</span><span class="p">(</span><span class="n">path</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">path_datasets</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">is_loaded</span> <span class="o">=</span> <span class="kc">True</span></div>
+
+<div class="viewcode-block" id="PowerGridBenchmark.generate"><a class="viewcode-back" href="../../../lips.benchmark.html#lips.benchmark.powergridBenchmark.PowerGridBenchmark.generate">[docs]</a>    <span class="k">def</span> <span class="nf">generate</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">nb_sample_train</span><span class="p">,</span> <span class="n">nb_sample_val</span><span class="p">,</span>
+                 <span class="n">nb_sample_test</span><span class="p">,</span> <span class="n">nb_sample_test_ood_topo</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        generate the different datasets required for the benchmark</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">is_loaded</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span><span class="s2">&quot;Previously saved data will be erased by this new generation&quot;</span><span class="p">)</span>
+        <span class="k">with</span> <span class="n">warnings</span><span class="o">.</span><span class="n">catch_warnings</span><span class="p">():</span>
+            <span class="n">warnings</span><span class="o">.</span><span class="n">filterwarnings</span><span class="p">(</span><span class="s2">&quot;ignore&quot;</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_fills_actor_simulator</span><span class="p">()</span>
+        <span class="k">if</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">exists</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">path_datasets</span><span class="p">):</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span><span class="s2">&quot;Deleting path </span><span class="si">%s</span><span class="s2"> that might contain previous runs&quot;</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">path_datasets</span><span class="p">)</span>
+            <span class="n">shutil</span><span class="o">.</span><span class="n">rmtree</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">path_datasets</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;Creating path </span><span class="si">%s</span><span class="s2"> to save the current data&quot;</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">path_datasets</span><span class="p">)</span>
+        <span class="n">os</span><span class="o">.</span><span class="n">mkdir</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">path_datasets</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">train_dataset</span><span class="o">.</span><span class="n">generate</span><span class="p">(</span><span class="n">simulator</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">training_simulator</span><span class="p">,</span>
+                                    <span class="n">actor</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">training_actor</span><span class="p">,</span>
+                                    <span class="n">path_out</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">path_datasets</span><span class="p">,</span>
+                                    <span class="n">nb_samples</span><span class="o">=</span><span class="n">nb_sample_train</span>
+                                    <span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">val_dataset</span><span class="o">.</span><span class="n">generate</span><span class="p">(</span><span class="n">simulator</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">val_simulator</span><span class="p">,</span>
+                                  <span class="n">actor</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">val_actor</span><span class="p">,</span>
+                                  <span class="n">path_out</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">path_datasets</span><span class="p">,</span>
+                                  <span class="n">nb_samples</span><span class="o">=</span><span class="n">nb_sample_val</span>
+                                  <span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_test_dataset</span><span class="o">.</span><span class="n">generate</span><span class="p">(</span><span class="n">simulator</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">test_simulator</span><span class="p">,</span>
+                                    <span class="n">actor</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">test_actor</span><span class="p">,</span>
+                                    <span class="n">path_out</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">path_datasets</span><span class="p">,</span>
+                                    <span class="n">nb_samples</span><span class="o">=</span><span class="n">nb_sample_test</span>
+                                    <span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_test_ood_topo_dataset</span><span class="o">.</span><span class="n">generate</span><span class="p">(</span><span class="n">simulator</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">test_ood_topo_simulator</span><span class="p">,</span>
+                                             <span class="n">actor</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">test_ood_topo_actor</span><span class="p">,</span>
+                                             <span class="n">path_out</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">path_datasets</span><span class="p">,</span>
+                                             <span class="n">nb_samples</span><span class="o">=</span><span class="n">nb_sample_test_ood_topo</span>
+                                             <span class="p">)</span></div>
+
+<div class="viewcode-block" id="PowerGridBenchmark.evaluate_simulator"><a class="viewcode-back" href="../../../lips.benchmark.html#lips.benchmark.powergridBenchmark.PowerGridBenchmark.evaluate_simulator">[docs]</a>    <span class="k">def</span> <span class="nf">evaluate_simulator</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span>
+                           <span class="n">dataset</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;all&quot;</span><span class="p">,</span>  <span class="c1"># TODO</span>
+                           <span class="n">augmented_simulator</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="n">PhysicalSimulator</span><span class="p">,</span> <span class="n">AugmentedSimulator</span><span class="p">,</span> <span class="kc">None</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+                           <span class="n">batch_size</span><span class="p">:</span> <span class="nb">int</span><span class="o">=</span><span class="mi">32</span><span class="p">,</span>
+                           <span class="n">save_path</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="kc">None</span><span class="p">]</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+                           <span class="n">active_flow</span><span class="p">:</span> <span class="nb">bool</span><span class="o">=</span><span class="kc">True</span>
+                           <span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;evaluate a trained augmented simulator on one or multiple test datasets</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        dataset, optional</span>
+<span class="sd">            _description_, by default &quot;all&quot;</span>
+<span class="sd">        batch_size, optional</span>
+<span class="sd">            _description_, by default 32</span>
+<span class="sd">        save_path, optional</span>
+<span class="sd">            _description_, by default None</span>
+<span class="sd">        active_flow, optional</span>
+<span class="sd">            _description_, by default True</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">            evaluation_results: dict</span>
+
+<span class="sd">        Raises</span>
+<span class="sd">        ------</span>
+<span class="sd">        RuntimeError</span>
+<span class="sd">            _description_</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_create_training_simulator</span><span class="p">()</span>
+        <span class="n">li_dataset</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="k">if</span> <span class="n">dataset</span> <span class="o">==</span> <span class="s2">&quot;all&quot;</span><span class="p">:</span>
+            <span class="n">li_dataset</span> <span class="o">=</span> <span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">val_dataset</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_test_dataset</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_test_ood_topo_dataset</span><span class="p">]</span>
+            <span class="n">keys</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;val&quot;</span><span class="p">,</span> <span class="s2">&quot;test&quot;</span><span class="p">,</span> <span class="s2">&quot;test_ood_topo&quot;</span><span class="p">]</span>
+        <span class="k">elif</span> <span class="n">dataset</span> <span class="o">==</span> <span class="s2">&quot;val&quot;</span> <span class="ow">or</span> <span class="n">dataset</span> <span class="o">==</span> <span class="s2">&quot;val_dataset&quot;</span><span class="p">:</span>
+            <span class="n">li_dataset</span> <span class="o">=</span> <span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">val_dataset</span><span class="p">]</span>
+            <span class="n">keys</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;val&quot;</span><span class="p">]</span>
+        <span class="k">elif</span> <span class="n">dataset</span> <span class="o">==</span> <span class="s2">&quot;test&quot;</span> <span class="ow">or</span> <span class="n">dataset</span> <span class="o">==</span> <span class="s2">&quot;test_dataset&quot;</span><span class="p">:</span>
+            <span class="n">li_dataset</span> <span class="o">=</span> <span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">_test_dataset</span><span class="p">]</span>
+            <span class="n">keys</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;test&quot;</span><span class="p">]</span>
+        <span class="k">elif</span> <span class="n">dataset</span> <span class="o">==</span> <span class="s2">&quot;test_ood_topo&quot;</span> <span class="ow">or</span> <span class="n">dataset</span> <span class="o">==</span> <span class="s2">&quot;test_ood_topo_dataset&quot;</span><span class="p">:</span>
+            <span class="n">li_dataset</span> <span class="o">=</span> <span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">_test_ood_topo_dataset</span><span class="p">]</span>
+            <span class="n">keys</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;test_ood_topo&quot;</span><span class="p">]</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">RuntimeError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Unknown dataset </span><span class="si">{</span><span class="n">dataset</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+
+        <span class="n">res</span> <span class="o">=</span> <span class="p">{}</span>
+        <span class="k">for</span> <span class="n">dataset_</span><span class="p">,</span> <span class="n">nm_</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span><span class="n">li_dataset</span><span class="p">,</span> <span class="n">keys</span><span class="p">):</span>
+            <span class="c1"># call the evaluate simulator function of Benchmark class</span>
+            <span class="n">tmp</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_aux_evaluate_on_single_dataset</span><span class="p">(</span><span class="n">dataset</span><span class="o">=</span><span class="n">dataset_</span><span class="p">,</span>
+                                                       <span class="n">augmented_simulator</span><span class="o">=</span><span class="n">augmented_simulator</span><span class="p">,</span>
+                                                       <span class="n">batch_size</span><span class="o">=</span><span class="n">batch_size</span><span class="p">,</span>
+                                                       <span class="n">active_flow</span><span class="o">=</span><span class="n">active_flow</span><span class="p">,</span>
+                                                       <span class="n">save_path</span><span class="o">=</span><span class="n">save_path</span>
+                                                      <span class="p">)</span>
+            <span class="n">res</span><span class="p">[</span><span class="n">nm_</span><span class="p">]</span> <span class="o">=</span> <span class="n">copy</span><span class="o">.</span><span class="n">deepcopy</span><span class="p">(</span><span class="n">tmp</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">res</span></div>
+
+    <span class="k">def</span> <span class="nf">_aux_evaluate_on_single_dataset</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span>
+                                        <span class="n">dataset</span><span class="p">:</span> <span class="n">PowerGridDataSet</span><span class="p">,</span>
+                                        <span class="n">augmented_simulator</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="n">PhysicalSimulator</span><span class="p">,</span> <span class="n">AugmentedSimulator</span><span class="p">,</span> <span class="kc">None</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+                                        <span class="n">batch_size</span><span class="p">:</span> <span class="nb">int</span><span class="o">=</span><span class="mi">32</span><span class="p">,</span>
+                                        <span class="n">active_flow</span><span class="p">:</span> <span class="nb">bool</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+                                        <span class="n">save_path</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="kc">None</span><span class="p">]</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        This function will evalute a simulator (physical or augmented) using various criteria predefined in evaluator object</span>
+<span class="sd">        on a ``single test dataset``. It can be overloaded or called to evaluate the performance on multiple datasets</span>
+
+<span class="sd">        params</span>
+<span class="sd">        ------</span>
+<span class="sd">            active_flow: ``bool``</span>
+<span class="sd">                whether to compute KCL on active (True) or reactive (False) powers</span>
+
+<span class="sd">            save_path: ``str`` or ``None``</span>
+<span class="sd">                if indicated the evaluation results will be saved to indicated path</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;Benchmark </span><span class="si">%s</span><span class="s2">, evaluation using </span><span class="si">%s</span><span class="s2"> on </span><span class="si">%s</span><span class="s2"> dataset&quot;</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">benchmark_name</span><span class="p">,</span>
+                                                                            <span class="n">augmented_simulator</span><span class="o">.</span><span class="n">name</span><span class="p">,</span>
+                                                                            <span class="n">dataset</span><span class="o">.</span><span class="n">name</span>
+                                                                            <span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">augmented_simulator</span> <span class="o">=</span> <span class="n">augmented_simulator</span>
+        <span class="c1"># TODO: however, we can introduce the batch concept in DC, to have equitable comparison for time complexity</span>
+        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">augmented_simulator</span><span class="p">,</span> <span class="n">DCApproximationAS</span><span class="p">):</span>
+            <span class="n">predictions</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">augmented_simulator</span><span class="o">.</span><span class="n">evaluate</span><span class="p">(</span><span class="n">dataset</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">predictions</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">augmented_simulator</span><span class="o">.</span><span class="n">evaluate</span><span class="p">(</span><span class="n">dataset</span><span class="p">,</span> <span class="n">batch_size</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">predictions</span><span class="p">[</span><span class="n">dataset</span><span class="o">.</span><span class="n">name</span><span class="p">]</span> <span class="o">=</span> <span class="n">predictions</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">observations</span><span class="p">[</span><span class="n">dataset</span><span class="o">.</span><span class="n">name</span><span class="p">]</span> <span class="o">=</span> <span class="n">dataset</span><span class="o">.</span><span class="n">data</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">dataset</span> <span class="o">=</span> <span class="n">dataset</span>
+
+        <span class="n">res</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">evaluation</span><span class="o">.</span><span class="n">evaluate</span><span class="p">(</span><span class="n">observations</span><span class="o">=</span><span class="n">dataset</span><span class="o">.</span><span class="n">data</span><span class="p">,</span>
+                                       <span class="n">predictions</span><span class="o">=</span><span class="n">predictions</span><span class="p">,</span>
+                                       <span class="n">save_path</span><span class="o">=</span><span class="n">save_path</span>
+                                       <span class="p">)</span>
+
+        <span class="c1"># res = self.evaluation.do_evaluations(env=get_env(self.utils.get_kwargs_simulator_scenario()),</span>
+        <span class="c1">#                                      env_name=None,</span>
+        <span class="c1">#                                      predictions=predictions,</span>
+        <span class="c1">#                                      observations=observations,</span>
+        <span class="c1">#                                      choice=&quot;predictions&quot;,  # we want to evaluate only the predictions here</span>
+        <span class="c1">#                                      active_flow=active_flow,</span>
+        <span class="c1">#                                      save_path=save_path  # TODO currently not used</span>
+        <span class="c1">#                                      )</span>
+        <span class="k">return</span> <span class="n">res</span>
+
+    <span class="k">def</span> <span class="nf">_create_training_simulator</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;&quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">training_simulator</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">training_simulator</span> <span class="o">=</span> <span class="n">Grid2opSimulator</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">utils</span><span class="o">.</span><span class="n">get_kwargs_simulator_scenario</span><span class="p">(),</span>
+                                                       <span class="n">initial_chronics_id</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">initial_chronics_id</span><span class="p">,</span>
+                                                       <span class="c1"># i use 994 chronics out of the 904 for training</span>
+                                                       <span class="n">chronics_selected_regex</span><span class="o">=</span><span class="s2">&quot;^((?!(.*9[0-9][0-9].*)).)*$&quot;</span>
+                                                       <span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">_fills_actor_simulator</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;This function is only called when the data are simulated&quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_create_training_simulator</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">training_simulator</span><span class="o">.</span><span class="n">seed</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">train_env_seed</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">val_simulator</span> <span class="o">=</span> <span class="n">Grid2opSimulator</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">utils</span><span class="o">.</span><span class="n">get_kwargs_simulator_scenario</span><span class="p">(),</span>
+                                              <span class="n">initial_chronics_id</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">initial_chronics_id</span><span class="p">,</span>
+                                              <span class="c1"># i use 50 full chronics for testing</span>
+                                              <span class="n">chronics_selected_regex</span><span class="o">=</span><span class="s2">&quot;.*9[0-4][0-9].*&quot;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">val_simulator</span><span class="o">.</span><span class="n">seed</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">val_env_seed</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">test_simulator</span> <span class="o">=</span> <span class="n">Grid2opSimulator</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">utils</span><span class="o">.</span><span class="n">get_kwargs_simulator_scenario</span><span class="p">(),</span>
+                                               <span class="n">initial_chronics_id</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">initial_chronics_id</span><span class="p">,</span>
+                                               <span class="c1"># i use 25 full chronics for testing</span>
+                                               <span class="n">chronics_selected_regex</span><span class="o">=</span><span class="s2">&quot;.*9[5-9][0-4].*&quot;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">test_simulator</span><span class="o">.</span><span class="n">seed</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">test_env_seed</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">test_ood_topo_simulator</span> <span class="o">=</span> <span class="n">Grid2opSimulator</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">utils</span><span class="o">.</span><span class="n">get_kwargs_simulator_scenario</span><span class="p">(),</span>
+                                                        <span class="n">initial_chronics_id</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">initial_chronics_id</span><span class="p">,</span>
+                                                        <span class="c1"># i use 25 full chronics for testing</span>
+                                                        <span class="n">chronics_selected_regex</span><span class="o">=</span><span class="s2">&quot;.*9[5-9][5-9].*&quot;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">test_ood_topo_simulator</span><span class="o">.</span><span class="n">seed</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">test_ood_topo_env_seed</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">training_actor</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">utils</span><span class="o">.</span><span class="n">get_actor_training_scenario</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">training_simulator</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">training_actor</span><span class="o">.</span><span class="n">seed</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">train_actor_seed</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">val_actor</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">utils</span><span class="o">.</span><span class="n">get_actor_test_scenario</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">val_simulator</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">val_actor</span><span class="o">.</span><span class="n">seed</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">val_actor_seed</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">test_actor</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">utils</span><span class="o">.</span><span class="n">get_actor_test_scenario</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">test_simulator</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">test_actor</span><span class="o">.</span><span class="n">seed</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">test_actor_seed</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">test_ood_topo_actor</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">utils</span><span class="o">.</span><span class="n">get_actor_test_ood_topo_scenario</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">test_ood_topo_simulator</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">test_ood_topo_actor</span><span class="o">.</span><span class="n">seed</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">test_ood_topo_actor_seed</span><span class="p">)</span></div>
+</pre></div>
+
+           </div>
+          </div>
+          <footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2021, IRT SystemX.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

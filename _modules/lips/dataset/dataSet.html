@@ -1,0 +1,238 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>lips.dataset.dataSet &mdash; LIPS 0.1 documentation</title>
+      <link rel="stylesheet" href="../../../_static/pygments.css" type="text/css" />
+      <link rel="stylesheet" href="../../../_static/css/theme.css" type="text/css" />
+  <!--[if lt IE 9]>
+    <script src="../../../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script data-url_root="../../../" id="documentation_options" src="../../../_static/documentation_options.js"></script>
+        <script src="../../../_static/jquery.js"></script>
+        <script src="../../../_static/underscore.js"></script>
+        <script src="../../../_static/doctools.js"></script>
+    <script src="../../../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+            <a href="../../../index.html" class="icon icon-home"> LIPS
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">GETTING STARTED</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../quickstart.html">Getting started</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">TECHNICAL DOCUMENTATION</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../lips.augmented_simulators.html">augmented_simulators package</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../lips.benchmark.html">benchmark package</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../lips.config.html">lips.config package</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../lips.dataset.html">lips.dataset package</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../lips.evaluation.html">lips.evaluation package</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../lips.logger.html">lips.logger package</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../lips.metrics.power_grid.html">metrics.power_grid package</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../lips.metrics.html">lips.metrics package</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../lips.physical_simulator.html">lips.physical_simulator package</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">GUIDE</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../license.html">License</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../help.html">Help</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../../index.html">LIPS</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../../../index.html" class="icon icon-home"></a> &raquo;</li>
+          <li><a href="../../index.html">Module code</a> &raquo;</li>
+      <li>lips.dataset.dataSet</li>
+      <li class="wy-breadcrumbs-aside">
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <h1>Source code for lips.dataset.dataSet</h1><div class="highlight"><pre>
+<span></span><span class="c1"># copyright (c) 2021-2022, IRT SystemX and RTE (https://www.irt-systemx.fr/)</span>
+<span class="c1"># See AUTHORS.txt</span>
+<span class="c1"># This Source Code Form is subject to the terms of the Mozilla Public License, version 2.0.</span>
+<span class="c1"># If a copy of the Mozilla Public License, version 2.0 was not distributed with this file,</span>
+<span class="c1"># you can obtain one at http://mozilla.org/MPL/2.0/.</span>
+<span class="c1"># SPDX-License-Identifier: MPL-2.0</span>
+<span class="c1"># This file is part of LIPS, LIPS is a python platform for power networks benchmarking</span>
+
+<span class="kn">from</span> <span class="nn">lips.physical_simulator</span> <span class="kn">import</span> <span class="n">PhysicalSimulator</span>
+
+
+<div class="viewcode-block" id="DataSet"><a class="viewcode-back" href="../../../lips.dataset.html#lips.dataset.dataSet.DataSet">[docs]</a><span class="k">class</span> <span class="nc">DataSet</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    This class represent a single dataset, that comes from a database (coming either from real world application</span>
+<span class="sd">    or from generated data)</span>
+
+<span class="sd">    If implemented it also offers the possibility to generate data. The data generation might come from a simulator</span>
+<span class="sd">    that will be called when generating the dataset.</span>
+
+<span class="sd">    This is the base class of all DataSet in LIPS repository</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">name</span> <span class="o">=</span> <span class="n">name</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">data</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">size</span> <span class="o">=</span> <span class="mi">0</span>
+
+    <span class="k">def</span> <span class="fm">__len__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">size</span>
+
+<div class="viewcode-block" id="DataSet.generate"><a class="viewcode-back" href="../../../lips.dataset.html#lips.dataset.dataSet.DataSet.generate">[docs]</a>    <span class="k">def</span> <span class="nf">generate</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span>
+                 <span class="n">simulator</span><span class="p">,</span>
+                 <span class="n">actor</span><span class="p">,</span>
+                 <span class="n">path_out</span><span class="p">,</span>
+                 <span class="n">nb_samples</span><span class="p">,</span>
+                 <span class="n">simulator_seed</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+                 <span class="n">actor_seed</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;function to generate some data. It takes a &quot;simulator&quot; as input and will save the results into</span>
+<span class="sd">        path_out.</span>
+
+<span class="sd">        We expect that the results are saved in `path_out/simulation_name` if they are stored</span>
+<span class="sd">        in plain text. Otherwise, if stored in a database we expect them to have (at least) some metadata involving the</span>
+<span class="sd">        the `simulation_name`.</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        simulator:</span>
+<span class="sd">            A simulator. The exact definition of the interface of the simulator is for now free. This means that a</span>
+<span class="sd">            specific dataset class should be used for all different usecase.</span>
+
+<span class="sd">        actor:</span>
+<span class="sd">            Something that is able to modify the simulator to generate different kind of data. It can be ``None``</span>
+<span class="sd">            if this is irrelevant.</span>
+
+<span class="sd">        path_out:</span>
+<span class="sd">            The path where the data should be saved</span>
+
+<span class="sd">        nb_samples:</span>
+<span class="sd">            The number of &quot;step&quot; to generate</span>
+
+<span class="sd">        simulator_seed:</span>
+<span class="sd">            Seed used to set the simulator for reproducible experiments</span>
+
+<span class="sd">        actor_seed:</span>
+<span class="sd">            Seed used to set the actor for reproducible experiments</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">assert</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">simulator</span><span class="p">,</span> <span class="n">PhysicalSimulator</span><span class="p">),</span> <span class="sa">f</span><span class="s2">&quot;simulator should be a derived type of `PhysicalSimulator` &quot;</span> \
+                                                         <span class="sa">f</span><span class="s2">&quot;you provided </span><span class="si">{</span><span class="nb">type</span><span class="p">(</span><span class="n">simulator</span><span class="p">)</span><span class="si">}</span><span class="s2">&quot;</span>
+        <span class="k">if</span> <span class="n">actor</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="ow">and</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">actor</span><span class="p">,</span> <span class="n">simulator</span><span class="o">.</span><span class="n">actor_types</span><span class="p">):</span>
+            <span class="k">raise</span> <span class="ne">RuntimeError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;actor should be compatible with your simulator. You provided an actor of &quot;</span>
+                               <span class="sa">f</span><span class="s2">&quot;type </span><span class="si">{</span><span class="nb">type</span><span class="p">(</span><span class="n">actor</span><span class="p">)</span><span class="si">}</span><span class="s2"> while your simulator accepts only actor from types &quot;</span>
+                               <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">simulator</span><span class="o">.</span><span class="n">actor_types</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="DataSet.load"><a class="viewcode-back" href="../../../lips.dataset.html#lips.dataset.dataSet.DataSet.load">[docs]</a>    <span class="k">def</span> <span class="nf">load</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">path</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        This function loads a dataset previously generated, for example by a call to `generate` it is expected</span>
+<span class="sd">        to fail if it cannot match a dataset with the right experiment_name and &quot;simulation_name&quot;</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        path:</span>
+<span class="sd">            The path to look for the dataset</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">pass</span></div>
+
+<div class="viewcode-block" id="DataSet.sample"><a class="viewcode-back" href="../../../lips.dataset.html#lips.dataset.dataSet.DataSet.sample">[docs]</a>    <span class="k">def</span> <span class="nf">sample</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">nb_sample</span><span class="p">,</span> <span class="n">sampler</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        This functions samples uniformely at random some elements amongst the `self.data`</span>
+
+<span class="sd">        If `nb_sample` is higher than the number of data in self.data then it samples with replacements.</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        nb_sample:</span>
+<span class="sd">            Number of samples to sample from the dataset</span>
+
+<span class="sd">        sampler:</span>
+<span class="sd">            Currently unused, will be used to implement more complex sampling method</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">data</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">RuntimeError</span><span class="p">(</span><span class="s2">&quot;Impossible to sample from a non initialized dataset. &quot;</span>
+                               <span class="s2">&quot;Have you called `dataset.load(...)` &quot;</span>
+                               <span class="s2">&quot;or `dataset.generate(...)` ?&quot;</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="DataSet.get_data"><a class="viewcode-back" href="../../../lips.dataset.html#lips.dataset.dataSet.DataSet.get_data">[docs]</a>    <span class="k">def</span> <span class="nf">get_data</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">index</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        This function returns the data in the data that match the index `index`</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        index:</span>
+<span class="sd">            A list of integer</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">data</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">RuntimeError</span><span class="p">(</span><span class="s2">&quot;Impossible to get_data from a non initialized dataset. &quot;</span>
+                               <span class="s2">&quot;Have you called `dataset.load(...)` &quot;</span>
+                               <span class="s2">&quot;or `dataset.generate(...)` ?&quot;</span><span class="p">)</span></div></div>
+</pre></div>
+
+           </div>
+          </div>
+          <footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2021, IRT SystemX.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

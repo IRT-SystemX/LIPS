@@ -1,0 +1,296 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>lips.evaluation.evaluation &mdash; LIPS 0.1 documentation</title>
+      <link rel="stylesheet" href="../../../_static/pygments.css" type="text/css" />
+      <link rel="stylesheet" href="../../../_static/css/theme.css" type="text/css" />
+  <!--[if lt IE 9]>
+    <script src="../../../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script data-url_root="../../../" id="documentation_options" src="../../../_static/documentation_options.js"></script>
+        <script src="../../../_static/jquery.js"></script>
+        <script src="../../../_static/underscore.js"></script>
+        <script src="../../../_static/doctools.js"></script>
+    <script src="../../../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+            <a href="../../../index.html" class="icon icon-home"> LIPS
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">GETTING STARTED</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../quickstart.html">Getting started</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">TECHNICAL DOCUMENTATION</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../lips.augmented_simulators.html">augmented_simulators package</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../lips.benchmark.html">benchmark package</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../lips.config.html">lips.config package</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../lips.dataset.html">lips.dataset package</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../lips.evaluation.html">lips.evaluation package</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../lips.logger.html">lips.logger package</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../lips.metrics.power_grid.html">metrics.power_grid package</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../lips.metrics.html">lips.metrics package</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../lips.physical_simulator.html">lips.physical_simulator package</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">GUIDE</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../license.html">License</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../help.html">Help</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../../index.html">LIPS</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../../../index.html" class="icon icon-home"></a> &raquo;</li>
+          <li><a href="../../index.html">Module code</a> &raquo;</li>
+      <li>lips.evaluation.evaluation</li>
+      <li class="wy-breadcrumbs-aside">
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <h1>Source code for lips.evaluation.evaluation</h1><div class="highlight"><pre>
+<span></span><span class="c1"># Copyright (c) 2021, IRT SystemX (https://www.irt-systemx.fr/en/)</span>
+<span class="c1"># See AUTHORS.txt</span>
+<span class="c1"># This Source Code Form is subject to the terms of the Mozilla Public License, version 2.0.</span>
+<span class="c1"># If a copy of the Mozilla Public License, version 2.0 was not distributed with this file,</span>
+<span class="c1"># you can obtain one at http://mozilla.org/MPL/2.0/.</span>
+<span class="c1"># SPDX-License-Identifier: MPL-2.0</span>
+<span class="c1"># This file is part of LIPS, LIPS is a python platform for power networks benchmarking</span>
+
+<span class="c1">#from abc import ABC, abstractmethod</span>
+<span class="kn">from</span> <span class="nn">collections.abc</span> <span class="kn">import</span> <span class="n">Iterable</span>
+<span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Union</span>
+
+<span class="kn">from</span> <span class="nn">.utils</span> <span class="kn">import</span> <span class="n">Mapper</span>
+<span class="kn">from</span> <span class="nn">..logger</span> <span class="kn">import</span> <span class="n">CustomLogger</span>
+<span class="kn">from</span> <span class="nn">..config</span> <span class="kn">import</span> <span class="n">ConfigManager</span>
+<span class="kn">from</span> <span class="nn">..dataset</span> <span class="kn">import</span> <span class="n">DataSet</span>
+<span class="kn">from</span> <span class="nn">..benchmark</span> <span class="kn">import</span> <span class="n">Benchmark</span>
+
+<div class="viewcode-block" id="Evaluation"><a class="viewcode-back" href="../../../lips.evaluation.html#lips.evaluation.evaluation.Evaluation">[docs]</a><span class="k">class</span> <span class="nc">Evaluation</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Evaluation base class</span>
+
+<span class="sd">    Evaluation class to be implemented for evaluation of an augmented simulator</span>
+
+<span class="sd">    Examples of such classes are provided in `PowerGridEvaluation` and `TransportEvaluation`</span>
+
+<span class="sd">    Attributes</span>
+<span class="sd">    ----------</span>
+<span class="sd">    config_path, optional</span>
+<span class="sd">        the path where config file could be found, by default None</span>
+<span class="sd">    config_section, optional</span>
+<span class="sd">        the section of config file to be used for evaluation, by default None</span>
+<span class="sd">    log_path, optional</span>
+<span class="sd">        the path where the logs should be stored or path to an existing log file, by default None</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">MACHINE_LEARNING</span> <span class="o">=</span> <span class="s2">&quot;ML&quot;</span>
+    <span class="n">PHYSICS_COMPLIANCES</span> <span class="o">=</span> <span class="s2">&quot;Physics&quot;</span>
+    <span class="n">INDUSTRIAL_READINESS</span> <span class="o">=</span> <span class="s2">&quot;IndRed&quot;</span>
+    <span class="c1"># OOD_GENERALIZATION = &quot;OOD&quot;</span>
+
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span>
+                 <span class="n">config</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="n">ConfigManager</span><span class="p">,</span> <span class="kc">None</span><span class="p">]</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+                 <span class="n">config_path</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="kc">None</span><span class="p">]</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+                 <span class="n">config_section</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="kc">None</span><span class="p">]</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+                 <span class="n">log_path</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="kc">None</span><span class="p">]</span><span class="o">=</span><span class="kc">None</span>
+                 <span class="p">):</span>
+
+        <span class="k">if</span> <span class="n">config</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">config</span> <span class="o">=</span> <span class="n">ConfigManager</span><span class="p">(</span><span class="n">section_name</span><span class="o">=</span><span class="n">config_section</span><span class="p">,</span> <span class="n">path</span><span class="o">=</span><span class="n">config_path</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">config</span> <span class="o">=</span> <span class="n">config</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">observations</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">predictions</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">()</span>
+        <span class="c1"># logger</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">log_path</span> <span class="o">=</span> <span class="n">log_path</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">logger</span> <span class="o">=</span> <span class="n">CustomLogger</span><span class="p">(</span><span class="vm">__class__</span><span class="o">.</span><span class="vm">__name__</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">log_path</span><span class="p">)</span><span class="o">.</span><span class="n">logger</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">mapper</span> <span class="o">=</span> <span class="n">Mapper</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">metrics</span> <span class="o">=</span> <span class="p">{}</span>
+
+<div class="viewcode-block" id="Evaluation.from_benchmark"><a class="viewcode-back" href="../../../lips.evaluation.html#lips.evaluation.evaluation.Evaluation.from_benchmark">[docs]</a>    <span class="nd">@classmethod</span>
+    <span class="c1">#@abstractmethod</span>
+    <span class="k">def</span> <span class="nf">from_benchmark</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span>
+                       <span class="n">benchmark</span><span class="p">:</span> <span class="n">Benchmark</span><span class="p">,</span>
+                       <span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Class method to intialize the evaluation from Benchmark instance</span>
+
+<span class="sd">        Benchmark instance should include at least both `observations` and `predictions` variables</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">pass</span></div>
+
+<div class="viewcode-block" id="Evaluation.from_dataset"><a class="viewcode-back" href="../../../lips.evaluation.html#lips.evaluation.evaluation.Evaluation.from_dataset">[docs]</a>    <span class="nd">@classmethod</span>
+    <span class="k">def</span> <span class="nf">from_dataset</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span>
+                     <span class="n">dataset</span><span class="p">:</span> <span class="n">DataSet</span><span class="p">,</span>
+                     <span class="n">config_path</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="kc">None</span><span class="p">]</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+                     <span class="n">config_section</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="kc">None</span><span class="p">]</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+                     <span class="n">log_path</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="kc">None</span><span class="p">]</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Class method to initialize the evaluation from DataSet instance</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">pass</span></div>
+
+    <span class="k">def</span> <span class="nf">__init_metric_dict</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Initialize the metrics dictionary structure</span>
+
+<span class="sd">        It should be called if any modification to default category names</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">metrics_cat</span> <span class="o">=</span> <span class="p">{}</span>
+        <span class="n">metrics_cat</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">MACHINE_LEARNING</span><span class="p">]</span> <span class="o">=</span> <span class="p">{}</span>
+        <span class="n">metrics_cat</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">PHYSICS_COMPLIANCES</span><span class="p">]</span> <span class="o">=</span> <span class="p">{}</span>
+        <span class="n">metrics_cat</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">INDUSTRIAL_READINESS</span><span class="p">]</span> <span class="o">=</span> <span class="p">{}</span>
+        <span class="c1"># metrics_cat[self.OOD_GENERALIZATION] = {}</span>
+
+        <span class="k">return</span> <span class="n">metrics_cat</span>
+
+<div class="viewcode-block" id="Evaluation.evaluate"><a class="viewcode-back" href="../../../lips.evaluation.html#lips.evaluation.evaluation.Evaluation.evaluate">[docs]</a>    <span class="k">def</span> <span class="nf">evaluate</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span>
+                 <span class="n">observations</span><span class="p">:</span> <span class="nb">dict</span><span class="p">,</span>
+                 <span class="n">predictions</span><span class="p">:</span> <span class="nb">dict</span><span class="p">,</span>
+                 <span class="n">save_path</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="kc">None</span><span class="p">]</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;The main function which evaluates all the required criteria provided in config file</span>
+
+<span class="sd">        This function should be overridden to do all the required evaluations for each category</span>
+
+<span class="sd">        - ML evaluation</span>
+<span class="sd">        - Physics Compliance evaluation</span>
+<span class="sd">        - Industrial Readiness evaluation</span>
+<span class="sd">        - OOD Generalization evaluation</span>
+
+<span class="sd">        The child classes should override this class for further extensions</span>
+<span class="sd">        - PowerGridEvaluation</span>
+<span class="sd">        - TransportEvaluation</span>
+
+<span class="sd">        &gt; Notice that, the already minimalist code compute two metrics which are `MSE` and `MAE` from scikit-learn package</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        dataset</span>
+<span class="sd">            DataSet object including true observations used to evaluate the predictions</span>
+<span class="sd">        predictions</span>
+<span class="sd">            predictions obtained from augmented simulators</span>
+<span class="sd">        save_path, optional</span>
+<span class="sd">            path where the results should be saved, by default None</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">observations</span> <span class="o">=</span> <span class="n">observations</span> <span class="c1">#dataset.data</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">predictions</span> <span class="o">=</span> <span class="n">predictions</span>
+        <span class="c1">#self.logger.info(&quot;General metrics&quot;)</span>
+        <span class="n">generic_functions</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">mapper</span><span class="o">.</span><span class="n">map_generic_criteria</span><span class="p">()</span>
+        <span class="c1"># create metrics dictionary</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">metrics</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">__init_metric_dict</span><span class="p">())</span>
+        <span class="n">metric_dict</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">metrics</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">MACHINE_LEARNING</span><span class="p">]</span>
+
+        <span class="k">for</span> <span class="n">metric_name</span><span class="p">,</span> <span class="n">metric_fun</span> <span class="ow">in</span> <span class="n">generic_functions</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+            <span class="n">metric_dict</span><span class="p">[</span><span class="n">metric_name</span><span class="p">]</span> <span class="o">=</span> <span class="p">{}</span>
+            <span class="k">for</span> <span class="n">nm_</span><span class="p">,</span> <span class="n">pred_</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">predictions</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+                <span class="k">if</span> <span class="n">nm_</span> <span class="o">==</span> <span class="s2">&quot;__prod_p_dc&quot;</span><span class="p">:</span>
+                    <span class="c1"># fix for the DC approximation</span>
+                    <span class="k">continue</span>
+                <span class="n">true_</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">observations</span><span class="p">[</span><span class="n">nm_</span><span class="p">]</span>
+                <span class="n">tmp</span> <span class="o">=</span> <span class="n">metric_fun</span><span class="p">(</span><span class="n">true_</span><span class="p">,</span> <span class="n">pred_</span><span class="p">)</span>
+                <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">tmp</span><span class="p">,</span> <span class="n">Iterable</span><span class="p">):</span>
+                    <span class="n">metric_dict</span><span class="p">[</span><span class="n">metric_name</span><span class="p">][</span><span class="n">nm_</span><span class="p">]</span> <span class="o">=</span> <span class="p">[</span><span class="nb">float</span><span class="p">(</span><span class="n">el</span><span class="p">)</span> <span class="k">for</span> <span class="n">el</span> <span class="ow">in</span> <span class="n">tmp</span><span class="p">]</span>
+                    <span class="c1"># self.logger.info(&quot;%s for %s: %s&quot;, metric_name, nm_, tmp)</span>
+                <span class="k">else</span><span class="p">:</span>
+                    <span class="n">metric_dict</span><span class="p">[</span><span class="n">metric_name</span><span class="p">][</span><span class="n">nm_</span><span class="p">]</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><span class="n">tmp</span><span class="p">)</span>
+                    <span class="c1"># self.logger.info(&quot;%s for %s: %.2f&quot;, metric_name, nm_, tmp)</span>
+
+        <span class="c1"># TODO : don&#39;t forget to save the results</span>
+        <span class="k">if</span> <span class="n">save_path</span><span class="p">:</span>
+            <span class="k">pass</span></div>
+
+<div class="viewcode-block" id="Evaluation.evaluate_ml"><a class="viewcode-back" href="../../../lips.evaluation.html#lips.evaluation.evaluation.Evaluation.evaluate_ml">[docs]</a>    <span class="k">def</span> <span class="nf">evaluate_ml</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        It evaluates machine learning specific criteria</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">pass</span></div>
+
+<div class="viewcode-block" id="Evaluation.evaluate_physics"><a class="viewcode-back" href="../../../lips.evaluation.html#lips.evaluation.evaluation.Evaluation.evaluate_physics">[docs]</a>    <span class="k">def</span> <span class="nf">evaluate_physics</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        It should evaluate Physics Compliances</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">pass</span></div>
+
+<div class="viewcode-block" id="Evaluation.evaluate_industrial_readiness"><a class="viewcode-back" href="../../../lips.evaluation.html#lips.evaluation.evaluation.Evaluation.evaluate_industrial_readiness">[docs]</a>    <span class="k">def</span> <span class="nf">evaluate_industrial_readiness</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        It should evaluate the industrial readiness of augmented simulators</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">pass</span></div>
+
+<div class="viewcode-block" id="Evaluation.evaluate_ood"><a class="viewcode-back" href="../../../lips.evaluation.html#lips.evaluation.evaluation.Evaluation.evaluate_ood">[docs]</a>    <span class="k">def</span> <span class="nf">evaluate_ood</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        It should evaluate out-of-distribution capacity of augmented simulators</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">pass</span></div>
+
+<div class="viewcode-block" id="Evaluation.compare_simulators"><a class="viewcode-back" href="../../../lips.evaluation.html#lips.evaluation.evaluation.Evaluation.compare_simulators">[docs]</a>    <span class="k">def</span> <span class="nf">compare_simulators</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Bonus function</span>
+
+<span class="sd">        It taks multiple trained simulators and evaluates them on test datasets</span>
+<span class="sd">        and finally it reports the results side by side</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">pass</span></div></div>
+</pre></div>
+
+           </div>
+          </div>
+          <footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2021, IRT SystemX.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

@@ -1,0 +1,226 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>benchmark package &mdash; LIPS 0.1 documentation</title>
+      <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+      <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
+  <!--[if lt IE 9]>
+    <script src="_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script data-url_root="./" id="documentation_options" src="_static/documentation_options.js"></script>
+        <script src="_static/jquery.js"></script>
+        <script src="_static/underscore.js"></script>
+        <script src="_static/doctools.js"></script>
+    <script src="_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="lips.config package" href="lips.config.html" />
+    <link rel="prev" title="augmented_simulators package" href="lips.augmented_simulators.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+            <a href="index.html" class="icon icon-home"> LIPS
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">GETTING STARTED</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="quickstart.html">Getting started</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">TECHNICAL DOCUMENTATION</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="lips.augmented_simulators.html">augmented_simulators package</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">benchmark package</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#submodules">Submodules</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#module-lips.benchmark.Benchmark">lips.benchmark.Benchmark module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#module-lips.benchmark.powergridBenchmark">lips.benchmark.powergridBenchmark module</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="lips.config.html">lips.config package</a></li>
+<li class="toctree-l1"><a class="reference internal" href="lips.dataset.html">lips.dataset package</a></li>
+<li class="toctree-l1"><a class="reference internal" href="lips.evaluation.html">lips.evaluation package</a></li>
+<li class="toctree-l1"><a class="reference internal" href="lips.logger.html">lips.logger package</a></li>
+<li class="toctree-l1"><a class="reference internal" href="lips.metrics.power_grid.html">metrics.power_grid package</a></li>
+<li class="toctree-l1"><a class="reference internal" href="lips.metrics.html">lips.metrics package</a></li>
+<li class="toctree-l1"><a class="reference internal" href="lips.physical_simulator.html">lips.physical_simulator package</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">GUIDE</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="license.html">License</a></li>
+<li class="toctree-l1"><a class="reference internal" href="help.html">Help</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="index.html">LIPS</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="index.html" class="icon icon-home"></a> &raquo;</li>
+      <li>benchmark package</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="_sources/lips.benchmark.rst.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="benchmark-package">
+<h1>benchmark package<a class="headerlink" href="#benchmark-package" title="Permalink to this headline"></a></h1>
+<section id="submodules">
+<h2>Submodules<a class="headerlink" href="#submodules" title="Permalink to this headline"></a></h2>
+</section>
+<section id="module-lips.benchmark.Benchmark">
+<span id="lips-benchmark-benchmark-module"></span><h2>lips.benchmark.Benchmark module<a class="headerlink" href="#module-lips.benchmark.Benchmark" title="Permalink to this headline"></a></h2>
+<dl class="py class">
+<dt class="sig sig-object py" id="lips.benchmark.Benchmark.Benchmark">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">lips.benchmark.Benchmark.</span></span><span class="sig-name descname"><span class="pre">Benchmark</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">benchmark_name</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dataset</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Union</span><span class="p"><span class="pre">[</span></span><span class="pre">None</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference internal" href="lips.dataset.html#lips.dataset.dataSet.DataSet" title="lips.dataset.dataSet.DataSet"><span class="pre">lips.dataset.dataSet.DataSet</span></a><span class="p"><span class="pre">]</span></span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">augmented_simulator</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><span class="pre">Union</span><span class="p"><span class="pre">[</span></span><a class="reference internal" href="lips.augmented_simulators.html#lips.augmented_simulators.augmentedSimulator.AugmentedSimulator" title="lips.augmented_simulators.augmentedSimulator.AugmentedSimulator"><span class="pre">lips.augmented_simulators.augmentedSimulator.AugmentedSimulator</span></a><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference internal" href="lips.physical_simulator.html#lips.physical_simulator.physicsSolver.PhysicsSolver" title="lips.physical_simulator.physicsSolver.PhysicsSolver"><span class="pre">lips.physical_simulator.physicsSolver.PhysicsSolver</span></a><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">evaluation</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><a class="reference internal" href="lips.evaluation.html#lips.evaluation.evaluation.Evaluation" title="lips.evaluation.evaluation.Evaluation"><span class="pre">lips.evaluation.evaluation.Evaluation</span></a><span class="p"><span class="pre">]</span></span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">benchmark_path</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">log_path</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">config_path</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/lips/benchmark/Benchmark.html#Benchmark"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#lips.benchmark.Benchmark.Benchmark" title="Permalink to this definition"></a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">abc.ABC</span></code></p>
+<p>Benchmark class that takes a test dataset, a simulator (physical or augmented) and an evaluator object and
+evaluates the simulator on test dataset with respect to required metrics requested by evaluator</p>
+<blockquote>
+<div><dl>
+<dt>benchmark_name<span class="classifier"><code class="docutils literal notranslate"><span class="pre">str</span></code></span></dt><dd><p>a name attributed to the corresponding experiment</p>
+</dd>
+<dt>dataset: <code class="docutils literal notranslate"><span class="pre">DataSet</span></code> object</dt><dd><p>an object of DataSet class which containing the data for training, validation and testing</p>
+</dd>
+<dt>Simulator: An object from an augmented simulator</dt><dd><p>This is an object of Physical or Augmneted simulator including the prediction results</p>
+</dd>
+<dt>evaluation: <code class="docutils literal notranslate"><span class="pre">object</span></code> of <code class="docutils literal notranslate"><span class="pre">Evaluation</span></code> class</dt><dd><p>It allows to evaluate the performance of the simulator with respect to various point of views
+It should be parameterized before passing to benchmark class to include appropriate metrics
+otherwise, it is initialized using an empty dictionary</p>
+</dd>
+<dt>benchmark_path<span class="classifier"><code class="docutils literal notranslate"><span class="pre">string</span></code></span></dt><dd><p>the path used to save the benchmark results</p>
+</dd>
+</dl>
+</div></blockquote>
+<dl class="py method">
+<dt class="sig sig-object py" id="lips.benchmark.Benchmark.Benchmark.evaluate_simulator">
+<em class="property"><span class="pre">abstract</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">evaluate_simulator</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">dataset</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="lips.dataset.html#lips.dataset.dataSet.DataSet" title="lips.dataset.dataSet.DataSet"><span class="pre">lips.dataset.dataSet.DataSet</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">augmented_simulator</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><span class="pre">Union</span><span class="p"><span class="pre">[</span></span><a class="reference internal" href="lips.physical_simulator.html#lips.physical_simulator.physicalSimulator.PhysicalSimulator" title="lips.physical_simulator.physicalSimulator.PhysicalSimulator"><span class="pre">lips.physical_simulator.physicalSimulator.PhysicalSimulator</span></a><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference internal" href="lips.augmented_simulators.html#lips.augmented_simulators.augmentedSimulator.AugmentedSimulator" title="lips.augmented_simulators.augmentedSimulator.AugmentedSimulator"><span class="pre">lips.augmented_simulators.augmentedSimulator.AugmentedSimulator</span></a><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">batch_size</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">32</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">save_path</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/lips/benchmark/Benchmark.html#Benchmark.evaluate_simulator"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#lips.benchmark.Benchmark.Benchmark.evaluate_simulator" title="Permalink to this definition"></a></dt>
+<dd><p>This function will evalute a simulator (physical or augmented) using various criteria predefined in evaluator object
+on a <code class="docutils literal notranslate"><span class="pre">single</span> <span class="pre">test</span> <span class="pre">dataset</span></code>. It can be overloaded or called to evaluate the performance on multiple datasets</p>
+<blockquote>
+<div><dl class="simple">
+<dt>dataset: <code class="docutils literal notranslate"><span class="pre">DataSet</span></code> object</dt><dd><p>a test dataset on which the augmented simulator should be performed and evaluated by</p>
+</dd>
+<dt>augmented_simulator: <code class="docutils literal notranslate"><span class="pre">AugmentedSimulator</span></code> object</dt><dd><p>a trained augmented simulator which should be evaluated</p>
+</dd>
+<dt>batch_size: <code class="docutils literal notranslate"><span class="pre">int</span></code></dt><dd><p>evaluation batch size</p>
+</dd>
+<dt>save_path: <code class="docutils literal notranslate"><span class="pre">str</span></code> or <code class="docutils literal notranslate"><span class="pre">None</span></code></dt><dd><p>if indicated the evaluation results will be saved to indicated path</p>
+</dd>
+</dl>
+</div></blockquote>
+</dd></dl>
+
+</dd></dl>
+
+</section>
+<section id="module-lips.benchmark.powergridBenchmark">
+<span id="lips-benchmark-powergridbenchmark-module"></span><h2>lips.benchmark.powergridBenchmark module<a class="headerlink" href="#module-lips.benchmark.powergridBenchmark" title="Permalink to this headline"></a></h2>
+<dl class="py class">
+<dt class="sig sig-object py" id="lips.benchmark.powergridBenchmark.PowerGridBenchmark">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">lips.benchmark.powergridBenchmark.</span></span><span class="sig-name descname"><span class="pre">PowerGridBenchmark</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">benchmark_path</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">config_path</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">benchmark_name</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'Benchmark1'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">load_data_set</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">evaluation</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">log_path</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">train_env_seed</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">val_env_seed</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">2</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">test_env_seed</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">3</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">test_ood_topo_env_seed</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">4</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">initial_chronics_id</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">train_actor_seed</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">5</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">val_actor_seed</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">6</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">test_actor_seed</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">7</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">test_ood_topo_actor_seed</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">8</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/lips/benchmark/powergridBenchmark.html#PowerGridBenchmark"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#lips.benchmark.powergridBenchmark.PowerGridBenchmark" title="Permalink to this definition"></a></dt>
+<dd><p>Bases: <a class="reference internal" href="#lips.benchmark.Benchmark.Benchmark" title="lips.benchmark.Benchmark.Benchmark"><code class="xref py py-class docutils literal notranslate"><span class="pre">lips.benchmark.Benchmark.Benchmark</span></code></a></p>
+<p>This class allows to benchmark a power grid scenario which are defined in a config file.</p>
+<dl class="py method">
+<dt class="sig sig-object py" id="lips.benchmark.powergridBenchmark.PowerGridBenchmark.evaluate_simulator">
+<span class="sig-name descname"><span class="pre">evaluate_simulator</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">dataset</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'all'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">augmented_simulator</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><span class="pre">Union</span><span class="p"><span class="pre">[</span></span><a class="reference internal" href="lips.physical_simulator.html#lips.physical_simulator.physicalSimulator.PhysicalSimulator" title="lips.physical_simulator.physicalSimulator.PhysicalSimulator"><span class="pre">lips.physical_simulator.physicalSimulator.PhysicalSimulator</span></a><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference internal" href="lips.augmented_simulators.html#lips.augmented_simulators.augmentedSimulator.AugmentedSimulator" title="lips.augmented_simulators.augmentedSimulator.AugmentedSimulator"><span class="pre">lips.augmented_simulators.augmentedSimulator.AugmentedSimulator</span></a><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">batch_size</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">32</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">save_path</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">active_flow</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/lips/benchmark/powergridBenchmark.html#PowerGridBenchmark.evaluate_simulator"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#lips.benchmark.powergridBenchmark.PowerGridBenchmark.evaluate_simulator" title="Permalink to this definition"></a></dt>
+<dd><p>evaluate a trained augmented simulator on one or multiple test datasets</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>dataset</strong> – _description_, by default “all”</p></li>
+<li><p><strong>optional</strong> – _description_, by default “all”</p></li>
+<li><p><strong>batch_size</strong> – _description_, by default 32</p></li>
+<li><p><strong>optional</strong> – _description_, by default 32</p></li>
+<li><p><strong>save_path</strong> – _description_, by default None</p></li>
+<li><p><strong>optional</strong> – _description_, by default None</p></li>
+<li><p><strong>active_flow</strong> – _description_, by default True</p></li>
+<li><p><strong>optional</strong> – _description_, by default True</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p><strong>evaluation_results</strong></p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>dict</p>
+</dd>
+<dt class="field-even">Raises</dt>
+<dd class="field-even"><p><strong>RuntimeError</strong> – _description_</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="lips.benchmark.powergridBenchmark.PowerGridBenchmark.generate">
+<span class="sig-name descname"><span class="pre">generate</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">nb_sample_train</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">nb_sample_val</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">nb_sample_test</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">nb_sample_test_ood_topo</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/lips/benchmark/powergridBenchmark.html#PowerGridBenchmark.generate"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#lips.benchmark.powergridBenchmark.PowerGridBenchmark.generate" title="Permalink to this definition"></a></dt>
+<dd><p>generate the different datasets required for the benchmark</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="lips.benchmark.powergridBenchmark.PowerGridBenchmark.load">
+<span class="sig-name descname"><span class="pre">load</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/lips/benchmark/powergridBenchmark.html#PowerGridBenchmark.load"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#lips.benchmark.powergridBenchmark.PowerGridBenchmark.load" title="Permalink to this definition"></a></dt>
+<dd><p>load the already generated datasets</p>
+</dd></dl>
+
+</dd></dl>
+
+</section>
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="lips.augmented_simulators.html" class="btn btn-neutral float-left" title="augmented_simulators package" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="lips.config.html" class="btn btn-neutral float-right" title="lips.config package" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2021, IRT SystemX.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

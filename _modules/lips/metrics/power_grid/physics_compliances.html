@@ -1,0 +1,649 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>lips.metrics.power_grid.physics_compliances &mdash; LIPS 0.1 documentation</title>
+      <link rel="stylesheet" href="../../../../_static/pygments.css" type="text/css" />
+      <link rel="stylesheet" href="../../../../_static/css/theme.css" type="text/css" />
+  <!--[if lt IE 9]>
+    <script src="../../../../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script data-url_root="../../../../" id="documentation_options" src="../../../../_static/documentation_options.js"></script>
+        <script src="../../../../_static/jquery.js"></script>
+        <script src="../../../../_static/underscore.js"></script>
+        <script src="../../../../_static/doctools.js"></script>
+    <script src="../../../../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+            <a href="../../../../index.html" class="icon icon-home"> LIPS
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">GETTING STARTED</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../../quickstart.html">Getting started</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">TECHNICAL DOCUMENTATION</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../../lips.augmented_simulators.html">augmented_simulators package</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../lips.benchmark.html">benchmark package</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../lips.config.html">lips.config package</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../lips.dataset.html">lips.dataset package</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../lips.evaluation.html">lips.evaluation package</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../lips.logger.html">lips.logger package</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../lips.metrics.power_grid.html">metrics.power_grid package</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../lips.metrics.html">lips.metrics package</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../lips.physical_simulator.html">lips.physical_simulator package</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">GUIDE</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../../license.html">License</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../help.html">Help</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../../../index.html">LIPS</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../../../../index.html" class="icon icon-home"></a> &raquo;</li>
+          <li><a href="../../../index.html">Module code</a> &raquo;</li>
+      <li>lips.metrics.power_grid.physics_compliances</li>
+      <li class="wy-breadcrumbs-aside">
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <h1>Source code for lips.metrics.power_grid.physics_compliances</h1><div class="highlight"><pre>
+<span></span><span class="c1"># Copyright (c) 2021, IRT SystemX (https://www.irt-systemx.fr/en/)</span>
+<span class="c1"># See AUTHORS.txt</span>
+<span class="c1"># This Source Code Form is subject to the terms of the Mozilla Public License, version 2.0.</span>
+<span class="c1"># If a copy of the Mozilla Public License, version 2.0 was not distributed with this file,</span>
+<span class="c1"># you can obtain one at http://mozilla.org/MPL/2.0/.</span>
+<span class="c1"># SPDX-License-Identifier: MPL-2.0</span>
+<span class="c1"># This file is part of LIPS, LIPS is a python platform for power networks benchmarking</span>
+
+<span class="kn">import</span> <span class="nn">sys</span>
+<span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Union</span>
+<span class="kn">from</span> <span class="nn">collections</span> <span class="kn">import</span> <span class="n">Counter</span>
+<span class="kn">import</span> <span class="nn">math</span>
+
+<span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+<span class="c1"># TODO : implement a mean_absolute_error independently from sklearn</span>
+<span class="kn">from</span> <span class="nn">sklearn.metrics</span> <span class="kn">import</span> <span class="n">mean_absolute_error</span>
+
+<span class="kn">from</span> <span class="nn">lips.logger</span> <span class="kn">import</span> <span class="n">CustomLogger</span>
+
+<div class="viewcode-block" id="verify_current_pos"><a class="viewcode-back" href="../../../../lips.metrics.power_grid.html#lips.metrics.power_grid.physics_compliances.verify_current_pos">[docs]</a><span class="k">def</span> <span class="nf">verify_current_pos</span><span class="p">(</span><span class="n">predictions</span><span class="p">:</span> <span class="nb">dict</span><span class="p">,</span>
+                       <span class="n">log_path</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="kc">None</span><span class="p">]</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+                       <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;current positivity check</span>
+
+<span class="sd">    Verifies the electrical current positivity at both extremity of power lines a_or &gt;= 0 , a_ex &gt;= 0</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    predictions: `dict`</span>
+<span class="sd">        dictionary of predictions made by an augmented simulator</span>
+<span class="sd">    log_path: `str`</span>
+<span class="sd">        a path wehere the log should be saved</span>
+<span class="sd">    **kwargs:</span>
+<span class="sd">        supplementary arguments (may be required in future)</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    verifications: `dict`</span>
+<span class="sd">        a dictionary reporting the evaluation results for both line extremities</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="c1"># logger</span>
+    <span class="n">logger</span> <span class="o">=</span> <span class="n">CustomLogger</span><span class="p">(</span><span class="s2">&quot;PhysicsCompliances&quot;</span><span class="p">,</span> <span class="n">log_path</span><span class="p">)</span><span class="o">.</span><span class="n">logger</span>
+    <span class="n">verifications</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">()</span>
+
+    <span class="k">for</span> <span class="n">key_</span> <span class="ow">in</span> <span class="p">[</span><span class="s2">&quot;a_or&quot;</span><span class="p">,</span> <span class="s2">&quot;a_ex&quot;</span><span class="p">]:</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="n">a_arr</span> <span class="o">=</span> <span class="n">predictions</span><span class="p">[</span><span class="n">key_</span><span class="p">]</span>
+        <span class="k">except</span> <span class="ne">KeyError</span><span class="p">:</span>
+            <span class="n">logger</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="s2">&quot;</span><span class="si">%s</span><span class="s2"> does not exists in predictions dict&quot;</span><span class="p">,</span> <span class="n">key_</span><span class="p">)</span>
+            <span class="k">raise</span>
+        <span class="k">if</span> <span class="n">np</span><span class="o">.</span><span class="n">any</span><span class="p">(</span><span class="n">a_arr</span> <span class="o">&lt;</span> <span class="mi">0</span><span class="p">):</span>
+            <span class="n">verifications</span><span class="p">[</span><span class="n">key_</span><span class="p">]</span> <span class="o">=</span> <span class="p">{}</span>
+            <span class="n">a_or_errors</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">where</span><span class="p">(</span><span class="n">a_arr</span> <span class="o">&lt;</span> <span class="mi">0</span><span class="p">))</span><span class="o">.</span><span class="n">T</span>
+            <span class="n">a_or_violation_proportion</span> <span class="o">=</span> <span class="p">(</span><span class="mf">1.0</span> <span class="o">*</span> <span class="nb">len</span><span class="p">(</span><span class="n">a_or_errors</span><span class="p">))</span> <span class="o">/</span> <span class="n">a_arr</span><span class="o">.</span><span class="n">size</span>
+            <span class="n">error_a_or</span> <span class="o">=</span> <span class="o">-</span><span class="n">np</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">minimum</span><span class="p">(</span><span class="n">a_arr</span><span class="o">.</span><span class="n">flatten</span><span class="p">(),</span> <span class="mf">0.</span><span class="p">))</span>
+            <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;the sum of negative current values (A) for </span><span class="si">%s</span><span class="s2">: </span><span class="si">%.3f</span><span class="s2">&quot;</span><span class="p">,</span> <span class="n">key_</span><span class="p">,</span> <span class="n">error_a_or</span><span class="p">)</span>
+            <span class="n">verifications</span><span class="p">[</span><span class="n">key_</span><span class="p">][</span><span class="s2">&quot;indices&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="p">[(</span><span class="nb">int</span><span class="p">(</span><span class="n">el</span><span class="p">[</span><span class="mi">0</span><span class="p">]),</span> <span class="nb">int</span><span class="p">(</span><span class="n">el</span><span class="p">[</span><span class="mi">1</span><span class="p">]))</span> <span class="k">for</span> <span class="n">el</span> <span class="ow">in</span> <span class="n">a_or_errors</span><span class="p">]</span>
+            <span class="n">verifications</span><span class="p">[</span><span class="n">key_</span><span class="p">][</span><span class="s2">&quot;Error&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><span class="n">error_a_or</span><span class="p">)</span>
+            <span class="n">verifications</span><span class="p">[</span><span class="n">key_</span><span class="p">][</span><span class="s2">&quot;Violation_proportion&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><span class="n">a_or_violation_proportion</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;Current positivity check passed for </span><span class="si">%s</span><span class="s2">&quot;</span><span class="p">,</span> <span class="n">key_</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">verifications</span></div>
+
+<div class="viewcode-block" id="verify_voltage_pos"><a class="viewcode-back" href="../../../../lips.metrics.power_grid.html#lips.metrics.power_grid.physics_compliances.verify_voltage_pos">[docs]</a><span class="k">def</span> <span class="nf">verify_voltage_pos</span><span class="p">(</span><span class="n">predictions</span><span class="p">:</span><span class="nb">dict</span><span class="p">,</span>
+                       <span class="n">log_path</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="kc">None</span><span class="p">]</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+                       <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Voltage positivity check</span>
+
+<span class="sd">    Verifies the electrical voltage positivity at both extremity of power lines v_or &gt;= 0 , v_ex &gt;= 0</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    predictions: `dict`</span>
+<span class="sd">        dictionary of predictions made by an augmented simulator</span>
+<span class="sd">    log_path: `str`</span>
+<span class="sd">        a path wehere the log should be saved</span>
+<span class="sd">    **kwargs:</span>
+<span class="sd">        supplementary arguments (may be required in future)</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    verifications: `dict`</span>
+<span class="sd">        a dictionary reporting the evaluation results for both line extremities</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="c1"># logger</span>
+    <span class="n">logger</span> <span class="o">=</span> <span class="n">CustomLogger</span><span class="p">(</span><span class="s2">&quot;PhysicsCompliances&quot;</span><span class="p">,</span> <span class="n">log_path</span><span class="p">)</span><span class="o">.</span><span class="n">logger</span>
+    <span class="n">verifications</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">()</span>
+
+    <span class="k">for</span> <span class="n">key_</span> <span class="ow">in</span> <span class="p">[</span><span class="s2">&quot;v_or&quot;</span><span class="p">,</span> <span class="s2">&quot;v_ex&quot;</span><span class="p">]:</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="n">v_arr</span> <span class="o">=</span> <span class="n">predictions</span><span class="p">[</span><span class="n">key_</span><span class="p">]</span>
+        <span class="k">except</span> <span class="ne">KeyError</span><span class="p">:</span>
+            <span class="n">logger</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="s2">&quot;</span><span class="si">%s</span><span class="s2"> does not exists in predictions dict&quot;</span><span class="p">,</span> <span class="n">key_</span><span class="p">)</span>
+            <span class="k">raise</span>
+        <span class="k">if</span> <span class="n">np</span><span class="o">.</span><span class="n">any</span><span class="p">(</span><span class="n">v_arr</span> <span class="o">&lt;</span> <span class="mi">0</span><span class="p">):</span>
+            <span class="n">verifications</span><span class="p">[</span><span class="n">key_</span><span class="p">]</span> <span class="o">=</span> <span class="p">{}</span>
+            <span class="n">v_or_errors</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">where</span><span class="p">(</span><span class="n">v_arr</span> <span class="o">&lt;</span> <span class="mi">0</span><span class="p">))</span><span class="o">.</span><span class="n">T</span>
+            <span class="n">v_or_violation_proportion</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">v_or_errors</span><span class="p">)</span> <span class="o">/</span> <span class="n">v_arr</span><span class="o">.</span><span class="n">size</span>
+            <span class="n">error_v_or</span> <span class="o">=</span> <span class="o">-</span><span class="n">np</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">minimum</span><span class="p">(</span><span class="n">v_arr</span><span class="o">.</span><span class="n">flatten</span><span class="p">(),</span> <span class="mf">0.</span><span class="p">))</span>
+            <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;the sum of negative voltage values (kV) for </span><span class="si">%s</span><span class="s2">: </span><span class="si">%.3f</span><span class="s2">&quot;</span><span class="p">,</span> <span class="n">key_</span><span class="p">,</span> <span class="n">error_v_or</span><span class="p">)</span>
+            <span class="n">verifications</span><span class="p">[</span><span class="n">key_</span><span class="p">][</span><span class="s2">&quot;indices&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="p">[(</span><span class="nb">int</span><span class="p">(</span><span class="n">el</span><span class="p">[</span><span class="mi">0</span><span class="p">]),</span> <span class="nb">int</span><span class="p">(</span><span class="n">el</span><span class="p">[</span><span class="mi">1</span><span class="p">]))</span> <span class="k">for</span> <span class="n">el</span> <span class="ow">in</span> <span class="n">v_or_errors</span><span class="p">]</span>
+            <span class="n">verifications</span><span class="p">[</span><span class="n">key_</span><span class="p">][</span><span class="s2">&quot;Error&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><span class="n">error_v_or</span><span class="p">)</span>
+            <span class="n">verifications</span><span class="p">[</span><span class="n">key_</span><span class="p">][</span><span class="s2">&quot;Violation_proportion&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><span class="n">v_or_violation_proportion</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;Voltage positivity check passed for </span><span class="si">%s</span><span class="s2">&quot;</span><span class="p">,</span> <span class="n">key_</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">verifications</span></div>
+
+<div class="viewcode-block" id="verify_loss_pos"><a class="viewcode-back" href="../../../../lips.metrics.power_grid.html#lips.metrics.power_grid.physics_compliances.verify_loss_pos">[docs]</a><span class="k">def</span> <span class="nf">verify_loss_pos</span><span class="p">(</span><span class="n">predictions</span><span class="p">:</span> <span class="nb">dict</span><span class="p">,</span>
+                    <span class="n">log_path</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="kc">None</span><span class="p">]</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+                    <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;loss positivity check</span>
+
+<span class="sd">    Verify that the electrical losses are greater than zero at each power line p_or + p_ex &gt;= 0</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    predictions: `dict`</span>
+<span class="sd">        dictionary of predictions made by an augmented simulator</span>
+<span class="sd">    log_path: `str`</span>
+<span class="sd">        a path wehere the log should be saved</span>
+<span class="sd">    **kwargs:</span>
+<span class="sd">        supplementary arguments (may be required in future)</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">        a dictionary reporting the evaluation results</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="c1"># logger</span>
+    <span class="n">logger</span> <span class="o">=</span> <span class="n">CustomLogger</span><span class="p">(</span><span class="s2">&quot;PhysicsCompliances&quot;</span><span class="p">,</span> <span class="n">log_path</span><span class="p">)</span><span class="o">.</span><span class="n">logger</span>
+    <span class="n">verifications</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">()</span>
+    <span class="k">try</span><span class="p">:</span>
+        <span class="n">p_or</span> <span class="o">=</span> <span class="n">predictions</span><span class="p">[</span><span class="s2">&quot;p_or&quot;</span><span class="p">]</span>
+        <span class="n">p_ex</span> <span class="o">=</span> <span class="n">predictions</span><span class="p">[</span><span class="s2">&quot;p_ex&quot;</span><span class="p">]</span>
+    <span class="k">except</span> <span class="ne">KeyError</span><span class="p">:</span>
+        <span class="n">logger</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="s2">&quot;The predictions dict does not include required variables&quot;</span><span class="p">)</span>
+        <span class="k">raise</span>
+    <span class="n">loss</span> <span class="o">=</span> <span class="n">p_or</span> <span class="o">+</span> <span class="n">p_ex</span>
+
+    <span class="k">if</span> <span class="n">np</span><span class="o">.</span><span class="n">any</span><span class="p">(</span><span class="n">loss</span><span class="p">):</span>
+        <span class="n">loss_error</span> <span class="o">=</span> <span class="o">-</span><span class="n">np</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">minimum</span><span class="p">(</span><span class="n">loss</span><span class="p">,</span> <span class="mf">0.</span><span class="p">))</span>
+        <span class="n">loss_errors</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">where</span><span class="p">(</span><span class="n">loss</span> <span class="o">&lt;</span> <span class="mi">0</span><span class="p">))</span><span class="o">.</span><span class="n">T</span>
+        <span class="n">loss_violation_proportion</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">loss_errors</span><span class="p">)</span> <span class="o">/</span> <span class="n">p_or</span><span class="o">.</span><span class="n">size</span>
+        <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;the sum of negative losses : </span><span class="si">%.3f</span><span class="s2">&quot;</span><span class="p">,</span> <span class="n">loss_error</span><span class="p">)</span>
+        <span class="n">verifications</span><span class="p">[</span><span class="s2">&quot;loss_criterion&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">loss_error</span><span class="c1">#[(int(el[0]), int(el[1])) for el in loss_error]</span>
+        <span class="n">verifications</span><span class="p">[</span><span class="s2">&quot;loss_errors&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="p">[(</span><span class="nb">int</span><span class="p">(</span><span class="n">el</span><span class="p">[</span><span class="mi">0</span><span class="p">]),</span> <span class="nb">int</span><span class="p">(</span><span class="n">el</span><span class="p">[</span><span class="mi">1</span><span class="p">]))</span> <span class="k">for</span> <span class="n">el</span> <span class="ow">in</span> <span class="n">loss_errors</span><span class="p">]</span><span class="c1">#float(loss_errors)</span>
+        <span class="n">verifications</span><span class="p">[</span><span class="s2">&quot;violation_proportion&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><span class="n">loss_violation_proportion</span><span class="p">)</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;Loss positivity check passed&quot;</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">verifications</span></div>
+
+<div class="viewcode-block" id="verify_disc_lines"><a class="viewcode-back" href="../../../../lips.metrics.power_grid.html#lips.metrics.power_grid.physics_compliances.verify_disc_lines">[docs]</a><span class="k">def</span> <span class="nf">verify_disc_lines</span><span class="p">(</span><span class="n">predictions</span><span class="p">:</span> <span class="nb">dict</span><span class="p">,</span>
+                      <span class="n">log_path</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="kc">None</span><span class="p">]</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+                      <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Verifies if the predictions are null for disconnected lines</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    predictions: `dict`</span>
+<span class="sd">        dictionary of predictions made by an augmented simulator</span>
+<span class="sd">    log_path: `str`</span>
+<span class="sd">        a path wehere the log should be saved</span>
+<span class="sd">    **kwargs:</span>
+<span class="sd">        supplementary arguments</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    verifications: `dict`</span>
+<span class="sd">        a dictionary reporting the evaluation results</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">FLOW_VARIABLES</span> <span class="o">=</span> <span class="p">(</span><span class="s2">&quot;p_or&quot;</span><span class="p">,</span> <span class="s2">&quot;p_ex&quot;</span><span class="p">,</span> <span class="s2">&quot;q_or&quot;</span><span class="p">,</span> <span class="s2">&quot;q_ex&quot;</span><span class="p">,</span> <span class="s2">&quot;a_or&quot;</span><span class="p">,</span> <span class="s2">&quot;a_ex&quot;</span><span class="p">)</span>
+    <span class="c1"># logger</span>
+    <span class="n">logger</span> <span class="o">=</span> <span class="n">CustomLogger</span><span class="p">(</span><span class="s2">&quot;PhysicsCompliances&quot;</span><span class="p">,</span> <span class="n">log_path</span><span class="p">)</span><span class="o">.</span><span class="n">logger</span>
+    <span class="k">try</span><span class="p">:</span>
+        <span class="n">observations</span> <span class="o">=</span> <span class="n">kwargs</span><span class="p">[</span><span class="s2">&quot;observations&quot;</span><span class="p">]</span>
+    <span class="k">except</span> <span class="ne">KeyError</span><span class="p">:</span>
+        <span class="n">logger</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="s2">&quot;Kwargs of function verify_disc_lines does not include observations key&quot;</span><span class="p">)</span>
+
+    <span class="k">try</span><span class="p">:</span>
+        <span class="n">line_status</span> <span class="o">=</span> <span class="n">observations</span><span class="p">[</span><span class="s2">&quot;line_status&quot;</span><span class="p">]</span>
+    <span class="k">except</span> <span class="ne">KeyError</span><span class="p">:</span>
+        <span class="n">logger</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="s2">&quot;line_status key not found in observations.&quot;</span><span class="p">)</span>
+
+    <span class="n">verifications</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">()</span>
+    <span class="n">sum_disconnected_values</span> <span class="o">=</span> <span class="mi">0</span>
+
+    <span class="n">ind_disc</span> <span class="o">=</span> <span class="n">line_status</span> <span class="o">!=</span> <span class="mi">1</span>
+    <span class="n">len_disc</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">ind_disc</span><span class="p">)</span>
+
+    <span class="k">if</span> <span class="n">np</span><span class="o">.</span><span class="n">any</span><span class="p">(</span><span class="n">ind_disc</span><span class="p">):</span>
+        <span class="k">for</span> <span class="n">g</span><span class="p">,</span> <span class="n">key_pairs</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">((</span><span class="s2">&quot;p&quot;</span><span class="p">,</span> <span class="s2">&quot;q&quot;</span><span class="p">,</span> <span class="s2">&quot;a&quot;</span><span class="p">),</span> <span class="n">FLOW_VARIABLES</span><span class="p">):</span>
+            <span class="k">if</span> <span class="n">key_pairs</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="ow">in</span> <span class="n">predictions</span><span class="o">.</span><span class="n">keys</span><span class="p">():</span>
+                <span class="k">for</span> <span class="n">key_</span> <span class="ow">in</span> <span class="n">key_pairs</span><span class="p">:</span>
+                    <span class="n">pred_disc</span> <span class="o">=</span> <span class="n">predictions</span><span class="p">[</span><span class="n">key_</span><span class="p">][</span><span class="n">ind_disc</span><span class="p">]</span>
+                    <span class="n">violation</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">abs</span><span class="p">(</span><span class="n">pred_disc</span><span class="p">)</span><span class="o">&gt;</span><span class="mi">0</span><span class="p">))</span>
+                    <span class="n">verifications</span><span class="p">[</span><span class="n">key_</span><span class="p">]</span> <span class="o">=</span> <span class="n">violation</span>
+                    <span class="n">sum_disconnected_values</span> <span class="o">+=</span> <span class="n">violation</span>
+                <span class="n">verifications</span><span class="p">[</span><span class="n">g</span><span class="p">]</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">sum</span><span class="p">((</span><span class="n">np</span><span class="o">.</span><span class="n">abs</span><span class="p">(</span><span class="n">key_pairs</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span> <span class="o">+</span>
+                                                        <span class="n">np</span><span class="o">.</span><span class="n">abs</span><span class="p">(</span><span class="n">key_pairs</span><span class="p">[</span><span class="mi">1</span><span class="p">]))</span><span class="o">&gt;</span><span class="mi">0</span><span class="p">)</span> <span class="o">/</span>
+                                                        <span class="n">len_disc</span><span class="p">)</span>
+
+    <span class="k">if</span> <span class="n">sum_disconnected_values</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
+        <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;Prediction in presence of line disconnection. Problem encountered !&quot;</span><span class="p">)</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;Prediction in presence of line disconnection. Check passed !&quot;</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">verifications</span></div>
+
+<div class="viewcode-block" id="verify_current_eq"><a class="viewcode-back" href="../../../../lips.metrics.power_grid.html#lips.metrics.power_grid.physics_compliances.verify_current_eq">[docs]</a><span class="k">def</span> <span class="nf">verify_current_eq</span><span class="p">(</span><span class="n">predictions</span><span class="p">:</span> <span class="nb">dict</span><span class="p">,</span>
+                      <span class="n">log_path</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="kc">None</span><span class="p">]</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+                      <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    verify the following relation between p, q and v :</span>
+<span class="sd">        * a_or = sqrt(p_or**2 + q_or**2) / (sqrt(3).v_or)</span>
+<span class="sd">        * a_ex = sqrt(p_ex**2 + q_ex**2) / (sqrt(3).v_ex)</span>
+
+<span class="sd">    # TODO : update the equations by considering only voltage &gt; 0 cases, hence it does not need eps</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    predictions: `dict`</span>
+<span class="sd">        dictionary of predictions made by an augmented simulator</span>
+<span class="sd">    log_path: `str`</span>
+<span class="sd">        a path wehere the log should be saved</span>
+<span class="sd">    **kwargs:</span>
+<span class="sd">        supplementary parameters (may be required in future)</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">        a dictionary reporting the evaluation results</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="c1"># logger</span>
+    <span class="n">logger</span> <span class="o">=</span> <span class="n">CustomLogger</span><span class="p">(</span><span class="s2">&quot;PhysicsCompliances&quot;</span><span class="p">,</span> <span class="n">log_path</span><span class="p">)</span><span class="o">.</span><span class="n">logger</span>
+    <span class="n">verifications</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">()</span>
+    <span class="c1"># consider an epsilon value to avoid division by zero</span>
+    <span class="n">eps</span> <span class="o">=</span> <span class="n">sys</span><span class="o">.</span><span class="n">float_info</span><span class="o">.</span><span class="n">epsilon</span>
+    <span class="k">for</span> <span class="n">key_</span> <span class="ow">in</span> <span class="p">(</span><span class="s2">&quot;or&quot;</span><span class="p">,</span> <span class="s2">&quot;ex&quot;</span><span class="p">):</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="n">a_arr</span> <span class="o">=</span> <span class="n">predictions</span><span class="p">[</span><span class="s2">&quot;a&quot;</span><span class="o">+</span><span class="n">key_</span><span class="p">]</span>
+            <span class="n">p_arr</span> <span class="o">=</span> <span class="n">predictions</span><span class="p">[</span><span class="s2">&quot;p&quot;</span><span class="o">+</span><span class="n">key_</span><span class="p">]</span>
+            <span class="n">q_arr</span> <span class="o">=</span> <span class="n">predictions</span><span class="p">[</span><span class="s2">&quot;q&quot;</span><span class="o">+</span><span class="n">key_</span><span class="p">]</span>
+            <span class="n">v_arr</span> <span class="o">=</span> <span class="n">predictions</span><span class="p">[</span><span class="s2">&quot;v&quot;</span><span class="o">+</span><span class="n">key_</span><span class="p">]</span>
+        <span class="k">except</span> <span class="ne">KeyError</span><span class="p">:</span>
+            <span class="n">logger</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="s2">&quot;The predictions dict does not include required variables&quot;</span><span class="p">)</span>
+            <span class="k">raise</span>
+        <span class="c1">#a_or = sqrt(p_or**2 + q_or**2) / (sqrt(3).v_or)</span>
+        <span class="c1">#a_ex = sqrt(p_ex**2 + q_ex**2) / (sqrt(3).v_ex)</span>
+        <span class="n">a_comp</span> <span class="o">=</span> <span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span><span class="n">p_arr</span><span class="o">**</span><span class="mi">2</span> <span class="o">+</span> <span class="n">q_arr</span><span class="o">**</span><span class="mi">2</span><span class="p">)</span> <span class="o">/</span> <span class="p">((</span><span class="n">np</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span><span class="mi">3</span><span class="p">)</span> <span class="o">*</span> <span class="n">v_arr</span><span class="p">)</span><span class="o">+</span><span class="n">eps</span><span class="p">))</span> <span class="o">*</span> <span class="mi">1000</span>
+        <span class="n">verifications</span><span class="p">[</span><span class="s2">&quot;a&quot;</span><span class="o">+</span><span class="n">key_</span><span class="o">+</span><span class="s2">&quot;_deviation&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="p">[</span><span class="nb">float</span><span class="p">(</span><span class="n">el</span><span class="p">)</span> <span class="k">for</span> <span class="n">el</span> <span class="ow">in</span>
+            <span class="n">mean_absolute_error</span><span class="p">(</span><span class="n">a_arr</span><span class="p">,</span> <span class="n">a_comp</span><span class="p">,</span> <span class="n">multioutput</span><span class="o">=</span><span class="s1">&#39;raw_values&#39;</span><span class="p">)]</span>
+        <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;Mean absolute error of a&quot;</span><span class="o">+</span><span class="n">key_</span><span class="o">+</span><span class="s2">&quot; : </span><span class="si">%.3f</span><span class="s2">&quot;</span><span class="p">,</span> <span class="n">verifications</span><span class="p">[</span><span class="s2">&quot;a&quot;</span><span class="o">+</span><span class="n">key_</span><span class="o">+</span><span class="s2">&quot;_deviation&quot;</span><span class="p">])</span>
+    <span class="k">return</span> <span class="n">verifications</span></div>
+
+<div class="viewcode-block" id="verify_loss"><a class="viewcode-back" href="../../../../lips.metrics.power_grid.html#lips.metrics.power_grid.physics_compliances.verify_loss">[docs]</a><span class="k">def</span> <span class="nf">verify_loss</span><span class="p">(</span><span class="n">predictions</span><span class="p">,</span>
+                <span class="n">log_path</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="kc">None</span><span class="p">]</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+                <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Verify the energy loss</span>
+
+<span class="sd">    The loss should be between 1 and 4 % of production at each step.</span>
+
+<span class="sd">    2 possible way to call the function with two set of information:</span>
+<span class="sd">        1) indicating only the path to the stored arrays by using the `path` parameter</span>
+<span class="sd">        2) indicating explicitly the required variables for computing the law which are (prod_p, p_or and p_ex)</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    predictions: `dict`</span>
+<span class="sd">        Predictions made by an augmented simulator</span>
+<span class="sd">    log_path: `str`</span>
+<span class="sd">        the path where the logs should be saved</span>
+<span class="sd">    **kwargs:</span>
+<span class="sd">        It should contain `observations` and `config` to load the tolerance</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    A dictionary comprising following keys:</span>
+
+<span class="sd">    - EL: `array`</span>
+<span class="sd">        array of energy losses for each iteration</span>
+<span class="sd">    - violation_percentage: `float`</span>
+<span class="sd">        percentage of violation of loss</span>
+<span class="sd">    - failed_indices: `list`</span>
+<span class="sd">        The indices of failed cases</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="c1"># logger</span>
+    <span class="n">logger</span> <span class="o">=</span> <span class="n">CustomLogger</span><span class="p">(</span><span class="s2">&quot;PhysicsCompliances(Loss)&quot;</span><span class="p">,</span> <span class="n">log_path</span><span class="p">)</span><span class="o">.</span><span class="n">logger</span>
+    <span class="k">try</span><span class="p">:</span>
+        <span class="n">observations</span> <span class="o">=</span> <span class="n">kwargs</span><span class="p">[</span><span class="s2">&quot;observations&quot;</span><span class="p">]</span>
+    <span class="k">except</span> <span class="ne">KeyError</span><span class="p">:</span>
+        <span class="n">logger</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="s2">&quot;The requirements were not satisiftied to call verify_loss function&quot;</span><span class="p">)</span>
+        <span class="k">raise</span>
+    <span class="k">try</span><span class="p">:</span>
+        <span class="n">config</span> <span class="o">=</span> <span class="n">kwargs</span><span class="p">[</span><span class="s2">&quot;config&quot;</span><span class="p">]</span>
+    <span class="k">except</span> <span class="ne">KeyError</span><span class="p">:</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="n">tolerance</span> <span class="o">=</span> <span class="n">kwargs</span><span class="p">[</span><span class="s2">&quot;tolerance&quot;</span><span class="p">]</span>
+        <span class="k">except</span> <span class="ne">KeyError</span><span class="p">:</span>
+            <span class="n">logger</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="s2">&quot;The tolerance could not be found for verify_loss function&quot;</span><span class="p">)</span>
+            <span class="k">raise</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">tolerance</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><span class="n">tolerance</span><span class="p">)</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">tolerance</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><span class="n">config</span><span class="o">.</span><span class="n">get_option</span><span class="p">(</span><span class="s2">&quot;eval_params&quot;</span><span class="p">)[</span><span class="s2">&quot;EL_tolerance&quot;</span><span class="p">])</span>
+
+
+    <span class="n">verifications</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">()</span>
+    <span class="n">failed_indices</span> <span class="o">=</span> <span class="kc">None</span>
+    <span class="n">violation_percentage</span> <span class="o">=</span> <span class="kc">None</span>
+
+
+    <span class="k">try</span><span class="p">:</span>
+        <span class="n">prod_p</span> <span class="o">=</span> <span class="n">observations</span><span class="p">[</span><span class="s2">&quot;prod_p&quot;</span><span class="p">]</span>
+        <span class="n">p_or</span> <span class="o">=</span> <span class="n">predictions</span><span class="p">[</span><span class="s2">&quot;p_or&quot;</span><span class="p">]</span>
+        <span class="n">p_ex</span> <span class="o">=</span> <span class="n">predictions</span><span class="p">[</span><span class="s2">&quot;p_ex&quot;</span><span class="p">]</span>
+    <span class="k">except</span> <span class="ne">KeyError</span><span class="p">:</span>
+        <span class="n">logger</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="s2">&quot;The observations or/and predictions do not include required variables&quot;</span><span class="p">)</span>
+        <span class="k">raise</span>
+
+    <span class="n">el_</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">abs</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">p_or</span> <span class="o">+</span> <span class="n">p_ex</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="mi">1</span><span class="p">))</span>
+    <span class="n">ratio</span> <span class="o">=</span> <span class="n">el_</span> <span class="o">/</span> <span class="n">np</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">prod_p</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+
+    <span class="n">condition</span> <span class="o">=</span> <span class="n">ratio</span> <span class="o">&gt;</span> <span class="n">tolerance</span>
+    <span class="k">if</span> <span class="n">np</span><span class="o">.</span><span class="n">any</span><span class="p">(</span><span class="n">condition</span><span class="p">):</span>
+        <span class="n">failed_indices</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">where</span><span class="p">(</span><span class="n">condition</span><span class="p">))</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
+        <span class="n">violation_percentage</span> <span class="o">=</span> <span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">failed_indices</span><span class="p">)</span> <span class="o">/</span> <span class="nb">len</span><span class="p">(</span><span class="n">el_</span><span class="p">))</span><span class="o">*</span><span class="mi">100</span>
+        <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;Number of failed cases is: </span><span class="si">%i</span><span class="s2"> and the proportion is: </span><span class="si">%.3f</span><span class="s2"> </span><span class="si">%%</span><span class="s2">&quot;</span><span class="p">,</span> <span class="nb">len</span><span class="p">(</span><span class="n">failed_indices</span><span class="p">),</span> <span class="n">violation_percentage</span><span class="p">)</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;Verification is done without any violation&quot;</span><span class="p">)</span>
+        <span class="n">violation_percentage</span> <span class="o">=</span> <span class="mf">0.</span>
+
+    <span class="n">verifications</span><span class="p">[</span><span class="s2">&quot;Law_values&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">el_</span>
+    <span class="n">verifications</span><span class="p">[</span><span class="s2">&quot;violation_percentage&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">violation_percentage</span>
+    <span class="n">verifications</span><span class="p">[</span><span class="s2">&quot;failed_indices&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">failed_indices</span>
+    <span class="k">return</span> <span class="n">verifications</span></div>
+
+<div class="viewcode-block" id="verify_energy_conservation"><a class="viewcode-back" href="../../../../lips.metrics.power_grid.html#lips.metrics.power_grid.physics_compliances.verify_energy_conservation">[docs]</a><span class="k">def</span> <span class="nf">verify_energy_conservation</span><span class="p">(</span><span class="n">predictions</span><span class="p">:</span> <span class="nb">dict</span><span class="p">,</span>
+                               <span class="n">log_path</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="kc">None</span><span class="p">]</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+                               <span class="o">**</span><span class="n">kwargs</span>
+                              <span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;This function verifies the law of conservation of energy (LCE)</span>
+
+<span class="sd">    productions = load + loss</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    predictions</span>
+<span class="sd">        Predictions made by an augmented simulator</span>
+<span class="sd">    log_path, optional</span>
+<span class="sd">        the path where the logs should be saved, by default None</span>
+<span class="sd">    **kwargs:</span>
+<span class="sd">        It should contain `observations` and `config` to load the tolerance</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    a dictionary with following keys:</span>
+<span class="sd">    - LCE: `array`</span>
+<span class="sd">        an array including the law of conservation of energy values stored for each step (observation)</span>
+
+<span class="sd">    - violation_percentage: `scalar`</span>
+<span class="sd">        a value expressed in percentage to indicate the percentage of</span>
+
+<span class="sd">    - failed_indices: `array`</span>
+<span class="sd">        an array giving the indices of observations that not verify the law given the indicated tolerance</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="c1"># logger</span>
+    <span class="n">logger</span> <span class="o">=</span> <span class="n">CustomLogger</span><span class="p">(</span><span class="s2">&quot;PhysicsCompliances(LCE)&quot;</span><span class="p">,</span> <span class="n">log_path</span><span class="p">)</span><span class="o">.</span><span class="n">logger</span>
+
+    <span class="k">try</span><span class="p">:</span>
+        <span class="n">observations</span> <span class="o">=</span> <span class="n">kwargs</span><span class="p">[</span><span class="s2">&quot;observations&quot;</span><span class="p">]</span>
+    <span class="k">except</span> <span class="ne">KeyError</span><span class="p">:</span>
+        <span class="n">logger</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="s2">&quot;The requirements were not satisiftied to verify_energy_conservation function&quot;</span><span class="p">)</span>
+        <span class="k">raise</span>
+
+    <span class="k">try</span><span class="p">:</span>
+        <span class="n">config</span> <span class="o">=</span> <span class="n">kwargs</span><span class="p">[</span><span class="s2">&quot;config&quot;</span><span class="p">]</span>
+    <span class="k">except</span> <span class="ne">KeyError</span><span class="p">:</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="n">tolerance</span> <span class="o">=</span> <span class="n">kwargs</span><span class="p">[</span><span class="s2">&quot;tolerance&quot;</span><span class="p">]</span>
+        <span class="k">except</span> <span class="ne">KeyError</span><span class="p">:</span>
+            <span class="n">logger</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="s2">&quot;The tolerance could not be found for verify_loss function&quot;</span><span class="p">)</span>
+            <span class="k">raise</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">tolerance</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><span class="n">tolerance</span><span class="p">)</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">tolerance</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><span class="n">config</span><span class="o">.</span><span class="n">get_option</span><span class="p">(</span><span class="s2">&quot;eval_params&quot;</span><span class="p">)[</span><span class="s2">&quot;EL_tolerance&quot;</span><span class="p">])</span>
+
+
+    <span class="k">try</span><span class="p">:</span>
+        <span class="n">prod_p</span> <span class="o">=</span> <span class="n">observations</span><span class="p">[</span><span class="s2">&quot;prod_p&quot;</span><span class="p">]</span>
+        <span class="n">load_p</span> <span class="o">=</span> <span class="n">observations</span><span class="p">[</span><span class="s2">&quot;load_p&quot;</span><span class="p">]</span>
+        <span class="n">p_or</span> <span class="o">=</span> <span class="n">predictions</span><span class="p">[</span><span class="s2">&quot;p_or&quot;</span><span class="p">]</span>
+        <span class="n">p_ex</span> <span class="o">=</span> <span class="n">predictions</span><span class="p">[</span><span class="s2">&quot;p_ex&quot;</span><span class="p">]</span>
+    <span class="k">except</span> <span class="ne">KeyError</span><span class="p">:</span>
+        <span class="n">logger</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="s2">&quot;The observations or/and predictions do not include required variables&quot;</span><span class="p">)</span>
+        <span class="k">raise</span>
+
+    <span class="n">verifications</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">()</span>
+    <span class="n">productions</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">prod_p</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+    <span class="n">loads</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">load_p</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+    <span class="n">loss</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">p_or</span> <span class="o">+</span> <span class="n">p_ex</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span> <span class="c1"># TODO : not np.abs(np.sum(...)) ? Try and see</span>
+
+    <span class="n">lce_</span> <span class="o">=</span> <span class="n">productions</span> <span class="o">-</span> <span class="n">loads</span> <span class="o">-</span> <span class="n">loss</span>
+    <span class="n">failed_indices</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">where</span><span class="p">(</span><span class="nb">abs</span><span class="p">(</span><span class="n">lce_</span><span class="p">)</span> <span class="o">&gt;</span> <span class="n">tolerance</span><span class="p">))</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
+    <span class="n">violation_percentage</span> <span class="o">=</span> <span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">failed_indices</span><span class="p">)</span> <span class="o">/</span> <span class="nb">len</span><span class="p">(</span><span class="n">lce_</span><span class="p">))</span><span class="o">*</span><span class="mi">100</span>
+    <span class="n">criteria</span> <span class="o">=</span> <span class="n">mean_absolute_error</span><span class="p">(</span><span class="n">loads</span> <span class="o">-</span> <span class="n">productions</span><span class="p">,</span> <span class="n">loss</span><span class="p">)</span>
+
+    <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;Mean Absolute Error (MAE) between (loads - productions) and loss is : </span><span class="si">%.3f</span><span class="s2">&quot;</span><span class="p">,</span> <span class="n">criteria</span><span class="p">)</span>
+    <span class="n">verifications</span><span class="p">[</span><span class="s2">&quot;Law_values&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">lce_</span>
+    <span class="n">verifications</span><span class="p">[</span><span class="s2">&quot;violation_percentage&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">violation_percentage</span>
+    <span class="n">verifications</span><span class="p">[</span><span class="s2">&quot;criteria&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">criteria</span>
+
+    <span class="k">return</span> <span class="n">verifications</span></div>
+
+<div class="viewcode-block" id="verify_kcl"><a class="viewcode-back" href="../../../../lips.metrics.power_grid.html#lips.metrics.power_grid.physics_compliances.verify_kcl">[docs]</a><span class="k">def</span> <span class="nf">verify_kcl</span><span class="p">(</span><span class="n">env</span><span class="p">,</span> <span class="n">ref_obs</span><span class="p">,</span> <span class="n">predictions</span><span class="p">,</span> <span class="n">tol</span><span class="o">=</span><span class="mf">1e-3</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    This function used the check_solution function offered by lightsim2grid package, to</span>
+<span class="sd">    verify the Kirchhoff&#39;s current law</span>
+
+<span class="sd">    TODO: how to include environment in the function ?</span>
+
+<span class="sd">    params</span>
+<span class="sd">    ------</span>
+<span class="sd">        env: `grid2op` environment</span>
+<span class="sd">            the grid2op environment used to generate the data</span>
+
+<span class="sd">        ref_obs: `dict`</span>
+<span class="sd">            the reference data used as ground truth</span>
+
+<span class="sd">        predictions: `dict`</span>
+<span class="sd">            it should include the voltages (V) and the voltage angles (theta)</span>
+
+<span class="sd">        tol: `float`</span>
+<span class="sd">            the tolerance to respect the KCL</span>
+
+<span class="sd">    returns</span>
+<span class="sd">    _______</span>
+<span class="sd">        KCL_value: `float`</span>
+<span class="sd">            a global float value averaged over all the observations</span>
+
+<span class="sd">        violation_prop_obs_level: `list`</span>
+<span class="sd">            violation proportion at observation level</span>
+
+<span class="sd">        violation_prop_node_level : `list`</span>
+<span class="sd">            violation proportion at substation level</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">try</span><span class="p">:</span>
+        <span class="kn">from</span> <span class="nn">lightsim2grid</span> <span class="kn">import</span> <span class="n">PhysicalLawChecker</span>
+    <span class="k">except</span> <span class="ne">ImportError</span> <span class="k">as</span> <span class="n">error</span><span class="p">:</span>
+        <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Install the LightSim2Grid to be able to use this verification&quot;</span><span class="p">)</span>
+        <span class="k">raise</span> <span class="n">error</span>
+
+    <span class="n">obs</span> <span class="o">=</span> <span class="n">env</span><span class="o">.</span><span class="n">reset</span><span class="p">()</span>
+    <span class="n">n_obs</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">predictions</span><span class="p">[</span><span class="s2">&quot;v_or&quot;</span><span class="p">])</span>
+    <span class="n">n_sub</span> <span class="o">=</span> <span class="n">env</span><span class="o">.</span><span class="n">n_sub</span>
+
+    <span class="c1"># used to transform the Kv to Per Unit (Pu)</span>
+    <span class="n">lines_or_pu_to_kv</span> <span class="o">=</span> <span class="n">env</span><span class="o">.</span><span class="n">backend</span><span class="o">.</span><span class="n">lines_or_pu_to_kv</span>
+    <span class="n">lines_ex_pu_to_kv</span> <span class="o">=</span> <span class="n">env</span><span class="o">.</span><span class="n">backend</span><span class="o">.</span><span class="n">lines_ex_pu_to_kv</span>
+
+    <span class="c1"># create a checker</span>
+    <span class="n">checker</span> <span class="o">=</span> <span class="n">PhysicalLawChecker</span><span class="p">(</span><span class="n">env</span><span class="p">)</span>
+
+    <span class="n">idx_list</span> <span class="o">=</span> <span class="nb">list</span><span class="p">()</span>
+    <span class="n">nodes_violation_count</span> <span class="o">=</span> <span class="nb">list</span><span class="p">()</span>
+    <span class="c1"># a set of attributes available in ref_obs but not in predictions (injections + topology)</span>
+    <span class="c1"># it concerns the attributs which are used as predictors</span>
+    <span class="n">ref_obs_keys</span> <span class="o">=</span> <span class="n">ref_obs</span><span class="o">.</span><span class="n">keys</span><span class="p">()</span> <span class="o">-</span> <span class="n">predictions</span><span class="o">.</span><span class="n">keys</span><span class="p">()</span>
+    <span class="c1"># loop over the observations</span>
+    <span class="k">for</span> <span class="n">id_</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">n_obs</span><span class="p">):</span>
+        <span class="c1"># replacing the `obs` attributes using the injections + topology (real data)</span>
+        <span class="k">for</span> <span class="n">key_</span> <span class="ow">in</span> <span class="n">ref_obs_keys</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">key_</span> <span class="o">==</span> <span class="s2">&quot;prod_p&quot;</span><span class="p">:</span>
+                <span class="n">key_1</span> <span class="o">=</span> <span class="s2">&quot;gen_p&quot;</span>
+            <span class="k">elif</span> <span class="n">key_</span> <span class="o">==</span> <span class="s2">&quot;prod_q&quot;</span><span class="p">:</span>
+                <span class="n">key_1</span> <span class="o">=</span> <span class="s2">&quot;gen_q&quot;</span>
+            <span class="k">elif</span> <span class="n">key_</span> <span class="o">==</span> <span class="s2">&quot;prod_v&quot;</span><span class="p">:</span>
+                <span class="n">key_1</span> <span class="o">=</span> <span class="s2">&quot;gen_v&quot;</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">key_1</span> <span class="o">=</span> <span class="n">key_</span>
+            <span class="nb">setattr</span><span class="p">(</span><span class="n">obs</span><span class="p">,</span> <span class="n">key_1</span><span class="p">,</span> <span class="n">ref_obs</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">key_</span><span class="p">)[</span><span class="n">id_</span><span class="p">,</span> <span class="p">:])</span>
+
+        <span class="c1"># replacing the remaining attributes using the predictions</span>
+        <span class="k">for</span> <span class="n">key_</span> <span class="ow">in</span> <span class="n">predictions</span><span class="o">.</span><span class="n">keys</span><span class="p">():</span>
+            <span class="k">if</span> <span class="n">key_</span> <span class="o">==</span> <span class="s2">&quot;prod_p&quot;</span><span class="p">:</span>
+                <span class="n">key_1</span> <span class="o">=</span> <span class="s2">&quot;gen_p&quot;</span>
+            <span class="k">elif</span> <span class="n">key_</span> <span class="o">==</span> <span class="s2">&quot;prod_q&quot;</span><span class="p">:</span>
+                <span class="n">key_1</span> <span class="o">=</span> <span class="s2">&quot;gen_q&quot;</span>
+            <span class="k">elif</span> <span class="n">key_</span> <span class="o">==</span> <span class="s2">&quot;prod_v&quot;</span><span class="p">:</span>
+                <span class="n">key_1</span> <span class="o">=</span> <span class="s2">&quot;gen_v&quot;</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">key_1</span> <span class="o">=</span> <span class="n">key_</span>
+            <span class="nb">setattr</span><span class="p">(</span><span class="n">obs</span><span class="p">,</span> <span class="n">key_1</span><span class="p">,</span> <span class="n">predictions</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">key_</span><span class="p">)[</span><span class="n">id_</span><span class="p">,</span> <span class="p">:])</span>
+
+        <span class="c1"># the indices help to extract the V at substation level</span>
+        <span class="n">mat</span><span class="p">,</span> <span class="p">(</span><span class="n">load_bus</span><span class="p">,</span> <span class="n">gen_bus</span><span class="p">,</span> <span class="n">stor_bus</span><span class="p">,</span> <span class="n">lor_bus</span><span class="p">,</span> <span class="n">lex_bus</span><span class="p">)</span> <span class="o">=</span> <span class="n">obs</span><span class="o">.</span><span class="n">flow_bus_matrix</span><span class="p">(</span><span class="n">active_flow</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">as_csr_matrix</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+
+        <span class="c1">#theta_or = predictions[&quot;theta_or&quot;][id_]</span>
+        <span class="c1">#theta_ex = predictions[&quot;theta_ex&quot;][id_]</span>
+        <span class="c1">#v_or = predictions[&quot;v_or&quot;][id_] / lines_or_pu_to_kv</span>
+        <span class="c1">#v_ex = predictions[&quot;v_ex&quot;][id_] / lines_ex_pu_to_kv</span>
+        <span class="n">theta_or</span> <span class="o">=</span> <span class="nb">getattr</span><span class="p">(</span><span class="n">obs</span><span class="p">,</span> <span class="s2">&quot;theta_or&quot;</span><span class="p">)</span>
+        <span class="n">theta_ex</span> <span class="o">=</span> <span class="nb">getattr</span><span class="p">(</span><span class="n">obs</span><span class="p">,</span> <span class="s2">&quot;theta_ex&quot;</span><span class="p">)</span>
+        <span class="n">v_or</span> <span class="o">=</span> <span class="nb">getattr</span><span class="p">(</span><span class="n">obs</span><span class="p">,</span> <span class="s2">&quot;v_or&quot;</span><span class="p">)</span> <span class="o">/</span> <span class="n">lines_or_pu_to_kv</span>
+        <span class="n">v_ex</span> <span class="o">=</span> <span class="nb">getattr</span><span class="p">(</span><span class="n">obs</span><span class="p">,</span> <span class="s2">&quot;v_ex&quot;</span><span class="p">)</span> <span class="o">/</span> <span class="n">lines_ex_pu_to_kv</span>
+
+        <span class="n">v_list</span> <span class="o">=</span> <span class="nb">list</span><span class="p">()</span>
+        <span class="n">theta_list</span> <span class="o">=</span> <span class="nb">list</span><span class="p">()</span>
+
+        <span class="c1"># computing the voltages and the angles at each substation (average)</span>
+        <span class="k">for</span> <span class="n">sub_</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">n_sub</span><span class="p">):</span>
+            <span class="n">tmp_v</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">mean</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">concatenate</span><span class="p">((</span><span class="n">v_or</span><span class="p">[</span><span class="n">lor_bus</span><span class="o">==</span><span class="n">sub_</span><span class="p">],</span> <span class="n">v_ex</span><span class="p">[</span><span class="n">lex_bus</span><span class="o">==</span><span class="n">sub_</span><span class="p">])))</span>
+            <span class="n">v_list</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">tmp_v</span><span class="p">)</span>
+            <span class="n">tmp_theta</span> <span class="o">=</span> <span class="n">math</span><span class="o">.</span><span class="n">radians</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">mean</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">concatenate</span><span class="p">((</span><span class="n">theta_or</span><span class="p">[</span><span class="n">lor_bus</span><span class="o">==</span><span class="n">sub_</span><span class="p">],</span> <span class="n">theta_ex</span><span class="p">[</span><span class="n">lex_bus</span><span class="o">==</span><span class="n">sub_</span><span class="p">]))))</span>
+            <span class="n">theta_list</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">tmp_theta</span><span class="p">)</span>
+
+        <span class="c1"># computing the complex voltage at each sub station</span>
+        <span class="n">Va</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">theta_list</span><span class="p">)</span> <span class="c1"># voltage angles</span>
+        <span class="n">Vm</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">v_list</span><span class="p">)</span> <span class="c1"># voltage magnitudes</span>
+        <span class="c1"># complex voltages</span>
+        <span class="n">v</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="mi">2</span><span class="o">*</span><span class="n">n_sub</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="nb">complex</span><span class="p">)</span>
+        <span class="n">V</span> <span class="o">=</span> <span class="n">Vm</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">exp</span><span class="p">(</span><span class="mi">1</span><span class="n">j</span><span class="o">*</span><span class="n">Va</span><span class="p">)</span>
+        <span class="n">v</span><span class="p">[:</span><span class="n">n_sub</span><span class="p">]</span> <span class="o">=</span> <span class="n">V</span>
+        <span class="n">v</span><span class="p">[</span><span class="n">n_sub</span><span class="p">:]</span> <span class="o">+=</span> <span class="mi">100</span> <span class="c1"># TODO: maybe should be adapted when introducing topology changes</span>
+        <span class="c1"># as it activates new bus bars.</span>
+
+        <span class="n">mismatch</span> <span class="o">=</span> <span class="n">checker</span><span class="o">.</span><span class="n">check_solution</span><span class="p">(</span><span class="n">v</span><span class="p">,</span> <span class="n">obs</span><span class="p">)</span>
+
+        <span class="c1"># a case which does not respect the selected tolerance</span>
+        <span class="k">if</span> <span class="n">np</span><span class="o">.</span><span class="n">any</span><span class="p">(</span><span class="n">mismatch</span> <span class="o">&gt;</span> <span class="n">tol</span><span class="p">):</span>
+            <span class="n">idx_list</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">id_</span><span class="p">)</span>
+            <span class="n">nodes_violation_count</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">mismatch</span> <span class="o">&gt;</span> <span class="n">tol</span><span class="p">))</span>
+
+    <span class="c1"># the proportion of observations including at least one violation at any node</span>
+    <span class="n">violation_prop_obs_level</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">idx_list</span><span class="p">)</span> <span class="o">/</span> <span class="n">n_obs</span>
+    <span class="c1"># the proportion of substations violating the KCL over all the observations</span>
+    <span class="n">violation_prop_node_level</span> <span class="o">=</span> <span class="nb">sum</span><span class="p">(</span><span class="n">nodes_violation_count</span><span class="p">)</span> <span class="o">/</span> <span class="p">(</span><span class="n">n_obs</span><span class="o">*</span><span class="n">n_sub</span><span class="p">)</span>
+
+    <span class="k">return</span> <span class="n">violation_prop_obs_level</span><span class="p">,</span> <span class="n">violation_prop_node_level</span></div>
+</pre></div>
+
+           </div>
+          </div>
+          <footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2021, IRT SystemX.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

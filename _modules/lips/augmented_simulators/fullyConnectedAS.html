@@ -1,0 +1,463 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>lips.augmented_simulators.fullyConnectedAS &mdash; LIPS 0.1 documentation</title>
+      <link rel="stylesheet" href="../../../_static/pygments.css" type="text/css" />
+      <link rel="stylesheet" href="../../../_static/css/theme.css" type="text/css" />
+  <!--[if lt IE 9]>
+    <script src="../../../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script data-url_root="../../../" id="documentation_options" src="../../../_static/documentation_options.js"></script>
+        <script src="../../../_static/jquery.js"></script>
+        <script src="../../../_static/underscore.js"></script>
+        <script src="../../../_static/doctools.js"></script>
+    <script src="../../../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+            <a href="../../../index.html" class="icon icon-home"> LIPS
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">GETTING STARTED</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../quickstart.html">Getting started</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">TECHNICAL DOCUMENTATION</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../lips.augmented_simulators.html">augmented_simulators package</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../lips.benchmark.html">benchmark package</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../lips.config.html">lips.config package</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../lips.dataset.html">lips.dataset package</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../lips.evaluation.html">lips.evaluation package</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../lips.logger.html">lips.logger package</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../lips.metrics.power_grid.html">metrics.power_grid package</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../lips.metrics.html">lips.metrics package</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../lips.physical_simulator.html">lips.physical_simulator package</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">GUIDE</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../license.html">License</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../help.html">Help</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../../index.html">LIPS</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../../../index.html" class="icon icon-home"></a> &raquo;</li>
+          <li><a href="../../index.html">Module code</a> &raquo;</li>
+      <li>lips.augmented_simulators.fullyConnectedAS</li>
+      <li class="wy-breadcrumbs-aside">
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <h1>Source code for lips.augmented_simulators.fullyConnectedAS</h1><div class="highlight"><pre>
+<span></span><span class="c1"># Copyright (c) 2021, IRT SystemX and RTE (https://www.irt-systemx.fr/en/)</span>
+<span class="c1"># See AUTHORS.txt</span>
+<span class="c1"># This Source Code Form is subject to the terms of the Mozilla Public License, version 2.0.</span>
+<span class="c1"># If a copy of the Mozilla Public License, version 2.0 was not distributed with this file,</span>
+<span class="c1"># you can obtain one at http://mozilla.org/MPL/2.0/.</span>
+<span class="c1"># SPDX-License-Identifier: MPL-2.0</span>
+<span class="c1"># This file is part of LIPS, LIPS is a python platform for power networks benchmarking</span>
+
+<span class="kn">import</span> <span class="nn">os</span>
+<span class="kn">import</span> <span class="nn">time</span>
+<span class="kn">import</span> <span class="nn">json</span>
+<span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+<span class="kn">import</span> <span class="nn">copy</span>
+<span class="kn">import</span> <span class="nn">warnings</span>
+<span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Union</span>
+<span class="kn">import</span> <span class="nn">tempfile</span>
+<span class="kn">import</span> <span class="nn">shutil</span>
+
+<span class="kn">import</span> <span class="nn">tensorflow</span> <span class="k">as</span> <span class="nn">tf</span>
+<span class="kn">from</span> <span class="nn">tensorflow.keras.layers</span> <span class="kn">import</span> <span class="n">Layer</span>
+<span class="kn">from</span> <span class="nn">tensorflow.keras.layers</span> <span class="kn">import</span> <span class="n">Dense</span>
+<span class="kn">from</span> <span class="nn">tensorflow.keras.optimizers</span> <span class="kn">import</span> <span class="n">Optimizer</span>
+<span class="kn">import</span> <span class="nn">tensorflow.keras.optimizers</span> <span class="k">as</span> <span class="nn">tfko</span>
+
+<span class="k">with</span> <span class="n">warnings</span><span class="o">.</span><span class="n">catch_warnings</span><span class="p">():</span>
+    <span class="n">warnings</span><span class="o">.</span><span class="n">filterwarnings</span><span class="p">(</span><span class="s2">&quot;ignore&quot;</span><span class="p">,</span> <span class="n">category</span><span class="o">=</span><span class="ne">FutureWarning</span><span class="p">)</span>
+    <span class="kn">from</span> <span class="nn">tensorflow.keras.models</span> <span class="kn">import</span> <span class="n">Sequential</span><span class="p">,</span> <span class="n">Model</span>
+    <span class="kn">from</span> <span class="nn">tensorflow.keras.layers</span> <span class="kn">import</span> <span class="n">Activation</span>
+    <span class="kn">from</span> <span class="nn">tensorflow.keras.layers</span> <span class="kn">import</span> <span class="n">Input</span>
+
+<span class="kn">from</span> <span class="nn">lips.dataset</span> <span class="kn">import</span> <span class="n">DataSet</span>
+<span class="kn">from</span> <span class="nn">lips.config</span> <span class="kn">import</span> <span class="n">ConfigManager</span>
+<span class="kn">from</span> <span class="nn">lips.augmented_simulators</span> <span class="kn">import</span> <span class="n">AugmentedSimulator</span>
+<span class="kn">from</span> <span class="nn">lips.logger</span> <span class="kn">import</span> <span class="n">CustomLogger</span>
+
+
+<div class="viewcode-block" id="FullyConnectedAS"><a class="viewcode-back" href="../../../lips.augmented_simulators.html#lips.augmented_simulators.fullyConnectedAS.FullyConnectedAS">[docs]</a><span class="k">class</span> <span class="nc">FullyConnectedAS</span><span class="p">(</span><span class="n">AugmentedSimulator</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    This class uses tensorflow and keras to implement an Augmented simulator based on a fully connected neural network</span>
+<span class="sd">    trained using keras.</span>
+
+<span class="sd">    What it does is simply to concatenate all the input attributes together in one matrix, is asked to output</span>
+<span class="sd">    all the output in one big matrix.</span>
+
+<span class="sd">    It also handles basic scaling of the data</span>
+
+<span class="sd">    &quot;FullyConnectedAS&quot; stands for &quot;Fully Connected neural network used as an Agumented Simulator&quot;</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span>
+                 <span class="n">name</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;FullyConnected&quot;</span><span class="p">,</span>
+                 <span class="n">benchmark_name</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;Benchmark1&quot;</span><span class="p">,</span>
+                 <span class="n">path_config</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="kc">None</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+                 <span class="n">attr_x</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">tuple</span><span class="p">,</span> <span class="kc">None</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+                 <span class="n">attr_y</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">tuple</span><span class="p">,</span> <span class="kc">None</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+                 <span class="n">sizes_layer</span><span class="o">=</span><span class="p">(</span><span class="mi">150</span><span class="p">,</span> <span class="mi">150</span><span class="p">),</span>
+                 <span class="n">lr</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">3e-4</span><span class="p">,</span>  <span class="c1"># only used if &quot;optimizer&quot; is not None</span>
+                 <span class="n">layer</span><span class="p">:</span> <span class="n">Layer</span> <span class="o">=</span> <span class="n">Dense</span><span class="p">,</span>
+                 <span class="n">layer_act</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;relu&quot;</span><span class="p">,</span>
+                 <span class="n">optimizer</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="n">Optimizer</span><span class="p">,</span> <span class="kc">None</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+                 <span class="n">loss</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;mse&quot;</span><span class="p">,</span>  <span class="c1"># loss used to train the model</span>
+                 <span class="n">batch_size</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">128</span><span class="p">,</span>
+                 <span class="n">log_path</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="kc">None</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span>
+                <span class="p">):</span>
+
+        <span class="n">AugmentedSimulator</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">config_manager</span> <span class="o">=</span> <span class="n">ConfigManager</span><span class="p">(</span><span class="n">benchmark_name</span><span class="p">,</span> <span class="n">path_config</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">attr_x</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_attr_x</span> <span class="o">=</span> <span class="n">attr_x</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_attr_x</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">config_manager</span><span class="o">.</span><span class="n">get_option</span><span class="p">(</span><span class="s2">&quot;attr_x&quot;</span><span class="p">)</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">config_manager</span><span class="o">.</span><span class="n">get_option</span><span class="p">(</span><span class="s2">&quot;attr_tau&quot;</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="n">attr_y</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_attr_y</span> <span class="o">=</span> <span class="n">attr_y</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_attr_y</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">config_manager</span><span class="o">.</span><span class="n">get_option</span><span class="p">(</span><span class="s2">&quot;attr_y&quot;</span><span class="p">)</span>
+        <span class="c1">#self._attr_x = copy.deepcopy(attr_x)</span>
+        <span class="c1">#self._attr_y = copy.deepcopy(attr_y)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">sizes_layer</span> <span class="o">=</span> <span class="n">copy</span><span class="o">.</span><span class="n">deepcopy</span><span class="p">(</span><span class="n">sizes_layer</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_lr</span> <span class="o">=</span> <span class="n">lr</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">layer</span> <span class="o">=</span> <span class="n">layer</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">layer_act</span> <span class="o">=</span> <span class="n">layer_act</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_loss</span> <span class="o">=</span> <span class="n">loss</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_batch_size</span> <span class="o">=</span> <span class="n">batch_size</span>
+        <span class="k">if</span> <span class="n">optimizer</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">optimizer</span><span class="p">,</span> <span class="n">Optimizer</span><span class="p">):</span>
+                <span class="k">raise</span> <span class="ne">RuntimeError</span><span class="p">(</span><span class="s2">&quot;If an optimizer is provided, it should be a type tensorflow.keras.optimizers&quot;</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_optimizer</span> <span class="o">=</span> <span class="n">optimizer</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_optimizer</span> <span class="o">=</span> <span class="n">tfko</span><span class="o">.</span><span class="n">Adam</span><span class="p">(</span><span class="n">learning_rate</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_lr</span><span class="p">)</span>
+
+        <span class="c1"># number of dimension of x and y (number of columns)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_size_x</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_size_y</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_sizes_x</span> <span class="o">=</span> <span class="kc">None</span>  <span class="c1"># dimension of each variable</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_sizes_y</span> <span class="o">=</span> <span class="kc">None</span>  <span class="c1"># dimension of each variable</span>
+        <span class="c1"># this model normalizes the data by dividing by the variance and removing the means, i need to keep them</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_std_x</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_std_y</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_m_x</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_m_y</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="c1"># this is the keras &quot;model&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_model</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="n">Model</span><span class="p">,</span> <span class="kc">None</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">predict_time</span> <span class="o">=</span> <span class="kc">None</span>
+
+        <span class="c1"># create a logger instance</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">logger</span> <span class="o">=</span> <span class="n">CustomLogger</span><span class="p">(</span><span class="vm">__class__</span><span class="o">.</span><span class="vm">__name__</span><span class="p">,</span> <span class="n">log_path</span><span class="p">)</span><span class="o">.</span><span class="n">logger</span>
+
+<div class="viewcode-block" id="FullyConnectedAS.init"><a class="viewcode-back" href="../../../lips.augmented_simulators.html#lips.augmented_simulators.fullyConnectedAS.FullyConnectedAS.init">[docs]</a>    <span class="k">def</span> <span class="nf">init</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;this function will build the neural network&quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_model</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="c1"># model is already initialized</span>
+            <span class="k">return</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_size_x</span> <span class="ow">is</span> <span class="kc">None</span> <span class="ow">or</span> <span class="bp">self</span><span class="o">.</span><span class="n">_size_y</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">RuntimeError</span><span class="p">(</span><span class="s2">&quot;Impossible to initialize the model if i don&#39;t know its size. Have you called &quot;</span>
+                               <span class="s2">&quot;`fully_connected.load_metada` or `fully_connected.train` ?&quot;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_model</span> <span class="o">=</span> <span class="n">Sequential</span><span class="p">()</span>
+        <span class="n">input_</span> <span class="o">=</span> <span class="n">Input</span><span class="p">(</span><span class="n">shape</span><span class="o">=</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_size_x</span><span class="p">,),</span> <span class="n">name</span><span class="o">=</span><span class="s2">&quot;input&quot;</span><span class="p">)</span>
+
+        <span class="c1"># now make the model</span>
+        <span class="n">previous</span> <span class="o">=</span> <span class="n">input_</span>
+        <span class="k">for</span> <span class="n">layer_id</span><span class="p">,</span> <span class="n">layer_size</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">sizes_layer</span><span class="p">):</span>
+            <span class="n">previous</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">layer</span><span class="p">(</span><span class="n">layer_size</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="sa">f</span><span class="s2">&quot;layer_</span><span class="si">{</span><span class="n">layer_id</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)(</span><span class="n">previous</span><span class="p">)</span>
+            <span class="n">previous</span> <span class="o">=</span> <span class="n">Activation</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">layer_act</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="sa">f</span><span class="s2">&quot;activation_</span><span class="si">{</span><span class="n">layer_id</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)(</span><span class="n">previous</span><span class="p">)</span>
+        <span class="n">output_</span> <span class="o">=</span> <span class="n">Dense</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_size_y</span><span class="p">)(</span><span class="n">previous</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_model</span> <span class="o">=</span> <span class="n">Model</span><span class="p">(</span><span class="n">inputs</span><span class="o">=</span><span class="n">input_</span><span class="p">,</span>
+                            <span class="n">outputs</span><span class="o">=</span><span class="n">output_</span><span class="p">,</span>
+                            <span class="n">name</span><span class="o">=</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s2">_model&quot;</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="FullyConnectedAS.train"><a class="viewcode-back" href="../../../lips.augmented_simulators.html#lips.augmented_simulators.fullyConnectedAS.FullyConnectedAS.train">[docs]</a>    <span class="k">def</span> <span class="nf">train</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">nb_iter</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span>
+              <span class="n">train_dataset</span><span class="p">:</span> <span class="n">DataSet</span><span class="p">,</span>
+              <span class="n">val_dataset</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="kc">None</span><span class="p">,</span> <span class="n">DataSet</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+              <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;This is an example of a reference implementation of this class. Feel&quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Training of </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s2"> started&quot;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_observations</span><span class="p">[</span><span class="n">train_dataset</span><span class="o">.</span><span class="n">name</span><span class="p">]</span> <span class="o">=</span> <span class="n">train_dataset</span><span class="o">.</span><span class="n">data</span>
+        <span class="c1"># extract the input and output suitable for learning (matrices) from the generic dataset</span>
+        <span class="n">processed_x</span><span class="p">,</span> <span class="n">processed_y</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_process_all_dataset</span><span class="p">(</span><span class="n">train_dataset</span><span class="p">,</span> <span class="n">training</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">val_dataset</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">processed_x_val</span><span class="p">,</span> <span class="n">processed_y_val</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_process_all_dataset</span><span class="p">(</span><span class="n">val_dataset</span><span class="p">,</span> <span class="n">training</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+
+        <span class="c1"># create the neural network (now that I know the sizes)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">init</span><span class="p">()</span>
+
+        <span class="c1"># &#39;compile&#39; the keras model (now that it is initialized)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_model</span><span class="o">.</span><span class="n">compile</span><span class="p">(</span><span class="n">optimizer</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_optimizer</span><span class="p">,</span>
+                            <span class="n">loss</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_loss</span><span class="p">)</span>
+
+        <span class="c1"># train the model</span>
+        <span class="k">if</span> <span class="n">val_dataset</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">validation_data</span> <span class="o">=</span> <span class="p">(</span><span class="n">processed_x_val</span><span class="p">,</span> <span class="n">processed_y_val</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">validation_data</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="n">history_callback</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_model</span><span class="o">.</span><span class="n">fit</span><span class="p">(</span><span class="n">x</span><span class="o">=</span><span class="n">processed_x</span><span class="p">,</span>
+                                           <span class="n">y</span><span class="o">=</span><span class="n">processed_y</span><span class="p">,</span>
+                                           <span class="n">validation_data</span><span class="o">=</span><span class="n">validation_data</span><span class="p">,</span>
+                                           <span class="n">epochs</span><span class="o">=</span><span class="n">nb_iter</span><span class="p">,</span>
+                                           <span class="n">batch_size</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_batch_size</span><span class="p">,</span>
+                                           <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Training of </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s2"> finished&quot;</span><span class="p">)</span>
+        <span class="c1"># NB in this function we use the high level keras method &quot;fit&quot; to fit the data. It does not stricly</span>
+        <span class="c1"># uses the `DataSet` interface. For more complicated training loop, one can always use</span>
+        <span class="c1"># dataset.get_data(indexes) to retrieve the batch of data corresponding to `indexes` and</span>
+        <span class="c1"># `self.process_dataset` to process the example of this dataset one by one.</span>
+        <span class="k">return</span> <span class="n">history_callback</span></div>
+
+<div class="viewcode-block" id="FullyConnectedAS.evaluate"><a class="viewcode-back" href="../../../lips.augmented_simulators.html#lips.augmented_simulators.fullyConnectedAS.FullyConnectedAS.evaluate">[docs]</a>    <span class="k">def</span> <span class="nf">evaluate</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">dataset</span><span class="p">:</span> <span class="n">DataSet</span><span class="p">,</span> <span class="n">batch_size</span><span class="p">:</span> <span class="nb">int</span><span class="o">=</span><span class="mi">32</span><span class="p">,</span> <span class="n">save_values</span><span class="p">:</span> <span class="nb">bool</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;evaluate the model on the given dataset&quot;&quot;&quot;</span>
+        <span class="c1"># the observations used for evaluation</span>
+        <span class="n">tmp_obs</span> <span class="o">=</span> <span class="n">dataset</span><span class="o">.</span><span class="n">get_data</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">dataset</span><span class="p">)))</span>
+        <span class="c1">#for attr_nm in self._attr_y:</span>
+        <span class="c1">#    self.observations[attr_nm] = tmp_obs =</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_observations</span><span class="p">[</span><span class="n">dataset</span><span class="o">.</span><span class="n">name</span><span class="p">]</span> <span class="o">=</span> <span class="n">tmp_obs</span>
+
+        <span class="c1"># process the dataset</span>
+        <span class="n">processed_x</span><span class="p">,</span> <span class="n">_</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_process_all_dataset</span><span class="p">(</span><span class="n">dataset</span><span class="p">,</span> <span class="n">training</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+
+        <span class="c1"># make the predictions</span>
+        <span class="n">_beg</span> <span class="o">=</span> <span class="n">time</span><span class="o">.</span><span class="n">time</span><span class="p">()</span>
+        <span class="n">tmp_res_y</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_model</span><span class="o">.</span><span class="n">predict</span><span class="p">(</span><span class="n">processed_x</span><span class="p">,</span> <span class="n">batch_size</span><span class="o">=</span><span class="n">batch_size</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">predict_time</span> <span class="o">=</span> <span class="n">time</span><span class="o">.</span><span class="n">time</span><span class="p">()</span> <span class="o">-</span> <span class="n">_beg</span>
+        <span class="c1"># rescale them</span>
+        <span class="n">tmp_res_y</span> <span class="o">*=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_std_y</span>
+        <span class="n">tmp_res_y</span> <span class="o">+=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_m_y</span>
+
+        <span class="c1"># and now output data as a dictionary</span>
+        <span class="n">predictions</span> <span class="o">=</span> <span class="p">{}</span>
+        <span class="n">prev_</span> <span class="o">=</span> <span class="mi">0</span>
+        <span class="k">for</span> <span class="n">var_id</span><span class="p">,</span> <span class="n">this_var_size</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_sizes_y</span><span class="p">):</span>
+            <span class="n">attr_nm</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_attr_y</span><span class="p">[</span><span class="n">var_id</span><span class="p">]</span>
+            <span class="n">predictions</span><span class="p">[</span><span class="n">attr_nm</span><span class="p">]</span> <span class="o">=</span> <span class="n">tmp_res_y</span><span class="p">[:,</span> <span class="n">prev_</span><span class="p">:(</span><span class="n">prev_</span> <span class="o">+</span> <span class="n">this_var_size</span><span class="p">)]</span>
+            <span class="n">prev_</span> <span class="o">+=</span> <span class="n">this_var_size</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_predictions</span><span class="p">[</span><span class="n">dataset</span><span class="o">.</span><span class="n">name</span><span class="p">]</span> <span class="o">=</span> <span class="n">predictions</span>
+
+        <span class="c1">#TODO : save the predictions and observations to files np</span>
+        <span class="k">if</span> <span class="n">save_values</span><span class="p">:</span>
+            <span class="k">pass</span>
+
+        <span class="k">return</span> <span class="n">predictions</span></div>
+
+<div class="viewcode-block" id="FullyConnectedAS.save"><a class="viewcode-back" href="../../../lips.augmented_simulators.html#lips.augmented_simulators.fullyConnectedAS.FullyConnectedAS.save">[docs]</a>    <span class="k">def</span> <span class="nf">save</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">path_out</span><span class="p">:</span> <span class="nb">str</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        This saves the weights of the neural network.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">exists</span><span class="p">(</span><span class="n">path_out</span><span class="p">):</span>
+            <span class="k">raise</span> <span class="ne">RuntimeError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;The path </span><span class="si">{</span><span class="n">path_out</span><span class="si">}</span><span class="s2"> does not exists.&quot;</span><span class="p">)</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_model</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">RuntimeError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;The model is not initialized i cannot save it&quot;</span><span class="p">)</span>
+
+        <span class="n">full_path_out</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">path_out</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">name</span><span class="p">)</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">exists</span><span class="p">(</span><span class="n">full_path_out</span><span class="p">):</span>
+            <span class="n">os</span><span class="o">.</span><span class="n">mkdir</span><span class="p">(</span><span class="n">full_path_out</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Model </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s2"> is saved at </span><span class="si">{</span><span class="n">full_path_out</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_model</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="c1"># save the weights</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_model</span><span class="o">.</span><span class="n">save</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">full_path_out</span><span class="p">,</span> <span class="s2">&quot;model.h5&quot;</span><span class="p">))</span></div>
+
+<div class="viewcode-block" id="FullyConnectedAS.restore"><a class="viewcode-back" href="../../../lips.augmented_simulators.html#lips.augmented_simulators.fullyConnectedAS.FullyConnectedAS.restore">[docs]</a>    <span class="k">def</span> <span class="nf">restore</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">path</span><span class="p">:</span> <span class="nb">str</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Restores the model from a saved one.</span>
+
+<span class="sd">        We first copy the weights file into a temporary directory, and then load from this one. This is avoid</span>
+<span class="sd">        file corruption in case the model fails to load.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">nm_file</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;model.h5&quot;</span>
+        <span class="n">path_weights</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">path</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">name</span><span class="p">,</span> <span class="n">nm_file</span><span class="p">)</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">exists</span><span class="p">(</span><span class="n">path_weights</span><span class="p">):</span>
+            <span class="k">raise</span> <span class="ne">RuntimeError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Impossible to find a saved model named </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s2"> at </span><span class="si">{</span><span class="n">path</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+
+        <span class="k">with</span> <span class="n">tempfile</span><span class="o">.</span><span class="n">TemporaryDirectory</span><span class="p">()</span> <span class="k">as</span> <span class="n">path_tmp</span><span class="p">:</span>
+            <span class="n">nm_tmp</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">path_tmp</span><span class="p">,</span> <span class="n">nm_file</span><span class="p">)</span>
+            <span class="c1"># copy the weights into this file</span>
+            <span class="n">shutil</span><span class="o">.</span><span class="n">copy</span><span class="p">(</span><span class="n">path_weights</span><span class="p">,</span> <span class="n">nm_tmp</span><span class="p">)</span>
+            <span class="c1"># load this copy (make sure the proper file is not corrupted even if the loading fails)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_model</span><span class="o">.</span><span class="n">load_weights</span><span class="p">(</span><span class="n">nm_tmp</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="FullyConnectedAS.save_metadata"><a class="viewcode-back" href="../../../lips.augmented_simulators.html#lips.augmented_simulators.fullyConnectedAS.FullyConnectedAS.save_metadata">[docs]</a>    <span class="k">def</span> <span class="nf">save_metadata</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">path_out</span><span class="p">:</span> <span class="nb">str</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        This is used to save the meta data of the augmented simulator.</span>
+
+<span class="sd">        In this case it saves the sizes, the scalers etc.</span>
+
+<span class="sd">        The only difficulty here is that i need to serialize, as json, numpy arrays</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">res_json</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;batch_size&quot;</span><span class="p">:</span> <span class="nb">int</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_batch_size</span><span class="p">),</span>
+                    <span class="s2">&quot;lr&quot;</span><span class="p">:</span> <span class="nb">float</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_lr</span><span class="p">),</span>
+                    <span class="s2">&quot;layer_act&quot;</span><span class="p">:</span> <span class="nb">str</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">layer_act</span><span class="p">),</span>
+                    <span class="s2">&quot;_loss&quot;</span><span class="p">:</span> <span class="nb">str</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_loss</span><span class="p">),</span>
+                    <span class="s2">&quot;_size_x&quot;</span><span class="p">:</span> <span class="nb">int</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_size_x</span><span class="p">),</span>
+                    <span class="s2">&quot;_size_y&quot;</span><span class="p">:</span> <span class="nb">int</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_size_y</span><span class="p">)}</span>
+        <span class="k">for</span> <span class="n">my_attr</span> <span class="ow">in</span> <span class="p">[</span><span class="s2">&quot;_sizes_x&quot;</span><span class="p">,</span> <span class="s2">&quot;_sizes_y&quot;</span><span class="p">,</span> <span class="s2">&quot;_m_x&quot;</span><span class="p">,</span> <span class="s2">&quot;_m_y&quot;</span><span class="p">,</span> <span class="s2">&quot;_std_x&quot;</span><span class="p">,</span>
+                        <span class="s2">&quot;_std_y&quot;</span><span class="p">,</span> <span class="s2">&quot;sizes_layer&quot;</span><span class="p">,</span> <span class="s2">&quot;_attr_x&quot;</span><span class="p">,</span> <span class="s2">&quot;_attr_y&quot;</span><span class="p">]:</span>
+            <span class="n">tmp</span> <span class="o">=</span> <span class="nb">getattr</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">my_attr</span><span class="p">)</span>
+            <span class="n">fun</span> <span class="o">=</span> <span class="k">lambda</span> <span class="n">x</span><span class="p">:</span> <span class="n">x</span>
+            <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">tmp</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">):</span>
+                <span class="k">if</span> <span class="n">tmp</span><span class="o">.</span><span class="n">dtype</span> <span class="o">==</span> <span class="nb">int</span> <span class="ow">or</span> <span class="n">tmp</span><span class="o">.</span><span class="n">dtype</span> <span class="o">==</span> <span class="n">np</span><span class="o">.</span><span class="n">int</span> <span class="ow">or</span> <span class="n">tmp</span><span class="o">.</span><span class="n">dtype</span> <span class="o">==</span> <span class="n">np</span><span class="o">.</span><span class="n">int32</span> <span class="ow">or</span> <span class="n">tmp</span><span class="o">.</span><span class="n">dtype</span> <span class="o">==</span> <span class="n">np</span><span class="o">.</span><span class="n">int64</span><span class="p">:</span>
+                    <span class="n">fun</span> <span class="o">=</span> <span class="nb">int</span>
+                <span class="k">elif</span> <span class="n">tmp</span><span class="o">.</span><span class="n">dtype</span> <span class="o">==</span> <span class="nb">float</span> <span class="ow">or</span> <span class="n">tmp</span><span class="o">.</span><span class="n">dtype</span> <span class="o">==</span> <span class="n">np</span><span class="o">.</span><span class="n">float32</span> <span class="ow">or</span> <span class="n">tmp</span><span class="o">.</span><span class="n">dtype</span> <span class="o">==</span> <span class="n">np</span><span class="o">.</span><span class="n">float64</span><span class="p">:</span>
+                    <span class="n">fun</span> <span class="o">=</span> <span class="nb">float</span>
+            <span class="n">res_json</span><span class="p">[</span><span class="n">my_attr</span><span class="p">]</span> <span class="o">=</span> <span class="p">[</span><span class="n">fun</span><span class="p">(</span><span class="n">el</span><span class="p">)</span> <span class="k">for</span> <span class="n">el</span> <span class="ow">in</span> <span class="n">tmp</span><span class="p">]</span>
+
+        <span class="n">full_path_out</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">path_out</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">name</span><span class="p">)</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">exists</span><span class="p">(</span><span class="n">full_path_out</span><span class="p">):</span>
+            <span class="n">os</span><span class="o">.</span><span class="n">mkdir</span><span class="p">(</span><span class="n">full_path_out</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Model </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s2"> is saved at </span><span class="si">{</span><span class="n">full_path_out</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+
+        <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">full_path_out</span><span class="p">,</span> <span class="s2">&quot;metadata.json&quot;</span><span class="p">),</span> <span class="s2">&quot;w&quot;</span><span class="p">,</span> <span class="n">encoding</span><span class="o">=</span><span class="s2">&quot;utf-8&quot;</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
+            <span class="n">json</span><span class="o">.</span><span class="n">dump</span><span class="p">(</span><span class="n">obj</span><span class="o">=</span><span class="n">res_json</span><span class="p">,</span> <span class="n">fp</span><span class="o">=</span><span class="n">f</span><span class="p">,</span> <span class="n">indent</span><span class="o">=</span><span class="mi">4</span><span class="p">,</span> <span class="n">sort_keys</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="FullyConnectedAS.load_metadata"><a class="viewcode-back" href="../../../lips.augmented_simulators.html#lips.augmented_simulators.fullyConnectedAS.FullyConnectedAS.load_metadata">[docs]</a>    <span class="k">def</span> <span class="nf">load_metadata</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">path</span><span class="p">:</span> <span class="nb">str</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;this is used to load the meta parameters from the model&quot;&quot;&quot;</span>
+        <span class="n">full_path</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">path</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">name</span><span class="p">)</span>
+        <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">full_path</span><span class="p">,</span> <span class="sa">f</span><span class="s2">&quot;metadata.json&quot;</span><span class="p">),</span> <span class="s2">&quot;r&quot;</span><span class="p">,</span> <span class="n">encoding</span><span class="o">=</span><span class="s2">&quot;utf-8&quot;</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
+            <span class="n">res_json</span> <span class="o">=</span> <span class="n">json</span><span class="o">.</span><span class="n">load</span><span class="p">(</span><span class="n">fp</span><span class="o">=</span><span class="n">f</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">_batch_size</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">res_json</span><span class="p">[</span><span class="s2">&quot;batch_size&quot;</span><span class="p">])</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_lr</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><span class="n">res_json</span><span class="p">[</span><span class="s2">&quot;lr&quot;</span><span class="p">])</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">layer_act</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="n">res_json</span><span class="p">[</span><span class="s2">&quot;layer_act&quot;</span><span class="p">])</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_loss</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="n">res_json</span><span class="p">[</span><span class="s2">&quot;_loss&quot;</span><span class="p">])</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_attr_x</span> <span class="o">=</span> <span class="n">res_json</span><span class="p">[</span><span class="s2">&quot;_attr_x&quot;</span><span class="p">]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_attr_y</span> <span class="o">=</span> <span class="n">res_json</span><span class="p">[</span><span class="s2">&quot;_attr_y&quot;</span><span class="p">]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">sizes_layer</span> <span class="o">=</span> <span class="n">res_json</span><span class="p">[</span><span class="s2">&quot;sizes_layer&quot;</span><span class="p">]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_size_x</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">res_json</span><span class="p">[</span><span class="s2">&quot;_size_x&quot;</span><span class="p">])</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_size_y</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">res_json</span><span class="p">[</span><span class="s2">&quot;_size_y&quot;</span><span class="p">])</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_sizes_x</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">res_json</span><span class="p">[</span><span class="s2">&quot;_sizes_x&quot;</span><span class="p">],</span> <span class="n">dtype</span><span class="o">=</span><span class="nb">int</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_sizes_y</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">res_json</span><span class="p">[</span><span class="s2">&quot;_sizes_y&quot;</span><span class="p">],</span> <span class="n">dtype</span><span class="o">=</span><span class="nb">int</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">_m_x</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">res_json</span><span class="p">[</span><span class="s2">&quot;_m_x&quot;</span><span class="p">],</span> <span class="n">dtype</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">float32</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_m_y</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">res_json</span><span class="p">[</span><span class="s2">&quot;_m_y&quot;</span><span class="p">],</span> <span class="n">dtype</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">float32</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_std_x</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">res_json</span><span class="p">[</span><span class="s2">&quot;_std_x&quot;</span><span class="p">],</span> <span class="n">dtype</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">float32</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_std_y</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">res_json</span><span class="p">[</span><span class="s2">&quot;_std_y&quot;</span><span class="p">],</span> <span class="n">dtype</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">float32</span><span class="p">)</span></div>
+
+    <span class="k">def</span> <span class="nf">_process_all_dataset</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">dataset</span><span class="p">:</span> <span class="n">DataSet</span><span class="p">,</span> <span class="n">training</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;This function will extract the whole dataset and format it in a way we can train the</span>
+<span class="sd">        fully connected neural network from it</span>
+
+<span class="sd">        if &quot;training&quot; is `True` then it will also computes the scalers:</span>
+
+<span class="sd">        - _std_x</span>
+<span class="sd">        - _std_y</span>
+<span class="sd">        - _m_x</span>
+<span class="sd">        - _m_y</span>
+
+<span class="sd">        And the size of the dataset self._size_x and self._size_y</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">all_data</span> <span class="o">=</span> <span class="n">dataset</span><span class="o">.</span><span class="n">get_data</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">dataset</span><span class="p">)))</span>
+        <span class="k">if</span> <span class="n">training</span><span class="p">:</span>
+            <span class="c1"># init the sizes and everything</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_sizes_x</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="n">all_data</span><span class="p">[</span><span class="n">el</span><span class="p">]</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="k">for</span> <span class="n">el</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_attr_x</span><span class="p">],</span> <span class="n">dtype</span><span class="o">=</span><span class="nb">int</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_sizes_y</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="n">all_data</span><span class="p">[</span><span class="n">el</span><span class="p">]</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="k">for</span> <span class="n">el</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_attr_y</span><span class="p">],</span> <span class="n">dtype</span><span class="o">=</span><span class="nb">int</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_size_x</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_sizes_x</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_size_y</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_sizes_y</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_size_x</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">RuntimeError</span><span class="p">(</span><span class="s2">&quot;Model cannot be used, we don&#39;t know the size of the input vector. Either train it &quot;</span>
+                               <span class="s2">&quot;or load its meta data properly.&quot;</span><span class="p">)</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_size_y</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">RuntimeError</span><span class="p">(</span><span class="s2">&quot;Model cannot be used, we don&#39;t know the size of the output vector. Either train it &quot;</span>
+                               <span class="s2">&quot;or load its meta data properly.&quot;</span><span class="p">)</span>
+
+        <span class="n">res_x</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">concatenate</span><span class="p">([</span><span class="n">all_data</span><span class="p">[</span><span class="n">el</span><span class="p">]</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">float32</span><span class="p">)</span> <span class="k">for</span> <span class="n">el</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_attr_x</span><span class="p">],</span> <span class="n">axis</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+        <span class="n">res_y</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">concatenate</span><span class="p">([</span><span class="n">all_data</span><span class="p">[</span><span class="n">el</span><span class="p">]</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">float32</span><span class="p">)</span> <span class="k">for</span> <span class="n">el</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_attr_y</span><span class="p">],</span> <span class="n">axis</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="n">training</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_m_x</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">mean</span><span class="p">(</span><span class="n">res_x</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_m_y</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">mean</span><span class="p">(</span><span class="n">res_y</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_std_x</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">std</span><span class="p">(</span><span class="n">res_x</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_std_y</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">std</span><span class="p">(</span><span class="n">res_y</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
+
+            <span class="c1"># to avoid division by 0.</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_std_x</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">abs</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_std_x</span><span class="p">)</span> <span class="o">&lt;=</span> <span class="mf">1e-1</span><span class="p">]</span> <span class="o">=</span> <span class="mi">1</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_std_y</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">abs</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_std_y</span><span class="p">)</span> <span class="o">&lt;=</span> <span class="mf">1e-1</span><span class="p">]</span> <span class="o">=</span> <span class="mi">1</span>
+
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_m_x</span> <span class="ow">is</span> <span class="kc">None</span> <span class="ow">or</span> <span class="bp">self</span><span class="o">.</span><span class="n">_m_y</span> <span class="ow">is</span> <span class="kc">None</span> <span class="ow">or</span> <span class="bp">self</span><span class="o">.</span><span class="n">_std_x</span> <span class="ow">is</span> <span class="kc">None</span> <span class="ow">or</span> <span class="bp">self</span><span class="o">.</span><span class="n">_std_y</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">RuntimeError</span><span class="p">(</span><span class="s2">&quot;Model cannot be used, we don&#39;t know the size of the output vector. Either train it &quot;</span>
+                               <span class="s2">&quot;or load its meta data properly.&quot;</span><span class="p">)</span>
+
+        <span class="n">res_x</span> <span class="o">-=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_m_x</span>
+        <span class="n">res_x</span> <span class="o">/=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_std_x</span>
+        <span class="n">res_y</span> <span class="o">-=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_m_y</span>
+        <span class="n">res_y</span> <span class="o">/=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_std_y</span>
+
+        <span class="k">return</span> <span class="n">res_x</span><span class="p">,</span> <span class="n">res_y</span>
+
+<div class="viewcode-block" id="FullyConnectedAS.data_to_dict"><a class="viewcode-back" href="../../../lips.augmented_simulators.html#lips.augmented_simulators.fullyConnectedAS.FullyConnectedAS.data_to_dict">[docs]</a>    <span class="k">def</span> <span class="nf">data_to_dict</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        This functions return the observations and corresponding predictions of the last evaluation</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_observations</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_predictions</span></div></div>
+</pre></div>
+
+           </div>
+          </div>
+          <footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2021, IRT SystemX.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>
