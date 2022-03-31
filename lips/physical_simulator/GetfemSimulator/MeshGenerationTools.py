@@ -188,27 +188,16 @@ def MergeMeshes(outputFile, meshFiles):
     gmsh.finalize()
 
 
-def GenerateCoincidentHFLFMeshes(romMeshFile, refMeshFile, interRadius, wheelDim, meshSize, version="Standard"):
+def GenerateCoincidentHFLFMeshes(wheelExtMeshFile, wheelMeshFile, interRadius, wheelDim, meshSize, version="Standard"):
     wheel_radius = interRadius
     if version=="Asym":
-        GenerateWheelMeshFileAsymVersion(outputFile=romMeshFile, wheelDimensions=(wheel_radius, wheelDim[1]), meshSize=meshSize, refMesh=None)
+        GenerateWheelMeshFileAsymVersion(outputFile=wheelExtMeshFile, wheelDimensions=(wheel_radius, wheelDim[1]), meshSize=meshSize, refMesh=None)
         GenerateWheelMeshFileAsymVersion(outputFile="wheel_inter", wheelDimensions=(wheelDim[0], wheel_radius), meshSize=meshSize, refMesh=1)
     elif version=="Tread":
-        GenerateWheelMeshFileTreadVersion(outputFile=romMeshFile, wheelDimensions=(wheel_radius, wheelDim[1]), meshSize=meshSize)
+        GenerateWheelMeshFileTreadVersion(outputFile=wheelExtMeshFile, wheelDimensions=(wheel_radius, wheelDim[1]), meshSize=meshSize)
         GenerateWheelMeshFileTreadVersion(outputFile="wheel_inter", wheelDimensions=(wheelDim[0], wheel_radius), meshSize=meshSize)
     elif version=="Standard":
-        GenerateWheelMeshFileStandardVersion(outputFile=romMeshFile, wheelDimensions=(wheel_radius, wheelDim[1]), meshSize=meshSize)
+        GenerateWheelMeshFileStandardVersion(outputFile=wheelExtMeshFile, wheelDimensions=(wheel_radius, wheelDim[1]), meshSize=meshSize)
         GenerateWheelMeshFileStandardVersion(outputFile="wheel_inter", wheelDimensions=(wheelDim[0], wheel_radius), meshSize=meshSize)
 
-    MergeMeshes(refMeshFile, [romMeshFile+".msh", "wheel_inter.msh"])
-
-def CheckIntegrity():
-    wheelDimensions=(8.,15.)
-    GenerateCoincidentHFLFMeshes(romMeshFile="wheel_romStandard",refMeshFile="wheel_refStandard",interRadius=11.5,wheelDim=wheelDimensions,meshSize=1.0,version="Standard")
-    GenerateCoincidentHFLFMeshes(romMeshFile="wheel_romTread",refMeshFile="wheel_refTread",interRadius=11.5,wheelDim=wheelDimensions,meshSize=1.0,version="Tread")
-    wheelDimensions=(20.,50.)
-    GenerateCoincidentHFLFMeshes(romMeshFile="wheel_romAsym",refMeshFile="wheel_refAsym",interRadius=39.0,wheelDim=wheelDimensions,meshSize=1.0,version="Asym")
-    return "OK"
-
-if __name__ =="__main__":
-    CheckIntegrity()
+    MergeMeshes(wheelMeshFile, [wheelExtMeshFile+".msh", "wheel_inter.msh"])

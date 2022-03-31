@@ -36,8 +36,7 @@ def SimulatorGeneration(physicalDomain,physicalProperties):
     except KeyError:
         raise(Exception("Unable to treat this kind of problem !"))
 
-    mesh=MeshGeneration(physicalDomain)
-    simulator.mesh=mesh
+    simulator.mesh=MeshGeneration(physicalDomain)
     simulator.refNumByRegion=physicalDomain["refNumByRegion"]
 
     filterPhysicalProperties={k: v for k, v in physicalProperties.items() if k!="ProblemType"}

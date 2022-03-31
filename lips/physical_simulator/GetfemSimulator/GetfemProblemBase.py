@@ -385,10 +385,3 @@ class GetfemProblemBase:
             s+="\t Element degree: "+str(self.feDef[space]["degree"])
             s+="\t Dof per node: "+str(self.feDef[space]["dof"])+"\n"
         return s
-
-
-def CheckIntegrity():
-    return "OK"
-
-if __name__ =="__main__":
-    CheckIntegrity()
