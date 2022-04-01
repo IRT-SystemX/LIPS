@@ -1,6 +1,39 @@
 # LIPS : Learning Industrial physical simulation benchmark suite: the power grid case
 This repository implements the benchmarking platform called LIPS and provides the necessary utilities to reproduce the generated datasets used in research.
 
+## Installation
+To be able to run the experiments in this repository, the users should install the last lips package from its github repository. The following steps show how to install this package and its dependencies from source.
+
+### Requirements
+- Python >= 3.6
+
+### Setup a Virtualenv (optional)
+#### Create a virtual environment
+
+```commandline
+cd my-project-folder
+pip3 install -U virtualenv
+python3 -m virtualenv venv_lips
+```
+#### Enter virtual environment
+```commandline
+source venv_lips/bin/activate
+```
+
+### Install from source
+```commandline
+git clone https://github.com/Mleyliabadi/LIPS
+cd LIPS
+git checkout ml-dev
+pip3 install -U .
+cd ..
+```
+
+### To contribute
+```commandline
+pip3 install -e .[recommended]
+```
+
 ## Introduction
 Nowdays, the simulators are used in every domain to emulate a real-world situation or event or to reproduce the critical situations for which further investigation may be required. The simulators are based generally on physics equations and are costly in terms of time complexity. 
 
