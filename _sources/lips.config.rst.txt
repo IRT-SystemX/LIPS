@@ -1,6 +1,11 @@
 lips.config package
 ===================
 
+.. automodule:: lips.config
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
 Submodules
 ----------
 

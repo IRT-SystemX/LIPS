@@ -40,14 +40,14 @@
 </ul>
 <p class="caption" role="heading"><span class="caption-text">TECHNICAL DOCUMENTATION</span></p>
 <ul>
-<li class="toctree-l1"><a class="reference internal" href="../../../lips.augmented_simulators.html">augmented_simulators package</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../../../lips.benchmark.html">benchmark package</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../lips.augmented_simulators.html">lips.augmented_simulators package</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../lips.benchmark.html">lips.benchmark package</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../lips.config.html">lips.config package</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../lips.dataset.html">lips.dataset package</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../lips.evaluation.html">lips.evaluation package</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../lips.logger.html">lips.logger package</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../../../lips.metrics.power_grid.html">metrics.power_grid package</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../lips.metrics.html">lips.metrics package</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../lips.neurips_benchmark.html">lips.neurips_benchmark package</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../lips.physical_simulator.html">lips.physical_simulator package</a></li>
 </ul>
 <p class="caption" role="heading"><span class="caption-text">GUIDE</span></p>
@@ -90,10 +90,9 @@
 <span class="c1"># This file is part of LIPS, LIPS is a python platform for power networks benchmarking</span>
 
 <span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Union</span>
-<span class="kn">from</span> <span class="nn">lips.dataset</span> <span class="kn">import</span> <span class="n">DataSet</span>
+<span class="kn">from</span> <span class="nn">..dataset</span> <span class="kn">import</span> <span class="n">DataSet</span>
 
-
-<div class="viewcode-block" id="AugmentedSimulator"><a class="viewcode-back" href="../../../lips.augmented_simulators.html#lips.augmented_simulators.augmentedSimulator.AugmentedSimulator">[docs]</a><span class="k">class</span> <span class="nc">AugmentedSimulator</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
+<div class="viewcode-block" id="AugmentedSimulator"><a class="viewcode-back" href="../../../lips.augmented_simulators.html#lips.augmented_simulators.AugmentedSimulator">[docs]</a><span class="k">class</span> <span class="nc">AugmentedSimulator</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    This class is the Base class that is used to create some &quot;augmented simulator&quot;. These &quot;augmented simulator&quot; can be</span>
 <span class="sd">    anything that emulates the behaviour of some &quot;simulator&quot;.</span>
@@ -102,11 +101,11 @@
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="p">:</span> <span class="nb">str</span><span class="p">):</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">name</span> <span class="o">=</span> <span class="n">name</span>
-        
+
         <span class="bp">self</span><span class="o">.</span><span class="n">_observations</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">()</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_predictions</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">()</span>
 
-<div class="viewcode-block" id="AugmentedSimulator.train"><a class="viewcode-back" href="../../../lips.augmented_simulators.html#lips.augmented_simulators.augmentedSimulator.AugmentedSimulator.train">[docs]</a>    <span class="k">def</span> <span class="nf">train</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">nb_iter</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span> <span class="n">train_dataset</span><span class="p">:</span> <span class="n">DataSet</span><span class="p">,</span> <span class="n">val_dataset</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="kc">None</span><span class="p">,</span> <span class="n">DataSet</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">):</span>
+<div class="viewcode-block" id="AugmentedSimulator.train"><a class="viewcode-back" href="../../../lips.augmented_simulators.html#lips.augmented_simulators.AugmentedSimulator.train">[docs]</a>    <span class="k">def</span> <span class="nf">train</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">nb_iter</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span> <span class="n">train_dataset</span><span class="p">:</span> <span class="n">DataSet</span><span class="p">,</span> <span class="n">val_dataset</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="kc">None</span><span class="p">,</span> <span class="n">DataSet</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Train the Augmented simulator using the provided datasets (parameters `train_dataset` and</span>
 <span class="sd">        `val_dataset`) for a given number of iterations (`nb_iter`)</span>
@@ -123,13 +122,13 @@
             <span class="k">raise</span> <span class="ne">RuntimeError</span><span class="p">(</span><span class="s2">&quot;Impossible to train a model for a negative number of iteration. Make sure that &quot;</span>
                                <span class="s2">&quot;`nb_iter` &gt; 0.&quot;</span><span class="p">)</span></div>
 
-<div class="viewcode-block" id="AugmentedSimulator.evaluate"><a class="viewcode-back" href="../../../lips.augmented_simulators.html#lips.augmented_simulators.augmentedSimulator.AugmentedSimulator.evaluate">[docs]</a>    <span class="k">def</span> <span class="nf">evaluate</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">dataset</span><span class="p">:</span> <span class="n">DataSet</span><span class="p">):</span>
+<div class="viewcode-block" id="AugmentedSimulator.evaluate"><a class="viewcode-back" href="../../../lips.augmented_simulators.html#lips.augmented_simulators.AugmentedSimulator.evaluate">[docs]</a>    <span class="k">def</span> <span class="nf">evaluate</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">dataset</span><span class="p">:</span> <span class="n">DataSet</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        evaluate the model on the full dataset</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">pass</span></div>
 
-<div class="viewcode-block" id="AugmentedSimulator.init"><a class="viewcode-back" href="../../../lips.augmented_simulators.html#lips.augmented_simulators.augmentedSimulator.AugmentedSimulator.init">[docs]</a>    <span class="k">def</span> <span class="nf">init</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+<div class="viewcode-block" id="AugmentedSimulator.init"><a class="viewcode-back" href="../../../lips.augmented_simulators.html#lips.augmented_simulators.AugmentedSimulator.init">[docs]</a>    <span class="k">def</span> <span class="nf">init</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        initialize the &quot;augmented simulator&quot;.</span>
 
@@ -137,33 +136,33 @@
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">pass</span></div>
 
-<div class="viewcode-block" id="AugmentedSimulator.process_dataset"><a class="viewcode-back" href="../../../lips.augmented_simulators.html#lips.augmented_simulators.augmentedSimulator.AugmentedSimulator.process_dataset">[docs]</a>    <span class="k">def</span> <span class="nf">process_dataset</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">one_example</span><span class="p">):</span>
+<div class="viewcode-block" id="AugmentedSimulator.process_dataset"><a class="viewcode-back" href="../../../lips.augmented_simulators.html#lips.augmented_simulators.AugmentedSimulator.process_dataset">[docs]</a>    <span class="k">def</span> <span class="nf">process_dataset</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">one_example</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        This function transforms one state of a dataset (one row if you want) into something that can be used by</span>
 <span class="sd">        the neural network (for example)</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">pass</span></div>
 
-<div class="viewcode-block" id="AugmentedSimulator.data_to_dict"><a class="viewcode-back" href="../../../lips.augmented_simulators.html#lips.augmented_simulators.augmentedSimulator.AugmentedSimulator.data_to_dict">[docs]</a>    <span class="k">def</span> <span class="nf">data_to_dict</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<div class="viewcode-block" id="AugmentedSimulator.data_to_dict"><a class="viewcode-back" href="../../../lips.augmented_simulators.html#lips.augmented_simulators.AugmentedSimulator.data_to_dict">[docs]</a>    <span class="k">def</span> <span class="nf">data_to_dict</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        This function should return two dictionaries in the following order </span>
-<span class="sd">            - the observations used for evaluation </span>
+<span class="sd">        This function should return two dictionaries in the following order</span>
+<span class="sd">            - the observations used for evaluation</span>
 <span class="sd">            - corresponding predictions</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">pass</span></div>
 
-<div class="viewcode-block" id="AugmentedSimulator.save"><a class="viewcode-back" href="../../../lips.augmented_simulators.html#lips.augmented_simulators.augmentedSimulator.AugmentedSimulator.save">[docs]</a>    <span class="k">def</span> <span class="nf">save</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">path_out</span><span class="p">:</span> <span class="nb">str</span><span class="p">):</span>
+<div class="viewcode-block" id="AugmentedSimulator.save"><a class="viewcode-back" href="../../../lips.augmented_simulators.html#lips.augmented_simulators.AugmentedSimulator.save">[docs]</a>    <span class="k">def</span> <span class="nf">save</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">path_out</span><span class="p">:</span> <span class="nb">str</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;save the model at a given path&quot;&quot;&quot;</span>
         <span class="k">pass</span></div>
 
-<div class="viewcode-block" id="AugmentedSimulator.restore"><a class="viewcode-back" href="../../../lips.augmented_simulators.html#lips.augmented_simulators.augmentedSimulator.AugmentedSimulator.restore">[docs]</a>    <span class="k">def</span> <span class="nf">restore</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">path</span><span class="p">:</span> <span class="nb">str</span><span class="p">):</span>
+<div class="viewcode-block" id="AugmentedSimulator.restore"><a class="viewcode-back" href="../../../lips.augmented_simulators.html#lips.augmented_simulators.AugmentedSimulator.restore">[docs]</a>    <span class="k">def</span> <span class="nf">restore</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">path</span><span class="p">:</span> <span class="nb">str</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        restore the model from the given path. It is expected to raise an error if it cannot be initialized</span>
 <span class="sd">        by the data located at `path`</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">pass</span></div>
 
-<div class="viewcode-block" id="AugmentedSimulator.save_metadata"><a class="viewcode-back" href="../../../lips.augmented_simulators.html#lips.augmented_simulators.augmentedSimulator.AugmentedSimulator.save_metadata">[docs]</a>    <span class="k">def</span> <span class="nf">save_metadata</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">path_out</span><span class="p">:</span> <span class="nb">str</span><span class="p">):</span>
+<div class="viewcode-block" id="AugmentedSimulator.save_metadata"><a class="viewcode-back" href="../../../lips.augmented_simulators.html#lips.augmented_simulators.AugmentedSimulator.save_metadata">[docs]</a>    <span class="k">def</span> <span class="nf">save_metadata</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">path_out</span><span class="p">:</span> <span class="nb">str</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Saves the &quot;metadata&quot; of the model.</span>
 
@@ -173,7 +172,7 @@
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">pass</span></div>
 
-<div class="viewcode-block" id="AugmentedSimulator.load_metadata"><a class="viewcode-back" href="../../../lips.augmented_simulators.html#lips.augmented_simulators.augmentedSimulator.AugmentedSimulator.load_metadata">[docs]</a>    <span class="k">def</span> <span class="nf">load_metadata</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">path</span><span class="p">:</span> <span class="nb">str</span><span class="p">):</span>
+<div class="viewcode-block" id="AugmentedSimulator.load_metadata"><a class="viewcode-back" href="../../../lips.augmented_simulators.html#lips.augmented_simulators.AugmentedSimulator.load_metadata">[docs]</a>    <span class="k">def</span> <span class="nf">load_metadata</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">path</span><span class="p">:</span> <span class="nb">str</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;load the metada from the given path.&quot;&quot;&quot;</span>
         <span class="k">pass</span></div></div>
 </pre></div>

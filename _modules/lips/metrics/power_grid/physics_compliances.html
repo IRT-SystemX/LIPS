@@ -40,14 +40,14 @@
 </ul>
 <p class="caption" role="heading"><span class="caption-text">TECHNICAL DOCUMENTATION</span></p>
 <ul>
-<li class="toctree-l1"><a class="reference internal" href="../../../../lips.augmented_simulators.html">augmented_simulators package</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../../../../lips.benchmark.html">benchmark package</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../lips.augmented_simulators.html">lips.augmented_simulators package</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../lips.benchmark.html">lips.benchmark package</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../../lips.config.html">lips.config package</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../../lips.dataset.html">lips.dataset package</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../../lips.evaluation.html">lips.evaluation package</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../../lips.logger.html">lips.logger package</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../../../../lips.metrics.power_grid.html">metrics.power_grid package</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../../lips.metrics.html">lips.metrics package</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../lips.neurips_benchmark.html">lips.neurips_benchmark package</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../../lips.physical_simulator.html">lips.physical_simulator package</a></li>
 </ul>
 <p class="caption" role="heading"><span class="caption-text">GUIDE</span></p>
@@ -91,14 +91,13 @@
 
 <span class="kn">import</span> <span class="nn">sys</span>
 <span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Union</span>
-<span class="kn">from</span> <span class="nn">collections</span> <span class="kn">import</span> <span class="n">Counter</span>
 <span class="kn">import</span> <span class="nn">math</span>
 
 <span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
 <span class="c1"># TODO : implement a mean_absolute_error independently from sklearn</span>
 <span class="kn">from</span> <span class="nn">sklearn.metrics</span> <span class="kn">import</span> <span class="n">mean_absolute_error</span>
 
-<span class="kn">from</span> <span class="nn">lips.logger</span> <span class="kn">import</span> <span class="n">CustomLogger</span>
+<span class="kn">from</span> <span class="nn">...logger</span> <span class="kn">import</span> <span class="n">CustomLogger</span>
 
 <div class="viewcode-block" id="verify_current_pos"><a class="viewcode-back" href="../../../../lips.metrics.power_grid.html#lips.metrics.power_grid.physics_compliances.verify_current_pos">[docs]</a><span class="k">def</span> <span class="nf">verify_current_pos</span><span class="p">(</span><span class="n">predictions</span><span class="p">:</span> <span class="nb">dict</span><span class="p">,</span>
                        <span class="n">log_path</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="kc">None</span><span class="p">]</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
@@ -109,16 +108,16 @@
 
 <span class="sd">    Parameters</span>
 <span class="sd">    ----------</span>
-<span class="sd">    predictions: `dict`</span>
+<span class="sd">    predictions: ``dict``</span>
 <span class="sd">        dictionary of predictions made by an augmented simulator</span>
-<span class="sd">    log_path: `str`</span>
+<span class="sd">    log_path: ``str``</span>
 <span class="sd">        a path wehere the log should be saved</span>
-<span class="sd">    **kwargs:</span>
+<span class="sd">    **kwargs: ``dict``</span>
 <span class="sd">        supplementary arguments (may be required in future)</span>
 
 <span class="sd">    Returns</span>
 <span class="sd">    -------</span>
-<span class="sd">    verifications: `dict`</span>
+<span class="sd">    `dict`</span>
 <span class="sd">        a dictionary reporting the evaluation results for both line extremities</span>
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="c1"># logger</span>
@@ -153,16 +152,16 @@
 
 <span class="sd">    Parameters</span>
 <span class="sd">    ----------</span>
-<span class="sd">    predictions: `dict`</span>
+<span class="sd">    predictions: ``dict``</span>
 <span class="sd">        dictionary of predictions made by an augmented simulator</span>
-<span class="sd">    log_path: `str`</span>
+<span class="sd">    log_path: ``str``</span>
 <span class="sd">        a path wehere the log should be saved</span>
-<span class="sd">    **kwargs:</span>
+<span class="sd">    **kwargs: ``dict``</span>
 <span class="sd">        supplementary arguments (may be required in future)</span>
 
 <span class="sd">    Returns</span>
 <span class="sd">    -------</span>
-<span class="sd">    verifications: `dict`</span>
+<span class="sd">    ``dict``</span>
 <span class="sd">        a dictionary reporting the evaluation results for both line extremities</span>
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="c1"># logger</span>
@@ -197,15 +196,16 @@
 
 <span class="sd">    Parameters</span>
 <span class="sd">    ----------</span>
-<span class="sd">    predictions: `dict`</span>
+<span class="sd">    predictions: ``dict``</span>
 <span class="sd">        dictionary of predictions made by an augmented simulator</span>
-<span class="sd">    log_path: `str`</span>
+<span class="sd">    log_path: ``str``</span>
 <span class="sd">        a path wehere the log should be saved</span>
-<span class="sd">    **kwargs:</span>
+<span class="sd">    **kwargs: ``dict``</span>
 <span class="sd">        supplementary arguments (may be required in future)</span>
 
 <span class="sd">    Returns</span>
 <span class="sd">    -------</span>
+<span class="sd">    ``dict``</span>
 <span class="sd">        a dictionary reporting the evaluation results</span>
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="c1"># logger</span>
@@ -238,16 +238,16 @@
 
 <span class="sd">    Parameters</span>
 <span class="sd">    ----------</span>
-<span class="sd">    predictions: `dict`</span>
+<span class="sd">    predictions: ``dict``</span>
 <span class="sd">        dictionary of predictions made by an augmented simulator</span>
-<span class="sd">    log_path: `str`</span>
+<span class="sd">    log_path: ``str``</span>
 <span class="sd">        a path wehere the log should be saved</span>
-<span class="sd">    **kwargs:</span>
+<span class="sd">    **kwargs: ``dict``</span>
 <span class="sd">        supplementary arguments</span>
 
 <span class="sd">    Returns</span>
 <span class="sd">    -------</span>
-<span class="sd">    verifications: `dict`</span>
+<span class="sd">    `dict`</span>
 <span class="sd">        a dictionary reporting the evaluation results</span>
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="n">FLOW_VARIABLES</span> <span class="o">=</span> <span class="p">(</span><span class="s2">&quot;p_or&quot;</span><span class="p">,</span> <span class="s2">&quot;p_ex&quot;</span><span class="p">,</span> <span class="s2">&quot;q_or&quot;</span><span class="p">,</span> <span class="s2">&quot;q_ex&quot;</span><span class="p">,</span> <span class="s2">&quot;a_or&quot;</span><span class="p">,</span> <span class="s2">&quot;a_ex&quot;</span><span class="p">)</span>
@@ -292,22 +292,25 @@
                       <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    verify the following relation between p, q and v :</span>
-<span class="sd">        * a_or = sqrt(p_or**2 + q_or**2) / (sqrt(3).v_or)</span>
-<span class="sd">        * a_ex = sqrt(p_ex**2 + q_ex**2) / (sqrt(3).v_ex)</span>
+<span class="sd">    * a_or = sqrt(p_or**2 + q_or**2) / (sqrt(3).v_or)</span>
+<span class="sd">    * a_ex = sqrt(p_ex**2 + q_ex**2) / (sqrt(3).v_ex)</span>
 
-<span class="sd">    # TODO : update the equations by considering only voltage &gt; 0 cases, hence it does not need eps</span>
+<span class="sd">    Todo</span>
+<span class="sd">    ----</span>
+<span class="sd">    TODO : update the equations by considering only voltage &gt; 0 cases, hence it does not need eps</span>
 
 <span class="sd">    Parameters</span>
 <span class="sd">    ----------</span>
-<span class="sd">    predictions: `dict`</span>
+<span class="sd">    predictions: ``dict``</span>
 <span class="sd">        dictionary of predictions made by an augmented simulator</span>
-<span class="sd">    log_path: `str`</span>
+<span class="sd">    log_path: ``str``</span>
 <span class="sd">        a path wehere the log should be saved</span>
-<span class="sd">    **kwargs:</span>
+<span class="sd">    **kwargs: ``dict``</span>
 <span class="sd">        supplementary parameters (may be required in future)</span>
 
 <span class="sd">    Returns</span>
 <span class="sd">    -------</span>
+<span class="sd">    ``dict``</span>
 <span class="sd">        a dictionary reporting the evaluation results</span>
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="c1"># logger</span>
@@ -315,7 +318,7 @@
     <span class="n">verifications</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">()</span>
     <span class="c1"># consider an epsilon value to avoid division by zero</span>
     <span class="n">eps</span> <span class="o">=</span> <span class="n">sys</span><span class="o">.</span><span class="n">float_info</span><span class="o">.</span><span class="n">epsilon</span>
-    <span class="k">for</span> <span class="n">key_</span> <span class="ow">in</span> <span class="p">(</span><span class="s2">&quot;or&quot;</span><span class="p">,</span> <span class="s2">&quot;ex&quot;</span><span class="p">):</span>
+    <span class="k">for</span> <span class="n">key_</span> <span class="ow">in</span> <span class="p">(</span><span class="s2">&quot;_or&quot;</span><span class="p">,</span> <span class="s2">&quot;_ex&quot;</span><span class="p">):</span>
         <span class="k">try</span><span class="p">:</span>
             <span class="n">a_arr</span> <span class="o">=</span> <span class="n">predictions</span><span class="p">[</span><span class="s2">&quot;a&quot;</span><span class="o">+</span><span class="n">key_</span><span class="p">]</span>
             <span class="n">p_arr</span> <span class="o">=</span> <span class="n">predictions</span><span class="p">[</span><span class="s2">&quot;p&quot;</span><span class="o">+</span><span class="n">key_</span><span class="p">]</span>
@@ -329,7 +332,7 @@
         <span class="n">a_comp</span> <span class="o">=</span> <span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span><span class="n">p_arr</span><span class="o">**</span><span class="mi">2</span> <span class="o">+</span> <span class="n">q_arr</span><span class="o">**</span><span class="mi">2</span><span class="p">)</span> <span class="o">/</span> <span class="p">((</span><span class="n">np</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span><span class="mi">3</span><span class="p">)</span> <span class="o">*</span> <span class="n">v_arr</span><span class="p">)</span><span class="o">+</span><span class="n">eps</span><span class="p">))</span> <span class="o">*</span> <span class="mi">1000</span>
         <span class="n">verifications</span><span class="p">[</span><span class="s2">&quot;a&quot;</span><span class="o">+</span><span class="n">key_</span><span class="o">+</span><span class="s2">&quot;_deviation&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="p">[</span><span class="nb">float</span><span class="p">(</span><span class="n">el</span><span class="p">)</span> <span class="k">for</span> <span class="n">el</span> <span class="ow">in</span>
             <span class="n">mean_absolute_error</span><span class="p">(</span><span class="n">a_arr</span><span class="p">,</span> <span class="n">a_comp</span><span class="p">,</span> <span class="n">multioutput</span><span class="o">=</span><span class="s1">&#39;raw_values&#39;</span><span class="p">)]</span>
-        <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;Mean absolute error of a&quot;</span><span class="o">+</span><span class="n">key_</span><span class="o">+</span><span class="s2">&quot; : </span><span class="si">%.3f</span><span class="s2">&quot;</span><span class="p">,</span> <span class="n">verifications</span><span class="p">[</span><span class="s2">&quot;a&quot;</span><span class="o">+</span><span class="n">key_</span><span class="o">+</span><span class="s2">&quot;_deviation&quot;</span><span class="p">])</span>
+        <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;Mean absolute error of a</span><span class="si">%s</span><span class="s2"> : </span><span class="si">%.3f</span><span class="s2">&quot;</span><span class="p">,</span> <span class="n">key_</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">mean</span><span class="p">(</span><span class="n">verifications</span><span class="p">[</span><span class="s2">&quot;a&quot;</span><span class="o">+</span><span class="n">key_</span><span class="o">+</span><span class="s2">&quot;_deviation&quot;</span><span class="p">]))</span>
     <span class="k">return</span> <span class="n">verifications</span></div>
 
 <div class="viewcode-block" id="verify_loss"><a class="viewcode-back" href="../../../../lips.metrics.power_grid.html#lips.metrics.power_grid.physics_compliances.verify_loss">[docs]</a><span class="k">def</span> <span class="nf">verify_loss</span><span class="p">(</span><span class="n">predictions</span><span class="p">,</span>
@@ -340,22 +343,24 @@
 <span class="sd">    The loss should be between 1 and 4 % of production at each step.</span>
 
 <span class="sd">    2 possible way to call the function with two set of information:</span>
-<span class="sd">        1) indicating only the path to the stored arrays by using the `path` parameter</span>
-<span class="sd">        2) indicating explicitly the required variables for computing the law which are (prod_p, p_or and p_ex)</span>
+<span class="sd">    1) indicating only the path to the stored arrays by using the `path` parameter</span>
+<span class="sd">    2) indicating explicitly the required variables for computing the law which are (prod_p, p_or and p_ex)</span>
 
 <span class="sd">    Parameters</span>
 <span class="sd">    ----------</span>
-<span class="sd">    predictions: `dict`</span>
+<span class="sd">    predictions: ``dict``</span>
 <span class="sd">        Predictions made by an augmented simulator</span>
-<span class="sd">    log_path: `str`</span>
+<span class="sd">    log_path: ``str``</span>
 <span class="sd">        the path where the logs should be saved</span>
-<span class="sd">    **kwargs:</span>
+<span class="sd">    **kwargs: ``dict``</span>
 <span class="sd">        It should contain `observations` and `config` to load the tolerance</span>
 
 <span class="sd">    Returns</span>
 <span class="sd">    -------</span>
-<span class="sd">    A dictionary comprising following keys:</span>
+<span class="sd">    ``dict``</span>
+<span class="sd">        A dictionary comprising useful information about the loss</span>
 
+<span class="sd">    The following keys are added to the dictionary:</span>
 <span class="sd">    - EL: `array`</span>
 <span class="sd">        array of energy losses for each iteration</span>
 <span class="sd">    - violation_percentage: `float`</span>
@@ -424,16 +429,19 @@
 
 <span class="sd">    Parameters</span>
 <span class="sd">    ----------</span>
-<span class="sd">    predictions</span>
+<span class="sd">    predictions: ``dict``</span>
 <span class="sd">        Predictions made by an augmented simulator</span>
-<span class="sd">    log_path, optional</span>
+<span class="sd">    log_path: ``str``, optional</span>
 <span class="sd">        the path where the logs should be saved, by default None</span>
-<span class="sd">    **kwargs:</span>
+<span class="sd">    **kwargs: ``dict``</span>
 <span class="sd">        It should contain `observations` and `config` to load the tolerance</span>
 
 <span class="sd">    Returns</span>
 <span class="sd">    -------</span>
-<span class="sd">    a dictionary with following keys:</span>
+<span class="sd">    ``dict``</span>
+<span class="sd">        a dictionary with useful information about the verification</span>
+
+<span class="sd">    These informations are:</span>
 <span class="sd">    - LCE: `array`</span>
 <span class="sd">        an array including the law of conservation of energy values stored for each step (observation)</span>
 
@@ -492,37 +500,45 @@
 
     <span class="k">return</span> <span class="n">verifications</span></div>
 
-<div class="viewcode-block" id="verify_kcl"><a class="viewcode-back" href="../../../../lips.metrics.power_grid.html#lips.metrics.power_grid.physics_compliances.verify_kcl">[docs]</a><span class="k">def</span> <span class="nf">verify_kcl</span><span class="p">(</span><span class="n">env</span><span class="p">,</span> <span class="n">ref_obs</span><span class="p">,</span> <span class="n">predictions</span><span class="p">,</span> <span class="n">tol</span><span class="o">=</span><span class="mf">1e-3</span><span class="p">):</span>
+<div class="viewcode-block" id="verify_kcl"><a class="viewcode-back" href="../../../../lips.metrics.power_grid.html#lips.metrics.power_grid.physics_compliances.verify_kcl">[docs]</a><span class="k">def</span> <span class="nf">verify_kcl</span><span class="p">(</span><span class="n">env</span><span class="p">,</span> <span class="n">ref_obs</span><span class="p">:</span> <span class="nb">dict</span><span class="p">,</span> <span class="n">predictions</span><span class="p">:</span> <span class="nb">dict</span><span class="p">,</span> <span class="n">tol</span><span class="o">=</span><span class="mf">1e-3</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">tuple</span><span class="p">:</span>
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    This function used the check_solution function offered by lightsim2grid package, to</span>
 <span class="sd">    verify the Kirchhoff&#39;s current law</span>
 
+<span class="sd">    Todo</span>
+<span class="sd">    ----</span>
 <span class="sd">    TODO: how to include environment in the function ?</span>
+<span class="sd">    TODO: To be replaced by new implementations</span>
 
-<span class="sd">    params</span>
-<span class="sd">    ------</span>
-<span class="sd">        env: `grid2op` environment</span>
-<span class="sd">            the grid2op environment used to generate the data</span>
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    env: ``gri2op.Environment``</span>
+<span class="sd">        the grid2op environment used to generate the data</span>
 
-<span class="sd">        ref_obs: `dict`</span>
-<span class="sd">            the reference data used as ground truth</span>
+<span class="sd">    ref_obs: ``dict``</span>
+<span class="sd">        the reference data used as ground truth</span>
 
-<span class="sd">        predictions: `dict`</span>
-<span class="sd">            it should include the voltages (V) and the voltage angles (theta)</span>
+<span class="sd">    predictions: ``dict``</span>
+<span class="sd">        it should include the voltages (V) and the voltage angles (theta)</span>
 
-<span class="sd">        tol: `float`</span>
-<span class="sd">            the tolerance to respect the KCL</span>
+<span class="sd">    tol: ``float``</span>
+<span class="sd">        the tolerance to respect the KCL</span>
 
 <span class="sd">    returns</span>
-<span class="sd">    _______</span>
-<span class="sd">        KCL_value: `float`</span>
-<span class="sd">            a global float value averaged over all the observations</span>
+<span class="sd">    -------</span>
+<span class="sd">    tuple</span>
+<span class="sd">        a tuple including useful information about the verification</span>
 
-<span class="sd">        violation_prop_obs_level: `list`</span>
-<span class="sd">            violation proportion at observation level</span>
+<span class="sd">    These information are reported:</span>
+<span class="sd">    - KCL_value: `float`</span>
+<span class="sd">        a global float value averaged over all the observations</span>
 
-<span class="sd">        violation_prop_node_level : `list`</span>
-<span class="sd">            violation proportion at substation level</span>
+<span class="sd">    - violation_prop_obs_level: `list`</span>
+<span class="sd">        violation proportion at observation level</span>
+
+<span class="sd">    - violation_prop_node_level : `list`</span>
+<span class="sd">        violation proportion at substation level</span>
+
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="k">try</span><span class="p">:</span>
         <span class="kn">from</span> <span class="nn">lightsim2grid</span> <span class="kn">import</span> <span class="n">PhysicalLawChecker</span>

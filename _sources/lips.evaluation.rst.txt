@@ -1,6 +1,11 @@
 lips.evaluation package
 =======================
 
+.. automodule:: lips.evaluation
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
 Submodules
 ----------
 

@@ -40,14 +40,14 @@
 </ul>
 <p class="caption" role="heading"><span class="caption-text">TECHNICAL DOCUMENTATION</span></p>
 <ul>
-<li class="toctree-l1"><a class="reference internal" href="../../../lips.augmented_simulators.html">augmented_simulators package</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../../../lips.benchmark.html">benchmark package</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../lips.augmented_simulators.html">lips.augmented_simulators package</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../lips.benchmark.html">lips.benchmark package</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../lips.config.html">lips.config package</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../lips.dataset.html">lips.dataset package</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../lips.evaluation.html">lips.evaluation package</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../lips.logger.html">lips.logger package</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../../../lips.metrics.power_grid.html">metrics.power_grid package</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../lips.metrics.html">lips.metrics package</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../lips.neurips_benchmark.html">lips.neurips_benchmark package</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../lips.physical_simulator.html">lips.physical_simulator package</a></li>
 </ul>
 <p class="caption" role="heading"><span class="caption-text">GUIDE</span></p>
@@ -97,22 +97,26 @@
 <span class="kn">from</span> <span class="nn">..logger</span> <span class="kn">import</span> <span class="n">CustomLogger</span>
 <span class="kn">from</span> <span class="nn">..config</span> <span class="kn">import</span> <span class="n">ConfigManager</span>
 <span class="kn">from</span> <span class="nn">..dataset</span> <span class="kn">import</span> <span class="n">DataSet</span>
-<span class="kn">from</span> <span class="nn">..benchmark</span> <span class="kn">import</span> <span class="n">Benchmark</span>
+<span class="c1">#from ..benchmark import Benchmark</span>
 
-<div class="viewcode-block" id="Evaluation"><a class="viewcode-back" href="../../../lips.evaluation.html#lips.evaluation.evaluation.Evaluation">[docs]</a><span class="k">class</span> <span class="nc">Evaluation</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
+<div class="viewcode-block" id="Evaluation"><a class="viewcode-back" href="../../../lips.evaluation.html#lips.evaluation.Evaluation">[docs]</a><span class="k">class</span> <span class="nc">Evaluation</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;Evaluation base class</span>
 
 <span class="sd">    Evaluation class to be implemented for evaluation of an augmented simulator</span>
 
+<span class="sd">    Hint</span>
+<span class="sd">    ----</span>
 <span class="sd">    Examples of such classes are provided in `PowerGridEvaluation` and `TransportEvaluation`</span>
 
 <span class="sd">    Attributes</span>
 <span class="sd">    ----------</span>
-<span class="sd">    config_path, optional</span>
-<span class="sd">        the path where config file could be found, by default None</span>
-<span class="sd">    config_section, optional</span>
+<span class="sd">    config : Union[ConfigManager, ``None``], optional</span>
+<span class="sd">        the config object used for the evaluation, by default None</span>
+<span class="sd">    config_path : Union[``str``, ``None``], optional</span>
+<span class="sd">        the path where config file could be found,, by default None</span>
+<span class="sd">    config_section : Union[``str``, ``None``], optional</span>
 <span class="sd">        the section of config file to be used for evaluation, by default None</span>
-<span class="sd">    log_path, optional</span>
+<span class="sd">    log_path : Union[``str``, ``None``], optional</span>
 <span class="sd">        the path where the logs should be stored or path to an existing log file, by default None</span>
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="n">MACHINE_LEARNING</span> <span class="o">=</span> <span class="s2">&quot;ML&quot;</span>
@@ -126,7 +130,6 @@
                  <span class="n">config_section</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="kc">None</span><span class="p">]</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
                  <span class="n">log_path</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="kc">None</span><span class="p">]</span><span class="o">=</span><span class="kc">None</span>
                  <span class="p">):</span>
-
         <span class="k">if</span> <span class="n">config</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">config</span> <span class="o">=</span> <span class="n">ConfigManager</span><span class="p">(</span><span class="n">section_name</span><span class="o">=</span><span class="n">config_section</span><span class="p">,</span> <span class="n">path</span><span class="o">=</span><span class="n">config_path</span><span class="p">)</span>
         <span class="k">else</span><span class="p">:</span>
@@ -140,10 +143,10 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">mapper</span> <span class="o">=</span> <span class="n">Mapper</span><span class="p">()</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">metrics</span> <span class="o">=</span> <span class="p">{}</span>
 
-<div class="viewcode-block" id="Evaluation.from_benchmark"><a class="viewcode-back" href="../../../lips.evaluation.html#lips.evaluation.evaluation.Evaluation.from_benchmark">[docs]</a>    <span class="nd">@classmethod</span>
+<div class="viewcode-block" id="Evaluation.from_benchmark"><a class="viewcode-back" href="../../../lips.evaluation.html#lips.evaluation.Evaluation.from_benchmark">[docs]</a>    <span class="nd">@classmethod</span>
     <span class="c1">#@abstractmethod</span>
     <span class="k">def</span> <span class="nf">from_benchmark</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span>
-                       <span class="n">benchmark</span><span class="p">:</span> <span class="n">Benchmark</span><span class="p">,</span>
+                       <span class="n">benchmark</span><span class="p">:</span> <span class="s2">&quot;Benchmark&quot;</span><span class="p">,</span>
                        <span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Class method to intialize the evaluation from Benchmark instance</span>
@@ -152,7 +155,7 @@
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">pass</span></div>
 
-<div class="viewcode-block" id="Evaluation.from_dataset"><a class="viewcode-back" href="../../../lips.evaluation.html#lips.evaluation.evaluation.Evaluation.from_dataset">[docs]</a>    <span class="nd">@classmethod</span>
+<div class="viewcode-block" id="Evaluation.from_dataset"><a class="viewcode-back" href="../../../lips.evaluation.html#lips.evaluation.Evaluation.from_dataset">[docs]</a>    <span class="nd">@classmethod</span>
     <span class="k">def</span> <span class="nf">from_dataset</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span>
                      <span class="n">dataset</span><span class="p">:</span> <span class="n">DataSet</span><span class="p">,</span>
                      <span class="n">config_path</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="kc">None</span><span class="p">]</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
@@ -177,11 +180,11 @@
 
         <span class="k">return</span> <span class="n">metrics_cat</span>
 
-<div class="viewcode-block" id="Evaluation.evaluate"><a class="viewcode-back" href="../../../lips.evaluation.html#lips.evaluation.evaluation.Evaluation.evaluate">[docs]</a>    <span class="k">def</span> <span class="nf">evaluate</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span>
+<div class="viewcode-block" id="Evaluation.evaluate"><a class="viewcode-back" href="../../../lips.evaluation.html#lips.evaluation.Evaluation.evaluate">[docs]</a>    <span class="k">def</span> <span class="nf">evaluate</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span>
                  <span class="n">observations</span><span class="p">:</span> <span class="nb">dict</span><span class="p">,</span>
                  <span class="n">predictions</span><span class="p">:</span> <span class="nb">dict</span><span class="p">,</span>
                  <span class="n">save_path</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="kc">None</span><span class="p">]</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;The main function which evaluates all the required criteria provided in config file</span>
+        <span class="sd">&quot;&quot;&quot;Evaluate the predictions of an AugmentedSimulator</span>
 
 <span class="sd">        This function should be overridden to do all the required evaluations for each category</span>
 
@@ -190,20 +193,18 @@
 <span class="sd">        - Industrial Readiness evaluation</span>
 <span class="sd">        - OOD Generalization evaluation</span>
 
-<span class="sd">        The child classes should override this class for further extensions</span>
-<span class="sd">        - PowerGridEvaluation</span>
-<span class="sd">        - TransportEvaluation</span>
-
-<span class="sd">        &gt; Notice that, the already minimalist code compute two metrics which are `MSE` and `MAE` from scikit-learn package</span>
+<span class="sd">        Notes</span>
+<span class="sd">        -----</span>
+<span class="sd">        Notice that, the already minimalist code compute two metrics which are `MSE` and `MAE` from scikit-learn package</span>
 
 <span class="sd">        Parameters</span>
 <span class="sd">        ----------</span>
-<span class="sd">        dataset</span>
-<span class="sd">            DataSet object including true observations used to evaluate the predictions</span>
-<span class="sd">        predictions</span>
+<span class="sd">        observations : ``dict``</span>
+<span class="sd">            Observations used for evaluation of the augmented simulators</span>
+<span class="sd">        predictions : ``dict``</span>
 <span class="sd">            predictions obtained from augmented simulators</span>
-<span class="sd">        save_path, optional</span>
-<span class="sd">            path where the results should be saved, by default None</span>
+<span class="sd">        save_path : Union[``str``, ``None``], optional</span>
+<span class="sd">            path where the results should be saved, by default None, by default None</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">observations</span> <span class="o">=</span> <span class="n">observations</span> <span class="c1">#dataset.data</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">predictions</span> <span class="o">=</span> <span class="n">predictions</span>
@@ -232,31 +233,31 @@
         <span class="k">if</span> <span class="n">save_path</span><span class="p">:</span>
             <span class="k">pass</span></div>
 
-<div class="viewcode-block" id="Evaluation.evaluate_ml"><a class="viewcode-back" href="../../../lips.evaluation.html#lips.evaluation.evaluation.Evaluation.evaluate_ml">[docs]</a>    <span class="k">def</span> <span class="nf">evaluate_ml</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<div class="viewcode-block" id="Evaluation.evaluate_ml"><a class="viewcode-back" href="../../../lips.evaluation.html#lips.evaluation.Evaluation.evaluate_ml">[docs]</a>    <span class="k">def</span> <span class="nf">evaluate_ml</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        It evaluates machine learning specific criteria</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">pass</span></div>
 
-<div class="viewcode-block" id="Evaluation.evaluate_physics"><a class="viewcode-back" href="../../../lips.evaluation.html#lips.evaluation.evaluation.Evaluation.evaluate_physics">[docs]</a>    <span class="k">def</span> <span class="nf">evaluate_physics</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<div class="viewcode-block" id="Evaluation.evaluate_physics"><a class="viewcode-back" href="../../../lips.evaluation.html#lips.evaluation.Evaluation.evaluate_physics">[docs]</a>    <span class="k">def</span> <span class="nf">evaluate_physics</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        It should evaluate Physics Compliances</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">pass</span></div>
 
-<div class="viewcode-block" id="Evaluation.evaluate_industrial_readiness"><a class="viewcode-back" href="../../../lips.evaluation.html#lips.evaluation.evaluation.Evaluation.evaluate_industrial_readiness">[docs]</a>    <span class="k">def</span> <span class="nf">evaluate_industrial_readiness</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<div class="viewcode-block" id="Evaluation.evaluate_industrial_readiness"><a class="viewcode-back" href="../../../lips.evaluation.html#lips.evaluation.Evaluation.evaluate_industrial_readiness">[docs]</a>    <span class="k">def</span> <span class="nf">evaluate_industrial_readiness</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        It should evaluate the industrial readiness of augmented simulators</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">pass</span></div>
 
-<div class="viewcode-block" id="Evaluation.evaluate_ood"><a class="viewcode-back" href="../../../lips.evaluation.html#lips.evaluation.evaluation.Evaluation.evaluate_ood">[docs]</a>    <span class="k">def</span> <span class="nf">evaluate_ood</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<div class="viewcode-block" id="Evaluation.evaluate_ood"><a class="viewcode-back" href="../../../lips.evaluation.html#lips.evaluation.Evaluation.evaluate_ood">[docs]</a>    <span class="k">def</span> <span class="nf">evaluate_ood</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        It should evaluate out-of-distribution capacity of augmented simulators</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">pass</span></div>
 
-<div class="viewcode-block" id="Evaluation.compare_simulators"><a class="viewcode-back" href="../../../lips.evaluation.html#lips.evaluation.evaluation.Evaluation.compare_simulators">[docs]</a>    <span class="k">def</span> <span class="nf">compare_simulators</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<div class="viewcode-block" id="Evaluation.compare_simulators"><a class="viewcode-back" href="../../../lips.evaluation.html#lips.evaluation.Evaluation.compare_simulators">[docs]</a>    <span class="k">def</span> <span class="nf">compare_simulators</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Bonus function</span>
 

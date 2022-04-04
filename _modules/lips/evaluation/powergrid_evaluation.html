@@ -40,14 +40,14 @@
 </ul>
 <p class="caption" role="heading"><span class="caption-text">TECHNICAL DOCUMENTATION</span></p>
 <ul>
-<li class="toctree-l1"><a class="reference internal" href="../../../lips.augmented_simulators.html">augmented_simulators package</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../../../lips.benchmark.html">benchmark package</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../lips.augmented_simulators.html">lips.augmented_simulators package</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../lips.benchmark.html">lips.benchmark package</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../lips.config.html">lips.config package</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../lips.dataset.html">lips.dataset package</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../lips.evaluation.html">lips.evaluation package</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../lips.logger.html">lips.logger package</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../../../lips.metrics.power_grid.html">metrics.power_grid package</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../lips.metrics.html">lips.metrics package</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../lips.neurips_benchmark.html">lips.neurips_benchmark package</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../lips.physical_simulator.html">lips.physical_simulator package</a></li>
 </ul>
 <p class="caption" role="heading"><span class="caption-text">GUIDE</span></p>
@@ -98,11 +98,11 @@
 <span class="kn">from</span> <span class="nn">collections.abc</span> <span class="kn">import</span> <span class="n">Iterable</span>
 
 <span class="kn">from</span> <span class="nn">.evaluation</span> <span class="kn">import</span> <span class="n">Evaluation</span>
-<span class="kn">from</span> <span class="nn">..benchmark</span> <span class="kn">import</span> <span class="n">Benchmark</span>
+<span class="c1">#from ..benchmark import PowerGridBenchmark</span>
 <span class="kn">from</span> <span class="nn">..logger</span> <span class="kn">import</span> <span class="n">CustomLogger</span>
 <span class="kn">from</span> <span class="nn">..config</span> <span class="kn">import</span> <span class="n">ConfigManager</span>
 
-<div class="viewcode-block" id="PowerGridEvaluation"><a class="viewcode-back" href="../../../lips.evaluation.html#lips.evaluation.powergrid_evaluation.PowerGridEvaluation">[docs]</a><span class="k">class</span> <span class="nc">PowerGridEvaluation</span><span class="p">(</span><span class="n">Evaluation</span><span class="p">):</span>
+<div class="viewcode-block" id="PowerGridEvaluation"><a class="viewcode-back" href="../../../lips.evaluation.html#lips.evaluation.PowerGridEvaluation">[docs]</a><span class="k">class</span> <span class="nc">PowerGridEvaluation</span><span class="p">(</span><span class="n">Evaluation</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;Evaluation of the power grid specific metrics</span>
 
 <span class="sd">    It is a subclass of the Evaluation class</span>
@@ -136,9 +136,9 @@
         <span class="c1"># read the criteria and their mapped functions for power grid</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">criteria</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">mapper</span><span class="o">.</span><span class="n">map_powergrid_criteria</span><span class="p">()</span>
 
-<div class="viewcode-block" id="PowerGridEvaluation.from_benchmark"><a class="viewcode-back" href="../../../lips.evaluation.html#lips.evaluation.powergrid_evaluation.PowerGridEvaluation.from_benchmark">[docs]</a>    <span class="nd">@classmethod</span>
+<div class="viewcode-block" id="PowerGridEvaluation.from_benchmark"><a class="viewcode-back" href="../../../lips.evaluation.html#lips.evaluation.PowerGridEvaluation.from_benchmark">[docs]</a>    <span class="nd">@classmethod</span>
     <span class="k">def</span> <span class="nf">from_benchmark</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span>
-                       <span class="n">benchmark</span><span class="p">:</span><span class="n">Benchmark</span>
+                       <span class="n">benchmark</span><span class="p">:</span> <span class="s2">&quot;PowerGridBenchmark&quot;</span><span class="p">,</span>
                       <span class="p">):</span>
         <span class="sd">&quot;&quot;&quot; Intialize the evaluation class from a benchmark object</span>
 
@@ -153,7 +153,7 @@
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="bp">cls</span><span class="p">(</span><span class="n">config</span><span class="o">=</span><span class="n">benchmark</span><span class="o">.</span><span class="n">config</span><span class="p">,</span> <span class="n">log_path</span><span class="o">=</span><span class="n">benchmark</span><span class="o">.</span><span class="n">log_path</span><span class="p">)</span></div>
 
-<div class="viewcode-block" id="PowerGridEvaluation.evaluate"><a class="viewcode-back" href="../../../lips.evaluation.html#lips.evaluation.powergrid_evaluation.PowerGridEvaluation.evaluate">[docs]</a>    <span class="k">def</span> <span class="nf">evaluate</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span>
+<div class="viewcode-block" id="PowerGridEvaluation.evaluate"><a class="viewcode-back" href="../../../lips.evaluation.html#lips.evaluation.PowerGridEvaluation.evaluate">[docs]</a>    <span class="k">def</span> <span class="nf">evaluate</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span>
                  <span class="n">observations</span><span class="p">:</span> <span class="nb">dict</span><span class="p">,</span>
                  <span class="n">predictions</span><span class="p">:</span> <span class="nb">dict</span><span class="p">,</span>
                  <span class="n">save_path</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="kc">None</span><span class="p">]</span><span class="o">=</span><span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">:</span>
@@ -203,7 +203,7 @@
             <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">eval_dict</span><span class="p">[</span><span class="n">category</span><span class="p">]:</span>
                 <span class="bp">self</span><span class="o">.</span><span class="n">evaluate_industrial_readiness</span><span class="p">()</span>
 
-<div class="viewcode-block" id="PowerGridEvaluation.evaluate_ml"><a class="viewcode-back" href="../../../lips.evaluation.html#lips.evaluation.powergrid_evaluation.PowerGridEvaluation.evaluate_ml">[docs]</a>    <span class="k">def</span> <span class="nf">evaluate_ml</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<div class="viewcode-block" id="PowerGridEvaluation.evaluate_ml"><a class="viewcode-back" href="../../../lips.evaluation.html#lips.evaluation.PowerGridEvaluation.evaluate_ml">[docs]</a>    <span class="k">def</span> <span class="nf">evaluate_ml</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Verify PowerGrid Specific Machine Learning metrics such as MAPE90</span>
 <span class="sd">        &quot;&quot;&quot;</span>
@@ -224,7 +224,7 @@
                     <span class="n">metric_dict</span><span class="p">[</span><span class="n">metric_name</span><span class="p">][</span><span class="n">nm_</span><span class="p">]</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><span class="n">tmp</span><span class="p">)</span>
                     <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;</span><span class="si">%s</span><span class="s2"> for </span><span class="si">%s</span><span class="s2">: </span><span class="si">%.2f</span><span class="s2">&quot;</span><span class="p">,</span> <span class="n">metric_name</span><span class="p">,</span> <span class="n">nm_</span><span class="p">,</span> <span class="n">tmp</span><span class="p">)</span></div>
 
-<div class="viewcode-block" id="PowerGridEvaluation.evaluate_physics"><a class="viewcode-back" href="../../../lips.evaluation.html#lips.evaluation.powergrid_evaluation.PowerGridEvaluation.evaluate_physics">[docs]</a>    <span class="k">def</span> <span class="nf">evaluate_physics</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<div class="viewcode-block" id="PowerGridEvaluation.evaluate_physics"><a class="viewcode-back" href="../../../lips.evaluation.html#lips.evaluation.PowerGridEvaluation.evaluate_physics">[docs]</a>    <span class="k">def</span> <span class="nf">evaluate_physics</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        function that evaluates the physics compliances on given observations</span>
 <span class="sd">        It comprises various verifications which are:</span>
@@ -245,7 +245,7 @@
                              <span class="n">config</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">config</span><span class="p">)</span>
             <span class="n">metric_dict</span><span class="p">[</span><span class="n">metric_name</span><span class="p">]</span> <span class="o">=</span> <span class="n">tmp</span></div>
 
-<div class="viewcode-block" id="PowerGridEvaluation.evaluate_industrial_readiness"><a class="viewcode-back" href="../../../lips.evaluation.html#lips.evaluation.powergrid_evaluation.PowerGridEvaluation.evaluate_industrial_readiness">[docs]</a>    <span class="k">def</span> <span class="nf">evaluate_industrial_readiness</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<div class="viewcode-block" id="PowerGridEvaluation.evaluate_industrial_readiness"><a class="viewcode-back" href="../../../lips.evaluation.html#lips.evaluation.PowerGridEvaluation.evaluate_industrial_readiness">[docs]</a>    <span class="k">def</span> <span class="nf">evaluate_industrial_readiness</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Evaluate the augmented simulators from Industrial Readiness point of view</span>
 

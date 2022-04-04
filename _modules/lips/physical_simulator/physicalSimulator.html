@@ -40,14 +40,14 @@
 </ul>
 <p class="caption" role="heading"><span class="caption-text">TECHNICAL DOCUMENTATION</span></p>
 <ul>
-<li class="toctree-l1"><a class="reference internal" href="../../../lips.augmented_simulators.html">augmented_simulators package</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../../../lips.benchmark.html">benchmark package</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../lips.augmented_simulators.html">lips.augmented_simulators package</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../lips.benchmark.html">lips.benchmark package</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../lips.config.html">lips.config package</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../lips.dataset.html">lips.dataset package</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../lips.evaluation.html">lips.evaluation package</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../lips.logger.html">lips.logger package</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../../../lips.metrics.power_grid.html">metrics.power_grid package</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../lips.metrics.html">lips.metrics package</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../lips.neurips_benchmark.html">lips.neurips_benchmark package</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../lips.physical_simulator.html">lips.physical_simulator package</a></li>
 </ul>
 <p class="caption" role="heading"><span class="caption-text">GUIDE</span></p>
@@ -92,7 +92,7 @@
 <span class="kn">import</span> <span class="nn">copy</span>
 
 
-<div class="viewcode-block" id="PhysicalSimulator"><a class="viewcode-back" href="../../../lips.physical_simulator.html#lips.physical_simulator.physicalSimulator.PhysicalSimulator">[docs]</a><span class="k">class</span> <span class="nc">PhysicalSimulator</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
+<div class="viewcode-block" id="PhysicalSimulator"><a class="viewcode-back" href="../../../lips.physical_simulator.html#lips.physical_simulator.PhysicalSimulator">[docs]</a><span class="k">class</span> <span class="nc">PhysicalSimulator</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    This is the base class representing a physical simulator.</span>
 
@@ -110,7 +110,7 @@
     <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">actor_types</span><span class="p">):</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">actor_types</span> <span class="o">=</span> <span class="n">copy</span><span class="o">.</span><span class="n">deepcopy</span><span class="p">(</span><span class="n">actor_types</span><span class="p">)</span>
 
-<div class="viewcode-block" id="PhysicalSimulator.get_state"><a class="viewcode-back" href="../../../lips.physical_simulator.html#lips.physical_simulator.physicalSimulator.PhysicalSimulator.get_state">[docs]</a>    <span class="k">def</span> <span class="nf">get_state</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<div class="viewcode-block" id="PhysicalSimulator.get_state"><a class="viewcode-back" href="../../../lips.physical_simulator.html#lips.physical_simulator.PhysicalSimulator.get_state">[docs]</a>    <span class="k">def</span> <span class="nf">get_state</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        This function return the state of the simulator.</span>
 
@@ -118,7 +118,7 @@
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">pass</span></div>
 
-<div class="viewcode-block" id="PhysicalSimulator.modify_state"><a class="viewcode-back" href="../../../lips.physical_simulator.html#lips.physical_simulator.physicalSimulator.PhysicalSimulator.modify_state">[docs]</a>    <span class="k">def</span> <span class="nf">modify_state</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">actor</span><span class="p">):</span>
+<div class="viewcode-block" id="PhysicalSimulator.modify_state"><a class="viewcode-back" href="../../../lips.physical_simulator.html#lips.physical_simulator.PhysicalSimulator.modify_state">[docs]</a>    <span class="k">def</span> <span class="nf">modify_state</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">actor</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        This function allows to modify the internal state of the simulator. It is optional.</span>
 

@@ -1,16 +1,13 @@
-metrics.power\_grid package
+lips.metrics.power\_grid package
 ================================
 
-Submodules
-----------
-
-lips.metrics.power\_grid.metric\_percentage module
---------------------------------------------------
-
-.. automodule:: lips.metrics.power_grid.metric_percentage
+.. automodule:: lips.metrics.power_grid
    :members:
    :undoc-members:
    :show-inheritance:
+
+Submodules
+----------
 
 lips.metrics.power\_grid.physics\_compliances module
 ----------------------------------------------------
