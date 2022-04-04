@@ -15,7 +15,7 @@ from typing import Union
 from collections.abc import Iterable
 
 from .evaluation import Evaluation
-from ..benchmark import Benchmark
+#from ..benchmark import PowerGridBenchmark
 from ..logger import CustomLogger
 from ..config import ConfigManager
 
@@ -55,7 +55,7 @@ class PowerGridEvaluation(Evaluation):
 
     @classmethod
     def from_benchmark(cls,
-                       benchmark:Benchmark
+                       benchmark: "PowerGridBenchmark",
                       ):
         """ Intialize the evaluation class from a benchmark object
 

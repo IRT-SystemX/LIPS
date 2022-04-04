@@ -1,40 +1,70 @@
-# Copyright (c) 2021, IRT SystemX (https://www.irt-systemx.fr/en/)
-# See AUTHORS.txt
-# This Source Code Form is subject to the terms of the Mozilla Public License, version 2.0.
-# If a copy of the Mozilla Public License, version 2.0 was not distributed with this file,
-# you can obtain one at http://mozilla.org/MPL/2.0/.
-# SPDX-License-Identifier: MPL-2.0
-# This file is part of LIPS, LIPS is a python platform for power networks benchmarking
+"""
+Licence:
+    Copyright (c) 2021, IRT SystemX (https://www.irt-systemx.fr/en/)
+    See AUTHORS.txt
+    This Source Code Form is subject to the terms of the Mozilla Public License, version 2.0.
+    If a copy of the Mozilla Public License, version 2.0 was not distributed with this file,
+    you can obtain one at http://mozilla.org/MPL/2.0/.
+    SPDX-License-Identifier: MPL-2.0
+    This file is part of LIPS, LIPS is a python platform for power networks benchmarking
+
+"""
+
 import os
 import shutil
 import warnings
 import copy
 from typing import Union
 import importlib
-import numpy as np
-
-from lips.physical_simulator.dcApproximationAS import DCApproximationAS
 
 from . import Benchmark
-
 from ..augmented_simulators import AugmentedSimulator
 from ..physical_simulator import PhysicalSimulator
 from ..physical_simulator import Grid2opSimulator
-from ..physical_simulator.grid2opSimulator import get_env
+from ..physical_simulator.dcApproximationAS import DCApproximationAS
 from ..dataset import PowerGridDataSet
 from ..evaluation import PowerGridEvaluation
 
 
+
 class PowerGridBenchmark(Benchmark):
-    """
+    """PowerGrid Benchmark class
+
     This class allows to benchmark a power grid scenario which are defined in a config file.
+
+    Parameters
+    ----------
+    benchmark_path : ``str``
+        path to the benchmark
+    config_path : Union[``str``, ``None``], optional
+        path to the configuration file. If config_path is ``None``, the default config file
+        present in config module will be used by using the benchmark_name as the section, by default None
+    benchmark_name : ``str``, optional
+        the benchmark name which is used in turn as the config section, by default "Benchmark1"
+    load_data_set : ``bool``, optional
+        whether to load the already generated datasets, by default False
+    evaluation : Union[``PowerGridEvaluation``, ``None``], optional
+        a ``PowerGridEvaluation`` instance. If not indicated, the benchmark creates its
+        own evaluation instance using appropriate config, by default None
+    log_path : Union[``str``, ``None``], optional
+        path to the logs, by default None
+
+    Todo
+    ----
+    Add all the seeds into the config file
+
+    Warnings
+    --------
+    An independent class for each benchmark is maybe a better idea.
+    This class can be served as the base class for powergrid and a specific class for each benchmark
+    can extend this class.
     """
     def __init__(self,
                  benchmark_path: str,
                  config_path: Union[str, None]=None,
-                 benchmark_name="Benchmark1",
-                 load_data_set=False,
-                 evaluation=None,
+                 benchmark_name: str="Benchmark1",
+                 load_data_set: bool=False,
+                 evaluation: Union[PowerGridEvaluation, None]=None,
                  log_path: Union[str, None]=None,
                  train_env_seed: int = 1,
                  val_env_seed: int = 2,
@@ -45,9 +75,7 @@ class PowerGridBenchmark(Benchmark):
                  val_actor_seed: int = 6,
                  test_actor_seed: int = 7,
                  test_ood_topo_actor_seed: int = 8,
-
                  ):
-        # init the super class
         super().__init__(benchmark_name=benchmark_name,
                          dataset=None,
                          augmented_simulator=None,
@@ -137,8 +165,8 @@ class PowerGridBenchmark(Benchmark):
         self._test_ood_topo_dataset.load(path=self.path_datasets)
         self.is_loaded = True
 
-    def generate(self, nb_sample_train, nb_sample_val,
-                 nb_sample_test, nb_sample_test_ood_topo):
+    def generate(self, nb_sample_train: int, nb_sample_val: int,
+                 nb_sample_test: int, nb_sample_test_ood_topo: int):
         """
         generate the different datasets required for the benchmark
         """
@@ -180,29 +208,34 @@ class PowerGridBenchmark(Benchmark):
                            augmented_simulator: Union[PhysicalSimulator, AugmentedSimulator, None] = None,
                            batch_size: int=32,
                            save_path: Union[str, None]=None,
-                           active_flow: bool=True
-                           ):
+                           active_flow: bool=True) -> dict:
         """evaluate a trained augmented simulator on one or multiple test datasets
 
         Parameters
         ----------
-        dataset, optional
-            _description_, by default "all"
-        batch_size, optional
-            _description_, by default 32
-        save_path, optional
-            _description_, by default None
-        active_flow, optional
-            _description_, by default True
+        dataset : str, optional
+            dataset on which the evaluation should be performed, by default "all"
+        batch_size : int, optional
+            the batch size for inference, by default 32
+        save_path : Union[str, None], optional
+            the path that the evaluation results should be saved, by default None
+        active_flow : bool, optional
+            whether to compute the KCL for active_flow, by default True
+
+        Todo
+        ----
+        TODO: add active flow in config file
 
         Returns
         -------
-            evaluation_results: dict
+        dict
+            the results dictionary
 
         Raises
         ------
         RuntimeError
-            _description_
+            Unknown dataset selected
+
         """
         self._create_training_simulator()
         li_dataset = []
@@ -238,18 +271,28 @@ class PowerGridBenchmark(Benchmark):
                                         augmented_simulator: Union[PhysicalSimulator, AugmentedSimulator, None] = None,
                                         batch_size: int=32,
                                         active_flow: bool=True,
-                                        save_path: Union[str, None]=None):
-        """
+                                        save_path: Union[str, None]=None) -> dict:
+        """Evaluate a single dataset
         This function will evalute a simulator (physical or augmented) using various criteria predefined in evaluator object
         on a ``single test dataset``. It can be overloaded or called to evaluate the performance on multiple datasets
 
-        params
+        Parameters
         ------
-            active_flow: ``bool``
-                whether to compute KCL on active (True) or reactive (False) powers
+        dataset : PowerGridDataSet
+            the dataset
+        augmented_simulator : Union[PhysicalSimulator, AugmentedSimulator, None], optional
+            a trained augmented simulator, by default None
+        batch_size : int, optional
+            batch_size used for inference, by default 32
+        active_flow : bool, optional
+            whether to compute KCL on active (True) or reactive (False) powers, by default True
+        save_path : Union[str, None], optional
+            if indicated the evaluation results will be saved to indicated path, by default None
 
-            save_path: ``str`` or ``None``
-                if indicated the evaluation results will be saved to indicated path
+        Returns
+        -------
+        dict
+            the results dictionary
         """
         self.logger.info("Benchmark %s, evaluation using %s on %s dataset", self.benchmark_name,
                                                                             augmented_simulator.name,
@@ -282,7 +325,10 @@ class PowerGridBenchmark(Benchmark):
         return res
 
     def _create_training_simulator(self):
-        """"""
+        """
+        Initialize the simulator used for training
+
+        """
         if self.training_simulator is None:
             self.training_simulator = Grid2opSimulator(self.utils.get_kwargs_simulator_scenario(),
                                                        initial_chronics_id=self.initial_chronics_id,

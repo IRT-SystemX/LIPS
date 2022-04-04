@@ -1,6 +1,4 @@
 """
-Usage:
-    /__init__.py
 Licence:
     Copyright (c) 2021, IRT SystemX (https://www.irt-systemx.fr/en/)
     See AUTHORS.txt
@@ -13,9 +11,9 @@ Licence:
 
 from __future__ import absolute_import
 
-from .evaluation import Evaluation
-from .powergrid_evaluation import PowerGridEvaluation
-from .utils import Mapper
+from lips.evaluation.evaluation import Evaluation
+from lips.evaluation.powergrid_evaluation import PowerGridEvaluation
+from lips.evaluation.utils import Mapper
 
 __all__ = [
     "Evaluation",

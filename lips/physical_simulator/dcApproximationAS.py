@@ -6,7 +6,6 @@
 # SPDX-License-Identifier: MPL-2.0
 # This file is part of LIPS, LIPS is a python platform for power networks benchmarking
 
-import copy
 from typing import Union
 from tqdm import tqdm
 import time
@@ -18,10 +17,10 @@ from grid2op.Backend import PandaPowerBackend
 from grid2op.Action._BackendAction import _BackendAction
 from grid2op.Action import CompleteAction
 
-from lips.physical_simulator import Grid2opSimulator
-from lips.physical_simulator import PhysicsSolver
-from lips.dataset import PowerGridDataSet
-from lips.config import ConfigManager
+from . import Grid2opSimulator
+from . import PhysicsSolver
+from ..dataset import PowerGridDataSet
+from ..config import ConfigManager
 
 
 class DCApproximationAS(PhysicsSolver):
@@ -30,6 +29,9 @@ class DCApproximationAS(PhysicsSolver):
 
     It is based on a physical solver that linearized the powergrid equations and solve this linearization.
 
+    Todo
+    ----
+    TODO : add logger and log the computation time
 
     # TODO : to remove this description
     The goal of this file is double. First it illustrates that there is no strict difference between an
@@ -40,12 +42,12 @@ class DCApproximationAS(PhysicsSolver):
     def __init__(self,
                  name: str = "dc_approximation",
                  benchmark_name: str = "Benchmark1",
-                 path_config: Union[str, None] = None,
+                 config_path: Union[str, None] = None,
                  grid_path: Union[str, None] = None,
                  simulator: Union[Grid2opSimulator, None] = None,
                  ):
         PhysicsSolver.__init__(self, name=name)
-        self.config_manager = ConfigManager(benchmark_name, path_config)
+        self.config_manager = ConfigManager(benchmark_name, config_path)
         # input that will be given to the augmented simulator
         self._attr_x = ("prod_p", "prod_v", "load_p", "load_q", "topo_vect")
         # output that we want the proxy to predict

@@ -12,45 +12,44 @@ from abc import ABC, abstractmethod
 
 import numpy as np
 
-from lips.evaluation import Evaluation
+from ..evaluation import Evaluation
 from ..augmented_simulators import AugmentedSimulator
 from ..physical_simulator import PhysicalSimulator
 from ..physical_simulator import PhysicsSolver
-
-
 from ..config import ConfigManager
 from ..logger import CustomLogger
 from ..dataset import DataSet
 
 
 class Benchmark(ABC):
-    """
-    Benchmark class that takes a test dataset, a simulator (physical or augmented) and an evaluator object and
-    evaluates the simulator on test dataset with respect to required metrics requested by evaluator
+    """Benchmark Base Class
 
-    params
-    ------
-        benchmark_name : ``str``
-            a name attributed to the corresponding experiment
+    Benchmark class that takes a test dataset, a simulator (physical or augmented) and an
+    evaluator object and evaluates the simulator on test dataset with respect to required
+    metrics requested by evaluator
 
-        dataset: ``DataSet`` object
-            an object of DataSet class which containing the data for training, validation and testing
-
-        Simulator: An object from an augmented simulator
-            This is an object of Physical or Augmneted simulator including the prediction results
-
-        evaluation: ``object`` of ``Evaluation`` class
-            It allows to evaluate the performance of the simulator with respect to various point of views
-            It should be parameterized before passing to benchmark class to include appropriate metrics
-            otherwise, it is initialized using an empty dictionary
-
-        benchmark_path : ``string``
-            the path used to save the benchmark results
-
+    Attributes
+    ----------
+    benchmark_name : ``str``
+        a name attributed to the corresponding experiment
+    dataset : Union[``DataSet``, ``None``], optional
+        an object of ``DataSet`` class which containing the data for training, validation and testing, by default None
+    augmented_simulator : Union[``AugmentedSimulator``, ``PhysicsSolver``, ``None``], optional
+        This is an object of Physical or Augmneted simulator including the prediction results, by default None
+    evaluation : Evaluation, optional
+        It allows to evaluate the performance of the simulator with respect to various point of views
+        It should be parameterized before passing to benchmark class to include appropriate metrics
+        otherwise, it is initialized using an empty dictionary, by default None
+    benchmark_path : Union[``str``, ``None``], optional
+        the path used to save the benchmark results, by default None
+    log_path : Union[``str``, ``None``], optional
+        the path of logger, by default None
+    config_path : Union[``str``, ``None``], optional
+        the path of config file, by default None
     """
     def __init__(self,
                  benchmark_name: str,
-                 dataset: Union["DataSet", None]=None,
+                 dataset: Union[DataSet, None]=None,
                  augmented_simulator: Union[AugmentedSimulator, PhysicsSolver, None]=None,
                  evaluation: Evaluation=None,
                  benchmark_path: Union[str, None]=None,
@@ -86,27 +85,28 @@ class Benchmark(ABC):
 
     @abstractmethod
     def evaluate_simulator(self,
-                           dataset:DataSet,
+                           dataset: DataSet,
                            augmented_simulator: Union[PhysicalSimulator, AugmentedSimulator, None] = None,
                            batch_size: int=32,
-                           save_path: Union[str, None]=None):
+                           save_path: Union[str, None]=None) -> dict:
         """
         This function will evalute a simulator (physical or augmented) using various criteria predefined in evaluator object
         on a ``single test dataset``. It can be overloaded or called to evaluate the performance on multiple datasets
 
-        params
-        ------
-            dataset: ``DataSet`` object
-                a test dataset on which the augmented simulator should be performed and evaluated by
-
-            augmented_simulator: ``AugmentedSimulator`` object
-                a trained augmented simulator which should be evaluated
-
-            batch_size: ``int``
-                evaluation batch size
-
-            save_path: ``str`` or ``None``
-                if indicated the evaluation results will be saved to indicated path
+        Parameters
+        ----------
+        dataset: DataSet
+            a test dataset on which the augmented simulator should be performed and evaluated by
+        augmented_simulator: AugmentedSimulator
+            a trained augmented simulator which should be evaluated
+        batch_size: ``int``
+            evaluation batch size
+        save_path: Union[``str``, ``None``]
+            if indicated the evaluation results will be saved to indicated path
+        Returns
+        -------
+        ``dict``
+            a dictionary containing the evaluation results
         """
         self.augmented_simulator = augmented_simulator
         self.dataset = dataset
@@ -129,10 +129,12 @@ class Benchmark(ABC):
 
         !! we recommend to save to the default path for a better organisation (keep path=None)
 
-        params
+        Parameters
         ------
-            path: ``str``
-                if not indicated, the data will be saved in predefined path
+        path: ``str``
+            if not indicated, the data will be saved in predefined path
+        ext: ``str``
+            extension
         """
         if path:
             if not os.path.exists(path):
