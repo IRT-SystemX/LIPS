@@ -1,11 +1,7 @@
-.. LIPS documentation master file, created by
-   sphinx-quickstart on Wed Aug 18 17:01:15 2021.
-   You can adapt this file completely to your liking, but it should at least
-   contain the root `toctree` directive.
-
 Welcome to LIPS's documentation!
 ================================
-This platform serves as guide for Learning Industrial Physical Simulation (LIPS) platform users. All the requirements and functionalities are explained in this documentation.
+This platform serves as guide for Learning Industrial Physical Simulation (LIPS) platform users.
+All the requirements and functionalities are explained in this documentation.
 
 .. image:: images/Bench_scheme.png
    :width: 600
@@ -27,8 +23,8 @@ This platform serves as guide for Learning Industrial Physical Simulation (LIPS)
    lips.dataset
    lips.evaluation
    lips.logger
-   lips.metrics.power_grid
    lips.metrics
+   lips.neurips_benchmark
    lips.physical_simulator
 
 .. toctree::
@@ -37,8 +33,6 @@ This platform serves as guide for Learning Industrial Physical Simulation (LIPS)
 
    license
    help
-
-
 
 Indices and tables
 ==================

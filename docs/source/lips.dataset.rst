@@ -1,6 +1,11 @@
 lips.dataset package
 ====================
 
+.. automodule:: lips.dataset
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
 Submodules
 ----------
 
