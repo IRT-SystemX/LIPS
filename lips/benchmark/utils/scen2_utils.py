@@ -12,7 +12,7 @@ Set of utility function to generate the data for NeuripsBenchmark1
 import warnings
 import grid2op
 
-from lips.benchmark.utils.actor_utils import ChangeTopoRefN1, ChangeTopoRefN2, ChangeTopoRefN1Ref
+from .actor_utils import ChangeTopoRefN1, ChangeTopoRefN2, ChangeTopoRefN1Ref
 
 # for reference
 REF_ACTION = [# sub_5_id1

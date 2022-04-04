@@ -9,14 +9,13 @@
 import os
 import time
 import json
-import numpy as np
 import copy
 import warnings
 from typing import Union
 import tempfile
 import shutil
+import numpy as np
 
-import tensorflow as tf
 from tensorflow.keras.layers import Layer
 from tensorflow.keras.layers import Dense
 from tensorflow.keras.optimizers import Optimizer
@@ -28,28 +27,53 @@ with warnings.catch_warnings():
     from tensorflow.keras.layers import Activation
     from tensorflow.keras.layers import Input
 
-from lips.dataset import DataSet
-from lips.config import ConfigManager
-from lips.augmented_simulators import AugmentedSimulator
-from lips.logger import CustomLogger
+from . import AugmentedSimulator
+from ..dataset import DataSet
+from ..config import ConfigManager
+from ..logger import CustomLogger
 
 
 class FullyConnectedAS(AugmentedSimulator):
-    """
-    This class uses tensorflow and keras to implement an Augmented simulator based on a fully connected neural network
-    trained using keras.
+    """Fully Connected neural network (tensorflow)
 
-    What it does is simply to concatenate all the input attributes together in one matrix, is asked to output
-    all the output in one big matrix.
+    Parameters
+    ----------
+    name : ``str``, optional
+        the name of the model, to be used for saving, by default "FullyConnected"
+    benchmark_name : ``str``, optional
+        the name of the scenario for which the model should be used. It is used
+        to restore the configurations from config section, by default "Benchmark1"
+    config_path : Union[``str``, ``None``], optional
+        The path where the config file is available. If ``None``, the default config
+        will be used, by default ``None``
+    attr_x : Union[``tuple``, ``None``], optional
+        the list of input variables to be declared. If ``None`` the input variables
+        are restored from the config file, by default None
+    attr_y : Union[``tuple``, ``None``], optional
+        The list of output variables to be declared. If ``None`` the output variables
+        are restored from config file, by default None
+    sizes_layer : ``tuple``, optional
+        the number of layers and neurones in each layer, by default (150, 150)
+    lr : ``float``, optional
+        the learning rate for the optimizer, by default 3e-4
+    layer_act : ``str``, optional
+        the layers activation, by default "relu"
+    optimizer : Union[``Optimizer``, ``None``], optional
+        the optimizer used for optimizing network weights, by default None
+    loss : ``str``, optional
+        The loss criteria used during training procedure, by default "mse"
+    log_path : Union[``str``, ``None``], optional
+        the path where the logs should be stored, by default None
 
-    It also handles basic scaling of the data
-
-    "FullyConnectedAS" stands for "Fully Connected neural network used as an Agumented Simulator"
+    Raises
+    ------
+    RuntimeError
+        If an optimizer is provided, it should be a type tensorflow.keras.optimizers
     """
     def __init__(self,
                  name: str = "FullyConnected",
                  benchmark_name: str = "Benchmark1",
-                 path_config: Union[str, None] = None,
+                 config_path: Union[str, None] = None,
                  attr_x: Union[tuple, None] = None,
                  attr_y: Union[tuple, None] = None,
                  sizes_layer=(150, 150),
@@ -61,9 +85,8 @@ class FullyConnectedAS(AugmentedSimulator):
                  batch_size: int = 128,
                  log_path: Union[str, None] = None
                 ):
-
         AugmentedSimulator.__init__(self, name)
-        self.config_manager = ConfigManager(benchmark_name, path_config)
+        self.config_manager = ConfigManager(benchmark_name, config_path)
         if attr_x is not None:
             self._attr_x = attr_x
         else:
@@ -73,8 +96,6 @@ class FullyConnectedAS(AugmentedSimulator):
             self._attr_y = attr_y
         else:
             self._attr_y = self.config_manager.get_option("attr_y")
-        #self._attr_x = copy.deepcopy(attr_x)
-        #self._attr_y = copy.deepcopy(attr_y)
         self.sizes_layer = copy.deepcopy(sizes_layer)
         self._lr = lr
         self.layer = layer
@@ -130,9 +151,26 @@ class FullyConnectedAS(AugmentedSimulator):
     def train(self, nb_iter: int,
               train_dataset: DataSet,
               val_dataset: Union[None, DataSet] = None,
-              **kwargs):
-        """This is an example of a reference implementation of this class. Feel"""
-        self.logger.info(f"Training of {self.name} started")
+              **kwargs) -> dict:
+        """function used to train the model
+
+        Parameters
+        ----------
+        nb_iter : ``int``
+            number of epochs
+        train_dataset : DataSet
+            the training dataset used to train the model
+        val_dataset : Union[``None``, DataSet], optional
+            the validation dataset used to validate the model, by default None
+        **kwargs: ``dict``
+            supplementary arguments for ``fit`` method of ``tf.keras.Model``
+
+        Returns
+        -------
+        dict
+            history of the tensorflow model (losses)
+        """
+        self.logger.info("Training of {%s} started", self.name)
         self._observations[train_dataset.name] = train_dataset.data
         # extract the input and output suitable for learning (matrices) from the generic dataset
         processed_x, processed_y = self._process_all_dataset(train_dataset, training=True)
@@ -157,15 +195,34 @@ class FullyConnectedAS(AugmentedSimulator):
                                            epochs=nb_iter,
                                            batch_size=self._batch_size,
                                            **kwargs)
-        self.logger.info(f"Training of {self.name} finished")
+        self.logger.info("Training of {%s} finished", self.name)
         # NB in this function we use the high level keras method "fit" to fit the data. It does not stricly
         # uses the `DataSet` interface. For more complicated training loop, one can always use
         # dataset.get_data(indexes) to retrieve the batch of data corresponding to `indexes` and
         # `self.process_dataset` to process the example of this dataset one by one.
         return history_callback
 
-    def evaluate(self, dataset: DataSet, batch_size: int=32, save_values: bool=False):
-        """evaluate the model on the given dataset"""
+    def evaluate(self, dataset: DataSet, batch_size: int=32, save_values: bool=False) -> dict:
+        """evaluate the model on the given dataset
+
+        Parameters
+        ----------
+        dataset : DataSet
+            the dataset used for evaluation of the model
+        batch_size : ``int``, optional
+            the batch size used during inference phase, by default 32
+        save_values : ``bool``, optional
+            whether to save the evaluation resutls (predictions), by default False
+
+        Todo
+        ----
+        TODO : Save the predictions (not implemented yet)
+
+        Returns
+        -------
+        dict
+            the predictions of the model
+        """
         # the observations used for evaluation
         tmp_obs = dataset.get_data(np.arange(len(dataset)))
         #for attr_nm in self._attr_y:
@@ -199,29 +256,49 @@ class FullyConnectedAS(AugmentedSimulator):
         return predictions
 
     def save(self, path_out: str):
-        """
-        This saves the weights of the neural network.
+        """This saves the weights of the neural network.
+
+        Parameters
+        ----------
+        path_out : ``str``
+            path where the model should be saved
+
+        Raises
+        ------
+        RuntimeError
+            The path does not exist
+        RuntimeError
+            The model is not initialized, it cannot be saved
         """
         if not os.path.exists(path_out):
             raise RuntimeError(f"The path {path_out} does not exists.")
         if self._model is None:
-            raise RuntimeError(f"The model is not initialized i cannot save it")
+            raise RuntimeError("The model is not initialized, it cannot be saved")
 
         full_path_out = os.path.join(path_out, self.name)
         if not os.path.exists(full_path_out):
             os.mkdir(full_path_out)
-            self.logger.info(f"Model {self.name} is saved at {full_path_out}")
+            self.logger.info("Model {%s} is saved at {%s}", self.name, full_path_out)
 
         if self._model is not None:
             # save the weights
             self._model.save(os.path.join(full_path_out, "model.h5"))
 
     def restore(self, path: str):
-        """
-        Restores the model from a saved one.
+        """Restores the model from a saved one
 
         We first copy the weights file into a temporary directory, and then load from this one. This is avoid
         file corruption in case the model fails to load.
+
+        Parameters
+        ----------
+        path : ``str``
+            path from where the  model should be restored
+
+        Raises
+        ------
+        RuntimeError
+            Impossible to find a saved model at the indicated path
         """
         nm_file = f"model.h5"
         path_weights = os.path.join(path, self.name, nm_file)
@@ -236,12 +313,15 @@ class FullyConnectedAS(AugmentedSimulator):
             self._model.load_weights(nm_tmp)
 
     def save_metadata(self, path_out: str):
-        """
-        This is used to save the meta data of the augmented simulator.
+        """This is used to save the meta data of the augmented simulator
 
         In this case it saves the sizes, the scalers etc.
-
         The only difficulty here is that i need to serialize, as json, numpy arrays
+
+        Parameters
+        ----------
+        path_out : ``str``
+            path where the model metadata should be saved
         """
         res_json = {"batch_size": int(self._batch_size),
                     "lr": float(self._lr),
@@ -263,13 +343,19 @@ class FullyConnectedAS(AugmentedSimulator):
         full_path_out = os.path.join(path_out, self.name)
         if not os.path.exists(full_path_out):
             os.mkdir(full_path_out)
-            self.logger.info(f"Model {self.name} is saved at {full_path_out}")
+            self.logger.info("Model {%s} is saved at {%s}", self.name, full_path_out)
 
         with open(os.path.join(full_path_out, "metadata.json"), "w", encoding="utf-8") as f:
             json.dump(obj=res_json, fp=f, indent=4, sort_keys=True)
 
     def load_metadata(self, path: str):
-        """this is used to load the meta parameters from the model"""
+        """this is used to load the meta parameters from the model
+
+        Parameters
+        ----------
+        path : ``str``
+            path from where the  model should be restored
+        """
         full_path = os.path.join(path, self.name)
         with open(os.path.join(full_path, f"metadata.json"), "r", encoding="utf-8") as f:
             res_json = json.load(fp=f)
@@ -291,18 +377,38 @@ class FullyConnectedAS(AugmentedSimulator):
         self._std_x = np.array(res_json["_std_x"], dtype=np.float32)
         self._std_y = np.array(res_json["_std_y"], dtype=np.float32)
 
-    def _process_all_dataset(self, dataset: DataSet, training: bool = False):
-        """This function will extract the whole dataset and format it in a way we can train the
+    def _process_all_dataset(self, dataset: DataSet, training: bool = False) -> tuple:
+        """Process the dataset for neural network
+
+        This function will extract the whole dataset and format it in a way we can train the
         fully connected neural network from it
 
         if "training" is `True` then it will also computes the scalers:
-
         - _std_x
         - _std_y
         - _m_x
         - _m_y
 
         And the size of the dataset self._size_x and self._size_y
+
+        Parameters
+        ----------
+        dataset : ``DataSet``
+            the ``DataSet`` object to process
+        training : ``bool``
+            If the model is in training mode, by default ``False``
+
+        Returns
+        -------
+        tuple
+            the processed inputs and outputs for the model
+
+        Raises
+        ------
+        RuntimeError
+            Model cannot be used, we don't know the size of the input vector.
+        RuntimeError
+            Model cannot be used, we don't know the size of the output vector.
         """
         all_data = dataset.get_data(np.arange(len(dataset)))
         if training:
