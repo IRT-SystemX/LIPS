@@ -7,8 +7,7 @@
 # This file is part of LIPS, LIPS is a python platform for power networks benchmarking
 
 from typing import Union
-from lips.dataset import DataSet
-
+from ..dataset import DataSet
 
 class AugmentedSimulator(object):
     """
@@ -19,7 +18,7 @@ class AugmentedSimulator(object):
     """
     def __init__(self, name: str):
         self.name = name
-        
+
         self._observations = dict()
         self._predictions = dict()
 
@@ -63,8 +62,8 @@ class AugmentedSimulator(object):
 
     def data_to_dict(self):
         """
-        This function should return two dictionaries in the following order 
-            - the observations used for evaluation 
+        This function should return two dictionaries in the following order
+            - the observations used for evaluation
             - corresponding predictions
         """
         pass

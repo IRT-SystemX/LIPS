@@ -14,22 +14,26 @@ from .utils import Mapper
 from ..logger import CustomLogger
 from ..config import ConfigManager
 from ..dataset import DataSet
-from ..benchmark import Benchmark
+#from ..benchmark import Benchmark
 
 class Evaluation(object):
     """Evaluation base class
 
     Evaluation class to be implemented for evaluation of an augmented simulator
 
+    Hint
+    ----
     Examples of such classes are provided in `PowerGridEvaluation` and `TransportEvaluation`
 
     Attributes
     ----------
-    config_path, optional
-        the path where config file could be found, by default None
-    config_section, optional
+    config : Union[ConfigManager, ``None``], optional
+        the config object used for the evaluation, by default None
+    config_path : Union[``str``, ``None``], optional
+        the path where config file could be found,, by default None
+    config_section : Union[``str``, ``None``], optional
         the section of config file to be used for evaluation, by default None
-    log_path, optional
+    log_path : Union[``str``, ``None``], optional
         the path where the logs should be stored or path to an existing log file, by default None
     """
     MACHINE_LEARNING = "ML"
@@ -43,7 +47,6 @@ class Evaluation(object):
                  config_section: Union[str, None]=None,
                  log_path: Union[str, None]=None
                  ):
-
         if config is None:
             self.config = ConfigManager(section_name=config_section, path=config_path)
         else:
@@ -60,7 +63,7 @@ class Evaluation(object):
     @classmethod
     #@abstractmethod
     def from_benchmark(cls,
-                       benchmark: Benchmark,
+                       benchmark: "Benchmark",
                        ):
         """
         Class method to intialize the evaluation from Benchmark instance
@@ -98,7 +101,7 @@ class Evaluation(object):
                  observations: dict,
                  predictions: dict,
                  save_path: Union[str, None]=None):
-        """The main function which evaluates all the required criteria provided in config file
+        """Evaluate the predictions of an AugmentedSimulator
 
         This function should be overridden to do all the required evaluations for each category
 
@@ -107,20 +110,18 @@ class Evaluation(object):
         - Industrial Readiness evaluation
         - OOD Generalization evaluation
 
-        The child classes should override this class for further extensions
-        - PowerGridEvaluation
-        - TransportEvaluation
-
-        > Notice that, the already minimalist code compute two metrics which are `MSE` and `MAE` from scikit-learn package
+        Notes
+        -----
+        Notice that, the already minimalist code compute two metrics which are `MSE` and `MAE` from scikit-learn package
 
         Parameters
         ----------
-        dataset
-            DataSet object including true observations used to evaluate the predictions
-        predictions
+        observations : ``dict``
+            Observations used for evaluation of the augmented simulators
+        predictions : ``dict``
             predictions obtained from augmented simulators
-        save_path, optional
-            path where the results should be saved, by default None
+        save_path : Union[``str``, ``None``], optional
+            path where the results should be saved, by default None, by default None
         """
         self.observations = observations #dataset.data
         self.predictions = predictions
