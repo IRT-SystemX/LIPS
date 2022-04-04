@@ -1,42 +1,76 @@
-# copyright (c) 2021-2022, IRT SystemX and RTE (https://www.irt-systemx.fr/)
-# See AUTHORS.txt
-# This Source Code Form is subject to the terms of the Mozilla Public License, version 2.0.
-# If a copy of the Mozilla Public License, version 2.0 was not distributed with this file,
-# you can obtain one at http://mozilla.org/MPL/2.0/.
-# SPDX-License-Identifier: MPL-2.0
-# This file is part of LIPS, LIPS is a python platform for power networks benchmarking
+""" This module is used to generate powergrid datasets
+
+Licence:
+    copyright (c) 2021-2022, IRT SystemX and RTE (https://www.irt-systemx.fr/)
+    See AUTHORS.txt
+    This Source Code Form is subject to the terms of the Mozilla Public License, version 2.0.
+    If a copy of the Mozilla Public License, version 2.0 was not distributed with this file,
+    you can obtain one at http://mozilla.org/MPL/2.0/.
+    SPDX-License-Identifier: MPL-2.0
+    This file is part of LIPS, LIPS is a python platform for power networks benchmarking
+"""
 
 import os
 import warnings
-import numpy as np
 import shutil
-
 import copy
-from typing import Union
+from typing import Union, Callable
+import numpy as np
 from tqdm import tqdm  # TODO remove for final push
 
-from lips.dataset.dataSet import DataSet
-from lips.logger import CustomLogger
+from grid2op.Agent import BaseAgent
+
+from . import DataSet
+from ..logger import CustomLogger
+from ..physical_simulator import Grid2opSimulator
 
 class PowerGridDataSet(DataSet):
-    """
+    """Class to manage powergrid data
+
     This specific DataSet uses grid2op framework to simulate data coming from a powergrid.
-    # TODO : to remove all the comments lines corresponding to theta attributes
+
+    Attributes
+    ----------
+    name : ``str``, optional
+        the dataset name, by default "train"
+    attr_names : Union[``tuple``, ``None``], optional
+        the attributes list for which data should be generated, by default None
+    log_path : Union[``str``, ``None``], optional
+        the path where the logs should be stored, by default None
+
+    Todo
+    -------
+    TODO: to remove all the comments lines corresponding to theta attributes
+
+    Examples
+    --------
+
+    .. code-block:: python
+
+        from lips.dataset import PowerGridDataSet
+
+        # create a dataset
+        dataset = PowerGridDataSet()
+        dataset.generate_data()
+
     """
+    ALL_VARIABLES = ("prod_p", "prod_v", "load_p", "load_q", "line_status", "topo_vect",
+                     "a_or", "a_ex", "p_or", "p_ex", "q_or", "q_ex", "prod_q", "load_v",
+                     "v_or", "v_ex", "theta_or", "theta_ex")
 
     def __init__(self,
-                 name="train",
+                 name: str="train",
                  # for compatibility with existing code this will be removed in future version
                  # (and serialize directly the output of the simulator)
-                 attr_names=("prod_p", "prod_v", "load_p", "load_q", "line_status", "topo_vect",
-                             "a_or", "a_ex", "p_or", "p_ex", "q_or", "q_ex", "prod_q", "load_v",
-                             "v_or", "v_ex", "theta_or", "theta_ex"),
-                 #theta_attr_names=("theta_or", "theta_ex", "load_theta", "gen_theta", "storage_theta"),
+                 attr_names: Union[tuple, None]=None,
                  log_path: Union[str, None]=None
                  ):
         DataSet.__init__(self, name=name)
         self._nb_divergence = 0
-        self._attr_names = copy.deepcopy(attr_names)
+        if attr_names is not None:
+            self._attr_names = copy.deepcopy(attr_names)
+        else:
+            self._attr_names = self.ALL_VARIABLES
         self.size = 0
         #self._theta_attr_names = copy.deepcopy(theta_attr_names)
 
@@ -47,47 +81,47 @@ class PowerGridDataSet(DataSet):
         self._previous = None
         self._order = None
 
-        # TODO add a seed for reproducible experiment !
+        #TODO add a seed for reproducible experiment !
 
     def generate(self,
-                 simulator: "Grid2opSimulator",
-                 actor: Union[None, "BaseAgent"],
-                 path_out,
-                 nb_samples,
+                 simulator: Grid2opSimulator,
+                 actor: Union[BaseAgent, None],
+                 path_out: Union[str, None],
+                 nb_samples: int,
                  simulator_seed: Union[None, int] = None,
                  actor_seed: Union[None, int] = None):
-        """
-        For this dataset, we use a Grid2opSimulator and a  grid2op Agent to generate data from a powergrid.
+        """Generate a powergrid dataset
 
+        For this dataset, we use a Grid2opSimulator and a  grid2op Agent to generate data from a powergrid.
         This implementation can also serve as a reference for other implementation of the `generate` function.
 
         Parameters
         ----------
-        simulator:
-           In this case, this should be a grid2op environment
-
-        actor:
-
-        path_out:
+        simulator : Grid2opSimulator
+            In this case, this should be a grid2op environment
+        actor : Union[``BaseAgent``, ``None``]
+            the actor used to generate the data
+        path_out : Union[``str``, ``None``]
             The path where the data will be saved
-
-        nb_samples:
+        nb_samples : ``int``
             Number of rows (examples) in the final dataset
+        simulator_seed : Union[``None``, ``int``], optional
+            Seed used to set the simulator for reproducible experiments, by default None
+        actor_seed : Union[``None``, ``int``], optional
+            Seed used to set the actor for reproducible experiments, by default None
 
-        simulator_seed:
-            Seed used to set the simulator for reproducible experiments
-
-        actor_seed:
-            Seed used to set the actor for reproducible experiments
-
-        Returns
-        -------
+        Raises
+        ------
+        RuntimeError
+            Impossible to generate powergird data, Grid2Op is not installed
+        RuntimeError
+            Impossible to generate negative number of data
 
         """
         try:
             from grid2op.Agent import DoNothingAgent
         except ImportError as exc_:
-            raise RuntimeError("Impossible to `generate` powergrid datet if you don't have "
+            raise RuntimeError("Impossible to `generate` powergrid data if you don't have "
                                "the grid2Op package installed") from exc_
         self._nb_divergence = 0
         if nb_samples <= 0:
@@ -138,8 +172,15 @@ class PowerGridDataSet(DataSet):
         for idx_, attr_nm in enumerate(self._theta_attr_names):
             self.data[attr_nm][current_size, :] = theta[idx_]
     """
-    def _save_internal_data(self, path_out):
-        """save the self.data in a proper format"""
+    def _save_internal_data(self, path_out:str):
+        """save the self.data in a proper format
+
+        Parameters
+        ----------
+        path_out : ``str``
+            path to save the data
+
+        """
         full_path_out = os.path.join(os.path.abspath(path_out), self.name)
 
         if not os.path.exists(os.path.abspath(path_out)):
@@ -164,7 +205,26 @@ class PowerGridDataSet(DataSet):
         for attr_nm in self._attr_names:
             np.savez_compressed(f"{os.path.join(full_path_out, attr_nm)}.npz", data=self.data[attr_nm])
 
-    def load(self, path):
+    def load(self, path:str):
+        """load the dataset from a path
+
+        Parameters
+        ----------
+        path : ``str``
+            path from which the data should be loaded
+
+        Raises
+        ------
+        RuntimeError
+            Path cannot be found
+        RuntimeError
+            Not a valid directory
+        RuntimeError
+            There is no data to load
+        RuntimeError
+            Impossible to load the data
+
+        """
         if not os.path.exists(path):
             raise RuntimeError(f"{path} cannot be found on your computer")
         if not os.path.isdir(path):
@@ -193,12 +253,17 @@ class PowerGridDataSet(DataSet):
         self._init_sample()
 
     def _init_sample(self):
+        """initialize the sample
+
+        Init the sample
+        """
         self._previous = 0
         self._order = np.arange(self.size)
         np.random.shuffle(self._order)
 
-    def sample(self, nb_sample: int, sampler=None):
-        """
+    def sample(self, nb_sample: int, sampler: Callable=None):
+        """Sampling from the dataset
+
         For now, this sampling method will sample uniformly at random from the dataset.
 
         There is a guarantee: if you generate `sef.size` consecutive data with this method
@@ -209,15 +274,23 @@ class PowerGridDataSet(DataSet):
 
         Parameters
         ----------
-        nb_sample:
+        nb_sample : ``int``
             Number of sample to retrieve from the dataset.
 
-        sampler:
+        sampler : Callable
             currently unused
 
         Returns
         -------
-        A batch of data, either for training or for testing.
+        dict
+            A batch of data, either for training or for testing.
+
+        Raises
+        ------
+        RuntimeError
+            Impossible to require a negative number of data
+        RuntimeError
+            Impossible to require more than the size of the dataset
 
         """
         if nb_sample < 0:
@@ -252,17 +325,18 @@ class PowerGridDataSet(DataSet):
                 res[el][this_sz:] = self.data[el][self._order[:self._previous], :]
         return res
 
-    def get_data(self, index):
-        """
-        This function returns the data in the data that match the index `index`
+    def get_data(self, index: tuple) -> dict:
+        """This function returns the data in the data that match the index `index`
 
         Parameters
         ----------
-        index:
+        index : ``tuple``
             A list of integer
 
         Returns
         -------
+        dict
+            a dictionary of key (variable name) value (variable value)
 
         """
         super().get_data(index)  # check that everything is legit
