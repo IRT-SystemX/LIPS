@@ -8,14 +8,13 @@
 
 import sys
 from typing import Union
-from collections import Counter
 import math
 
 import numpy as np
 # TODO : implement a mean_absolute_error independently from sklearn
 from sklearn.metrics import mean_absolute_error
 
-from lips.logger import CustomLogger
+from ...logger import CustomLogger
 
 def verify_current_pos(predictions: dict,
                        log_path: Union[str, None]=None,
@@ -26,16 +25,16 @@ def verify_current_pos(predictions: dict,
 
     Parameters
     ----------
-    predictions: `dict`
+    predictions: ``dict``
         dictionary of predictions made by an augmented simulator
-    log_path: `str`
+    log_path: ``str``
         a path wehere the log should be saved
-    **kwargs:
+    **kwargs: ``dict``
         supplementary arguments (may be required in future)
 
     Returns
     -------
-    verifications: `dict`
+    `dict`
         a dictionary reporting the evaluation results for both line extremities
     """
     # logger
@@ -70,16 +69,16 @@ def verify_voltage_pos(predictions:dict,
 
     Parameters
     ----------
-    predictions: `dict`
+    predictions: ``dict``
         dictionary of predictions made by an augmented simulator
-    log_path: `str`
+    log_path: ``str``
         a path wehere the log should be saved
-    **kwargs:
+    **kwargs: ``dict``
         supplementary arguments (may be required in future)
 
     Returns
     -------
-    verifications: `dict`
+    ``dict``
         a dictionary reporting the evaluation results for both line extremities
     """
     # logger
@@ -114,15 +113,16 @@ def verify_loss_pos(predictions: dict,
 
     Parameters
     ----------
-    predictions: `dict`
+    predictions: ``dict``
         dictionary of predictions made by an augmented simulator
-    log_path: `str`
+    log_path: ``str``
         a path wehere the log should be saved
-    **kwargs:
+    **kwargs: ``dict``
         supplementary arguments (may be required in future)
 
     Returns
     -------
+    ``dict``
         a dictionary reporting the evaluation results
     """
     # logger
@@ -155,16 +155,16 @@ def verify_disc_lines(predictions: dict,
 
     Parameters
     ----------
-    predictions: `dict`
+    predictions: ``dict``
         dictionary of predictions made by an augmented simulator
-    log_path: `str`
+    log_path: ``str``
         a path wehere the log should be saved
-    **kwargs:
+    **kwargs: ``dict``
         supplementary arguments
 
     Returns
     -------
-    verifications: `dict`
+    `dict`
         a dictionary reporting the evaluation results
     """
     FLOW_VARIABLES = ("p_or", "p_ex", "q_or", "q_ex", "a_or", "a_ex")
@@ -209,22 +209,25 @@ def verify_current_eq(predictions: dict,
                       **kwargs):
     """
     verify the following relation between p, q and v :
-        * a_or = sqrt(p_or**2 + q_or**2) / (sqrt(3).v_or)
-        * a_ex = sqrt(p_ex**2 + q_ex**2) / (sqrt(3).v_ex)
+    * a_or = sqrt(p_or**2 + q_or**2) / (sqrt(3).v_or)
+    * a_ex = sqrt(p_ex**2 + q_ex**2) / (sqrt(3).v_ex)
 
-    # TODO : update the equations by considering only voltage > 0 cases, hence it does not need eps
+    Todo
+    ----
+    TODO : update the equations by considering only voltage > 0 cases, hence it does not need eps
 
     Parameters
     ----------
-    predictions: `dict`
+    predictions: ``dict``
         dictionary of predictions made by an augmented simulator
-    log_path: `str`
+    log_path: ``str``
         a path wehere the log should be saved
-    **kwargs:
+    **kwargs: ``dict``
         supplementary parameters (may be required in future)
 
     Returns
     -------
+    ``dict``
         a dictionary reporting the evaluation results
     """
     # logger
@@ -257,22 +260,24 @@ def verify_loss(predictions,
     The loss should be between 1 and 4 % of production at each step.
 
     2 possible way to call the function with two set of information:
-        1) indicating only the path to the stored arrays by using the `path` parameter
-        2) indicating explicitly the required variables for computing the law which are (prod_p, p_or and p_ex)
+    1) indicating only the path to the stored arrays by using the `path` parameter
+    2) indicating explicitly the required variables for computing the law which are (prod_p, p_or and p_ex)
 
     Parameters
     ----------
-    predictions: `dict`
+    predictions: ``dict``
         Predictions made by an augmented simulator
-    log_path: `str`
+    log_path: ``str``
         the path where the logs should be saved
-    **kwargs:
+    **kwargs: ``dict``
         It should contain `observations` and `config` to load the tolerance
 
     Returns
     -------
-    A dictionary comprising following keys:
+    ``dict``
+        A dictionary comprising useful information about the loss
 
+    The following keys are added to the dictionary:
     - EL: `array`
         array of energy losses for each iteration
     - violation_percentage: `float`
@@ -341,16 +346,19 @@ def verify_energy_conservation(predictions: dict,
 
     Parameters
     ----------
-    predictions
+    predictions: ``dict``
         Predictions made by an augmented simulator
-    log_path, optional
+    log_path: ``str``, optional
         the path where the logs should be saved, by default None
-    **kwargs:
+    **kwargs: ``dict``
         It should contain `observations` and `config` to load the tolerance
 
     Returns
     -------
-    a dictionary with following keys:
+    ``dict``
+        a dictionary with useful information about the verification
+
+    These informations are:
     - LCE: `array`
         an array including the law of conservation of energy values stored for each step (observation)
 
@@ -409,37 +417,45 @@ def verify_energy_conservation(predictions: dict,
 
     return verifications
 
-def verify_kcl(env, ref_obs, predictions, tol=1e-3):
+def verify_kcl(env, ref_obs: dict, predictions: dict, tol=1e-3) -> tuple:
     """
     This function used the check_solution function offered by lightsim2grid package, to
     verify the Kirchhoff's current law
 
+    Todo
+    ----
     TODO: how to include environment in the function ?
+    TODO: To be replaced by new implementations
 
-    params
-    ------
-        env: `grid2op` environment
-            the grid2op environment used to generate the data
+    Parameters
+    ----------
+    env: ``gri2op.Environment``
+        the grid2op environment used to generate the data
 
-        ref_obs: `dict`
-            the reference data used as ground truth
+    ref_obs: ``dict``
+        the reference data used as ground truth
 
-        predictions: `dict`
-            it should include the voltages (V) and the voltage angles (theta)
+    predictions: ``dict``
+        it should include the voltages (V) and the voltage angles (theta)
 
-        tol: `float`
-            the tolerance to respect the KCL
+    tol: ``float``
+        the tolerance to respect the KCL
 
     returns
-    _______
-        KCL_value: `float`
-            a global float value averaged over all the observations
+    -------
+    tuple
+        a tuple including useful information about the verification
 
-        violation_prop_obs_level: `list`
-            violation proportion at observation level
+    These information are reported:
+    - KCL_value: `float`
+        a global float value averaged over all the observations
 
-        violation_prop_node_level : `list`
-            violation proportion at substation level
+    - violation_prop_obs_level: `list`
+        violation proportion at observation level
+
+    - violation_prop_node_level : `list`
+        violation proportion at substation level
+
     """
     try:
         from lightsim2grid import PhysicalLawChecker
