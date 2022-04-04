@@ -138,6 +138,17 @@ dmypy.json
 #custom ignore folders
 .vscode
 
+# CI/CD
+.circleci/config.yml.bkp
+process.yml
+
+# linters
+.config
+
+# documentations
+docs/source/conf.py.bkp
+docs/_templates
+
 # getting started
 getting_started/Analyzing_Benchmark_class.ipynb
 getting_started/03_TrainAnAugmentedSimulator-Copy1.ipynb
@@ -164,6 +175,7 @@ lips/tests/Evaluation/test_evaluation.py
 
 # LIPS
 logs.log
+lips_logs.log
 
 lips/Outputs/Scenario1/Data/super_test
 lips/Outputs/Scenario1/Data/test
