@@ -2,7 +2,7 @@ version: 2.1
 
 references:
   dep_key: &dep_key
-              deps5-{{ .Branch }}-{{ checksum "requirements.txt" }}
+              deps7-{{ .Branch }}-{{ checksum "requirements.txt" }}
 
 executors:
   docker-executor:
@@ -34,6 +34,8 @@ commands:
             pip install jupytext --upgrade
             pip install sphinx
             pip install sphinx-rtd-theme
+            pip install sphinxcontrib_trio
+            pip install autodocsumm
       - change_owner
       - save_cache_dep
 
