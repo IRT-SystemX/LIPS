@@ -235,7 +235,7 @@ def verify_current_eq(predictions: dict,
     verifications = dict()
     # consider an epsilon value to avoid division by zero
     eps = sys.float_info.epsilon
-    for key_ in ("or", "ex"):
+    for key_ in ("_or", "_ex"):
         try:
             a_arr = predictions["a"+key_]
             p_arr = predictions["p"+key_]
@@ -249,7 +249,7 @@ def verify_current_eq(predictions: dict,
         a_comp = (np.sqrt(p_arr**2 + q_arr**2) / ((np.sqrt(3) * v_arr)+eps)) * 1000
         verifications["a"+key_+"_deviation"] = [float(el) for el in
             mean_absolute_error(a_arr, a_comp, multioutput='raw_values')]
-        logger.info("Mean absolute error of a"+key_+" : %.3f", verifications["a"+key_+"_deviation"])
+        logger.info("Mean absolute error of a%s : %.3f", key_, np.mean(verifications["a"+key_+"_deviation"]))
     return verifications
 
 def verify_loss(predictions,
