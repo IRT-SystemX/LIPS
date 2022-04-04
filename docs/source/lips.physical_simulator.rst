@@ -1,6 +1,11 @@
 lips.physical\_simulator package
 ================================
 
+.. automodule:: lips.physical_simulator
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
 Submodules
 ----------
 
