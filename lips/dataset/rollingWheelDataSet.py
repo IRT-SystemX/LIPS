@@ -72,7 +72,7 @@ class RollingWheelDataSet(DataSet):
         if nb_samples <= 0:
             raise RuntimeError("Impossible to generate a negative number of data.")
 
-        samples=actor.generate_samples(nb_samples=nb_samples)
+        samples=actor.generate_samples(nb_samples=nb_samples,sampler_seed=actor_seed)
         self._init_store_data(simulator=simulator,nb_samples=nb_samples)
 
         for current_size,sample in enumerate(tqdm(samples, desc=self.name)):

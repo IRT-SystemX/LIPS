@@ -1,0 +1,53 @@
+name: Pylint
+
+on:
+  push:
+    branches:
+      - main
+      - 'ml-*'
+      - 'bd-*'
+      - 'dd-*'
+      - 'jp-*'
+      - 'am-*'
+
+jobs:
+  build:
+    runs-on: ${{matrix.os}}
+    strategy:
+      matrix:
+        python-version: ["3.8"]
+        os: [ubuntu-latest]
+    steps:
+    - uses: actions/checkout@v2
+
+    - name: Set up Python ${{ matrix.python-version }}
+      uses: actions/setup-python@v2
+      with:
+        python-version: ${{ matrix.python-version }}
+
+    - name: Install dependencies
+      run: |
+        python -m pip install --upgrade pip
+        pip install pylint
+        pip install pylint-exit
+
+    - name: Get pip cache dir
+      id: pip-cache
+      run: |
+        echo "::set-output name=dir::$(pip cache dir)"
+
+    - name: pip cache
+      uses: actions/cache@v2
+      with:
+        path: ${{ steps.pip-cache.outputs.dir }}
+        key: ${{ runner.os }}-pip-${{ hashFiles('**/requirements.txt') }}
+        restore-keys: |
+          ${{ runner.os }}-pip-
+
+    - name: Analysing the code with pylint
+      run: |
+        pylint $(git ls-files '*.py')  || pylint-exit $?
+        if [ $? -ne 0 ]; then
+          echo "An error occurred while running pylint." >&2
+          exit 1
+        fi
