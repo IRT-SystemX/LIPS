@@ -201,7 +201,7 @@ workflows:
             ignore:
               - gh-pages
 
-    - run_notebook_test:
+    - run_pylint:
         requires:
           - build_dep
         filters:
@@ -209,9 +209,9 @@ workflows:
             ignore:
               - gh-pages
 
-    - run_pylint:
+    - run_notebook_test:
         requires:
-          - build_dep
+          - run_python_tests
         filters:
           branches:
             ignore:
