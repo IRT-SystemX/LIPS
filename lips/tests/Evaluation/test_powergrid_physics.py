@@ -88,7 +88,7 @@ def test_verify_voltage_equality():
     Verify if the voltage equality at bus is respected using real data
     """
     observations, _ = load_data()
-    config = ConfigManager(section_name="Benchmark2", path=None)
+    config = ConfigManager(section_name="Benchmark3", path=None)
     voltages, thetas = verify_voltage_at_bus(predictions=observations,
                                              observations=observations,
                                              config=config)
