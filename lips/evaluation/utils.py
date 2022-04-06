@@ -50,6 +50,7 @@ class Mapper(object):
 
         """
         from lips.metrics.power_grid import physics_compliances
+        from lips.metrics.power_grid.verify_voltage_equality import verify_voltage_at_bus
         from lips.metrics import DEFAULT_METRICS
         self.criteria.update(DEFAULT_METRICS)
         self.criteria.update(CURRENT_POS=physics_compliances.verify_current_pos)
@@ -60,6 +61,7 @@ class Mapper(object):
         self.criteria.update(CHECK_LOSS=physics_compliances.verify_loss)
         self.criteria.update(CHECK_LCE=physics_compliances.verify_energy_conservation)
         self.criteria.update(CHECK_KCL=physics_compliances.verify_kcl)
+        self.criteria.update(CHECK_VOLTAGE_EQ=verify_voltage_at_bus)
 
         return self.criteria
 
