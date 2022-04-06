@@ -8,20 +8,29 @@ def lipsToGetfemBridge(physicalDomain,physicalProperties):
     simulator=SimulatorGeneration(physicalDomain=physicalDomain,physicalProperties=physicalProperties)
     return simulator
 
+
 class GetfemSimulator(PhysicalSimulator):
     """
     This simulator uses the `Getfem` library to implement a physical simulator.
     """
-    def __init__(self, physicalDomain,physicalProblem):
-        self._simulator = lipsToGetfemBridge(physicalDomain,physicalProperties)
-        
-        self._simulator.Preprocessing()
+    def __init__(self, physicalDomain=None,physicalProperties=None,simulatorInstance=None):
+        if simulatorInstance is None:
+            self._simulator = lipsToGetfemBridge(physicalDomain,physicalProperties)
+            self._simulator.Preprocessing()
+        else:
+            self._simulator=type(simulatorInstance._simulator)(simulatorInstance._simulator)
 
     def build_model(self):
         self._simulator.BuildModel()
 
     def run_problem(self):
         self._simulator.RunProblem()
+
+    def get_solution(self,field_name):
+        return self._simulator.GetSolution(field_name)
+
+    def get_variable_value(self,field_name):
+        return self._simulator.GetVariableValue(field_name)
 
     def get_state(self):
         """
