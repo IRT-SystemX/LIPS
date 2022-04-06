@@ -7,11 +7,9 @@
 # This file is part of LIPS, LIPS is a python platform for power networks benchmarking
 
 """
-Set of utility function to generate the data for NeuripsBenchmark1
+Set of utility function to generate the data for Benchmark2
 """
-import warnings
-import grid2op
-
+from grid2op import Agent
 from .actor_utils import ChangeTopoRefN1, ChangeTopoRefN2, ChangeTopoRefN1Ref
 
 # for reference
@@ -55,42 +53,20 @@ REF_ACTION = [# sub_5_id1
                            "lines_ex_id": [(3, 2)]}},
               ]
 
+def _aux_act_scenario(env) -> tuple:
+    """Auxiliary function to prepare required actions to take
 
-def get_kwargs_simulator_scenario():
-    """
-    This function return the
+    It returns singular topo actions (acting on one sub)
+
+    Parameters
+    ----------
+    env : ``grid2op.Environment``
+        the environment on which actions should be taken
+
     Returns
     -------
-
-    """
-    try:
-        from lightsim2grid import LightSimBackend
-        BkCls = LightSimBackend
-    except ImportError as exc_:
-        from grid2op.Backend import PandaPowerBackend
-        BkCls = PandaPowerBackend
-
-    env_name = "l2rpn_case14_sandbox"
-    # create a temporary environment to retrieve the default parameters of this specific environment
-    with warnings.catch_warnings():
-        warnings.filterwarnings("ignore")
-        env_tmp = grid2op.make(env_name)
-    param = env_tmp.parameters
-    param.NO_OVERFLOW_DISCONNECTION = True
-    # i can act on all powerline / substation at once
-    param.MAX_LINE_STATUS_CHANGED = 999999
-    param.MAX_SUB_CHANGED = 999999
-    # i can act every step on every line / substation (no cooldown)
-    param.NB_TIMESTEP_COOLDOWN_LINE = 0
-    param.NB_TIMESTEP_COOLDOWN_SUB = 0
-    return {"dataset": env_name,
-            "param": param,
-            "backend": BkCls()}
-
-
-def _aux_act_scenario(env):
-    """
-    It returns singular topo actions (acting on one sub)
+    ``tuple``
+        list of topological action and list of N-1 actions
     """
     li_ref_topo = [{"set_line_status": [(l_id, -1)]} for l_id in range(env.n_line)]
     li_act_n1 = [REF_ACTION[0], REF_ACTION[1], REF_ACTION[6], REF_ACTION[7], REF_ACTION[10]]
@@ -98,9 +74,20 @@ def _aux_act_scenario(env):
     li_act_n1 = [env.action_space(el) for el in li_act_n1]
     return li_ref_topo, li_act_n1
 
-def _aux_act_scenario_ood(env):
-    """
+def _aux_act_scenario_ood(env) -> tuple:
+    """Auxiliary function to prepare required actions to take
+
     It returns composed topo actions (acting on two subs) to test the out-of-distribution
+
+    Parameters
+    ----------
+    env : ``grid2op.Environment``
+        the environment on which actions should be taken
+
+    Returns
+    -------
+    ``tuple``
+        list of topological action and list of N-1 actions
     """
     li_ref_topo = [{"set_line_status": [(l_id, -1)]} for l_id in range(env.n_line)]
     li_act_n1 = [REF_ACTION[15], REF_ACTION[16], REF_ACTION[17], REF_ACTION[18]]
@@ -108,7 +95,23 @@ def _aux_act_scenario_ood(env):
     li_act_n1 = [env.action_space(el) for el in li_act_n1]
     return li_ref_topo, li_act_n1
 
-def get_actor_training_scenario(simulator):
+def get_actor_training_scenario(simulator) -> Agent:
+    """Gets actor for training scenario
+
+    Parameters
+    ----------
+    simulator : PhysicalSimulator
+        The simulator instance
+
+    Returns
+    -------
+    ``grid2op.Agent``
+        the agent which acts on the environment
+
+    Todo
+    ----
+    TODO : simulator could be replaced by config
+    """
     env = simulator._simulator
     li_ref_topo, li_act_n1 = _aux_act_scenario(env)
     agent = ChangeTopoRefN1Ref(env.action_space,
@@ -118,7 +121,19 @@ def get_actor_training_scenario(simulator):
     return agent
 
 
-def get_actor_test_scenario(simulator):
+def get_actor_test_scenario(simulator) -> Agent:
+    """Get actor for test scenario
+
+    Parameters
+    ----------
+    simulator : PhysicalSimulator
+        The simulator instance
+
+    Returns
+    -------
+    ``grid2op.Agent``
+        the agent which acts on the environment
+    """
     env = simulator._simulator
     li_ref_topo, li_act_n1 = _aux_act_scenario(env)
     agent = ChangeTopoRefN1(env.action_space,
@@ -127,7 +142,19 @@ def get_actor_test_scenario(simulator):
     return agent
 
 
-def get_actor_test_ood_topo_scenario(simulator):
+def get_actor_test_ood_topo_scenario(simulator) -> Agent:
+    """Get actor for test ood scenario
+
+    Parameters
+    ----------
+    simulator : PhysicalSimulator
+        The simulator instance
+
+    Returns
+    -------
+    ``grid2op.Agent``
+        the agent which acts on the environment
+    """
     env = simulator._simulator
     li_ref_topo, li_act_n1 = _aux_act_scenario_ood(env)
     agent = ChangeTopoRefN1(env.action_space,

@@ -18,6 +18,7 @@ from typing import Union
 import importlib
 
 from . import Benchmark
+from .utils.powergrid_utils import get_kwargs_simulator_scenario
 from ..augmented_simulators import AugmentedSimulator
 from ..physical_simulator import PhysicalSimulator
 from ..physical_simulator import Grid2opSimulator
@@ -99,6 +100,7 @@ class PowerGridBenchmark(Benchmark):
             except ImportError as error:
                 self.logger.error("The module %s could not be accessed! %s", module_name, error)
 
+        self.env_name = self.config.get_option("env_name")
         self.training_simulator = None
         self.val_simulator = None
         self.test_simulator = None
@@ -330,7 +332,7 @@ class PowerGridBenchmark(Benchmark):
 
         """
         if self.training_simulator is None:
-            self.training_simulator = Grid2opSimulator(self.utils.get_kwargs_simulator_scenario(),
+            self.training_simulator = Grid2opSimulator(get_kwargs_simulator_scenario(self.config),
                                                        initial_chronics_id=self.initial_chronics_id,
                                                        # i use 994 chronics out of the 904 for training
                                                        chronics_selected_regex="^((?!(.*9[0-9][0-9].*)).)*$"
@@ -341,19 +343,19 @@ class PowerGridBenchmark(Benchmark):
         self._create_training_simulator()
         self.training_simulator.seed(self.train_env_seed)
 
-        self.val_simulator = Grid2opSimulator(self.utils.get_kwargs_simulator_scenario(),
+        self.val_simulator = Grid2opSimulator(get_kwargs_simulator_scenario(self.config),
                                               initial_chronics_id=self.initial_chronics_id,
                                               # i use 50 full chronics for testing
                                               chronics_selected_regex=".*9[0-4][0-9].*")
         self.val_simulator.seed(self.val_env_seed)
 
-        self.test_simulator = Grid2opSimulator(self.utils.get_kwargs_simulator_scenario(),
+        self.test_simulator = Grid2opSimulator(get_kwargs_simulator_scenario(self.config),
                                                initial_chronics_id=self.initial_chronics_id,
                                                # i use 25 full chronics for testing
                                                chronics_selected_regex=".*9[5-9][0-4].*")
         self.test_simulator.seed(self.test_env_seed)
 
-        self.test_ood_topo_simulator = Grid2opSimulator(self.utils.get_kwargs_simulator_scenario(),
+        self.test_ood_topo_simulator = Grid2opSimulator(get_kwargs_simulator_scenario(self.config),
                                                         initial_chronics_id=self.initial_chronics_id,
                                                         # i use 25 full chronics for testing
                                                         chronics_selected_regex=".*9[5-9][5-9].*")

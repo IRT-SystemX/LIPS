@@ -1,7 +1,22 @@
+"""
+Functions to compute the equality of voltages at each bus of the powergrid
+"""
+from typing import Union
 from tqdm import tqdm
 import numpy as np
 
+import grid2op
+from grid2op import Observation
+from ...logger import CustomLogger
+from ...benchmark.utils.powergrid_utils import get_kwargs_simulator_scenario
+
 # helper functions
+def _get_fake_obs(config) -> Observation:
+    env = grid2op.make(**get_kwargs_simulator_scenario(config))
+    env.deactivate_forecast()
+    obs, *_ = env.step(env.action_space({}))
+    return obs
+
 def _aux_get_buses(obs):
     """
     the part extracted from flow_bus_matrix of observation
@@ -145,19 +160,43 @@ def _aux_update_observation(obs, real_data, predictions, idx):
 
     return obs
 
-def verify_voltage_at_bus(obs, real_data, predictions, tol=1e-4, verify_theta=True):
+#def verify_voltage_at_bus(obs, real_data, predictions, tol=1e-4, verify_theta=True):
+def verify_voltage_at_bus(predictions: dict,
+                          log_path: Union[str, None]=None,
+                          **kwargs):
     """
     This functions checks if the elements connected to a same substations present the same voltages and angles
-
 
     return
     ------
     The result of this verification are presented in two fashions:
-        - the rate of not respected voltage values (in terms of proportion of substations)
-        - the mean and standard deviation of voltage values at each node
-        - the MAE between voltage values (it approaches the MAE computed over all the observations)
+    - the rate of not respected voltage values (in terms of proportion of substations)
+    - the mean and standard deviation of voltage values at each node
+    - the MAE between voltage values (it approaches the MAE computed over all the observations)
     """
-    n_obs = len(real_data["a_or"])
+    # logger
+    logger = CustomLogger("PhysicsCompliances(voltage_eq)", log_path).logger
+    try:
+        observations = kwargs["observations"]
+    except KeyError:
+        logger.error("The requirements were not satisiftied to call verify_voltage_at_bus function")
+        raise
+    try:
+        config = kwargs["config"]
+    except KeyError:
+        try:
+            tol = kwargs["tolerance"]
+        except KeyError:
+            logger.error("The tolerance could not be found for verify_voltage_at_bus function")
+            raise
+        else:
+            tol = float(tol)
+    else:
+        tol = float(config.get_option("eval_params")["VOLTAGE_EQ"]["tolerance"])
+        verify_theta = bool(config.get_option("eval_params")["VOLTAGE_EQ"]["verify_theta"])
+
+    n_obs = len(observations["a_or"])
+    obs = _get_fake_obs(config)
     n_buses = 2 * obs.n_sub
 
     mean_matrix_voltage = np.zeros((n_obs, n_buses), dtype=np.float)
@@ -173,7 +212,7 @@ def verify_voltage_at_bus(obs, real_data, predictions, tol=1e-4, verify_theta=Tr
     for i in tqdm(range(n_obs)):
         # update the observation with respect to data topology
         # this step is required, because the connectivity matrices and vectors evolve wrt. topology changes
-        obs_updated = _aux_update_observation(obs, real_data, predictions, i)
+        obs_updated = _aux_update_observation(obs, observations, predictions, i)
 
 
         for bus_ in range(n_buses):
