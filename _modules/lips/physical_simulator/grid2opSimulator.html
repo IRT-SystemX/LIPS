@@ -40,14 +40,14 @@
 </ul>
 <p class="caption" role="heading"><span class="caption-text">TECHNICAL DOCUMENTATION</span></p>
 <ul>
-<li class="toctree-l1"><a class="reference internal" href="../../../lips.augmented_simulators.html">lips.augmented_simulators package</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../../../lips.benchmark.html">lips.benchmark package</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../lips.augmented_simulators.html">augmented_simulators package</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../lips.benchmark.html">benchmark package</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../lips.config.html">lips.config package</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../lips.dataset.html">lips.dataset package</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../lips.evaluation.html">lips.evaluation package</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../lips.logger.html">lips.logger package</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../lips.metrics.power_grid.html">metrics.power_grid package</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../lips.metrics.html">lips.metrics package</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../../../lips.neurips_benchmark.html">lips.neurips_benchmark package</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../lips.physical_simulator.html">lips.physical_simulator package</a></li>
 </ul>
 <p class="caption" role="heading"><span class="caption-text">GUIDE</span></p>
@@ -81,47 +81,41 @@
            <div itemprop="articleBody">
              
   <h1>Source code for lips.physical_simulator.grid2opSimulator</h1><div class="highlight"><pre>
-<span></span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">Usage:</span>
-<span class="sd">    Grid2opSimulator implementing powergrid physical simulator</span>
-<span class="sd">Licence:</span>
-<span class="sd">    copyright (c) 2021-2022, IRT SystemX and RTE (https://www.irt-systemx.fr/)</span>
-<span class="sd">    See AUTHORS.txt</span>
-<span class="sd">    This Source Code Form is subject to the terms of the Mozilla Public License, version 2.0.</span>
-<span class="sd">    If a copy of the Mozilla Public License, version 2.0 was not distributed with this file,</span>
-<span class="sd">    you can obtain one at http://mozilla.org/MPL/2.0/.</span>
-<span class="sd">    SPDX-License-Identifier: MPL-2.0</span>
-<span class="sd">    This file is part of LIPS, LIPS is a python platform for power networks benchmarking</span>
-<span class="sd">&quot;&quot;&quot;</span>
+<span></span><span class="c1"># copyright (c) 2021-2022, IRT SystemX and RTE (https://www.irt-systemx.fr/)</span>
+<span class="c1"># See AUTHORS.txt</span>
+<span class="c1"># This Source Code Form is subject to the terms of the Mozilla Public License, version 2.0.</span>
+<span class="c1"># If a copy of the Mozilla Public License, version 2.0 was not distributed with this file,</span>
+<span class="c1"># you can obtain one at http://mozilla.org/MPL/2.0/.</span>
+<span class="c1"># SPDX-License-Identifier: MPL-2.0</span>
+<span class="c1"># This file is part of LIPS, LIPS is a python platform for power networks benchmarking</span>
 
-<span class="kn">import</span> <span class="nn">re</span>
 <span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Union</span>
 
 <span class="kn">import</span> <span class="nn">grid2op</span>
+<span class="kn">import</span> <span class="nn">re</span>
+
 <span class="kn">from</span> <span class="nn">grid2op.Action</span> <span class="kn">import</span> <span class="n">BaseAction</span>
 <span class="kn">from</span> <span class="nn">grid2op.Agent</span> <span class="kn">import</span> <span class="n">BaseAgent</span>
 <span class="kn">from</span> <span class="nn">grid2op.PlotGrid</span> <span class="kn">import</span> <span class="n">PlotMatplot</span>
 
-<span class="kn">from</span> <span class="nn">.</span> <span class="kn">import</span> <span class="n">PhysicalSimulator</span>
+<span class="kn">from</span> <span class="nn">lips.physical_simulator.physicalSimulator</span> <span class="kn">import</span> <span class="n">PhysicalSimulator</span>
 
-<div class="viewcode-block" id="Grid2opSimulator"><a class="viewcode-back" href="../../../lips.physical_simulator.html#lips.physical_simulator.Grid2opSimulator">[docs]</a><span class="k">class</span> <span class="nc">Grid2opSimulator</span><span class="p">(</span><span class="n">PhysicalSimulator</span><span class="p">):</span>
+
+<div class="viewcode-block" id="get_env"><a class="viewcode-back" href="../../../lips.physical_simulator.html#lips.physical_simulator.grid2opSimulator.get_env">[docs]</a><span class="k">def</span> <span class="nf">get_env</span><span class="p">(</span><span class="n">env_kwargs</span><span class="p">:</span> <span class="nb">dict</span><span class="p">):</span>
+    <span class="n">env</span> <span class="o">=</span> <span class="n">grid2op</span><span class="o">.</span><span class="n">make</span><span class="p">(</span><span class="o">**</span><span class="n">env_kwargs</span><span class="p">)</span>
+    <span class="n">env</span><span class="o">.</span><span class="n">deactivate_forecast</span><span class="p">()</span>
+    <span class="k">return</span> <span class="n">env</span></div>
+
+<div class="viewcode-block" id="Grid2opSimulator"><a class="viewcode-back" href="../../../lips.physical_simulator.html#lips.physical_simulator.grid2opSimulator.Grid2opSimulator">[docs]</a><span class="k">class</span> <span class="nc">Grid2opSimulator</span><span class="p">(</span><span class="n">PhysicalSimulator</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    This simulator uses the `grid2op` package to implement a physical simulator.</span>
-<span class="sd">    It accepts both grid2op BaseAction and grid2op BaseAgent to modify the internal state of the simulator</span>
 
-<span class="sd">    Parameters</span>
-<span class="sd">    ----------</span>
-<span class="sd">    env_kwargs : dict</span>
-<span class="sd">        Grid2op.Environment parameters</span>
-<span class="sd">    initial_chronics_id : Union[int, None], optional</span>
-<span class="sd">        the initial episode identifier, by default None</span>
-<span class="sd">    chronics_selected_regex : str, optional</span>
-<span class="sd">        the chronics to keep for this simulator, by default None</span>
+<span class="sd">    It accepts both grid2op BaseAction and grid2op BaseAgent to modify the internal state of the simulator</span>
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span>
                  <span class="n">env_kwargs</span><span class="p">:</span> <span class="nb">dict</span><span class="p">,</span>
-                 <span class="n">initial_chronics_id</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">int</span><span class="p">,</span> <span class="kc">None</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
-                 <span class="n">chronics_selected_regex</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+                 <span class="n">initial_chronics_id</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">int</span><span class="p">,</span> <span class="kc">None</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>  <span class="c1"># the initial chronic id</span>
+                 <span class="n">chronics_selected_regex</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>  <span class="c1"># the chronics to keep for this simulator</span>
                  <span class="p">):</span>
         <span class="n">PhysicalSimulator</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">actor_types</span><span class="o">=</span><span class="p">(</span><span class="n">BaseAction</span><span class="p">,</span> <span class="n">BaseAgent</span><span class="p">))</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_simulator</span> <span class="o">=</span> <span class="n">get_env</span><span class="p">(</span><span class="n">env_kwargs</span><span class="p">)</span>
@@ -141,7 +135,7 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">_info</span> <span class="o">=</span> <span class="kc">None</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_reset_simulator</span><span class="p">()</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_plot_helper</span> <span class="o">=</span> <span class="kc">None</span>
-
+        
 
         <span class="bp">self</span><span class="o">.</span><span class="n">_nb_divergence</span> <span class="o">=</span> <span class="mi">0</span>  <span class="c1"># number of failures of modify_state</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_nb_output</span> <span class="o">=</span> <span class="mi">0</span>  <span class="c1"># number of time get_state is called</span>
@@ -149,56 +143,34 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">_time_powerflow</span> <span class="o">=</span> <span class="mi">0</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">comp_time</span> <span class="o">=</span> <span class="mi">0</span>
 
-<div class="viewcode-block" id="Grid2opSimulator.seed"><a class="viewcode-back" href="../../../lips.physical_simulator.html#lips.physical_simulator.Grid2opSimulator.seed">[docs]</a>    <span class="k">def</span> <span class="nf">seed</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">seed</span><span class="p">:</span> <span class="nb">int</span><span class="p">):</span>
+<div class="viewcode-block" id="Grid2opSimulator.seed"><a class="viewcode-back" href="../../../lips.physical_simulator.html#lips.physical_simulator.grid2opSimulator.Grid2opSimulator.seed">[docs]</a>    <span class="k">def</span> <span class="nf">seed</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">seed</span><span class="p">:</span> <span class="nb">int</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        It seeds the environment, for reproducible experiments.</span>
-
 <span class="sd">        Parameters</span>
 <span class="sd">        ----------</span>
-<span class="sd">        seed: int</span>
+<span class="sd">        seed:</span>
 <span class="sd">            An integer representing the seed.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="n">seeds</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_simulator</span><span class="o">.</span><span class="n">seed</span><span class="p">(</span><span class="n">seed</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_reset_simulator</span><span class="p">()</span>
         <span class="k">return</span> <span class="n">seeds</span></div>
 
-<div class="viewcode-block" id="Grid2opSimulator.get_state"><a class="viewcode-back" href="../../../lips.physical_simulator.html#lips.physical_simulator.Grid2opSimulator.get_state">[docs]</a>    <span class="k">def</span> <span class="nf">get_state</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">tuple</span><span class="p">:</span>
+<div class="viewcode-block" id="Grid2opSimulator.get_state"><a class="viewcode-back" href="../../../lips.physical_simulator.html#lips.physical_simulator.grid2opSimulator.Grid2opSimulator.get_state">[docs]</a>    <span class="k">def</span> <span class="nf">get_state</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        The state of the powergrid is, for this class, represented by a tuple:</span>
 <span class="sd">        - grid2op observation.</span>
 <span class="sd">        - extra information (can be empty)</span>
 
-<span class="sd">        Returns</span>
-<span class="sd">        -------</span>
-<span class="sd">        tuple</span>
-<span class="sd">            observation and extra information</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_nb_output</span> <span class="o">+=</span> <span class="mi">1</span>
-        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_obs</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_info</span></div>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_obs</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_info</span><span class="c1">#, self._simulator.backend.get_theta()</span></div>
 
-    <span class="k">def</span> <span class="nf">_get_time_powerflow</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">tuple</span><span class="p">:</span>
-        <span class="sd">&quot;&quot;&quot;getter for powerflow execution time</span>
-
-<span class="sd">        Returns</span>
-<span class="sd">        -------</span>
-<span class="sd">        tuple</span>
-<span class="sd">            powerflow execution time &amp; computation time</span>
-<span class="sd">        &quot;&quot;&quot;</span>
+    <span class="k">def</span> <span class="nf">_get_time_powerflow</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_time_powerflow</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">comp_time</span>
 
-<div class="viewcode-block" id="Grid2opSimulator.modify_state"><a class="viewcode-back" href="../../../lips.physical_simulator.html#lips.physical_simulator.Grid2opSimulator.modify_state">[docs]</a>    <span class="k">def</span> <span class="nf">modify_state</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">actor</span><span class="p">:</span> <span class="n">BaseAgent</span><span class="p">):</span>
+<div class="viewcode-block" id="Grid2opSimulator.modify_state"><a class="viewcode-back" href="../../../lips.physical_simulator.html#lips.physical_simulator.grid2opSimulator.Grid2opSimulator.modify_state">[docs]</a>    <span class="k">def</span> <span class="nf">modify_state</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">actor</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        It calls `env.step` until a convergence is obtained.</span>
-
-<span class="sd">        Parameters</span>
-<span class="sd">        ----------</span>
-<span class="sd">        actor : BaseAgent</span>
-<span class="sd">            a grid2op agent which performs a specific action on the grid</span>
-
-<span class="sd">        Raises</span>
-<span class="sd">        ------</span>
-<span class="sd">        RuntimeError</span>
-<span class="sd">            _description_</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">modify_state</span><span class="p">(</span><span class="n">actor</span><span class="p">)</span>  <span class="c1"># perform the check that the actor is legit</span>
         <span class="n">done</span> <span class="o">=</span> <span class="kc">True</span>
@@ -212,7 +184,7 @@
             <span class="n">_end_time_pf</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_simulator</span><span class="o">.</span><span class="n">_time_powerflow</span>
             <span class="n">_diff_time_pf</span> <span class="o">=</span> <span class="n">_end_time_pf</span> <span class="o">-</span> <span class="n">_beg_time_pf</span>
             <span class="n">_diff_time_cp</span> <span class="o">=</span> <span class="n">_end_time_cp</span> <span class="o">-</span> <span class="n">_beg_time_cp</span>
-
+            
             <span class="bp">self</span><span class="o">.</span><span class="n">_time_powerflow</span> <span class="o">+=</span> <span class="n">_diff_time_pf</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">comp_time</span> <span class="o">+=</span> <span class="n">_diff_time_cp</span>
 
@@ -228,7 +200,7 @@
                 <span class="bp">self</span><span class="o">.</span><span class="n">_time_powerflow</span> <span class="o">-=</span> <span class="n">_diff_time_pf</span>
                 <span class="bp">self</span><span class="o">.</span><span class="n">comp_time</span> <span class="o">-=</span> <span class="n">_diff_time_cp</span></div>
 
-<div class="viewcode-block" id="Grid2opSimulator.visualize_network"><a class="viewcode-back" href="../../../lips.physical_simulator.html#lips.physical_simulator.Grid2opSimulator.visualize_network">[docs]</a>    <span class="k">def</span> <span class="nf">visualize_network</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">PlotMatplot</span><span class="p">:</span>
+<div class="viewcode-block" id="Grid2opSimulator.visualize_network"><a class="viewcode-back" href="../../../lips.physical_simulator.html#lips.physical_simulator.grid2opSimulator.Grid2opSimulator.visualize_network">[docs]</a>    <span class="k">def</span> <span class="nf">visualize_network</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        This functions shows the network state evolution over time for a given dataset</span>
 <span class="sd">        &quot;&quot;&quot;</span>
@@ -236,7 +208,7 @@
             <span class="bp">self</span><span class="o">.</span><span class="n">_plot_helper</span> <span class="o">=</span> <span class="n">PlotMatplot</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_simulator</span><span class="o">.</span><span class="n">observation_space</span><span class="p">)</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_plot_helper</span><span class="o">.</span><span class="n">plot_layout</span><span class="p">()</span></div>
 
-<div class="viewcode-block" id="Grid2opSimulator.visualize_network_reference_topology"><a class="viewcode-back" href="../../../lips.physical_simulator.html#lips.physical_simulator.Grid2opSimulator.visualize_network_reference_topology">[docs]</a>    <span class="k">def</span> <span class="nf">visualize_network_reference_topology</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span>
+<div class="viewcode-block" id="Grid2opSimulator.visualize_network_reference_topology"><a class="viewcode-back" href="../../../lips.physical_simulator.html#lips.physical_simulator.grid2opSimulator.Grid2opSimulator.visualize_network_reference_topology">[docs]</a>    <span class="k">def</span> <span class="nf">visualize_network_reference_topology</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span>
                                              <span class="n">action</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="n">BaseAction</span><span class="p">,</span> <span class="kc">None</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
                                              <span class="o">**</span><span class="n">plot_kwargs</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
@@ -262,23 +234,6 @@
             <span class="bp">self</span><span class="o">.</span><span class="n">_obs</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_simulator</span><span class="o">.</span><span class="n">get_obs</span><span class="p">()</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_reward</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_simulator</span><span class="o">.</span><span class="n">reward_range</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_info</span> <span class="o">=</span> <span class="p">{}</span></div>
-
-<div class="viewcode-block" id="get_env"><a class="viewcode-back" href="../../../lips.physical_simulator.html#lips.physical_simulator.get_env">[docs]</a><span class="k">def</span> <span class="nf">get_env</span><span class="p">(</span><span class="n">env_kwargs</span><span class="p">:</span> <span class="nb">dict</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;Getter for the environment</span>
-
-<span class="sd">    Parameters</span>
-<span class="sd">    ----------</span>
-<span class="sd">    env_kwargs : dict</span>
-<span class="sd">        environment parameters</span>
-
-<span class="sd">    Returns</span>
-<span class="sd">    -------</span>
-<span class="sd">    grid2op.Environment</span>
-<span class="sd">        A grid2op environment with the given parameters</span>
-<span class="sd">    &quot;&quot;&quot;</span>
-    <span class="n">env</span> <span class="o">=</span> <span class="n">grid2op</span><span class="o">.</span><span class="n">make</span><span class="p">(</span><span class="o">**</span><span class="n">env_kwargs</span><span class="p">)</span>
-    <span class="n">env</span><span class="o">.</span><span class="n">deactivate_forecast</span><span class="p">()</span>
-    <span class="k">return</span> <span class="n">env</span></div>
 </pre></div>
 
            </div>

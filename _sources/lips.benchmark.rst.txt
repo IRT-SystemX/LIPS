@@ -1,10 +1,5 @@
-lips.benchmark package
+benchmark package
 ======================
-
-.. automodule:: lips.benchmark
-   :members:
-   :undoc-members:
-   :show-inheritance:
 
 Submodules
 ----------
