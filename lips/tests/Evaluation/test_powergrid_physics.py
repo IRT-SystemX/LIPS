@@ -10,6 +10,7 @@ from collections.abc import Iterable
 
 from lips.config import ConfigManager
 from lips.metrics.power_grid import physics_compliances
+from lips.metrics.power_grid.verify_voltage_equality import verify_voltage_at_bus
 
 
 def load_data():
@@ -82,6 +83,19 @@ def test_energy_conservation_function():
                                                                    tolerance=tolerance)
     assert verifications["violation_percentage"] == float(0)
 
+def test_verify_voltage_equality():
+    """
+    Verify if the voltage equality at bus is respected using real data
+    """
+    observations, _ = load_data()
+    config = ConfigManager(section_name="Benchmark2", path=None)
+    voltages, thetas = verify_voltage_at_bus(predictions=observations,
+                                             observations=observations,
+                                             config=config)
+    # Assert that violation of voltage equality at bus is zero on simulation data
+    assert voltages[-1] == 0
+    assert thetas[-1] == 0
+
 '''
 if __name__ == "__main__":
     #test_evaluation()
@@ -93,6 +107,8 @@ if __name__ == "__main__":
     test_lce()
     """
     #test_loss_function()
-    test_loss_function()
-    test_energy_conservation_function()
+    #test_loss_function()
+    #test_energy_conservation_function()
+    # test verify voltage equality
+    test_verify_voltage_equality()
 '''
