@@ -1,6 +1,11 @@
 lips.neurips\_benchmark package
 ===============================
 
+.. automodule:: lips.neurips_benchmark
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
 Submodules
 ----------
 

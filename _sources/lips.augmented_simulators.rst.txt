@@ -1,5 +1,10 @@
-augmented\_simulators package
+lips.augmented\_simulators package
 ==================================
+
+.. automodule:: lips.augmented_simulators
+   :members:
+   :undoc-members:
+   :show-inheritance:
 
 Submodules
 ----------

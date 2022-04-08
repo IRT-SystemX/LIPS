@@ -1,6 +1,11 @@
 lips.logger package
 ===================
 
+.. automodule:: lips.logger
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
 Submodules
 ----------
 

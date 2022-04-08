@@ -1,6 +1,11 @@
 lips package
 ============
 
+.. automodule:: lips
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
 Subpackages
 -----------
 
@@ -16,11 +21,3 @@ Subpackages
    lips.metrics
    lips.neurips_benchmark
    lips.physical_simulator
-
-Module contents
----------------
-
-.. automodule:: lips
-   :members:
-   :undoc-members:
-   :show-inheritance:
