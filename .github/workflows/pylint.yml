@@ -5,7 +5,10 @@ on:
     branches:
       - main
       - 'ml-*'
+      - 'bd-dev'
       - 'dd-*'
+      - 'jp-*'
+      - 'am-*'
 
 jobs:
   build:
