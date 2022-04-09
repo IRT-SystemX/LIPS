@@ -40,14 +40,14 @@
 </ul>
 <p class="caption" role="heading"><span class="caption-text">TECHNICAL DOCUMENTATION</span></p>
 <ul>
-<li class="toctree-l1"><a class="reference internal" href="../../../lips.augmented_simulators.html">lips.augmented_simulators package</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../../../lips.benchmark.html">lips.benchmark package</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../lips.augmented_simulators.html">augmented_simulators package</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../lips.benchmark.html">benchmark package</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../lips.config.html">lips.config package</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../lips.dataset.html">lips.dataset package</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../lips.evaluation.html">lips.evaluation package</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../lips.logger.html">lips.logger package</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../lips.metrics.power_grid.html">metrics.power_grid package</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../lips.metrics.html">lips.metrics package</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../../../lips.neurips_benchmark.html">lips.neurips_benchmark package</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../lips.physical_simulator.html">lips.physical_simulator package</a></li>
 </ul>
 <p class="caption" role="heading"><span class="caption-text">GUIDE</span></p>
@@ -81,79 +81,45 @@
            <div itemprop="articleBody">
              
   <h1>Source code for lips.dataset.powergridDataSet</h1><div class="highlight"><pre>
-<span></span><span class="sd">&quot;&quot;&quot; This module is used to generate powergrid datasets</span>
-
-<span class="sd">Licence:</span>
-<span class="sd">    copyright (c) 2021-2022, IRT SystemX and RTE (https://www.irt-systemx.fr/)</span>
-<span class="sd">    See AUTHORS.txt</span>
-<span class="sd">    This Source Code Form is subject to the terms of the Mozilla Public License, version 2.0.</span>
-<span class="sd">    If a copy of the Mozilla Public License, version 2.0 was not distributed with this file,</span>
-<span class="sd">    you can obtain one at http://mozilla.org/MPL/2.0/.</span>
-<span class="sd">    SPDX-License-Identifier: MPL-2.0</span>
-<span class="sd">    This file is part of LIPS, LIPS is a python platform for power networks benchmarking</span>
-<span class="sd">&quot;&quot;&quot;</span>
+<span></span><span class="c1"># copyright (c) 2021-2022, IRT SystemX and RTE (https://www.irt-systemx.fr/)</span>
+<span class="c1"># See AUTHORS.txt</span>
+<span class="c1"># This Source Code Form is subject to the terms of the Mozilla Public License, version 2.0.</span>
+<span class="c1"># If a copy of the Mozilla Public License, version 2.0 was not distributed with this file,</span>
+<span class="c1"># you can obtain one at http://mozilla.org/MPL/2.0/.</span>
+<span class="c1"># SPDX-License-Identifier: MPL-2.0</span>
+<span class="c1"># This file is part of LIPS, LIPS is a python platform for power networks benchmarking</span>
 
 <span class="kn">import</span> <span class="nn">os</span>
 <span class="kn">import</span> <span class="nn">warnings</span>
-<span class="kn">import</span> <span class="nn">shutil</span>
-<span class="kn">import</span> <span class="nn">copy</span>
-<span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Union</span><span class="p">,</span> <span class="n">Callable</span>
 <span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+<span class="kn">import</span> <span class="nn">shutil</span>
+
+<span class="kn">import</span> <span class="nn">copy</span>
+<span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Union</span>
 <span class="kn">from</span> <span class="nn">tqdm</span> <span class="kn">import</span> <span class="n">tqdm</span>  <span class="c1"># TODO remove for final push</span>
 
-<span class="kn">from</span> <span class="nn">grid2op.Agent</span> <span class="kn">import</span> <span class="n">BaseAgent</span>
+<span class="kn">from</span> <span class="nn">lips.dataset.dataSet</span> <span class="kn">import</span> <span class="n">DataSet</span>
+<span class="kn">from</span> <span class="nn">lips.logger</span> <span class="kn">import</span> <span class="n">CustomLogger</span>
 
-<span class="kn">from</span> <span class="nn">.</span> <span class="kn">import</span> <span class="n">DataSet</span>
-<span class="kn">from</span> <span class="nn">..logger</span> <span class="kn">import</span> <span class="n">CustomLogger</span>
-<span class="kn">from</span> <span class="nn">..physical_simulator</span> <span class="kn">import</span> <span class="n">Grid2opSimulator</span>
-
-<div class="viewcode-block" id="PowerGridDataSet"><a class="viewcode-back" href="../../../lips.dataset.html#lips.dataset.PowerGridDataSet">[docs]</a><span class="k">class</span> <span class="nc">PowerGridDataSet</span><span class="p">(</span><span class="n">DataSet</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;Class to manage powergrid data</span>
-
+<div class="viewcode-block" id="PowerGridDataSet"><a class="viewcode-back" href="../../../lips.dataset.html#lips.dataset.powergridDataSet.PowerGridDataSet">[docs]</a><span class="k">class</span> <span class="nc">PowerGridDataSet</span><span class="p">(</span><span class="n">DataSet</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    This specific DataSet uses grid2op framework to simulate data coming from a powergrid.</span>
-
-<span class="sd">    Attributes</span>
-<span class="sd">    ----------</span>
-<span class="sd">    name : ``str``, optional</span>
-<span class="sd">        the dataset name, by default &quot;train&quot;</span>
-<span class="sd">    attr_names : Union[``tuple``, ``None``], optional</span>
-<span class="sd">        the attributes list for which data should be generated, by default None</span>
-<span class="sd">    log_path : Union[``str``, ``None``], optional</span>
-<span class="sd">        the path where the logs should be stored, by default None</span>
-
-<span class="sd">    Todo</span>
-<span class="sd">    -------</span>
-<span class="sd">    TODO: to remove all the comments lines corresponding to theta attributes</span>
-
-<span class="sd">    Examples</span>
-<span class="sd">    --------</span>
-
-<span class="sd">    .. code-block:: python</span>
-
-<span class="sd">        from lips.dataset import PowerGridDataSet</span>
-
-<span class="sd">        # create a dataset</span>
-<span class="sd">        dataset = PowerGridDataSet()</span>
-<span class="sd">        dataset.generate_data()</span>
-
+<span class="sd">    # TODO : to remove all the comments lines corresponding to theta attributes</span>
 <span class="sd">    &quot;&quot;&quot;</span>
-    <span class="n">ALL_VARIABLES</span> <span class="o">=</span> <span class="p">(</span><span class="s2">&quot;prod_p&quot;</span><span class="p">,</span> <span class="s2">&quot;prod_v&quot;</span><span class="p">,</span> <span class="s2">&quot;load_p&quot;</span><span class="p">,</span> <span class="s2">&quot;load_q&quot;</span><span class="p">,</span> <span class="s2">&quot;line_status&quot;</span><span class="p">,</span> <span class="s2">&quot;topo_vect&quot;</span><span class="p">,</span>
-                     <span class="s2">&quot;a_or&quot;</span><span class="p">,</span> <span class="s2">&quot;a_ex&quot;</span><span class="p">,</span> <span class="s2">&quot;p_or&quot;</span><span class="p">,</span> <span class="s2">&quot;p_ex&quot;</span><span class="p">,</span> <span class="s2">&quot;q_or&quot;</span><span class="p">,</span> <span class="s2">&quot;q_ex&quot;</span><span class="p">,</span> <span class="s2">&quot;prod_q&quot;</span><span class="p">,</span> <span class="s2">&quot;load_v&quot;</span><span class="p">,</span>
-                     <span class="s2">&quot;v_or&quot;</span><span class="p">,</span> <span class="s2">&quot;v_ex&quot;</span><span class="p">,</span> <span class="s2">&quot;theta_or&quot;</span><span class="p">,</span> <span class="s2">&quot;theta_ex&quot;</span><span class="p">)</span>
 
     <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span>
-                 <span class="n">name</span><span class="p">:</span> <span class="nb">str</span><span class="o">=</span><span class="s2">&quot;train&quot;</span><span class="p">,</span>
+                 <span class="n">name</span><span class="o">=</span><span class="s2">&quot;train&quot;</span><span class="p">,</span>
                  <span class="c1"># for compatibility with existing code this will be removed in future version</span>
                  <span class="c1"># (and serialize directly the output of the simulator)</span>
-                 <span class="n">attr_names</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">tuple</span><span class="p">,</span> <span class="kc">None</span><span class="p">]</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+                 <span class="n">attr_names</span><span class="o">=</span><span class="p">(</span><span class="s2">&quot;prod_p&quot;</span><span class="p">,</span> <span class="s2">&quot;prod_v&quot;</span><span class="p">,</span> <span class="s2">&quot;load_p&quot;</span><span class="p">,</span> <span class="s2">&quot;load_q&quot;</span><span class="p">,</span> <span class="s2">&quot;line_status&quot;</span><span class="p">,</span> <span class="s2">&quot;topo_vect&quot;</span><span class="p">,</span>
+                             <span class="s2">&quot;a_or&quot;</span><span class="p">,</span> <span class="s2">&quot;a_ex&quot;</span><span class="p">,</span> <span class="s2">&quot;p_or&quot;</span><span class="p">,</span> <span class="s2">&quot;p_ex&quot;</span><span class="p">,</span> <span class="s2">&quot;q_or&quot;</span><span class="p">,</span> <span class="s2">&quot;q_ex&quot;</span><span class="p">,</span> <span class="s2">&quot;prod_q&quot;</span><span class="p">,</span> <span class="s2">&quot;load_v&quot;</span><span class="p">,</span>
+                             <span class="s2">&quot;v_or&quot;</span><span class="p">,</span> <span class="s2">&quot;v_ex&quot;</span><span class="p">,</span> <span class="s2">&quot;theta_or&quot;</span><span class="p">,</span> <span class="s2">&quot;theta_ex&quot;</span><span class="p">),</span>
+                 <span class="c1">#theta_attr_names=(&quot;theta_or&quot;, &quot;theta_ex&quot;, &quot;load_theta&quot;, &quot;gen_theta&quot;, &quot;storage_theta&quot;),</span>
                  <span class="n">log_path</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="kc">None</span><span class="p">]</span><span class="o">=</span><span class="kc">None</span>
                  <span class="p">):</span>
         <span class="n">DataSet</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="n">name</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_nb_divergence</span> <span class="o">=</span> <span class="mi">0</span>
-        <span class="k">if</span> <span class="n">attr_names</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">_attr_names</span> <span class="o">=</span> <span class="n">copy</span><span class="o">.</span><span class="n">deepcopy</span><span class="p">(</span><span class="n">attr_names</span><span class="p">)</span>
-        <span class="k">else</span><span class="p">:</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">_attr_names</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">ALL_VARIABLES</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_attr_names</span> <span class="o">=</span> <span class="n">copy</span><span class="o">.</span><span class="n">deepcopy</span><span class="p">(</span><span class="n">attr_names</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">size</span> <span class="o">=</span> <span class="mi">0</span>
         <span class="c1">#self._theta_attr_names = copy.deepcopy(theta_attr_names)</span>
 
@@ -164,47 +130,47 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">_previous</span> <span class="o">=</span> <span class="kc">None</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_order</span> <span class="o">=</span> <span class="kc">None</span>
 
-        <span class="c1">#TODO add a seed for reproducible experiment !</span>
+        <span class="c1"># TODO add a seed for reproducible experiment !</span>
 
-<div class="viewcode-block" id="PowerGridDataSet.generate"><a class="viewcode-back" href="../../../lips.dataset.html#lips.dataset.PowerGridDataSet.generate">[docs]</a>    <span class="k">def</span> <span class="nf">generate</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span>
-                 <span class="n">simulator</span><span class="p">:</span> <span class="n">Grid2opSimulator</span><span class="p">,</span>
-                 <span class="n">actor</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="n">BaseAgent</span><span class="p">,</span> <span class="kc">None</span><span class="p">],</span>
-                 <span class="n">path_out</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="kc">None</span><span class="p">],</span>
-                 <span class="n">nb_samples</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span>
+<div class="viewcode-block" id="PowerGridDataSet.generate"><a class="viewcode-back" href="../../../lips.dataset.html#lips.dataset.powergridDataSet.PowerGridDataSet.generate">[docs]</a>    <span class="k">def</span> <span class="nf">generate</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span>
+                 <span class="n">simulator</span><span class="p">:</span> <span class="s2">&quot;Grid2opSimulator&quot;</span><span class="p">,</span>
+                 <span class="n">actor</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="kc">None</span><span class="p">,</span> <span class="s2">&quot;BaseAgent&quot;</span><span class="p">],</span>
+                 <span class="n">path_out</span><span class="p">,</span>
+                 <span class="n">nb_samples</span><span class="p">,</span>
                  <span class="n">simulator_seed</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="kc">None</span><span class="p">,</span> <span class="nb">int</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
                  <span class="n">actor_seed</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="kc">None</span><span class="p">,</span> <span class="nb">int</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;Generate a powergrid dataset</span>
-
+        <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        For this dataset, we use a Grid2opSimulator and a  grid2op Agent to generate data from a powergrid.</span>
+
 <span class="sd">        This implementation can also serve as a reference for other implementation of the `generate` function.</span>
 
 <span class="sd">        Parameters</span>
 <span class="sd">        ----------</span>
-<span class="sd">        simulator : Grid2opSimulator</span>
-<span class="sd">            In this case, this should be a grid2op environment</span>
-<span class="sd">        actor : Union[``BaseAgent``, ``None``]</span>
-<span class="sd">            the actor used to generate the data</span>
-<span class="sd">        path_out : Union[``str``, ``None``]</span>
-<span class="sd">            The path where the data will be saved</span>
-<span class="sd">        nb_samples : ``int``</span>
-<span class="sd">            Number of rows (examples) in the final dataset</span>
-<span class="sd">        simulator_seed : Union[``None``, ``int``], optional</span>
-<span class="sd">            Seed used to set the simulator for reproducible experiments, by default None</span>
-<span class="sd">        actor_seed : Union[``None``, ``int``], optional</span>
-<span class="sd">            Seed used to set the actor for reproducible experiments, by default None</span>
+<span class="sd">        simulator:</span>
+<span class="sd">           In this case, this should be a grid2op environment</span>
 
-<span class="sd">        Raises</span>
-<span class="sd">        ------</span>
-<span class="sd">        RuntimeError</span>
-<span class="sd">            Impossible to generate powergird data, Grid2Op is not installed</span>
-<span class="sd">        RuntimeError</span>
-<span class="sd">            Impossible to generate negative number of data</span>
+<span class="sd">        actor:</span>
+
+<span class="sd">        path_out:</span>
+<span class="sd">            The path where the data will be saved</span>
+
+<span class="sd">        nb_samples:</span>
+<span class="sd">            Number of rows (examples) in the final dataset</span>
+
+<span class="sd">        simulator_seed:</span>
+<span class="sd">            Seed used to set the simulator for reproducible experiments</span>
+
+<span class="sd">        actor_seed:</span>
+<span class="sd">            Seed used to set the actor for reproducible experiments</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
 
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">try</span><span class="p">:</span>
             <span class="kn">from</span> <span class="nn">grid2op.Agent</span> <span class="kn">import</span> <span class="n">DoNothingAgent</span>
         <span class="k">except</span> <span class="ne">ImportError</span> <span class="k">as</span> <span class="n">exc_</span><span class="p">:</span>
-            <span class="k">raise</span> <span class="ne">RuntimeError</span><span class="p">(</span><span class="s2">&quot;Impossible to `generate` powergrid data if you don&#39;t have &quot;</span>
+            <span class="k">raise</span> <span class="ne">RuntimeError</span><span class="p">(</span><span class="s2">&quot;Impossible to `generate` powergrid datet if you don&#39;t have &quot;</span>
                                <span class="s2">&quot;the grid2Op package installed&quot;</span><span class="p">)</span> <span class="kn">from</span> <span class="nn">exc_</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_nb_divergence</span> <span class="o">=</span> <span class="mi">0</span>
         <span class="k">if</span> <span class="n">nb_samples</span> <span class="o">&lt;=</span> <span class="mi">0</span><span class="p">:</span>
@@ -255,15 +221,8 @@
 <span class="sd">        for idx_, attr_nm in enumerate(self._theta_attr_names):</span>
 <span class="sd">            self.data[attr_nm][current_size, :] = theta[idx_]</span>
 <span class="sd">    &quot;&quot;&quot;</span>
-    <span class="k">def</span> <span class="nf">_save_internal_data</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">path_out</span><span class="p">:</span><span class="nb">str</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;save the self.data in a proper format</span>
-
-<span class="sd">        Parameters</span>
-<span class="sd">        ----------</span>
-<span class="sd">        path_out : ``str``</span>
-<span class="sd">            path to save the data</span>
-
-<span class="sd">        &quot;&quot;&quot;</span>
+    <span class="k">def</span> <span class="nf">_save_internal_data</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">path_out</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;save the self.data in a proper format&quot;&quot;&quot;</span>
         <span class="n">full_path_out</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">abspath</span><span class="p">(</span><span class="n">path_out</span><span class="p">),</span> <span class="bp">self</span><span class="o">.</span><span class="n">name</span><span class="p">)</span>
 
         <span class="k">if</span> <span class="ow">not</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">exists</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">abspath</span><span class="p">(</span><span class="n">path_out</span><span class="p">)):</span>
@@ -288,26 +247,7 @@
         <span class="k">for</span> <span class="n">attr_nm</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_attr_names</span><span class="p">:</span>
             <span class="n">np</span><span class="o">.</span><span class="n">savez_compressed</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">full_path_out</span><span class="p">,</span> <span class="n">attr_nm</span><span class="p">)</span><span class="si">}</span><span class="s2">.npz&quot;</span><span class="p">,</span> <span class="n">data</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">data</span><span class="p">[</span><span class="n">attr_nm</span><span class="p">])</span>
 
-<div class="viewcode-block" id="PowerGridDataSet.load"><a class="viewcode-back" href="../../../lips.dataset.html#lips.dataset.PowerGridDataSet.load">[docs]</a>    <span class="k">def</span> <span class="nf">load</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">path</span><span class="p">:</span><span class="nb">str</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;load the dataset from a path</span>
-
-<span class="sd">        Parameters</span>
-<span class="sd">        ----------</span>
-<span class="sd">        path : ``str``</span>
-<span class="sd">            path from which the data should be loaded</span>
-
-<span class="sd">        Raises</span>
-<span class="sd">        ------</span>
-<span class="sd">        RuntimeError</span>
-<span class="sd">            Path cannot be found</span>
-<span class="sd">        RuntimeError</span>
-<span class="sd">            Not a valid directory</span>
-<span class="sd">        RuntimeError</span>
-<span class="sd">            There is no data to load</span>
-<span class="sd">        RuntimeError</span>
-<span class="sd">            Impossible to load the data</span>
-
-<span class="sd">        &quot;&quot;&quot;</span>
+<div class="viewcode-block" id="PowerGridDataSet.load"><a class="viewcode-back" href="../../../lips.dataset.html#lips.dataset.powergridDataSet.PowerGridDataSet.load">[docs]</a>    <span class="k">def</span> <span class="nf">load</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">path</span><span class="p">):</span>
         <span class="k">if</span> <span class="ow">not</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">exists</span><span class="p">(</span><span class="n">path</span><span class="p">):</span>
             <span class="k">raise</span> <span class="ne">RuntimeError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">path</span><span class="si">}</span><span class="s2"> cannot be found on your computer&quot;</span><span class="p">)</span>
         <span class="k">if</span> <span class="ow">not</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">isdir</span><span class="p">(</span><span class="n">path</span><span class="p">):</span>
@@ -336,17 +276,12 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">_init_sample</span><span class="p">()</span></div>
 
     <span class="k">def</span> <span class="nf">_init_sample</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;initialize the sample</span>
-
-<span class="sd">        Init the sample</span>
-<span class="sd">        &quot;&quot;&quot;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_previous</span> <span class="o">=</span> <span class="mi">0</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_order</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">size</span><span class="p">)</span>
         <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">shuffle</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_order</span><span class="p">)</span>
 
-<div class="viewcode-block" id="PowerGridDataSet.sample"><a class="viewcode-back" href="../../../lips.dataset.html#lips.dataset.PowerGridDataSet.sample">[docs]</a>    <span class="k">def</span> <span class="nf">sample</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">nb_sample</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span> <span class="n">sampler</span><span class="p">:</span> <span class="n">Callable</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;Sampling from the dataset</span>
-
+<div class="viewcode-block" id="PowerGridDataSet.sample"><a class="viewcode-back" href="../../../lips.dataset.html#lips.dataset.powergridDataSet.PowerGridDataSet.sample">[docs]</a>    <span class="k">def</span> <span class="nf">sample</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">nb_sample</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span> <span class="n">sampler</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        For now, this sampling method will sample uniformly at random from the dataset.</span>
 
 <span class="sd">        There is a guarantee: if you generate `sef.size` consecutive data with this method</span>
@@ -357,23 +292,15 @@
 
 <span class="sd">        Parameters</span>
 <span class="sd">        ----------</span>
-<span class="sd">        nb_sample : ``int``</span>
+<span class="sd">        nb_sample:</span>
 <span class="sd">            Number of sample to retrieve from the dataset.</span>
 
-<span class="sd">        sampler : Callable</span>
+<span class="sd">        sampler:</span>
 <span class="sd">            currently unused</span>
 
 <span class="sd">        Returns</span>
 <span class="sd">        -------</span>
-<span class="sd">        dict</span>
-<span class="sd">            A batch of data, either for training or for testing.</span>
-
-<span class="sd">        Raises</span>
-<span class="sd">        ------</span>
-<span class="sd">        RuntimeError</span>
-<span class="sd">            Impossible to require a negative number of data</span>
-<span class="sd">        RuntimeError</span>
-<span class="sd">            Impossible to require more than the size of the dataset</span>
+<span class="sd">        A batch of data, either for training or for testing.</span>
 
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">if</span> <span class="n">nb_sample</span> <span class="o">&lt;</span> <span class="mi">0</span><span class="p">:</span>
@@ -408,18 +335,17 @@
                 <span class="n">res</span><span class="p">[</span><span class="n">el</span><span class="p">][</span><span class="n">this_sz</span><span class="p">:]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">data</span><span class="p">[</span><span class="n">el</span><span class="p">][</span><span class="bp">self</span><span class="o">.</span><span class="n">_order</span><span class="p">[:</span><span class="bp">self</span><span class="o">.</span><span class="n">_previous</span><span class="p">],</span> <span class="p">:]</span>
         <span class="k">return</span> <span class="n">res</span></div>
 
-<div class="viewcode-block" id="PowerGridDataSet.get_data"><a class="viewcode-back" href="../../../lips.dataset.html#lips.dataset.PowerGridDataSet.get_data">[docs]</a>    <span class="k">def</span> <span class="nf">get_data</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">index</span><span class="p">:</span> <span class="nb">tuple</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">:</span>
-        <span class="sd">&quot;&quot;&quot;This function returns the data in the data that match the index `index`</span>
+<div class="viewcode-block" id="PowerGridDataSet.get_data"><a class="viewcode-back" href="../../../lips.dataset.html#lips.dataset.powergridDataSet.PowerGridDataSet.get_data">[docs]</a>    <span class="k">def</span> <span class="nf">get_data</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">index</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        This function returns the data in the data that match the index `index`</span>
 
 <span class="sd">        Parameters</span>
 <span class="sd">        ----------</span>
-<span class="sd">        index : ``tuple``</span>
+<span class="sd">        index:</span>
 <span class="sd">            A list of integer</span>
 
 <span class="sd">        Returns</span>
 <span class="sd">        -------</span>
-<span class="sd">        dict</span>
-<span class="sd">            a dictionary of key (variable name) value (variable value)</span>
 
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">get_data</span><span class="p">(</span><span class="n">index</span><span class="p">)</span>  <span class="c1"># check that everything is legit</span>

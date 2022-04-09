@@ -40,14 +40,14 @@
 </ul>
 <p class="caption" role="heading"><span class="caption-text">TECHNICAL DOCUMENTATION</span></p>
 <ul>
-<li class="toctree-l1"><a class="reference internal" href="../../../lips.augmented_simulators.html">lips.augmented_simulators package</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../../../lips.benchmark.html">lips.benchmark package</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../lips.augmented_simulators.html">augmented_simulators package</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../lips.benchmark.html">benchmark package</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../lips.config.html">lips.config package</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../lips.dataset.html">lips.dataset package</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../lips.evaluation.html">lips.evaluation package</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../lips.logger.html">lips.logger package</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../lips.metrics.power_grid.html">metrics.power_grid package</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../lips.metrics.html">lips.metrics package</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../../../lips.neurips_benchmark.html">lips.neurips_benchmark package</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../lips.physical_simulator.html">lips.physical_simulator package</a></li>
 </ul>
 <p class="caption" role="heading"><span class="caption-text">GUIDE</span></p>
@@ -92,9 +92,9 @@
 <span class="kn">import</span> <span class="nn">os</span>
 <span class="kn">import</span> <span class="nn">time</span>
 <span class="kn">import</span> <span class="nn">json</span>
+<span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
 <span class="kn">import</span> <span class="nn">copy</span>
 <span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Union</span><span class="p">,</span> <span class="n">Dict</span>
-<span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
 
 <span class="kn">from</span> <span class="nn">tensorflow.keras.layers</span> <span class="kn">import</span> <span class="n">Layer</span>
 <span class="kn">from</span> <span class="nn">tensorflow.keras.layers</span> <span class="kn">import</span> <span class="n">Dense</span>
@@ -103,66 +103,24 @@
 
 <span class="kn">from</span> <span class="nn">leap_net.proxy</span> <span class="kn">import</span> <span class="n">ProxyLeapNet</span>
 
-<span class="kn">from</span> <span class="nn">.</span> <span class="kn">import</span> <span class="n">AugmentedSimulator</span>
-<span class="kn">from</span> <span class="nn">..dataset</span> <span class="kn">import</span> <span class="n">DataSet</span>
-<span class="kn">from</span> <span class="nn">..config</span> <span class="kn">import</span> <span class="n">ConfigManager</span>
-<span class="kn">from</span> <span class="nn">..logger</span> <span class="kn">import</span> <span class="n">CustomLogger</span>
+<span class="kn">from</span> <span class="nn">lips.dataset</span> <span class="kn">import</span> <span class="n">DataSet</span>
+<span class="kn">from</span> <span class="nn">lips.augmented_simulators</span> <span class="kn">import</span> <span class="n">AugmentedSimulator</span>
+<span class="kn">from</span> <span class="nn">lips.config</span> <span class="kn">import</span> <span class="n">ConfigManager</span>
+<span class="kn">from</span> <span class="nn">lips.logger</span> <span class="kn">import</span> <span class="n">CustomLogger</span>
 
-<div class="viewcode-block" id="LeapNetAS"><a class="viewcode-back" href="../../../lips.augmented_simulators.html#lips.augmented_simulators.LeapNetAS">[docs]</a><span class="k">class</span> <span class="nc">LeapNetAS</span><span class="p">(</span><span class="n">AugmentedSimulator</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;LeapNet architecture</span>
 
+<div class="viewcode-block" id="LeapNetAS"><a class="viewcode-back" href="../../../lips.augmented_simulators.html#lips.augmented_simulators.leapNetAS.LeapNetAS">[docs]</a><span class="k">class</span> <span class="nc">LeapNetAS</span><span class="p">(</span><span class="n">AugmentedSimulator</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    This class wraps the `ProxyLeapNet` of the `leap_net` module (see https://github.com/BDonnot/leap_net) to be</span>
 <span class="sd">    used as an `AugmentedSimulator`.</span>
 
 <span class="sd">    This is just a wrapper, for modification of said &quot;leap_net&quot; or its description, please visit the original</span>
 <span class="sd">    github repository.</span>
-
-<span class="sd">    Parameters</span>
-<span class="sd">    ----------</span>
-<span class="sd">    name : ``str``, optional</span>
-<span class="sd">        the name of the model, to be used for saving, by default &quot;FullyConnected&quot;</span>
-<span class="sd">    benchmark_name : ``str``, optional</span>
-<span class="sd">        the name of the scenario for which the model should be used. It is used</span>
-<span class="sd">        to restore the configurations from config section, by default &quot;Benchmark1&quot;</span>
-<span class="sd">    config_path : Union[``str``, ``None``], optional</span>
-<span class="sd">        The path where the config file is available. If ``None``, the default config</span>
-<span class="sd">        will be used, by default ``None``</span>
-<span class="sd">    attr_x : Union[``tuple``, ``None``], optional</span>
-<span class="sd">        the list of input variables to be declared. If ``None`` the input variables</span>
-<span class="sd">        are restored from the config file, by default None</span>
-<span class="sd">    attr_y : Union[``tuple``, ``None``], optional</span>
-<span class="sd">        The list of output variables to be declared. If ``None`` the output variables</span>
-<span class="sd">        are restored from config file, by default None</span>
-<span class="sd">    sizes_layer : ``tuple``, optional</span>
-<span class="sd">        the number of layers and neurones in each layer, by default (150, 150)</span>
-<span class="sd">    lr : ``float``, optional</span>
-<span class="sd">        the learning rate for the optimizer, by default 3e-4</span>
-<span class="sd">    layer_act : ``str``, optional</span>
-<span class="sd">        the layers activation, by default &quot;relu&quot;</span>
-<span class="sd">    optimizer : Union[``Optimizer``, ``None``], optional</span>
-<span class="sd">        the optimizer used for optimizing network weights, by default None</span>
-<span class="sd">    loss : ``str``, optional</span>
-<span class="sd">        The loss criteria used during training procedure, by default &quot;mse&quot;</span>
-<span class="sd">    batch_size : ``int``</span>
-<span class="sd">        the batch size used during training, by default 128</span>
-<span class="sd">    topo_vect_to_tau: ``str``</span>
-<span class="sd">        the method to used to encode the topo vector, by default &quot;raw&quot;</span>
-<span class="sd">    kwargs_tau: ``dict``, optional</span>
-<span class="sd">        the keyword arguments to be passed to the topo vector encoding method, by default ``None``</span>
-<span class="sd">    mult_by_zero_lines_pred: ``bool``</span>
-<span class="sd">        if ``True``, the prediction of the model are multiplied by zero for disconnected lines, by default ``True``</span>
-<span class="sd">    log_path : Union[``str``, ``None``], optional</span>
-<span class="sd">        the path where the logs should be stored, by default None</span>
-
-<span class="sd">    Raises</span>
-<span class="sd">    ------</span>
-<span class="sd">    RuntimeError</span>
-<span class="sd">        If an optimizer is provided, it should be a type tensorflow.keras.optimizers</span>
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span>
                  <span class="n">name</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;LeapNetAS&quot;</span><span class="p">,</span>
                  <span class="n">benchmark_name</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;Benchmark1&quot;</span><span class="p">,</span>
-                 <span class="n">config_path</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="kc">None</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+                 <span class="n">path_config</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="kc">None</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
                  <span class="n">attr_x</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">tuple</span><span class="p">,</span> <span class="kc">None</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
                  <span class="n">attr_tau</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">tuple</span><span class="p">,</span> <span class="kc">None</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
                  <span class="n">attr_y</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">tuple</span><span class="p">,</span> <span class="kc">None</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
@@ -182,7 +140,7 @@
                  <span class="n">log_path</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="kc">None</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span>
                 <span class="p">):</span>
         <span class="n">AugmentedSimulator</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="p">)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">config_manager</span> <span class="o">=</span> <span class="n">ConfigManager</span><span class="p">(</span><span class="n">benchmark_name</span><span class="p">,</span> <span class="n">config_path</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">config_manager</span> <span class="o">=</span> <span class="n">ConfigManager</span><span class="p">(</span><span class="n">benchmark_name</span><span class="p">,</span> <span class="n">path_config</span><span class="p">)</span>
         <span class="k">if</span> <span class="n">attr_x</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">_attr_x</span> <span class="o">=</span> <span class="n">attr_x</span>
         <span class="c1"># TODO : add try except to verify if neither attr_x and config could be found and print out a runtime error</span>
@@ -237,33 +195,16 @@
         <span class="c1"># create a logger instance</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">logger</span> <span class="o">=</span> <span class="n">CustomLogger</span><span class="p">(</span><span class="vm">__class__</span><span class="o">.</span><span class="vm">__name__</span><span class="p">,</span> <span class="n">log_path</span><span class="p">)</span><span class="o">.</span><span class="n">logger</span>
 
-<div class="viewcode-block" id="LeapNetAS.init"><a class="viewcode-back" href="../../../lips.augmented_simulators.html#lips.augmented_simulators.LeapNetAS.init">[docs]</a>    <span class="k">def</span> <span class="nf">init</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+<div class="viewcode-block" id="LeapNetAS.init"><a class="viewcode-back" href="../../../lips.augmented_simulators.html#lips.augmented_simulators.leapNetAS.LeapNetAS.init">[docs]</a>    <span class="k">def</span> <span class="nf">init</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;this function will build the neural network&quot;&quot;&quot;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_leap_net_model</span><span class="o">.</span><span class="n">build_model</span><span class="p">()</span></div>
 
-<div class="viewcode-block" id="LeapNetAS.train"><a class="viewcode-back" href="../../../lips.augmented_simulators.html#lips.augmented_simulators.LeapNetAS.train">[docs]</a>    <span class="k">def</span> <span class="nf">train</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span>
+<div class="viewcode-block" id="LeapNetAS.train"><a class="viewcode-back" href="../../../lips.augmented_simulators.html#lips.augmented_simulators.leapNetAS.LeapNetAS.train">[docs]</a>    <span class="k">def</span> <span class="nf">train</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span>
               <span class="n">nb_iter</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span>
               <span class="n">train_dataset</span><span class="p">:</span> <span class="n">DataSet</span><span class="p">,</span>
               <span class="n">val_dataset</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="kc">None</span><span class="p">,</span> <span class="n">DataSet</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
-              <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">:</span>
-        <span class="sd">&quot;&quot;&quot;function used to train the model</span>
-
-<span class="sd">        Parameters</span>
-<span class="sd">        ----------</span>
-<span class="sd">        nb_iter : ``int``</span>
-<span class="sd">            number of epochs</span>
-<span class="sd">        train_dataset : DataSet</span>
-<span class="sd">            the training dataset used to train the model</span>
-<span class="sd">        val_dataset : Union[``None``, DataSet], optional</span>
-<span class="sd">            the validation dataset used to validate the model, by default None</span>
-<span class="sd">        **kwargs: ``dict``</span>
-<span class="sd">            supplementary arguments for ``fit`` method of ``tf.keras.Model``</span>
-
-<span class="sd">        Returns</span>
-<span class="sd">        -------</span>
-<span class="sd">        dict</span>
-<span class="sd">            history of the tensorflow model (losses)</span>
-<span class="sd">        &quot;&quot;&quot;</span>
+              <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;This is an example of a reference implementation of this class. Feel&quot;&quot;&quot;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Training of </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s2"> started&quot;</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_observations</span><span class="p">[</span><span class="n">train_dataset</span><span class="o">.</span><span class="n">name</span><span class="p">]</span> <span class="o">=</span> <span class="n">train_dataset</span><span class="o">.</span><span class="n">data</span>
         <span class="c1"># extract the input and output suitable for learning (matrices) from the generic dataset</span>
@@ -297,27 +238,8 @@
         <span class="c1"># `self.process_dataset` to process the example of this dataset one by one.</span>
         <span class="k">return</span> <span class="n">history_callback</span></div>
 
-<div class="viewcode-block" id="LeapNetAS.evaluate"><a class="viewcode-back" href="../../../lips.augmented_simulators.html#lips.augmented_simulators.LeapNetAS.evaluate">[docs]</a>    <span class="k">def</span> <span class="nf">evaluate</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">dataset</span><span class="p">:</span> <span class="n">DataSet</span><span class="p">,</span> <span class="n">batch_size</span><span class="p">:</span> <span class="nb">int</span><span class="o">=</span><span class="mi">32</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">:</span>
-        <span class="sd">&quot;&quot;&quot;evaluate the model on the given dataset</span>
-
-<span class="sd">        Parameters</span>
-<span class="sd">        ----------</span>
-<span class="sd">        dataset : DataSet</span>
-<span class="sd">            the dataset used for evaluation of the model</span>
-<span class="sd">        batch_size : ``int``, optional</span>
-<span class="sd">            the batch size used during inference phase, by default 32</span>
-<span class="sd">        save_values : ``bool``, optional</span>
-<span class="sd">            whether to save the evaluation resutls (predictions), by default False</span>
-
-<span class="sd">        Todo</span>
-<span class="sd">        ----</span>
-<span class="sd">        TODO : Save the predictions (not implemented yet)</span>
-
-<span class="sd">        Returns</span>
-<span class="sd">        -------</span>
-<span class="sd">        dict</span>
-<span class="sd">            the predictions of the model</span>
-<span class="sd">        &quot;&quot;&quot;</span>
+<div class="viewcode-block" id="LeapNetAS.evaluate"><a class="viewcode-back" href="../../../lips.augmented_simulators.html#lips.augmented_simulators.leapNetAS.LeapNetAS.evaluate">[docs]</a>    <span class="k">def</span> <span class="nf">evaluate</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">dataset</span><span class="p">:</span> <span class="n">DataSet</span><span class="p">,</span> <span class="n">batch_size</span><span class="p">:</span> <span class="nb">int</span><span class="o">=</span><span class="mi">32</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;evaluate the model on the given dataset&quot;&quot;&quot;</span>
         <span class="c1"># process the dataset</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_observations</span><span class="p">[</span><span class="n">dataset</span><span class="o">.</span><span class="n">name</span><span class="p">]</span> <span class="o">=</span> <span class="n">dataset</span><span class="o">.</span><span class="n">data</span>
         <span class="n">processed_x</span><span class="p">,</span> <span class="n">processed_tau</span><span class="p">,</span> <span class="n">_</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_process_all_dataset</span><span class="p">(</span><span class="n">dataset</span><span class="p">,</span> <span class="n">training</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
@@ -335,20 +257,9 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">_predictions</span><span class="p">[</span><span class="n">dataset</span><span class="o">.</span><span class="n">name</span><span class="p">]</span> <span class="o">=</span> <span class="n">res</span>
         <span class="k">return</span> <span class="n">res</span></div>
 
-<div class="viewcode-block" id="LeapNetAS.save"><a class="viewcode-back" href="../../../lips.augmented_simulators.html#lips.augmented_simulators.LeapNetAS.save">[docs]</a>    <span class="k">def</span> <span class="nf">save</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">path_out</span><span class="p">:</span> <span class="nb">str</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;This saves the weights of the neural network.</span>
-
-<span class="sd">        Parameters</span>
-<span class="sd">        ----------</span>
-<span class="sd">        path_out : ``str``</span>
-<span class="sd">            path where the model should be saved</span>
-
-<span class="sd">        Raises</span>
-<span class="sd">        ------</span>
-<span class="sd">        RuntimeError</span>
-<span class="sd">            The path does not exist</span>
-<span class="sd">        RuntimeError</span>
-<span class="sd">            The model is not initialized, it cannot be saved</span>
+<div class="viewcode-block" id="LeapNetAS.save"><a class="viewcode-back" href="../../../lips.augmented_simulators.html#lips.augmented_simulators.leapNetAS.LeapNetAS.save">[docs]</a>    <span class="k">def</span> <span class="nf">save</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">path_out</span><span class="p">:</span> <span class="nb">str</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        This saves the weights of the neural network.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">if</span> <span class="ow">not</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">exists</span><span class="p">(</span><span class="n">path_out</span><span class="p">):</span>
             <span class="k">raise</span> <span class="ne">RuntimeError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;The path </span><span class="si">{</span><span class="n">path_out</span><span class="si">}</span><span class="s2"> does not exists.&quot;</span><span class="p">)</span>
@@ -364,35 +275,23 @@
             <span class="c1"># save the weights</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">_leap_net_model</span><span class="o">.</span><span class="n">save_data</span><span class="p">(</span><span class="n">full_path_out</span><span class="p">,</span> <span class="n">ext</span><span class="o">=</span><span class="s2">&quot;.h5&quot;</span><span class="p">)</span></div>
 
-<div class="viewcode-block" id="LeapNetAS.restore"><a class="viewcode-back" href="../../../lips.augmented_simulators.html#lips.augmented_simulators.LeapNetAS.restore">[docs]</a>    <span class="k">def</span> <span class="nf">restore</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">path</span><span class="p">:</span> <span class="nb">str</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;Restores the model from a saved one</span>
+<div class="viewcode-block" id="LeapNetAS.restore"><a class="viewcode-back" href="../../../lips.augmented_simulators.html#lips.augmented_simulators.leapNetAS.LeapNetAS.restore">[docs]</a>    <span class="k">def</span> <span class="nf">restore</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">path</span><span class="p">:</span> <span class="nb">str</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Restores the model from a saved one.</span>
 
 <span class="sd">        We first copy the weights file into a temporary directory, and then load from this one. This is avoid</span>
 <span class="sd">        file corruption in case the model fails to load.</span>
-
-<span class="sd">        Parameters</span>
-<span class="sd">        ----------</span>
-<span class="sd">        path : ``str``</span>
-<span class="sd">            path from where the  model should be restored</span>
-
-<span class="sd">        Raises</span>
-<span class="sd">        ------</span>
-<span class="sd">        RuntimeError</span>
-<span class="sd">            Impossible to find a saved model at the indicated path</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="n">full_path</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">path</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">name</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_leap_net_model</span><span class="o">.</span><span class="n">load_data</span><span class="p">(</span><span class="n">full_path</span><span class="p">,</span> <span class="n">ext</span><span class="o">=</span><span class="s2">&quot;.h5&quot;</span><span class="p">)</span></div>
 
-<div class="viewcode-block" id="LeapNetAS.save_metadata"><a class="viewcode-back" href="../../../lips.augmented_simulators.html#lips.augmented_simulators.LeapNetAS.save_metadata">[docs]</a>    <span class="k">def</span> <span class="nf">save_metadata</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">path_out</span><span class="p">:</span> <span class="nb">str</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;This is used to save the meta data of the augmented simulator</span>
+<div class="viewcode-block" id="LeapNetAS.save_metadata"><a class="viewcode-back" href="../../../lips.augmented_simulators.html#lips.augmented_simulators.leapNetAS.LeapNetAS.save_metadata">[docs]</a>    <span class="k">def</span> <span class="nf">save_metadata</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">path_out</span><span class="p">:</span> <span class="nb">str</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        This is used to save the meta data of the augmented simulator.</span>
 
 <span class="sd">        In this case it saves the sizes, the scalers etc.</span>
-<span class="sd">        The only difficulty here is that i need to serialize, as json, numpy arrays</span>
 
-<span class="sd">        Parameters</span>
-<span class="sd">        ----------</span>
-<span class="sd">        path_out : ``str``</span>
-<span class="sd">            path where the model metadata should be saved</span>
+<span class="sd">        The only difficulty here is that i need to serialize, as json, numpy arrays</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="n">res_json</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_leap_net_model</span><span class="o">.</span><span class="n">get_metadata</span><span class="p">()</span>
         <span class="n">res_json</span><span class="p">[</span><span class="s2">&quot;batch_size&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_batch_size</span><span class="p">)</span>
@@ -408,14 +307,8 @@
         <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">full_path_out</span><span class="p">,</span> <span class="s2">&quot;metadata.json&quot;</span><span class="p">),</span> <span class="s2">&quot;w&quot;</span><span class="p">,</span> <span class="n">encoding</span><span class="o">=</span><span class="s2">&quot;utf-8&quot;</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
             <span class="n">json</span><span class="o">.</span><span class="n">dump</span><span class="p">(</span><span class="n">obj</span><span class="o">=</span><span class="n">res_json</span><span class="p">,</span> <span class="n">fp</span><span class="o">=</span><span class="n">f</span><span class="p">,</span> <span class="n">indent</span><span class="o">=</span><span class="mi">4</span><span class="p">,</span> <span class="n">sort_keys</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span></div>
 
-<div class="viewcode-block" id="LeapNetAS.load_metadata"><a class="viewcode-back" href="../../../lips.augmented_simulators.html#lips.augmented_simulators.LeapNetAS.load_metadata">[docs]</a>    <span class="k">def</span> <span class="nf">load_metadata</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">path</span><span class="p">:</span> <span class="nb">str</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;this is used to load the meta parameters from the model</span>
-
-<span class="sd">        Parameters</span>
-<span class="sd">        ----------</span>
-<span class="sd">        path : ``str``</span>
-<span class="sd">            path from where the  model should be restored</span>
-<span class="sd">        &quot;&quot;&quot;</span>
+<div class="viewcode-block" id="LeapNetAS.load_metadata"><a class="viewcode-back" href="../../../lips.augmented_simulators.html#lips.augmented_simulators.leapNetAS.LeapNetAS.load_metadata">[docs]</a>    <span class="k">def</span> <span class="nf">load_metadata</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">path</span><span class="p">:</span> <span class="nb">str</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;this is used to load the meta parameters from the model&quot;&quot;&quot;</span>
         <span class="n">full_path</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">path</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">name</span><span class="p">)</span>
         <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">full_path</span><span class="p">,</span> <span class="sa">f</span><span class="s2">&quot;metadata.json&quot;</span><span class="p">),</span> <span class="s2">&quot;r&quot;</span><span class="p">,</span> <span class="n">encoding</span><span class="o">=</span><span class="s2">&quot;utf-8&quot;</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
             <span class="n">res_json</span> <span class="o">=</span> <span class="n">json</span><span class="o">.</span><span class="n">load</span><span class="p">(</span><span class="n">fp</span><span class="o">=</span><span class="n">f</span><span class="p">)</span>
@@ -426,38 +319,18 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">_loss</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="n">res_json</span><span class="p">[</span><span class="s2">&quot;_loss&quot;</span><span class="p">])</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_leap_net_model</span><span class="o">.</span><span class="n">load_metadata</span><span class="p">(</span><span class="n">res_json</span><span class="p">)</span></div>
 
-    <span class="k">def</span> <span class="nf">_process_all_dataset</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">dataset</span><span class="p">:</span> <span class="n">DataSet</span><span class="p">,</span> <span class="n">training</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">tuple</span><span class="p">:</span>
-        <span class="sd">&quot;&quot;&quot;Process the dataset for neural network</span>
-
-<span class="sd">        This function will extract the whole dataset and format it in a way we can train the</span>
+    <span class="k">def</span> <span class="nf">_process_all_dataset</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">dataset</span><span class="p">:</span> <span class="n">DataSet</span><span class="p">,</span> <span class="n">training</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;This function will extract the whole dataset and format it in a way we can train the</span>
 <span class="sd">        fully connected neural network from it</span>
 
 <span class="sd">        if &quot;training&quot; is `True` then it will also computes the scalers:</span>
+
 <span class="sd">        - _std_x</span>
 <span class="sd">        - _std_y</span>
 <span class="sd">        - _m_x</span>
 <span class="sd">        - _m_y</span>
 
 <span class="sd">        And the size of the dataset self._size_x and self._size_y</span>
-
-<span class="sd">        Parameters</span>
-<span class="sd">        ----------</span>
-<span class="sd">        dataset : ``DataSet``</span>
-<span class="sd">            the ``DataSet`` object to process</span>
-<span class="sd">        training : ``bool``</span>
-<span class="sd">            If the model is in training mode, by default ``False``</span>
-
-<span class="sd">        Returns</span>
-<span class="sd">        -------</span>
-<span class="sd">        tuple</span>
-<span class="sd">            the processed inputs and outputs for the model</span>
-
-<span class="sd">        Raises</span>
-<span class="sd">        ------</span>
-<span class="sd">        RuntimeError</span>
-<span class="sd">            Model cannot be used, we don&#39;t know the size of the input vector.</span>
-<span class="sd">        RuntimeError</span>
-<span class="sd">            Model cannot be used, we don&#39;t know the size of the output vector.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="n">all_data</span> <span class="o">=</span> <span class="n">dataset</span><span class="o">.</span><span class="n">get_data</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">dataset</span><span class="p">)))</span>
         <span class="n">obss</span> <span class="o">=</span> <span class="kc">None</span>
