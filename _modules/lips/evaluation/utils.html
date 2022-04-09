@@ -133,6 +133,7 @@
 
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="kn">from</span> <span class="nn">lips.metrics.power_grid</span> <span class="kn">import</span> <span class="n">physics_compliances</span>
+        <span class="kn">from</span> <span class="nn">lips.metrics.power_grid.verify_voltage_equality</span> <span class="kn">import</span> <span class="n">verify_voltage_at_bus</span>
         <span class="kn">from</span> <span class="nn">lips.metrics</span> <span class="kn">import</span> <span class="n">DEFAULT_METRICS</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">criteria</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">DEFAULT_METRICS</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">criteria</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">CURRENT_POS</span><span class="o">=</span><span class="n">physics_compliances</span><span class="o">.</span><span class="n">verify_current_pos</span><span class="p">)</span>
@@ -143,6 +144,7 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">criteria</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">CHECK_LOSS</span><span class="o">=</span><span class="n">physics_compliances</span><span class="o">.</span><span class="n">verify_loss</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">criteria</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">CHECK_LCE</span><span class="o">=</span><span class="n">physics_compliances</span><span class="o">.</span><span class="n">verify_energy_conservation</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">criteria</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">CHECK_KCL</span><span class="o">=</span><span class="n">physics_compliances</span><span class="o">.</span><span class="n">verify_kcl</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">criteria</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">CHECK_VOLTAGE_EQ</span><span class="o">=</span><span class="n">verify_voltage_at_bus</span><span class="p">)</span>
 
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">criteria</span></div>
 

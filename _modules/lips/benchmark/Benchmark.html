@@ -104,7 +104,7 @@
 <span class="kn">from</span> <span class="nn">..dataset</span> <span class="kn">import</span> <span class="n">DataSet</span>
 
 
-<div class="viewcode-block" id="Benchmark"><a class="viewcode-back" href="../../../lips.benchmark.html#lips.benchmark.Benchmark">[docs]</a><span class="k">class</span> <span class="nc">Benchmark</span><span class="p">(</span><span class="n">ABC</span><span class="p">):</span>
+<div class="viewcode-block" id="Benchmark"><a class="viewcode-back" href="../../../lips.benchmark.html#lips.benchmark.Benchmark.Benchmark">[docs]</a><span class="k">class</span> <span class="nc">Benchmark</span><span class="p">(</span><span class="n">ABC</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;Benchmark Base Class</span>
 
 <span class="sd">    Benchmark class that takes a test dataset, a simulator (physical or augmented) and an</span>
@@ -166,7 +166,7 @@
             <span class="c1"># use the user-defined evaluation object</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">evaluation</span> <span class="o">=</span> <span class="n">evaluation</span>
 
-<div class="viewcode-block" id="Benchmark.evaluate_simulator"><a class="viewcode-back" href="../../../lips.benchmark.html#lips.benchmark.Benchmark.evaluate_simulator">[docs]</a>    <span class="nd">@abstractmethod</span>
+<div class="viewcode-block" id="Benchmark.evaluate_simulator"><a class="viewcode-back" href="../../../lips.benchmark.html#lips.benchmark.Benchmark.Benchmark.evaluate_simulator">[docs]</a>    <span class="nd">@abstractmethod</span>
     <span class="k">def</span> <span class="nf">evaluate_simulator</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span>
                            <span class="n">dataset</span><span class="p">:</span> <span class="n">DataSet</span><span class="p">,</span>
                            <span class="n">augmented_simulator</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="n">PhysicalSimulator</span><span class="p">,</span> <span class="n">AugmentedSimulator</span><span class="p">,</span> <span class="kc">None</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>

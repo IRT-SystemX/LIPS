@@ -160,7 +160,10 @@
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        retrun a dictionary of all the config options</span>
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="k">return</span> <span class="nb">dict</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">config</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">section_name</span><span class="p">]</span><span class="o">.</span><span class="n">items</span><span class="p">())</span></div>
+        <span class="n">my_dict</span> <span class="o">=</span> <span class="p">{}</span>
+        <span class="k">for</span> <span class="n">key_</span><span class="p">,</span> <span class="n">item_</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">config</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">section_name</span><span class="p">]</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+            <span class="n">my_dict</span><span class="p">[</span><span class="n">key_</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_str_to_list</span><span class="p">(</span><span class="n">item_</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">my_dict</span></div>
 
 <div class="viewcode-block" id="ConfigManager.edit_config_option"><a class="viewcode-back" href="../../../lips.config.html#lips.config.ConfigManager.edit_config_option">[docs]</a>    <span class="k">def</span> <span class="nf">edit_config_option</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span>
                            <span class="n">option</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
