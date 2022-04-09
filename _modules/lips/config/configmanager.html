@@ -40,14 +40,14 @@
 </ul>
 <p class="caption" role="heading"><span class="caption-text">TECHNICAL DOCUMENTATION</span></p>
 <ul>
-<li class="toctree-l1"><a class="reference internal" href="../../../lips.augmented_simulators.html">augmented_simulators package</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../../../lips.benchmark.html">benchmark package</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../lips.augmented_simulators.html">lips.augmented_simulators package</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../lips.benchmark.html">lips.benchmark package</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../lips.config.html">lips.config package</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../lips.dataset.html">lips.dataset package</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../lips.evaluation.html">lips.evaluation package</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../lips.logger.html">lips.logger package</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../../../lips.metrics.power_grid.html">metrics.power_grid package</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../lips.metrics.html">lips.metrics package</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../lips.neurips_benchmark.html">lips.neurips_benchmark package</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../lips.physical_simulator.html">lips.physical_simulator package</a></li>
 </ul>
 <p class="caption" role="heading"><span class="caption-text">GUIDE</span></p>
@@ -100,7 +100,7 @@
 <span class="kn">import</span> <span class="nn">ast</span>
 <span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Union</span>
 
-<div class="viewcode-block" id="ConfigManager"><a class="viewcode-back" href="../../../lips.config.html#lips.config.configmanager.ConfigManager">[docs]</a><span class="k">class</span> <span class="nc">ConfigManager</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
+<div class="viewcode-block" id="ConfigManager"><a class="viewcode-back" href="../../../lips.config.html#lips.config.ConfigManager">[docs]</a><span class="k">class</span> <span class="nc">ConfigManager</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    This class ease the use of config parser for the framework</span>
 <span class="sd">    &quot;&quot;&quot;</span>
@@ -121,7 +121,7 @@
         <span class="k">if</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">exists</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">path_config</span><span class="p">):</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">config</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_read_config</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">path_config</span><span class="p">)</span>
 
-<div class="viewcode-block" id="ConfigManager.create_config"><a class="viewcode-back" href="../../../lips.config.html#lips.config.configmanager.ConfigManager.create_config">[docs]</a>    <span class="k">def</span> <span class="nf">create_config</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span>
+<div class="viewcode-block" id="ConfigManager.create_config"><a class="viewcode-back" href="../../../lips.config.html#lips.config.ConfigManager.create_config">[docs]</a>    <span class="k">def</span> <span class="nf">create_config</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span>
                       <span class="n">scenario_name</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="kc">None</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
                       <span class="n">path</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="kc">None</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
                       <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
@@ -147,7 +147,7 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">_write_config</span><span class="p">(</span><span class="n">path</span><span class="p">)</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">config</span></div>
 
-<div class="viewcode-block" id="ConfigManager.get_option"><a class="viewcode-back" href="../../../lips.config.html#lips.config.configmanager.ConfigManager.get_option">[docs]</a>    <span class="k">def</span> <span class="nf">get_option</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">option</span><span class="p">:</span><span class="nb">str</span><span class="p">):</span>
+<div class="viewcode-block" id="ConfigManager.get_option"><a class="viewcode-back" href="../../../lips.config.html#lips.config.ConfigManager.get_option">[docs]</a>    <span class="k">def</span> <span class="nf">get_option</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">option</span><span class="p">:</span><span class="nb">str</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        return the value for an option under a list format</span>
 <span class="sd">        &quot;&quot;&quot;</span>
@@ -156,13 +156,13 @@
             <span class="n">option</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_str_to_list</span><span class="p">(</span><span class="n">option</span><span class="p">)</span>
         <span class="k">return</span> <span class="n">option</span></div>
 
-<div class="viewcode-block" id="ConfigManager.get_options_dict"><a class="viewcode-back" href="../../../lips.config.html#lips.config.configmanager.ConfigManager.get_options_dict">[docs]</a>    <span class="k">def</span> <span class="nf">get_options_dict</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<div class="viewcode-block" id="ConfigManager.get_options_dict"><a class="viewcode-back" href="../../../lips.config.html#lips.config.ConfigManager.get_options_dict">[docs]</a>    <span class="k">def</span> <span class="nf">get_options_dict</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        retrun a dictionary of all the config options</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="nb">dict</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">config</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">section_name</span><span class="p">]</span><span class="o">.</span><span class="n">items</span><span class="p">())</span></div>
 
-<div class="viewcode-block" id="ConfigManager.edit_config_option"><a class="viewcode-back" href="../../../lips.config.html#lips.config.configmanager.ConfigManager.edit_config_option">[docs]</a>    <span class="k">def</span> <span class="nf">edit_config_option</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span>
+<div class="viewcode-block" id="ConfigManager.edit_config_option"><a class="viewcode-back" href="../../../lips.config.html#lips.config.ConfigManager.edit_config_option">[docs]</a>    <span class="k">def</span> <span class="nf">edit_config_option</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span>
                            <span class="n">option</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
                            <span class="n">value</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="kc">None</span><span class="p">]</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
                            <span class="n">scenario_name</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="kc">None</span><span class="p">]</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
@@ -177,7 +177,7 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">config</span><span class="o">.</span><span class="n">set</span><span class="p">(</span><span class="n">scenario_name</span><span class="p">,</span> <span class="n">option</span><span class="p">,</span> <span class="n">value</span><span class="p">)</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">config</span></div>
 
-<div class="viewcode-block" id="ConfigManager.remove_section"><a class="viewcode-back" href="../../../lips.config.html#lips.config.configmanager.ConfigManager.remove_section">[docs]</a>    <span class="k">def</span> <span class="nf">remove_section</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">section_name</span><span class="p">:</span> <span class="nb">str</span><span class="p">):</span>
+<div class="viewcode-block" id="ConfigManager.remove_section"><a class="viewcode-back" href="../../../lips.config.html#lips.config.ConfigManager.remove_section">[docs]</a>    <span class="k">def</span> <span class="nf">remove_section</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">section_name</span><span class="p">:</span> <span class="nb">str</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        remove a section from the config file</span>
 
@@ -189,7 +189,7 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">config</span><span class="o">.</span><span class="n">remove_section</span><span class="p">(</span><span class="n">section_name</span><span class="p">)</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">config</span></div>
 
-<div class="viewcode-block" id="ConfigManager.remove_config_option"><a class="viewcode-back" href="../../../lips.config.html#lips.config.configmanager.ConfigManager.remove_config_option">[docs]</a>    <span class="k">def</span> <span class="nf">remove_config_option</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span>
+<div class="viewcode-block" id="ConfigManager.remove_config_option"><a class="viewcode-back" href="../../../lips.config.html#lips.config.ConfigManager.remove_config_option">[docs]</a>    <span class="k">def</span> <span class="nf">remove_config_option</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span>
                              <span class="n">option</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="kc">None</span><span class="p">],</span>
                              <span class="n">scenario_name</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="kc">None</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>

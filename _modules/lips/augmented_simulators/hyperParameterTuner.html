@@ -40,14 +40,14 @@
 </ul>
 <p class="caption" role="heading"><span class="caption-text">TECHNICAL DOCUMENTATION</span></p>
 <ul>
-<li class="toctree-l1"><a class="reference internal" href="../../../lips.augmented_simulators.html">augmented_simulators package</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../../../lips.benchmark.html">benchmark package</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../lips.augmented_simulators.html">lips.augmented_simulators package</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../lips.benchmark.html">lips.benchmark package</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../lips.config.html">lips.config package</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../lips.dataset.html">lips.dataset package</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../lips.evaluation.html">lips.evaluation package</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../lips.logger.html">lips.logger package</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../../../lips.metrics.power_grid.html">metrics.power_grid package</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../lips.metrics.html">lips.metrics package</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../lips.neurips_benchmark.html">lips.neurips_benchmark package</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../lips.physical_simulator.html">lips.physical_simulator package</a></li>
 </ul>
 <p class="caption" role="heading"><span class="caption-text">GUIDE</span></p>
@@ -88,35 +88,63 @@
 <span class="c1"># you can obtain one at http://mozilla.org/MPL/2.0/.</span>
 <span class="c1"># SPDX-License-Identifier: MPL-2.0</span>
 <span class="c1"># This file is part of LIPS, LIPS is a python platform for power networks benchmarking</span>
+<span class="kn">from</span> <span class="nn">.</span> <span class="kn">import</span> <span class="n">AugmentedSimulator</span>
 
-
-<div class="viewcode-block" id="HyperParameterTuner"><a class="viewcode-back" href="../../../lips.augmented_simulators.html#lips.augmented_simulators.hyperParameterTuner.HyperParameterTuner">[docs]</a><span class="k">class</span> <span class="nc">HyperParameterTuner</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
+<div class="viewcode-block" id="HyperParameterTuner"><a class="viewcode-back" href="../../../lips.augmented_simulators.html#lips.augmented_simulators.HyperParameterTuner">[docs]</a><span class="k">class</span> <span class="nc">HyperParameterTuner</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    A class providing the functionality to tune the hyper-parameters of the &quot;fullyConnectedAS&quot;</span>
 <span class="sd">    augmented simulator.</span>
 
-<span class="sd">    params</span>
-<span class="sd">    ------</span>
-<span class="sd">        augmented_simulator: ``object`` of class ``AugmentedSimulator``</span>
-<span class="sd">            an augmented simulator like fullyConnectedAs or LeapNet</span>
+<span class="sd">    Attributes</span>
+<span class="sd">    ----------</span>
+<span class="sd">    augmented_simulator: AugmentedSimulator</span>
+<span class="sd">        an augmented simulator like fullyConnectedAs or LeapNet</span>
 <span class="sd">    &quot;&quot;&quot;</span>
-    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">augmented_simulator</span><span class="p">):</span>
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">augmented_simulator</span><span class="p">:</span> <span class="n">AugmentedSimulator</span><span class="p">):</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">augmented_simulator</span> <span class="o">=</span> <span class="n">augmented_simulator</span>
 
-<div class="viewcode-block" id="HyperParameterTuner.tune"><a class="viewcode-back" href="../../../lips.augmented_simulators.html#lips.augmented_simulators.hyperParameterTuner.HyperParameterTuner.tune">[docs]</a>    <span class="k">def</span> <span class="nf">tune</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span>
-             <span class="n">dataset</span><span class="p">,</span> 
-             <span class="n">sizes_layer</span><span class="o">=</span><span class="p">[(</span><span class="mi">150</span><span class="p">,</span><span class="mi">150</span><span class="p">)],</span> 
-             <span class="n">layer_act</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;relu&quot;</span><span class="p">],</span> 
-             <span class="n">lr</span><span class="o">=</span><span class="p">[</span><span class="mf">3e-4</span><span class="p">],</span> 
-             <span class="n">batch_size</span><span class="o">=</span><span class="p">[</span><span class="mi">128</span><span class="p">],</span> 
-             <span class="n">epochs</span><span class="o">=</span><span class="p">[</span><span class="mi">5</span><span class="p">],</span> 
-             <span class="n">loss</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;mse&quot;</span><span class="p">],</span> 
-             <span class="n">n_folds</span><span class="o">=</span><span class="mi">3</span><span class="p">,</span> 
-             <span class="n">verbose</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> 
-             <span class="n">n_jobs</span><span class="o">=</span><span class="mi">1</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+<div class="viewcode-block" id="HyperParameterTuner.tune"><a class="viewcode-back" href="../../../lips.augmented_simulators.html#lips.augmented_simulators.HyperParameterTuner.tune">[docs]</a>    <span class="k">def</span> <span class="nf">tune</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span>
+             <span class="n">dataset</span><span class="p">:</span> <span class="nb">dict</span><span class="p">,</span>
+             <span class="n">sizes_layer</span><span class="p">:</span> <span class="nb">tuple</span><span class="o">=</span><span class="p">((</span><span class="mi">150</span><span class="p">,</span><span class="mi">150</span><span class="p">),),</span>
+             <span class="n">layer_act</span><span class="p">:</span> <span class="nb">tuple</span><span class="o">=</span><span class="p">(</span><span class="s2">&quot;relu&quot;</span><span class="p">,),</span>
+             <span class="n">lr</span><span class="p">:</span> <span class="nb">tuple</span><span class="o">=</span><span class="p">(</span><span class="mf">3e-4</span><span class="p">,),</span>
+             <span class="n">batch_size</span><span class="p">:</span> <span class="nb">tuple</span><span class="o">=</span><span class="p">(</span><span class="mi">128</span><span class="p">,),</span>
+             <span class="n">epochs</span><span class="p">:</span> <span class="nb">tuple</span><span class="o">=</span><span class="p">(</span><span class="mi">5</span><span class="p">,),</span>
+             <span class="n">loss</span><span class="p">:</span> <span class="nb">tuple</span><span class="o">=</span><span class="p">(</span><span class="s2">&quot;mse&quot;</span><span class="p">,),</span>
+             <span class="n">n_folds</span><span class="p">:</span> <span class="nb">int</span><span class="o">=</span><span class="mi">3</span><span class="p">,</span>
+             <span class="n">verbose</span><span class="p">:</span> <span class="nb">int</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span>
+             <span class="n">n_jobs</span><span class="p">:</span> <span class="nb">int</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot;function to tune the hyper-parameters</span>
 <span class="sd">        This function allows to run a grid search cross validation over a set of hyper parameters</span>
 <span class="sd">        All the parameters of this function except for dataset, epochs and number of folds could be a list</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        dataset : dict</span>
+<span class="sd">            dataset on which fine tuning should be performed</span>
+<span class="sd">        sizes_layer : tuple, optional</span>
+<span class="sd">            various layer sizes, by default ((150,150))</span>
+<span class="sd">        layer_act : tuple, optional</span>
+<span class="sd">            various activations, by default (&quot;relu&quot;)</span>
+<span class="sd">        lr : tuple, optional</span>
+<span class="sd">            various learning rates, by default (3e-4)</span>
+<span class="sd">        batch_size : tuple, optional</span>
+<span class="sd">            batch size used for training, by default (128)</span>
+<span class="sd">        epochs : tuple, optional</span>
+<span class="sd">            number of epochs for augmented simulator, by default (5)</span>
+<span class="sd">        loss : tuple, optional</span>
+<span class="sd">            the loss function of training phase, by default (&quot;mse&quot;)</span>
+<span class="sd">        n_folds : int, optional</span>
+<span class="sd">            number of folds in cross validation, by default 3</span>
+<span class="sd">        verbose : int, optional</span>
+<span class="sd">            verbosity, by default 1</span>
+<span class="sd">        n_jobs : int, optional</span>
+<span class="sd">            number of jobs used for parallelization, by default 1</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        dict</span>
+<span class="sd">            grid search results</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="n">processed_x</span><span class="p">,</span> <span class="n">processed_y</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">augmented_simulator</span><span class="o">.</span><span class="n">_process_all_dataset</span><span class="p">(</span><span class="n">dataset</span><span class="p">,</span> <span class="n">training</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
 
@@ -145,10 +173,28 @@
                        <span class="n">layer_act</span><span class="o">=</span><span class="s2">&quot;relu&quot;</span><span class="p">,</span>
                        <span class="n">lr</span><span class="o">=</span><span class="mf">3e-4</span><span class="p">,</span>
                        <span class="n">loss</span><span class="o">=</span><span class="s2">&quot;mse&quot;</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;create the model</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        sizes_layer : tuple, optional</span>
+<span class="sd">            model layer sizes, by default (150,150)</span>
+<span class="sd">        layer_act : str, optional</span>
+<span class="sd">            activation function, by default &quot;relu&quot;</span>
+<span class="sd">        lr : _type_, optional</span>
+<span class="sd">            learning rate, by default 3e-4</span>
+<span class="sd">        loss : str, optional</span>
+<span class="sd">            loss function, by default &quot;mse&quot;</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        AugmentedSimulator._model</span>
+<span class="sd">            the model to be finetuned</span>
+<span class="sd">        &quot;&quot;&quot;</span>
         <span class="kn">import</span> <span class="nn">tensorflow.keras.optimizers</span> <span class="k">as</span> <span class="nn">tfko</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">augmented_simulator</span><span class="o">.</span><span class="n">sizes_layer</span> <span class="o">=</span> <span class="n">sizes_layer</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">augmented_simulator</span><span class="o">.</span><span class="n">layer_act</span> <span class="o">=</span> <span class="n">layer_act</span>
-        
+
         <span class="bp">self</span><span class="o">.</span><span class="n">augmented_simulator</span><span class="o">.</span><span class="n">init</span><span class="p">()</span>
         <span class="n">optimizer</span> <span class="o">=</span> <span class="n">tfko</span><span class="o">.</span><span class="n">Adam</span><span class="p">(</span><span class="n">learning_rate</span><span class="o">=</span><span class="n">lr</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">augmented_simulator</span><span class="o">.</span><span class="n">_model</span><span class="o">.</span><span class="n">compile</span><span class="p">(</span><span class="n">optimizer</span><span class="o">=</span><span class="n">optimizer</span><span class="p">,</span> <span class="n">loss</span><span class="o">=</span><span class="n">loss</span><span class="p">,</span> <span class="n">metrics</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;mae&quot;</span><span class="p">])</span>

@@ -18,8 +18,8 @@
     <script src="_static/js/theme.js"></script>
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" />
-    <link rel="next" title="lips.physical_simulator package" href="lips.physical_simulator.html" />
-    <link rel="prev" title="metrics.power_grid package" href="lips.metrics.power_grid.html" /> 
+    <link rel="next" title="lips.metrics.power_grid package" href="lips.metrics.power_grid.html" />
+    <link rel="prev" title="lips.logger package" href="lips.logger.html" /> 
 </head>
 
 <body class="wy-body-for-nav"> 
@@ -43,20 +43,22 @@
 </ul>
 <p class="caption" role="heading"><span class="caption-text">TECHNICAL DOCUMENTATION</span></p>
 <ul class="current">
-<li class="toctree-l1"><a class="reference internal" href="lips.augmented_simulators.html">augmented_simulators package</a></li>
-<li class="toctree-l1"><a class="reference internal" href="lips.benchmark.html">benchmark package</a></li>
+<li class="toctree-l1"><a class="reference internal" href="lips.augmented_simulators.html">lips.augmented_simulators package</a></li>
+<li class="toctree-l1"><a class="reference internal" href="lips.benchmark.html">lips.benchmark package</a></li>
 <li class="toctree-l1"><a class="reference internal" href="lips.config.html">lips.config package</a></li>
 <li class="toctree-l1"><a class="reference internal" href="lips.dataset.html">lips.dataset package</a></li>
 <li class="toctree-l1"><a class="reference internal" href="lips.evaluation.html">lips.evaluation package</a></li>
 <li class="toctree-l1"><a class="reference internal" href="lips.logger.html">lips.logger package</a></li>
-<li class="toctree-l1"><a class="reference internal" href="lips.metrics.power_grid.html">metrics.power_grid package</a></li>
 <li class="toctree-l1 current"><a class="current reference internal" href="#">lips.metrics package</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="#subpackages">Subpackages</a><ul>
-<li class="toctree-l3"><a class="reference internal" href="lips.metrics.power_grid.html">metrics.power_grid package</a></li>
+<li class="toctree-l3"><a class="reference internal" href="lips.metrics.power_grid.html">lips.metrics.power_grid package</a></li>
 </ul>
 </li>
+<li class="toctree-l2"><a class="reference internal" href="#submodules">Submodules</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#module-lips.metrics.ml_metrics">lips.metrics.ml_metrics module</a></li>
 </ul>
 </li>
+<li class="toctree-l1"><a class="reference internal" href="lips.neurips_benchmark.html">lips.neurips_benchmark package</a></li>
 <li class="toctree-l1"><a class="reference internal" href="lips.physical_simulator.html">lips.physical_simulator package</a></li>
 </ul>
 <p class="caption" role="heading"><span class="caption-text">GUIDE</span></p>
@@ -89,20 +91,341 @@
           <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
            <div itemprop="articleBody">
              
-  <section id="lips-metrics-package">
-<h1>lips.metrics package<a class="headerlink" href="#lips-metrics-package" title="Permalink to this headline"></a></h1>
+  <section id="module-lips.metrics">
+<span id="lips-metrics-package"></span><h1>lips.metrics package<a class="headerlink" href="#module-lips.metrics" title="Permalink to this headline"></a></h1>
+<dl class="simple">
+<dt>Usage:</dt><dd><p>Init file for metrics module</p>
+</dd>
+<dt>Licence:</dt><dd><p>Copyright (c) 2021, IRT SystemX (<a class="reference external" href="https://www.irt-systemx.fr/en/">https://www.irt-systemx.fr/en/</a>)
+See AUTHORS.txt
+This Source Code Form is subject to the terms of the Mozilla Public License, version 2.0.
+If a copy of the Mozilla Public License, version 2.0 was not distributed with this file,
+you can obtain one at <a class="reference external" href="http://mozilla.org/MPL/2.0/">http://mozilla.org/MPL/2.0/</a>.
+SPDX-License-Identifier: MPL-2.0
+This file is part of LIPS, LIPS is a python platform for power networks benchmarking</p>
+</dd>
+</dl>
+<p><strong>Functions:</strong></p>
+<table class="autosummary longtable docutils align-default">
+<colgroup>
+<col style="width: 10%" />
+<col style="width: 90%" />
+</colgroup>
+<tbody>
+<tr class="row-odd"><td><p><a class="reference internal" href="#lips.metrics.mape_quantile" title="lips.metrics.mape_quantile"><code class="xref py py-obj docutils literal notranslate"><span class="pre">mape_quantile</span></code></a>(y_true, y_pred[, multioutput, ...])</p></td>
+<td><p>Computes the &quot;MAPE&quot; norm (mean absolute percentage error) but only on the <cite>q</cite> highest values column wise.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#lips.metrics.nrmse" title="lips.metrics.nrmse"><code class="xref py py-obj docutils literal notranslate"><span class="pre">nrmse</span></code></a>(y_true, y_pred[, multioutput, threshold])</p></td>
+<td><p>Computes the &quot;normalized RMSE&quot; norm.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#lips.metrics.mape" title="lips.metrics.mape"><code class="xref py py-obj docutils literal notranslate"><span class="pre">mape</span></code></a>(y_true, y_pred[, multioutput, threshold])</p></td>
+<td><p>Computes the &quot;MAPE&quot; norm (mean absolute percentage error).</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#lips.metrics.pearson_r" title="lips.metrics.pearson_r"><code class="xref py py-obj docutils literal notranslate"><span class="pre">pearson_r</span></code></a>(y_true, y_pred[, multioutput, ...])</p></td>
+<td><p>Compute the pearson correlation coefficient given two matrices y_true and y_pred.</p></td>
+</tr>
+</tbody>
+</table>
+<dl class="py function">
+<dt class="sig sig-object py" id="lips.metrics.mape_quantile">
+<span class="sig-prename descclassname"><span class="pre">lips.metrics.</span></span><span class="sig-name descname"><span class="pre">mape_quantile</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">y_true</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">y_pred</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">multioutput</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'uniform'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">quantile</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0.1</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">Union</span><span class="p"><span class="pre">[</span></span><span class="pre">float</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">numpy.ndarray</span><span class="p"><span class="pre">]</span></span></span></span><a class="reference internal" href="_modules/lips/metrics/ml_metrics.html#mape_quantile"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#lips.metrics.mape_quantile" title="Permalink to this definition"></a></dt>
+<dd><p>Computes the “MAPE” norm (mean absolute percentage error) but only on the <cite>q</cite> highest values column wise.
+This is a domain specific metric, used for example when we are interested in predicting correctly
+the highest values of a given variable.
+if multioutput is “uniform” then a single number is returned and it consists in taking the average of the previous
+vector.</p>
+<p class="rubric">Notes</p>
+<p>This function completely ignores the values where <cite>y_true</cite> are such that <cite>|y_true| &lt; threshold</cite>. It only considers
+values of y_true above the <cite>threshold</cite>.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>y_true</strong> (<code class="docutils literal notranslate"><span class="pre">numpy.ndarray</span></code>) – The true values. Each rows is an example, each column is a variable.</p></li>
+<li><p><strong>y_pred</strong> (<code class="docutils literal notranslate"><span class="pre">numpy.ndarray</span></code>) – The predicted values. Its shape should match the one from <cite>y_true</cite></p></li>
+<li><p><strong>multioutput</strong> (<code class="docutils literal notranslate"><span class="pre">str</span></code>) – Whether or not to aggregate the returned values</p></li>
+<li><p><strong>quantile</strong> (<code class="docutils literal notranslate"><span class="pre">float</span></code>) – The highest ratio to keep. For example, if <cite>quantile=0.1</cite> (default) the 10% highest values are kept.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>If <cite>multioutput</cite> is “uniform” it will return a floating point number, otherwise it will return a vector
+with as many component as the number of columns in y_true an y_pred.</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>Union[float, np.ndarray]</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="lips.metrics.nrmse">
+<span class="sig-prename descclassname"><span class="pre">lips.metrics.</span></span><span class="sig-name descname"><span class="pre">nrmse</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">y_true</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">y_pred</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">multioutput</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'uniform'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">threshold</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1.0</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">Union</span><span class="p"><span class="pre">[</span></span><span class="pre">float</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">numpy.ndarray</span><span class="p"><span class="pre">]</span></span></span></span><a class="reference internal" href="_modules/lips/metrics/ml_metrics.html#nrmse"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#lips.metrics.nrmse" title="Permalink to this definition"></a></dt>
+<dd><p>Computes the “normalized RMSE” norm.
+This norms compute the mean squared error (average over the rows of the square of the difference between y_true
+and y_pred). This gives a vector with as many elements as the number of columns of y_true and y_pred.
+Then it computes the RMSE by taking the square root of each numbers.
+Then, this rmse vector is divided by the the ‘max - min’ over each column, which is the “normalization”.
+if multioutput is “uniform” then a single number is returned and it consists in taking the average of the previous
+vector.</p>
+<p class="rubric">Notes</p>
+<p>If the difference ‘max - min’ for a column is bellow the threshold (by default 1.) it is replaced by this threshold.
+This has been implemented to avoid numerical instability when some columns are almost equal everywhere (this can
+happen in the power system settings: for example some voltages are always constant). You can put “0.” to
+deactivate this feature.
+The shapes of y_true and y_pred should match.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>y_true</strong> (<code class="docutils literal notranslate"><span class="pre">numpy.ndarray</span></code>) – The true values. Each rows is an example, each column is a variable.</p></li>
+<li><p><strong>y_pred</strong> (<code class="docutils literal notranslate"><span class="pre">numpy.ndarray</span></code>) – The predicted values. Its shape should match the one from <cite>y_true</cite></p></li>
+<li><p><strong>multioutput</strong> (<code class="docutils literal notranslate"><span class="pre">str</span></code>) – Whether or not to aggregate the returned values</p></li>
+<li><p><strong>threshold</strong> (<code class="docutils literal notranslate"><span class="pre">float</span></code>) – The the section “Notes” for more information. This should be a floating point number &gt;= 0.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>If <cite>multioutput</cite> is “uniform” it will return a floating point number, otherwise it will return a vector
+with as many component as the number of columns in y_true an y_pred.</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>Union[<code class="docutils literal notranslate"><span class="pre">float</span></code>, <code class="docutils literal notranslate"><span class="pre">numpy.ndarray</span></code>]</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="lips.metrics.mape">
+<span class="sig-prename descclassname"><span class="pre">lips.metrics.</span></span><span class="sig-name descname"><span class="pre">mape</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">y_true</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">y_pred</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">multioutput</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'uniform'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">threshold</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1.0</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">Union</span><span class="p"><span class="pre">[</span></span><span class="pre">float</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">numpy.ndarray</span><span class="p"><span class="pre">]</span></span></span></span><a class="reference internal" href="_modules/lips/metrics/ml_metrics.html#mape"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#lips.metrics.mape" title="Permalink to this definition"></a></dt>
+<dd><p>Computes the “MAPE” norm (mean absolute percentage error).
+if multioutput is “uniform” then a single number is returned and it consists in taking the average of the previous
+vector.</p>
+<p class="rubric">Notes</p>
+<p>This function completely ignores the values where <cite>y_true</cite> are such that <cite>|y_true| &lt; threshold</cite>. It only considers
+values of y_true above the <cite>threshold</cite>.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>y_true</strong> (<code class="docutils literal notranslate"><span class="pre">numpy.ndarray</span></code>) – The true values. Each rows is an example, each column is a variable.</p></li>
+<li><p><strong>y_pred</strong> (<code class="docutils literal notranslate"><span class="pre">numpy.ndarray</span></code>) – The predicted values. Its shape should match the one from <cite>y_true</cite></p></li>
+<li><p><strong>multioutput</strong> (<code class="docutils literal notranslate"><span class="pre">str</span></code>) – Whether or not to aggregate the returned values</p></li>
+<li><p><strong>threshold</strong> (<code class="docutils literal notranslate"><span class="pre">float</span></code>) – The the section “Notes” for more information. This should be a floating point number &gt;= 0.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>If <cite>multioutput</cite> is “uniform” it will return a floating point number, otherwise it will return a vector
+with as many component as the number of columns in y_true an y_pred.</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>Union[float, np.ndarray]</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="lips.metrics.pearson_r">
+<span class="sig-prename descclassname"><span class="pre">lips.metrics.</span></span><span class="sig-name descname"><span class="pre">pearson_r</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">y_true</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">y_pred</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">multioutput</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'uniform'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">threshold</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1.0</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">Union</span><span class="p"><span class="pre">[</span></span><span class="pre">float</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">numpy.ndarray</span><span class="p"><span class="pre">]</span></span></span></span><a class="reference internal" href="_modules/lips/metrics/ml_metrics.html#pearson_r"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#lips.metrics.pearson_r" title="Permalink to this definition"></a></dt>
+<dd><p>Compute the pearson correlation coefficient given two matrices y_true and y_pred.
+Each row is supposed to be an example (on which the pearson correlation coefficient) is computed. The computation
+happens independently for each column.</p>
+<p class="rubric">Notes</p>
+<p>If the difference ‘max - min’ for a column is bellow the threshold (by default 1.) this routines consider that
+the value is constant and thus do not compute the pearson correlation coefficient and returns “nan” instead.
+When multioutput is not “uniform” the average is computed only on the “non nan” variables. Nan component are
+ignored.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>y_true</strong> (<code class="docutils literal notranslate"><span class="pre">numpy.ndarray</span></code>) – The true values. Each rows is an example, each column is a variable.</p></li>
+<li><p><strong>y_pred</strong> (<code class="docutils literal notranslate"><span class="pre">numpy.ndarray</span></code>) – The predicted values. Its shape should match the one from <cite>y_true</cite></p></li>
+<li><p><strong>multioutput</strong> (<code class="docutils literal notranslate"><span class="pre">str</span></code>) – Whether or not to aggregate the returned values</p></li>
+<li><p><strong>threshold</strong> (<code class="docutils literal notranslate"><span class="pre">float</span></code>) – The the section “Notes” for more information. This should be a floating point number &gt;= 0.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>If <cite>multioutput</cite> is “uniform” it will return a floating point number corresponding to the average pearson
+correlation coefficient, otherwise it will return a vector with as many component as the number of columns
+in y_true an y_pred.</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>Union[float, np.ndarray]</p>
+</dd>
+</dl>
+</dd></dl>
+
 <section id="subpackages">
 <h2>Subpackages<a class="headerlink" href="#subpackages" title="Permalink to this headline"></a></h2>
 <div class="toctree-wrapper compound">
 <ul>
-<li class="toctree-l1"><a class="reference internal" href="lips.metrics.power_grid.html">metrics.power_grid package</a><ul>
+<li class="toctree-l1"><a class="reference internal" href="lips.metrics.power_grid.html">lips.metrics.power_grid package</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="lips.metrics.power_grid.html#submodules">Submodules</a></li>
-<li class="toctree-l2"><a class="reference internal" href="lips.metrics.power_grid.html#lips-metrics-power-grid-metric-percentage-module">lips.metrics.power_grid.metric_percentage module</a></li>
 <li class="toctree-l2"><a class="reference internal" href="lips.metrics.power_grid.html#module-lips.metrics.power_grid.physics_compliances">lips.metrics.power_grid.physics_compliances module</a></li>
 </ul>
 </li>
 </ul>
 </div>
+</section>
+<section id="submodules">
+<h2>Submodules<a class="headerlink" href="#submodules" title="Permalink to this headline"></a></h2>
+</section>
+<section id="module-lips.metrics.ml_metrics">
+<span id="lips-metrics-ml-metrics-module"></span><h2>lips.metrics.ml_metrics module<a class="headerlink" href="#module-lips.metrics.ml_metrics" title="Permalink to this headline"></a></h2>
+<dl class="simple">
+<dt>These functions are from :</dt><dd><p><a class="reference external" href="https://github.com/BDonnot/leap_net/blob/master/leap_net/metrics/mape.py">https://github.com/BDonnot/leap_net/blob/master/leap_net/metrics/mape.py</a>
+<a class="reference external" href="https://github.com/BDonnot/leap_net/blob/master/leap_net/metrics/mape_quantile.py">https://github.com/BDonnot/leap_net/blob/master/leap_net/metrics/mape_quantile.py</a>
+<a class="reference external" href="https://github.com/BDonnot/leap_net/blob/master/leap_net/metrics/nrmse.py">https://github.com/BDonnot/leap_net/blob/master/leap_net/metrics/nrmse.py</a></p>
+</dd>
+<dt>Licence:</dt><dd><p>Copyright (c) 2019-2020, RTE (<a class="reference external" href="https://www.rte-france.com">https://www.rte-france.com</a>)
+See AUTHORS.txt
+This Source Code Form is subject to the terms of the Mozilla Public License, version 2.0.
+If a copy of the Mozilla Public License, version 2.0 was not distributed with this file,
+you can obtain one at <a class="reference external" href="http://mozilla.org/MPL/2.0/">http://mozilla.org/MPL/2.0/</a>.
+SPDX-License-Identifier: MPL-2.0
+This file is part of leap_net, leap_net a keras implementation of the LEAP Net model.</p>
+</dd>
+</dl>
+<p><strong>Functions:</strong></p>
+<table class="autosummary longtable docutils align-default">
+<colgroup>
+<col style="width: 10%" />
+<col style="width: 90%" />
+</colgroup>
+<tbody>
+<tr class="row-odd"><td><p><a class="reference internal" href="#lips.metrics.ml_metrics.mape" title="lips.metrics.ml_metrics.mape"><code class="xref py py-obj docutils literal notranslate"><span class="pre">mape</span></code></a>(y_true, y_pred[, multioutput, threshold])</p></td>
+<td><p>Computes the &quot;MAPE&quot; norm (mean absolute percentage error).</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#lips.metrics.ml_metrics.mape_quantile" title="lips.metrics.ml_metrics.mape_quantile"><code class="xref py py-obj docutils literal notranslate"><span class="pre">mape_quantile</span></code></a>(y_true, y_pred[, multioutput, ...])</p></td>
+<td><p>Computes the &quot;MAPE&quot; norm (mean absolute percentage error) but only on the <cite>q</cite> highest values column wise.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#lips.metrics.ml_metrics.nrmse" title="lips.metrics.ml_metrics.nrmse"><code class="xref py py-obj docutils literal notranslate"><span class="pre">nrmse</span></code></a>(y_true, y_pred[, multioutput, threshold])</p></td>
+<td><p>Computes the &quot;normalized RMSE&quot; norm.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#lips.metrics.ml_metrics.pearson_r" title="lips.metrics.ml_metrics.pearson_r"><code class="xref py py-obj docutils literal notranslate"><span class="pre">pearson_r</span></code></a>(y_true, y_pred[, multioutput, ...])</p></td>
+<td><p>Compute the pearson correlation coefficient given two matrices y_true and y_pred.</p></td>
+</tr>
+</tbody>
+</table>
+<dl class="py function">
+<dt class="sig sig-object py" id="lips.metrics.ml_metrics.mape">
+<span class="sig-prename descclassname"><span class="pre">lips.metrics.ml_metrics.</span></span><span class="sig-name descname"><span class="pre">mape</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">y_true</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">y_pred</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">multioutput</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'uniform'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">threshold</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1.0</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">Union</span><span class="p"><span class="pre">[</span></span><span class="pre">float</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">numpy.ndarray</span><span class="p"><span class="pre">]</span></span></span></span><a class="reference internal" href="_modules/lips/metrics/ml_metrics.html#mape"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#lips.metrics.ml_metrics.mape" title="Permalink to this definition"></a></dt>
+<dd><p>Computes the “MAPE” norm (mean absolute percentage error).
+if multioutput is “uniform” then a single number is returned and it consists in taking the average of the previous
+vector.</p>
+<p class="rubric">Notes</p>
+<p>This function completely ignores the values where <cite>y_true</cite> are such that <cite>|y_true| &lt; threshold</cite>. It only considers
+values of y_true above the <cite>threshold</cite>.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>y_true</strong> (<code class="docutils literal notranslate"><span class="pre">numpy.ndarray</span></code>) – The true values. Each rows is an example, each column is a variable.</p></li>
+<li><p><strong>y_pred</strong> (<code class="docutils literal notranslate"><span class="pre">numpy.ndarray</span></code>) – The predicted values. Its shape should match the one from <cite>y_true</cite></p></li>
+<li><p><strong>multioutput</strong> (<code class="docutils literal notranslate"><span class="pre">str</span></code>) – Whether or not to aggregate the returned values</p></li>
+<li><p><strong>threshold</strong> (<code class="docutils literal notranslate"><span class="pre">float</span></code>) – The the section “Notes” for more information. This should be a floating point number &gt;= 0.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>If <cite>multioutput</cite> is “uniform” it will return a floating point number, otherwise it will return a vector
+with as many component as the number of columns in y_true an y_pred.</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>Union[float, np.ndarray]</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="lips.metrics.ml_metrics.mape_quantile">
+<span class="sig-prename descclassname"><span class="pre">lips.metrics.ml_metrics.</span></span><span class="sig-name descname"><span class="pre">mape_quantile</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">y_true</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">y_pred</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">multioutput</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'uniform'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">quantile</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0.1</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">Union</span><span class="p"><span class="pre">[</span></span><span class="pre">float</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">numpy.ndarray</span><span class="p"><span class="pre">]</span></span></span></span><a class="reference internal" href="_modules/lips/metrics/ml_metrics.html#mape_quantile"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#lips.metrics.ml_metrics.mape_quantile" title="Permalink to this definition"></a></dt>
+<dd><p>Computes the “MAPE” norm (mean absolute percentage error) but only on the <cite>q</cite> highest values column wise.
+This is a domain specific metric, used for example when we are interested in predicting correctly
+the highest values of a given variable.
+if multioutput is “uniform” then a single number is returned and it consists in taking the average of the previous
+vector.</p>
+<p class="rubric">Notes</p>
+<p>This function completely ignores the values where <cite>y_true</cite> are such that <cite>|y_true| &lt; threshold</cite>. It only considers
+values of y_true above the <cite>threshold</cite>.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>y_true</strong> (<code class="docutils literal notranslate"><span class="pre">numpy.ndarray</span></code>) – The true values. Each rows is an example, each column is a variable.</p></li>
+<li><p><strong>y_pred</strong> (<code class="docutils literal notranslate"><span class="pre">numpy.ndarray</span></code>) – The predicted values. Its shape should match the one from <cite>y_true</cite></p></li>
+<li><p><strong>multioutput</strong> (<code class="docutils literal notranslate"><span class="pre">str</span></code>) – Whether or not to aggregate the returned values</p></li>
+<li><p><strong>quantile</strong> (<code class="docutils literal notranslate"><span class="pre">float</span></code>) – The highest ratio to keep. For example, if <cite>quantile=0.1</cite> (default) the 10% highest values are kept.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>If <cite>multioutput</cite> is “uniform” it will return a floating point number, otherwise it will return a vector
+with as many component as the number of columns in y_true an y_pred.</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>Union[float, np.ndarray]</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="lips.metrics.ml_metrics.nrmse">
+<span class="sig-prename descclassname"><span class="pre">lips.metrics.ml_metrics.</span></span><span class="sig-name descname"><span class="pre">nrmse</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">y_true</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">y_pred</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">multioutput</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'uniform'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">threshold</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1.0</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">Union</span><span class="p"><span class="pre">[</span></span><span class="pre">float</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">numpy.ndarray</span><span class="p"><span class="pre">]</span></span></span></span><a class="reference internal" href="_modules/lips/metrics/ml_metrics.html#nrmse"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#lips.metrics.ml_metrics.nrmse" title="Permalink to this definition"></a></dt>
+<dd><p>Computes the “normalized RMSE” norm.
+This norms compute the mean squared error (average over the rows of the square of the difference between y_true
+and y_pred). This gives a vector with as many elements as the number of columns of y_true and y_pred.
+Then it computes the RMSE by taking the square root of each numbers.
+Then, this rmse vector is divided by the the ‘max - min’ over each column, which is the “normalization”.
+if multioutput is “uniform” then a single number is returned and it consists in taking the average of the previous
+vector.</p>
+<p class="rubric">Notes</p>
+<p>If the difference ‘max - min’ for a column is bellow the threshold (by default 1.) it is replaced by this threshold.
+This has been implemented to avoid numerical instability when some columns are almost equal everywhere (this can
+happen in the power system settings: for example some voltages are always constant). You can put “0.” to
+deactivate this feature.
+The shapes of y_true and y_pred should match.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>y_true</strong> (<code class="docutils literal notranslate"><span class="pre">numpy.ndarray</span></code>) – The true values. Each rows is an example, each column is a variable.</p></li>
+<li><p><strong>y_pred</strong> (<code class="docutils literal notranslate"><span class="pre">numpy.ndarray</span></code>) – The predicted values. Its shape should match the one from <cite>y_true</cite></p></li>
+<li><p><strong>multioutput</strong> (<code class="docutils literal notranslate"><span class="pre">str</span></code>) – Whether or not to aggregate the returned values</p></li>
+<li><p><strong>threshold</strong> (<code class="docutils literal notranslate"><span class="pre">float</span></code>) – The the section “Notes” for more information. This should be a floating point number &gt;= 0.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>If <cite>multioutput</cite> is “uniform” it will return a floating point number, otherwise it will return a vector
+with as many component as the number of columns in y_true an y_pred.</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>Union[<code class="docutils literal notranslate"><span class="pre">float</span></code>, <code class="docutils literal notranslate"><span class="pre">numpy.ndarray</span></code>]</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="lips.metrics.ml_metrics.pearson_r">
+<span class="sig-prename descclassname"><span class="pre">lips.metrics.ml_metrics.</span></span><span class="sig-name descname"><span class="pre">pearson_r</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">y_true</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">y_pred</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">multioutput</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'uniform'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">threshold</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1.0</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">Union</span><span class="p"><span class="pre">[</span></span><span class="pre">float</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">numpy.ndarray</span><span class="p"><span class="pre">]</span></span></span></span><a class="reference internal" href="_modules/lips/metrics/ml_metrics.html#pearson_r"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#lips.metrics.ml_metrics.pearson_r" title="Permalink to this definition"></a></dt>
+<dd><p>Compute the pearson correlation coefficient given two matrices y_true and y_pred.
+Each row is supposed to be an example (on which the pearson correlation coefficient) is computed. The computation
+happens independently for each column.</p>
+<p class="rubric">Notes</p>
+<p>If the difference ‘max - min’ for a column is bellow the threshold (by default 1.) this routines consider that
+the value is constant and thus do not compute the pearson correlation coefficient and returns “nan” instead.
+When multioutput is not “uniform” the average is computed only on the “non nan” variables. Nan component are
+ignored.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>y_true</strong> (<code class="docutils literal notranslate"><span class="pre">numpy.ndarray</span></code>) – The true values. Each rows is an example, each column is a variable.</p></li>
+<li><p><strong>y_pred</strong> (<code class="docutils literal notranslate"><span class="pre">numpy.ndarray</span></code>) – The predicted values. Its shape should match the one from <cite>y_true</cite></p></li>
+<li><p><strong>multioutput</strong> (<code class="docutils literal notranslate"><span class="pre">str</span></code>) – Whether or not to aggregate the returned values</p></li>
+<li><p><strong>threshold</strong> (<code class="docutils literal notranslate"><span class="pre">float</span></code>) – The the section “Notes” for more information. This should be a floating point number &gt;= 0.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>If <cite>multioutput</cite> is “uniform” it will return a floating point number corresponding to the average pearson
+correlation coefficient, otherwise it will return a vector with as many component as the number of columns
+in y_true an y_pred.</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>Union[float, np.ndarray]</p>
+</dd>
+</dl>
+</dd></dl>
+
 </section>
 </section>
 
@@ -110,8 +433,8 @@
            </div>
           </div>
           <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
-        <a href="lips.metrics.power_grid.html" class="btn btn-neutral float-left" title="metrics.power_grid package" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
-        <a href="lips.physical_simulator.html" class="btn btn-neutral float-right" title="lips.physical_simulator package" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+        <a href="lips.logger.html" class="btn btn-neutral float-left" title="lips.logger package" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="lips.metrics.power_grid.html" class="btn btn-neutral float-right" title="lips.metrics.power_grid package" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
     </div>
 
   <hr/>

@@ -40,14 +40,14 @@
 </ul>
 <p class="caption" role="heading"><span class="caption-text">TECHNICAL DOCUMENTATION</span></p>
 <ul>
-<li class="toctree-l1"><a class="reference internal" href="../../../lips.augmented_simulators.html">augmented_simulators package</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../../../lips.benchmark.html">benchmark package</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../lips.augmented_simulators.html">lips.augmented_simulators package</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../lips.benchmark.html">lips.benchmark package</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../lips.config.html">lips.config package</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../lips.dataset.html">lips.dataset package</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../lips.evaluation.html">lips.evaluation package</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../lips.logger.html">lips.logger package</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../../../lips.metrics.power_grid.html">metrics.power_grid package</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../lips.metrics.html">lips.metrics package</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../lips.neurips_benchmark.html">lips.neurips_benchmark package</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../lips.physical_simulator.html">lips.physical_simulator package</a></li>
 </ul>
 <p class="caption" role="heading"><span class="caption-text">GUIDE</span></p>
@@ -96,30 +96,29 @@
 <span class="sd">Description:</span>
 <span class="sd">    This file is part of LIPS, LIPS is a python platform for power networks benchmarking</span>
 <span class="sd">&quot;&quot;&quot;</span>
+<span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Callable</span>
 <span class="kn">import</span> <span class="nn">copy</span>
 <span class="kn">from</span> <span class="nn">sklearn.metrics</span> <span class="kn">import</span> <span class="n">mean_squared_error</span>
 <span class="kn">from</span> <span class="nn">sklearn.metrics</span> <span class="kn">import</span> <span class="n">mean_absolute_error</span>
 
-<div class="viewcode-block" id="Mapper"><a class="viewcode-back" href="../../../lips.evaluation.html#lips.evaluation.utils.Mapper">[docs]</a><span class="k">class</span> <span class="nc">Mapper</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;</span>
+<div class="viewcode-block" id="Mapper"><a class="viewcode-back" href="../../../lips.evaluation.html#lips.evaluation.Mapper">[docs]</a><span class="k">class</span> <span class="nc">Mapper</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Mapper class</span>
 <span class="sd">    This class create a mapping dict between evaluation criteria and their respective functions available in metrics module</span>
 
 <span class="sd">    TODO:</span>
-<span class="sd">        - it should register the mapping meta data to a file</span>
-<span class="sd">        - to be able reload it from file</span>
-<span class="sd">        - to be able to update it (modify current and add new mappings)</span>
-
-<span class="sd">    Parameters</span>
-<span class="sd">    ==========</span>
+<span class="sd">    - it should register the mapping meta data to a file</span>
+<span class="sd">    - to be able reload it from file</span>
+<span class="sd">    - to be able to update it (modify current and add new mappings)</span>
 
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">criteria</span> <span class="o">=</span> <span class="p">{}</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">map_generic_criteria</span><span class="p">()</span>
 
-<div class="viewcode-block" id="Mapper.map_generic_criteria"><a class="viewcode-back" href="../../../lips.evaluation.html#lips.evaluation.utils.Mapper.map_generic_criteria">[docs]</a>    <span class="k">def</span> <span class="nf">map_generic_criteria</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<div class="viewcode-block" id="Mapper.map_generic_criteria"><a class="viewcode-back" href="../../../lips.evaluation.html#lips.evaluation.Mapper.map_generic_criteria">[docs]</a>    <span class="k">def</span> <span class="nf">map_generic_criteria</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Get a list of generic evaluation functions</span>
+
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="n">tmp_criteria</span> <span class="o">=</span> <span class="p">{}</span>
         <span class="n">tmp_criteria</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">MSE_avg</span><span class="o">=</span><span class="n">mean_squared_error</span><span class="p">)</span>
@@ -128,12 +127,13 @@
 
         <span class="k">return</span> <span class="n">copy</span><span class="o">.</span><span class="n">deepcopy</span><span class="p">(</span><span class="n">tmp_criteria</span><span class="p">)</span></div>
 
-<div class="viewcode-block" id="Mapper.map_powergrid_criteria"><a class="viewcode-back" href="../../../lips.evaluation.html#lips.evaluation.utils.Mapper.map_powergrid_criteria">[docs]</a>    <span class="k">def</span> <span class="nf">map_powergrid_criteria</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<div class="viewcode-block" id="Mapper.map_powergrid_criteria"><a class="viewcode-back" href="../../../lips.evaluation.html#lips.evaluation.Mapper.map_powergrid_criteria">[docs]</a>    <span class="k">def</span> <span class="nf">map_powergrid_criteria</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        It populates the dictionary with available powergrids critiera</span>
+
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="kn">from</span> <span class="nn">..metrics.power_grid</span> <span class="kn">import</span> <span class="n">physics_compliances</span>
-        <span class="kn">from</span> <span class="nn">..metrics.power_grid</span> <span class="kn">import</span> <span class="n">DEFAULT_METRICS</span>
+        <span class="kn">from</span> <span class="nn">lips.metrics.power_grid</span> <span class="kn">import</span> <span class="n">physics_compliances</span>
+        <span class="kn">from</span> <span class="nn">lips.metrics</span> <span class="kn">import</span> <span class="n">DEFAULT_METRICS</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">criteria</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">DEFAULT_METRICS</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">criteria</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">CURRENT_POS</span><span class="o">=</span><span class="n">physics_compliances</span><span class="o">.</span><span class="n">verify_current_pos</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">criteria</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">VOLTAGE_POS</span><span class="o">=</span><span class="n">physics_compliances</span><span class="o">.</span><span class="n">verify_voltage_pos</span><span class="p">)</span>
@@ -141,26 +141,47 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">criteria</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">DISC_LINES</span><span class="o">=</span><span class="n">physics_compliances</span><span class="o">.</span><span class="n">verify_disc_lines</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">criteria</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">CURRENT_EQ</span><span class="o">=</span><span class="n">physics_compliances</span><span class="o">.</span><span class="n">verify_current_eq</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">criteria</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">CHECK_LOSS</span><span class="o">=</span><span class="n">physics_compliances</span><span class="o">.</span><span class="n">verify_loss</span><span class="p">)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">criteria</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">LOSS_POS</span><span class="o">=</span><span class="n">physics_compliances</span><span class="o">.</span><span class="n">verify_energy_conservation</span><span class="p">)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">criteria</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">LOSS_POS</span><span class="o">=</span><span class="n">physics_compliances</span><span class="o">.</span><span class="n">verify_kcl</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">criteria</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">CHECK_LCE</span><span class="o">=</span><span class="n">physics_compliances</span><span class="o">.</span><span class="n">verify_energy_conservation</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">criteria</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">CHECK_KCL</span><span class="o">=</span><span class="n">physics_compliances</span><span class="o">.</span><span class="n">verify_kcl</span><span class="p">)</span>
 
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">criteria</span></div>
 
-<div class="viewcode-block" id="Mapper.map_label_to_func"><a class="viewcode-back" href="../../../lips.evaluation.html#lips.evaluation.utils.Mapper.map_label_to_func">[docs]</a>    <span class="k">def</span> <span class="nf">map_label_to_func</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">label</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">func</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        create new mappings</span>
+<div class="viewcode-block" id="Mapper.map_label_to_func"><a class="viewcode-back" href="../../../lips.evaluation.html#lips.evaluation.Mapper.map_label_to_func">[docs]</a>    <span class="k">def</span> <span class="nf">map_label_to_func</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">label</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">func</span><span class="p">:</span> <span class="n">Callable</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;create new mappings</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        label : str</span>
+<span class="sd">            a new label</span>
+<span class="sd">        func : Callable</span>
+<span class="sd">            a metric function</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">criteria</span><span class="p">[</span><span class="n">label</span><span class="p">]</span> <span class="o">=</span> <span class="n">func</span></div>
 
-<div class="viewcode-block" id="Mapper.get_func"><a class="viewcode-back" href="../../../lips.evaluation.html#lips.evaluation.utils.Mapper.get_func">[docs]</a>    <span class="k">def</span> <span class="nf">get_func</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">label</span><span class="p">:</span> <span class="nb">str</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        get the function for a metric</span>
+<div class="viewcode-block" id="Mapper.get_func"><a class="viewcode-back" href="../../../lips.evaluation.html#lips.evaluation.Mapper.get_func">[docs]</a>    <span class="k">def</span> <span class="nf">get_func</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">label</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Callable</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot;get the function for a metric</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        label : str</span>
+<span class="sd">            the label of the metric</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        Callable</span>
+<span class="sd">            the corresponding function</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">criteria</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">label</span><span class="p">)</span></div>
 
-<div class="viewcode-block" id="Mapper.rename_key"><a class="viewcode-back" href="../../../lips.evaluation.html#lips.evaluation.utils.Mapper.rename_key">[docs]</a>    <span class="k">def</span> <span class="nf">rename_key</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">k_old</span><span class="p">,</span> <span class="n">k_new</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        rename the a dictionary key</span>
+<div class="viewcode-block" id="Mapper.rename_key"><a class="viewcode-back" href="../../../lips.evaluation.html#lips.evaluation.Mapper.rename_key">[docs]</a>    <span class="k">def</span> <span class="nf">rename_key</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">k_old</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">k_new</span><span class="p">:</span> <span class="nb">str</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;rename the a dictionary key</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        k_old : str</span>
+<span class="sd">            old key</span>
+<span class="sd">        k_new : str</span>
+<span class="sd">            new key</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">criteria</span><span class="p">[</span><span class="n">k_new</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">criteria</span><span class="p">[</span><span class="n">k_old</span><span class="p">]</span></div></div>
 
