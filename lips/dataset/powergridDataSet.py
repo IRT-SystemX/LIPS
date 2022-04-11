@@ -23,6 +23,7 @@ from grid2op.Agent import BaseAgent
 from . import DataSet
 from ..logger import CustomLogger
 from ..physical_simulator import Grid2opSimulator
+from ..config import ConfigManager
 
 class PowerGridDataSet(DataSet):
     """Class to manage powergrid data
@@ -63,6 +64,7 @@ class PowerGridDataSet(DataSet):
                  # for compatibility with existing code this will be removed in future version
                  # (and serialize directly the output of the simulator)
                  attr_names: Union[tuple, None]=None,
+                 config: Union[ConfigManager, None]=None,
                  log_path: Union[str, None]=None
                  ):
         DataSet.__init__(self, name=name)
@@ -72,14 +74,24 @@ class PowerGridDataSet(DataSet):
         else:
             self._attr_names = self.ALL_VARIABLES
         self.size = 0
-        #self._theta_attr_names = copy.deepcopy(theta_attr_names)
 
         # logger
         self.logger = CustomLogger(__class__.__name__, log_path).logger
-
+        # config
+        if config is not None:
+            self.config = config
+        else:
+            self.config = ConfigManager()
         # for the sampling
         self._previous = None
         self._order = None
+
+        # normalization parameters
+        # number of dimension of x and y (number of columns)
+        self._size_x = None
+        self._size_y = None
+        self._sizes_x = None  # dimension of each variable
+        self._sizes_y = None  # dimension of each variable
 
         #TODO add a seed for reproducible experiment !
 
@@ -141,13 +153,6 @@ class PowerGridDataSet(DataSet):
             array_ = getattr(init_state, attr_nm)
             self.data[attr_nm] = np.zeros((nb_samples, array_.shape[0]), dtype=array_.dtype)
 
-        # TODO : to be removed after verification
-        """
-        for idx_, attr_nm in enumerate(self._theta_attr_names):
-            # this part is added to report the theta values
-            array_ = init_theta[idx_]
-            self.data[attr_nm] = np.zeros((nb_samples, array_.shape[0]), dtype=array_.dtype)
-        """
         for ds_size in tqdm(range(nb_samples), desc=self.name):
             simulator.modify_state(actor)
             current_state, extra_info = simulator.get_state()
@@ -156,6 +161,7 @@ class PowerGridDataSet(DataSet):
 
         self.size = nb_samples
         self._init_sample()
+        self._infer_sizes()
         if path_out is not None:
             # I should save the data
             self._save_internal_data(path_out)
@@ -165,13 +171,7 @@ class PowerGridDataSet(DataSet):
         for attr_nm in self._attr_names:
             array_ = getattr(obs, attr_nm)
             self.data[attr_nm][current_size, :] = array_
-    # TODO to be remove after verification
-    """
-    def _store_theta(self, current_size, theta):
-        # store the theta (angles) in self.data
-        for idx_, attr_nm in enumerate(self._theta_attr_names):
-            self.data[attr_nm][current_size, :] = theta[idx_]
-    """
+
     def _save_internal_data(self, path_out:str):
         """save the self.data in a proper format
 
@@ -251,6 +251,7 @@ class PowerGridDataSet(DataSet):
             self.size = self.data[attr_nm].shape[0]
 
         self._init_sample()
+        self._infer_sizes()
 
     def _init_sample(self):
         """initialize the sample
@@ -359,3 +360,130 @@ class PowerGridDataSet(DataSet):
             res[el][:] = self.data[el][index, :]
 
         return res
+
+    def _infer_sizes(self):
+        data = copy.deepcopy(self.data)
+        attr_tau = self.config.get_option("attr_tau")
+        attr_x = self.config.get_option("attr_x") + attr_tau
+        attr_y = self.config.get_option("attr_y")
+        self._sizes_x = np.array([data[el].shape[1] for el in attr_x], dtype=int)
+        self._sizes_y = np.array([data[el].shape[1] for el in attr_y], dtype=int)
+        self._size_x = np.sum(self._sizes_x)
+        self._size_y = np.sum(self._sizes_y)
+
+    def extract_data(self, concat: bool=True) -> tuple:
+        """extract the x and y data from the dataset
+
+        Parameters
+        ----------
+        concat : ``bool``
+            If True, the data will be concatenated in a single array.
+        Returns
+        -------
+        tuple
+            extracted inputs and outputs
+        """
+        # init the sizes and everything
+        data = copy.deepcopy(self.data)
+        attr_tau = self.config.get_option("attr_tau")
+        attr_x = self.config.get_option("attr_x") + attr_tau
+        attr_y = self.config.get_option("attr_y")
+
+        if concat:
+            extract_x = np.concatenate([data[el].astype(np.float32) for el in attr_x], axis=1)
+            extract_y = np.concatenate([data[el].astype(np.float32) for el in attr_y], axis=1)
+        else:
+            extract_x = [data[el].astype(np.float32) for el in attr_x]
+            extract_y = [data[el].astype(np.float32) for el in attr_y]
+        return extract_x, extract_y
+
+    def reconstruct_output(self, data: "np.ndarray") -> dict:
+        """It reconstruct the data from the extracted data
+
+        Parameters
+        ----------
+        data : ``np.ndarray``
+            the array that should be reconstruted
+
+        Returns
+        -------
+        dict
+            the reconstructed data with variable names in a dictionary
+        """
+        attr_y = self.config.get_option("attr_y")
+        predictions = {}
+        prev_ = 0
+        for var_id, this_var_size in enumerate(self._sizes_y):
+            attr_nm = attr_y[var_id]
+            predictions[attr_nm] = data[:, prev_:(prev_ + this_var_size)]
+            prev_ += this_var_size
+        return predictions
+
+
+    '''
+    def normalize_fit_transform(self, extract_x, extract_y) -> tuple:
+        """Estimate the parameters and normalize the data
+
+        It should be called on the result of previous extract_data function
+
+        Parameters
+        ----------
+        extract_x : ``np.ndarray``
+            extracted inputs in ``np.array`` format
+        extract_y : ``np.ndarray``
+            extracted outputs in ``np.array`` format
+
+        Returns
+        -------
+        tuple
+            noraminized inputs and outputs
+        """
+        self._m_x = np.mean(extract_x, axis=0)
+        self._m_y = np.mean(extract_y, axis=0)
+        self._std_x = np.std(extract_x, axis=0)
+        self._std_y = np.std(extract_y, axis=0)
+
+        # to avoid division by 0.
+        self._std_x[np.abs(self._std_x) <= 1e-1] = 1
+        self._std_y[np.abs(self._std_y) <= 1e-1] = 1
+
+        extract_x -= self._m_x
+        extract_x /= self._std_x
+        extract_y -= self._m_y
+        extract_y /= self._std_y
+
+        return extract_x, extract_y, (self._m_x, self._m_y, self._std_x, self._std_y)
+
+    def normalize_transform(self, extract_x, extract_y, *params):
+        """Normalize the data with provided parameters
+
+        Parameters
+        ----------
+        extract_x : ``np.ndarray``
+            extracted inputs in ``np.array`` format
+        extract_y : ``np.ndarray``
+            extracted outputs in ``np.array`` format
+
+        Returns
+        -------
+        _type_
+            _description_
+        """
+        if len(params) > 0:
+            self._m_x = params[0]
+            self._m_y = params[1]
+            self._std_x = params[2]
+            self._std_y = params[3]
+        else:
+            RuntimeError("run normalize_fit_transform on training data first")
+
+        extract_x -= self._m_x
+        extract_x /= self._std_x
+        extract_y -= self._m_y
+        extract_y /= self._std_y
+
+        return extract_x, extract_y
+
+    def normalize_inverse_transform(self, extract_x, extract_y) -> tuple:
+        pass
+    '''
