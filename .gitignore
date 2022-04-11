@@ -135,6 +135,9 @@ dmypy.json
 # Pyre type checker
 .pyre/
 
+# ignore all the bkp files
+*.bkp
+
 #custom ignore folders
 .vscode
 
@@ -148,6 +151,7 @@ process.yml
 # documentations
 docs/source/conf.py.bkp
 docs/_templates
+docs/build
 
 # getting started
 getting_started/Analyzing_Benchmark_class.ipynb

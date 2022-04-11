@@ -77,7 +77,10 @@ class ConfigManager(object):
         """
         retrun a dictionary of all the config options
         """
-        return dict(self.config[self.section_name].items())
+        my_dict = {}
+        for key_, item_ in self.config[self.section_name].items():
+            my_dict[key_] = self._str_to_list(item_)
+        return my_dict
 
     def edit_config_option(self,
                            option: str,

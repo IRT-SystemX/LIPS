@@ -87,8 +87,8 @@ class Benchmark(ABC):
     def evaluate_simulator(self,
                            dataset: DataSet,
                            augmented_simulator: Union[PhysicalSimulator, AugmentedSimulator, None] = None,
-                           batch_size: int=32,
-                           save_path: Union[str, None]=None) -> dict:
+                           save_path: Union[str, None]=None,
+                           **kwargs) -> dict:
         """
         This function will evalute a simulator (physical or augmented) using various criteria predefined in evaluator object
         on a ``single test dataset``. It can be overloaded or called to evaluate the performance on multiple datasets
@@ -99,10 +99,10 @@ class Benchmark(ABC):
             a test dataset on which the augmented simulator should be performed and evaluated by
         augmented_simulator: AugmentedSimulator
             a trained augmented simulator which should be evaluated
-        batch_size: ``int``
-            evaluation batch size
         save_path: Union[``str``, ``None``]
             if indicated the evaluation results will be saved to indicated path
+        **kwargs: ``dict``
+            additional parameters to be passed to the evaluator for augmented simulator
         Returns
         -------
         ``dict``
@@ -110,7 +110,7 @@ class Benchmark(ABC):
         """
         self.augmented_simulator = augmented_simulator
         self.dataset = dataset
-        predictions = self.augmented_simulator.evaluate(dataset, batch_size)
+        predictions = self.augmented_simulator.evaluate(dataset, **kwargs)
         observations = self.dataset.get_data(np.arange(len(dataset)))
         res = self.evaluation.evaluate(observations=observations,
                                        predictions=predictions,
