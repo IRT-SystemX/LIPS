@@ -130,21 +130,25 @@ class PowerGridBenchmark(Benchmark):
 
         self.train_dataset = PowerGridDataSet("train",
                                               attr_names=attr_names,
+                                              config=self.config,
                                               log_path=log_path
                                               )
 
         self.val_dataset = PowerGridDataSet("val",
                                             attr_names=attr_names,
+                                            config=self.config,
                                             log_path=log_path
                                             )
 
         self._test_dataset = PowerGridDataSet("test",
                                               attr_names=attr_names,
+                                              config=self.config,
                                               log_path=log_path
                                               )
 
         self._test_ood_topo_dataset = PowerGridDataSet("test_ood_topo",
                                                        attr_names=attr_names,
+                                                       config=self.config,
                                                        log_path=log_path
                                                        )
 
@@ -206,24 +210,22 @@ class PowerGridBenchmark(Benchmark):
                                              )
 
     def evaluate_simulator(self,
-                           dataset: str = "all",  # TODO
+                           dataset: str = "all",
                            augmented_simulator: Union[PhysicalSimulator, AugmentedSimulator, None] = None,
-                           batch_size: int=32,
                            save_path: Union[str, None]=None,
-                           active_flow: bool=True) -> dict:
+                           **kwargs) -> dict:
         """evaluate a trained augmented simulator on one or multiple test datasets
 
         Parameters
         ----------
         dataset : str, optional
             dataset on which the evaluation should be performed, by default "all"
-        batch_size : int, optional
-            the batch size for inference, by default 32
+        augmented_simulator : Union[PhysicalSimulator, AugmentedSimulator, None], optional
+            An instance of the class augmented simulator, by default None
         save_path : Union[str, None], optional
             the path that the evaluation results should be saved, by default None
-        active_flow : bool, optional
-            whether to compute the KCL for active_flow, by default True
-
+        **kwargs: ``dict``
+            additional arguments that will be passed to the augmented simulator
         Todo
         ----
         TODO: add active flow in config file
@@ -261,19 +263,16 @@ class PowerGridBenchmark(Benchmark):
             # call the evaluate simulator function of Benchmark class
             tmp = self._aux_evaluate_on_single_dataset(dataset=dataset_,
                                                        augmented_simulator=augmented_simulator,
-                                                       batch_size=batch_size,
-                                                       active_flow=active_flow,
-                                                       save_path=save_path
-                                                      )
+                                                       save_path=save_path,
+                                                       **kwargs)
             res[nm_] = copy.deepcopy(tmp)
         return res
 
     def _aux_evaluate_on_single_dataset(self,
                                         dataset: PowerGridDataSet,
                                         augmented_simulator: Union[PhysicalSimulator, AugmentedSimulator, None] = None,
-                                        batch_size: int=32,
-                                        active_flow: bool=True,
-                                        save_path: Union[str, None]=None) -> dict:
+                                        save_path: Union[str, None]=None,
+                                        **kwargs) -> dict:
         """Evaluate a single dataset
         This function will evalute a simulator (physical or augmented) using various criteria predefined in evaluator object
         on a ``single test dataset``. It can be overloaded or called to evaluate the performance on multiple datasets
@@ -305,7 +304,7 @@ class PowerGridBenchmark(Benchmark):
         if isinstance(self.augmented_simulator, DCApproximationAS):
             predictions = self.augmented_simulator.evaluate(dataset)
         else:
-            predictions = self.augmented_simulator.evaluate(dataset, batch_size)
+            predictions = self.augmented_simulator.evaluate(dataset, **kwargs)
 
         self.predictions[dataset.name] = predictions
         self.observations[dataset.name] = dataset.data
@@ -315,15 +314,6 @@ class PowerGridBenchmark(Benchmark):
                                        predictions=predictions,
                                        save_path=save_path
                                        )
-
-        # res = self.evaluation.do_evaluations(env=get_env(self.utils.get_kwargs_simulator_scenario()),
-        #                                      env_name=None,
-        #                                      predictions=predictions,
-        #                                      observations=observations,
-        #                                      choice="predictions",  # we want to evaluate only the predictions here
-        #                                      active_flow=active_flow,
-        #                                      save_path=save_path  # TODO currently not used
-        #                                      )
         return res
 
     def _create_training_simulator(self):

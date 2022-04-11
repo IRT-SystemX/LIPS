@@ -8,28 +8,11 @@
 
 __all__ = ["AugmentedSimulator"]
 
-from lips.augmented_simulators.augmentedSimulator import AugmentedSimulator
+from lips.augmented_simulators.augmented_simulator import AugmentedSimulator
 
-
-try:
-    from lips.augmented_simulators.hyperParameterTuner import HyperParameterTuner
-    __all__.append("HyperParameterTuner")
-except ImportError:
-    # tensorflow or sklearn package is not installed i cannot used this class
-    pass
-
-
-try:
-    from lips.augmented_simulators.fullyConnectedAS import FullyConnectedAS
-    __all__.append("FullyConnectedAS")
-except ImportError:
-    # tensorflow package is not installed i cannot used this augmented simulator
-    pass
-
-
-try:
-    from lips.augmented_simulators.leapNetAS import LeapNetAS
-    __all__.append("LeapNetAS")
-except ImportError:
-    # leap_net package is not installed i cannot used this augmented simulator
-    pass
+# try:
+#     from lips.augmented_simulators.hyperParameterTuner import HyperParameterTuner
+#     __all__.append("HyperParameterTuner")
+# except ImportError:
+#     # tensorflow or sklearn package is not installed i cannot used this class
+#     pass

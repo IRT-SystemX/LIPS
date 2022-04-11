@@ -25,8 +25,8 @@ on:
       - 'dd-*'
       - 'jp-*'
       - 'am-*'
-  issues:
-    types: [opened, edited, milestoned, closed, deleted, reopened]
+  #issues:
+    #types: [opened, edited, milestoned, closed, deleted, reopened]
 
 jobs:
   sync:
