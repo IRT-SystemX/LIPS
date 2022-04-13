@@ -15,12 +15,14 @@ import warnings
 import shutil
 import copy
 from typing import Union, Callable
-import numpy as np
+import json
 from tqdm import tqdm  # TODO remove for final push
 
+import numpy as np
 from grid2op.Agent import BaseAgent
 
 from . import DataSet
+from ..utils import NpEncoder
 from ..logger import CustomLogger
 from ..physical_simulator import Grid2opSimulator
 from ..config import ConfigManager
@@ -89,9 +91,16 @@ class PowerGridDataSet(DataSet):
         # normalization parameters
         # number of dimension of x and y (number of columns)
         self._size_x = None
+        self._size_tau = None
         self._size_y = None
         self._sizes_x = None  # dimension of each variable
+        self._sizes_tau = None
         self._sizes_y = None  # dimension of each variable
+        self._attr_tau = self.config.get_option("attr_tau")
+        self._attr_x = self.config.get_option("attr_x")
+        self._attr_y = self.config.get_option("attr_y")
+
+        self.env_data = dict()
 
         #TODO add a seed for reproducible experiment !
 
@@ -162,6 +171,7 @@ class PowerGridDataSet(DataSet):
         self.size = nb_samples
         self._init_sample()
         self._infer_sizes()
+        self._store_env_data(simulator._simulator)
         if path_out is not None:
             # I should save the data
             self._save_internal_data(path_out)
@@ -171,6 +181,23 @@ class PowerGridDataSet(DataSet):
         for attr_nm in self._attr_names:
             array_ = getattr(obs, attr_nm)
             self.data[attr_nm][current_size, :] = array_
+
+    def _store_env_data(self, env):
+        """store the environment data in self.env_data"""
+        self.env_data["n_line"] = env.n_line
+        self.env_data["n_sub"] = env.n_sub
+        self.env_data["n_gen"] = env.n_gen
+        self.env_data["n_load"] = env.n_load
+        self.env_data["sub_info"] = env.sub_info
+        self.env_data["_size_x"] = self._size_x
+        self.env_data["_size_tau"] = self._size_tau
+        self.env_data["_size_y"] = self._size_y
+        self.env_data["_sizes_x"] = self._sizes_x
+        self.env_data["_sizes_tau"] = self._sizes_tau
+        self.env_data["_sizes_y"] = self._sizes_y
+        self.env_data["_attr_x"] = self._attr_x
+        self.env_data["_attr_tau"] = self._attr_tau
+        self.env_data["_attr_y"] = self._attr_y
 
     def _save_internal_data(self, path_out:str):
         """save the self.data in a proper format
@@ -204,6 +231,10 @@ class PowerGridDataSet(DataSet):
         #for attr_nm in (*self._attr_names, *self._theta_attr_names):
         for attr_nm in self._attr_names:
             np.savez_compressed(f"{os.path.join(full_path_out, attr_nm)}.npz", data=self.data[attr_nm])
+
+        # save static_data
+        with open(os.path.join(full_path_out ,"metadata.json"), "w", encoding="utf-8") as f:
+            json.dump(obj=self.env_data, fp=f, indent=4, sort_keys=True, cls=NpEncoder)
 
     def load(self, path:str):
         """load the dataset from a path
@@ -252,6 +283,34 @@ class PowerGridDataSet(DataSet):
 
         self._init_sample()
         self._infer_sizes()
+        self._load_env_data(full_path)
+
+    def _load_env_data(self, path:str):
+        """load the environment data from a path
+
+        Parameters
+        ----------
+        path : ``str``
+            path from which the data should be loaded
+
+        Raises
+        ------
+        RuntimeError
+            Path cannot be found
+        RuntimeError
+            Not a valid directory
+        RuntimeError
+            There is no data to load
+        RuntimeError
+            Impossible to load the data
+
+        """
+        if not os.path.exists(os.path.join(path, "metadata.json")):
+            raise RuntimeError(f"There is no metadata saved in {path}. Have you called `dataset.generate()` with "
+                               f"a given `path_out` ?")
+
+        with open(os.path.join(path, "metadata.json"), "r", encoding="utf-8") as f:
+            self.env_data = json.load(fp=f)
 
     def _init_sample(self):
         """initialize the sample
@@ -363,13 +422,23 @@ class PowerGridDataSet(DataSet):
 
     def _infer_sizes(self):
         data = copy.deepcopy(self.data)
-        attr_tau = self.config.get_option("attr_tau")
-        attr_x = self.config.get_option("attr_x") + attr_tau
-        attr_y = self.config.get_option("attr_y")
-        self._sizes_x = np.array([data[el].shape[1] for el in attr_x], dtype=int)
-        self._sizes_y = np.array([data[el].shape[1] for el in attr_y], dtype=int)
+        self._sizes_x = np.array([data[el].shape[1] for el in self._attr_x], dtype=int)
+        self._sizes_tau = np.array([data[el].shape[1] for el in self._attr_tau], dtype=int)
+        self._sizes_y = np.array([data[el].shape[1] for el in self._attr_y], dtype=int)
         self._size_x = np.sum(self._sizes_x)
+        self._size_tau = np.sum(self._sizes_tau)
         self._size_y = np.sum(self._sizes_y)
+
+    def get_sizes(self):
+        """Get the sizes of the dataset
+
+        Returns
+        -------
+        tuple
+            A tuple of size (nb_sample, size_x, size_tau, size_y)
+
+        """
+        return self._size_x, self._size_tau, self._size_y
 
     def extract_data(self, concat: bool=True) -> tuple:
         """extract the x and y data from the dataset
@@ -385,17 +454,18 @@ class PowerGridDataSet(DataSet):
         """
         # init the sizes and everything
         data = copy.deepcopy(self.data)
-        attr_tau = self.config.get_option("attr_tau")
-        attr_x = self.config.get_option("attr_x") + attr_tau
-        attr_y = self.config.get_option("attr_y")
 
         if concat:
+            attr_x = self._attr_tau + self._attr_x
             extract_x = np.concatenate([data[el].astype(np.float32) for el in attr_x], axis=1)
-            extract_y = np.concatenate([data[el].astype(np.float32) for el in attr_y], axis=1)
+            extract_y = np.concatenate([data[el].astype(np.float32) for el in self._attr_y], axis=1)
+            return extract_x, extract_y
         else:
-            extract_x = [data[el].astype(np.float32) for el in attr_x]
-            extract_y = [data[el].astype(np.float32) for el in attr_y]
-        return extract_x, extract_y
+            extract_x = [data[el].astype(np.float32) for el in self._attr_x]
+            extract_tau = [data[el].astype(np.float32) for el in self._attr_tau]
+            extract_y = [data[el].astype(np.float32) for el in self._attr_y]
+            return (extract_x, extract_tau), extract_y
+
 
     def reconstruct_output(self, data: "np.ndarray") -> dict:
         """It reconstruct the data from the extracted data
@@ -410,80 +480,10 @@ class PowerGridDataSet(DataSet):
         dict
             the reconstructed data with variable names in a dictionary
         """
-        attr_y = self.config.get_option("attr_y")
         predictions = {}
         prev_ = 0
         for var_id, this_var_size in enumerate(self._sizes_y):
-            attr_nm = attr_y[var_id]
+            attr_nm = self._attr_y[var_id]
             predictions[attr_nm] = data[:, prev_:(prev_ + this_var_size)]
             prev_ += this_var_size
         return predictions
-
-
-    '''
-    def normalize_fit_transform(self, extract_x, extract_y) -> tuple:
-        """Estimate the parameters and normalize the data
-
-        It should be called on the result of previous extract_data function
-
-        Parameters
-        ----------
-        extract_x : ``np.ndarray``
-            extracted inputs in ``np.array`` format
-        extract_y : ``np.ndarray``
-            extracted outputs in ``np.array`` format
-
-        Returns
-        -------
-        tuple
-            noraminized inputs and outputs
-        """
-        self._m_x = np.mean(extract_x, axis=0)
-        self._m_y = np.mean(extract_y, axis=0)
-        self._std_x = np.std(extract_x, axis=0)
-        self._std_y = np.std(extract_y, axis=0)
-
-        # to avoid division by 0.
-        self._std_x[np.abs(self._std_x) <= 1e-1] = 1
-        self._std_y[np.abs(self._std_y) <= 1e-1] = 1
-
-        extract_x -= self._m_x
-        extract_x /= self._std_x
-        extract_y -= self._m_y
-        extract_y /= self._std_y
-
-        return extract_x, extract_y, (self._m_x, self._m_y, self._std_x, self._std_y)
-
-    def normalize_transform(self, extract_x, extract_y, *params):
-        """Normalize the data with provided parameters
-
-        Parameters
-        ----------
-        extract_x : ``np.ndarray``
-            extracted inputs in ``np.array`` format
-        extract_y : ``np.ndarray``
-            extracted outputs in ``np.array`` format
-
-        Returns
-        -------
-        _type_
-            _description_
-        """
-        if len(params) > 0:
-            self._m_x = params[0]
-            self._m_y = params[1]
-            self._std_x = params[2]
-            self._std_y = params[3]
-        else:
-            RuntimeError("run normalize_fit_transform on training data first")
-
-        extract_x -= self._m_x
-        extract_x /= self._std_x
-        extract_y -= self._m_y
-        extract_y /= self._std_y
-
-        return extract_x, extract_y
-
-    def normalize_inverse_transform(self, extract_x, extract_y) -> tuple:
-        pass
-    '''
