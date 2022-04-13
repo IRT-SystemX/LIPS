@@ -237,7 +237,10 @@ class NeuripsBenchmark1(Benchmark):
                                         KCL_tolerance=1e-2,
                                         active_flow=True
                                         ):
-        predictions = augmented_simulator.evaluate(dataset, batch_size)
+        if augmented_simulator.__class__.__name__ == "DCApproximationAS":
+            predictions = augmented_simulator.evaluate(dataset)
+        else:
+            predictions = augmented_simulator.evaluate(dataset, batch_size)    
         ref_data = dataset.get_data(np.arange(len(dataset)))
         logging.info("Experimented simulator : {}".format(augmented_simulator.name))
         res = self.evaluation.do_evaluations(env=self.training_simulator._simulator,  # TODO this is relatively ugly
