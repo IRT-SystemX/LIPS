@@ -98,17 +98,14 @@
 <span class="kn">import</span> <span class="nn">shutil</span>
 <span class="kn">import</span> <span class="nn">copy</span>
 <span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Union</span><span class="p">,</span> <span class="n">Callable</span>
-<span class="kn">import</span> <span class="nn">json</span>
+<span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
 <span class="kn">from</span> <span class="nn">tqdm</span> <span class="kn">import</span> <span class="n">tqdm</span>  <span class="c1"># TODO remove for final push</span>
 
-<span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
 <span class="kn">from</span> <span class="nn">grid2op.Agent</span> <span class="kn">import</span> <span class="n">BaseAgent</span>
 
 <span class="kn">from</span> <span class="nn">.</span> <span class="kn">import</span> <span class="n">DataSet</span>
-<span class="kn">from</span> <span class="nn">..utils</span> <span class="kn">import</span> <span class="n">NpEncoder</span>
 <span class="kn">from</span> <span class="nn">..logger</span> <span class="kn">import</span> <span class="n">CustomLogger</span>
 <span class="kn">from</span> <span class="nn">..physical_simulator</span> <span class="kn">import</span> <span class="n">Grid2opSimulator</span>
-<span class="kn">from</span> <span class="nn">..config</span> <span class="kn">import</span> <span class="n">ConfigManager</span>
 
 <div class="viewcode-block" id="PowerGridDataSet"><a class="viewcode-back" href="../../../lips.dataset.html#lips.dataset.PowerGridDataSet">[docs]</a><span class="k">class</span> <span class="nc">PowerGridDataSet</span><span class="p">(</span><span class="n">DataSet</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;Class to manage powergrid data</span>
@@ -149,7 +146,6 @@
                  <span class="c1"># for compatibility with existing code this will be removed in future version</span>
                  <span class="c1"># (and serialize directly the output of the simulator)</span>
                  <span class="n">attr_names</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">tuple</span><span class="p">,</span> <span class="kc">None</span><span class="p">]</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
-                 <span class="n">config</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="n">ConfigManager</span><span class="p">,</span> <span class="kc">None</span><span class="p">]</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
                  <span class="n">log_path</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="kc">None</span><span class="p">]</span><span class="o">=</span><span class="kc">None</span>
                  <span class="p">):</span>
         <span class="n">DataSet</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="n">name</span><span class="p">)</span>
@@ -159,31 +155,14 @@
         <span class="k">else</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">_attr_names</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">ALL_VARIABLES</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">size</span> <span class="o">=</span> <span class="mi">0</span>
+        <span class="c1">#self._theta_attr_names = copy.deepcopy(theta_attr_names)</span>
 
         <span class="c1"># logger</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">logger</span> <span class="o">=</span> <span class="n">CustomLogger</span><span class="p">(</span><span class="vm">__class__</span><span class="o">.</span><span class="vm">__name__</span><span class="p">,</span> <span class="n">log_path</span><span class="p">)</span><span class="o">.</span><span class="n">logger</span>
-        <span class="c1"># config</span>
-        <span class="k">if</span> <span class="n">config</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">config</span> <span class="o">=</span> <span class="n">config</span>
-        <span class="k">else</span><span class="p">:</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">config</span> <span class="o">=</span> <span class="n">ConfigManager</span><span class="p">()</span>
+
         <span class="c1"># for the sampling</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_previous</span> <span class="o">=</span> <span class="kc">None</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_order</span> <span class="o">=</span> <span class="kc">None</span>
-
-        <span class="c1"># normalization parameters</span>
-        <span class="c1"># number of dimension of x and y (number of columns)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">_size_x</span> <span class="o">=</span> <span class="kc">None</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">_size_tau</span> <span class="o">=</span> <span class="kc">None</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">_size_y</span> <span class="o">=</span> <span class="kc">None</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">_sizes_x</span> <span class="o">=</span> <span class="kc">None</span>  <span class="c1"># dimension of each variable</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">_sizes_tau</span> <span class="o">=</span> <span class="kc">None</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">_sizes_y</span> <span class="o">=</span> <span class="kc">None</span>  <span class="c1"># dimension of each variable</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">_attr_tau</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">config</span><span class="o">.</span><span class="n">get_option</span><span class="p">(</span><span class="s2">&quot;attr_tau&quot;</span><span class="p">)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">_attr_x</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">config</span><span class="o">.</span><span class="n">get_option</span><span class="p">(</span><span class="s2">&quot;attr_x&quot;</span><span class="p">)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">_attr_y</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">config</span><span class="o">.</span><span class="n">get_option</span><span class="p">(</span><span class="s2">&quot;attr_y&quot;</span><span class="p">)</span>
-
-        <span class="bp">self</span><span class="o">.</span><span class="n">env_data</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">()</span>
 
         <span class="c1">#TODO add a seed for reproducible experiment !</span>
 
@@ -245,6 +224,13 @@
             <span class="n">array_</span> <span class="o">=</span> <span class="nb">getattr</span><span class="p">(</span><span class="n">init_state</span><span class="p">,</span> <span class="n">attr_nm</span><span class="p">)</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">data</span><span class="p">[</span><span class="n">attr_nm</span><span class="p">]</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">((</span><span class="n">nb_samples</span><span class="p">,</span> <span class="n">array_</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]),</span> <span class="n">dtype</span><span class="o">=</span><span class="n">array_</span><span class="o">.</span><span class="n">dtype</span><span class="p">)</span>
 
+        <span class="c1"># TODO : to be removed after verification</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        for idx_, attr_nm in enumerate(self._theta_attr_names):</span>
+<span class="sd">            # this part is added to report the theta values</span>
+<span class="sd">            array_ = init_theta[idx_]</span>
+<span class="sd">            self.data[attr_nm] = np.zeros((nb_samples, array_.shape[0]), dtype=array_.dtype)</span>
+<span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">for</span> <span class="n">ds_size</span> <span class="ow">in</span> <span class="n">tqdm</span><span class="p">(</span><span class="nb">range</span><span class="p">(</span><span class="n">nb_samples</span><span class="p">),</span> <span class="n">desc</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">name</span><span class="p">):</span>
             <span class="n">simulator</span><span class="o">.</span><span class="n">modify_state</span><span class="p">(</span><span class="n">actor</span><span class="p">)</span>
             <span class="n">current_state</span><span class="p">,</span> <span class="n">extra_info</span> <span class="o">=</span> <span class="n">simulator</span><span class="o">.</span><span class="n">get_state</span><span class="p">()</span>
@@ -253,8 +239,6 @@
 
         <span class="bp">self</span><span class="o">.</span><span class="n">size</span> <span class="o">=</span> <span class="n">nb_samples</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_init_sample</span><span class="p">()</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">_infer_sizes</span><span class="p">()</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">_store_env_data</span><span class="p">(</span><span class="n">simulator</span><span class="o">.</span><span class="n">_simulator</span><span class="p">)</span>
         <span class="k">if</span> <span class="n">path_out</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
             <span class="c1"># I should save the data</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">_save_internal_data</span><span class="p">(</span><span class="n">path_out</span><span class="p">)</span></div>
@@ -264,24 +248,13 @@
         <span class="k">for</span> <span class="n">attr_nm</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_attr_names</span><span class="p">:</span>
             <span class="n">array_</span> <span class="o">=</span> <span class="nb">getattr</span><span class="p">(</span><span class="n">obs</span><span class="p">,</span> <span class="n">attr_nm</span><span class="p">)</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">data</span><span class="p">[</span><span class="n">attr_nm</span><span class="p">][</span><span class="n">current_size</span><span class="p">,</span> <span class="p">:]</span> <span class="o">=</span> <span class="n">array_</span>
-
-    <span class="k">def</span> <span class="nf">_store_env_data</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">env</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;store the environment data in self.env_data&quot;&quot;&quot;</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">env_data</span><span class="p">[</span><span class="s2">&quot;n_line&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">env</span><span class="o">.</span><span class="n">n_line</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">env_data</span><span class="p">[</span><span class="s2">&quot;n_sub&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">env</span><span class="o">.</span><span class="n">n_sub</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">env_data</span><span class="p">[</span><span class="s2">&quot;n_gen&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">env</span><span class="o">.</span><span class="n">n_gen</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">env_data</span><span class="p">[</span><span class="s2">&quot;n_load&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">env</span><span class="o">.</span><span class="n">n_load</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">env_data</span><span class="p">[</span><span class="s2">&quot;sub_info&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">env</span><span class="o">.</span><span class="n">sub_info</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">env_data</span><span class="p">[</span><span class="s2">&quot;_size_x&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_size_x</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">env_data</span><span class="p">[</span><span class="s2">&quot;_size_tau&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_size_tau</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">env_data</span><span class="p">[</span><span class="s2">&quot;_size_y&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_size_y</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">env_data</span><span class="p">[</span><span class="s2">&quot;_sizes_x&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_sizes_x</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">env_data</span><span class="p">[</span><span class="s2">&quot;_sizes_tau&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_sizes_tau</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">env_data</span><span class="p">[</span><span class="s2">&quot;_sizes_y&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_sizes_y</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">env_data</span><span class="p">[</span><span class="s2">&quot;_attr_x&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_attr_x</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">env_data</span><span class="p">[</span><span class="s2">&quot;_attr_tau&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_attr_tau</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">env_data</span><span class="p">[</span><span class="s2">&quot;_attr_y&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_attr_y</span>
-
+    <span class="c1"># TODO to be remove after verification</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    def _store_theta(self, current_size, theta):</span>
+<span class="sd">        # store the theta (angles) in self.data</span>
+<span class="sd">        for idx_, attr_nm in enumerate(self._theta_attr_names):</span>
+<span class="sd">            self.data[attr_nm][current_size, :] = theta[idx_]</span>
+<span class="sd">    &quot;&quot;&quot;</span>
     <span class="k">def</span> <span class="nf">_save_internal_data</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">path_out</span><span class="p">:</span><span class="nb">str</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;save the self.data in a proper format</span>
 
@@ -314,10 +287,6 @@
         <span class="c1">#for attr_nm in (*self._attr_names, *self._theta_attr_names):</span>
         <span class="k">for</span> <span class="n">attr_nm</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_attr_names</span><span class="p">:</span>
             <span class="n">np</span><span class="o">.</span><span class="n">savez_compressed</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">full_path_out</span><span class="p">,</span> <span class="n">attr_nm</span><span class="p">)</span><span class="si">}</span><span class="s2">.npz&quot;</span><span class="p">,</span> <span class="n">data</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">data</span><span class="p">[</span><span class="n">attr_nm</span><span class="p">])</span>
-
-        <span class="c1"># save static_data</span>
-        <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">full_path_out</span> <span class="p">,</span><span class="s2">&quot;metadata.json&quot;</span><span class="p">),</span> <span class="s2">&quot;w&quot;</span><span class="p">,</span> <span class="n">encoding</span><span class="o">=</span><span class="s2">&quot;utf-8&quot;</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
-            <span class="n">json</span><span class="o">.</span><span class="n">dump</span><span class="p">(</span><span class="n">obj</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">env_data</span><span class="p">,</span> <span class="n">fp</span><span class="o">=</span><span class="n">f</span><span class="p">,</span> <span class="n">indent</span><span class="o">=</span><span class="mi">4</span><span class="p">,</span> <span class="n">sort_keys</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="bp">cls</span><span class="o">=</span><span class="n">NpEncoder</span><span class="p">)</span>
 
 <div class="viewcode-block" id="PowerGridDataSet.load"><a class="viewcode-back" href="../../../lips.dataset.html#lips.dataset.PowerGridDataSet.load">[docs]</a>    <span class="k">def</span> <span class="nf">load</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">path</span><span class="p">:</span><span class="nb">str</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;load the dataset from a path</span>
@@ -364,36 +333,7 @@
             <span class="bp">self</span><span class="o">.</span><span class="n">data</span><span class="p">[</span><span class="n">attr_nm</span><span class="p">]</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">load</span><span class="p">(</span><span class="n">path_this_array</span><span class="p">)[</span><span class="s2">&quot;data&quot;</span><span class="p">]</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">size</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">data</span><span class="p">[</span><span class="n">attr_nm</span><span class="p">]</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
 
-        <span class="bp">self</span><span class="o">.</span><span class="n">_init_sample</span><span class="p">()</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">_infer_sizes</span><span class="p">()</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">_load_env_data</span><span class="p">(</span><span class="n">full_path</span><span class="p">)</span></div>
-
-    <span class="k">def</span> <span class="nf">_load_env_data</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">path</span><span class="p">:</span><span class="nb">str</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;load the environment data from a path</span>
-
-<span class="sd">        Parameters</span>
-<span class="sd">        ----------</span>
-<span class="sd">        path : ``str``</span>
-<span class="sd">            path from which the data should be loaded</span>
-
-<span class="sd">        Raises</span>
-<span class="sd">        ------</span>
-<span class="sd">        RuntimeError</span>
-<span class="sd">            Path cannot be found</span>
-<span class="sd">        RuntimeError</span>
-<span class="sd">            Not a valid directory</span>
-<span class="sd">        RuntimeError</span>
-<span class="sd">            There is no data to load</span>
-<span class="sd">        RuntimeError</span>
-<span class="sd">            Impossible to load the data</span>
-
-<span class="sd">        &quot;&quot;&quot;</span>
-        <span class="k">if</span> <span class="ow">not</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">exists</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">path</span><span class="p">,</span> <span class="s2">&quot;metadata.json&quot;</span><span class="p">)):</span>
-            <span class="k">raise</span> <span class="ne">RuntimeError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;There is no metadata saved in </span><span class="si">{</span><span class="n">path</span><span class="si">}</span><span class="s2">. Have you called `dataset.generate()` with &quot;</span>
-                               <span class="sa">f</span><span class="s2">&quot;a given `path_out` ?&quot;</span><span class="p">)</span>
-
-        <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">path</span><span class="p">,</span> <span class="s2">&quot;metadata.json&quot;</span><span class="p">),</span> <span class="s2">&quot;r&quot;</span><span class="p">,</span> <span class="n">encoding</span><span class="o">=</span><span class="s2">&quot;utf-8&quot;</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">env_data</span> <span class="o">=</span> <span class="n">json</span><span class="o">.</span><span class="n">load</span><span class="p">(</span><span class="n">fp</span><span class="o">=</span><span class="n">f</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_init_sample</span><span class="p">()</span></div>
 
     <span class="k">def</span> <span class="nf">_init_sample</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;initialize the sample</span>
@@ -501,75 +441,7 @@
         <span class="k">for</span> <span class="n">el</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_attr_names</span><span class="p">:</span>
             <span class="n">res</span><span class="p">[</span><span class="n">el</span><span class="p">][:]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">data</span><span class="p">[</span><span class="n">el</span><span class="p">][</span><span class="n">index</span><span class="p">,</span> <span class="p">:]</span>
 
-        <span class="k">return</span> <span class="n">res</span></div>
-
-    <span class="k">def</span> <span class="nf">_infer_sizes</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="n">data</span> <span class="o">=</span> <span class="n">copy</span><span class="o">.</span><span class="n">deepcopy</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">data</span><span class="p">)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">_sizes_x</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="n">data</span><span class="p">[</span><span class="n">el</span><span class="p">]</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="k">for</span> <span class="n">el</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_attr_x</span><span class="p">],</span> <span class="n">dtype</span><span class="o">=</span><span class="nb">int</span><span class="p">)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">_sizes_tau</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="n">data</span><span class="p">[</span><span class="n">el</span><span class="p">]</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="k">for</span> <span class="n">el</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_attr_tau</span><span class="p">],</span> <span class="n">dtype</span><span class="o">=</span><span class="nb">int</span><span class="p">)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">_sizes_y</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="n">data</span><span class="p">[</span><span class="n">el</span><span class="p">]</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="k">for</span> <span class="n">el</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_attr_y</span><span class="p">],</span> <span class="n">dtype</span><span class="o">=</span><span class="nb">int</span><span class="p">)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">_size_x</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_sizes_x</span><span class="p">)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">_size_tau</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_sizes_tau</span><span class="p">)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">_size_y</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_sizes_y</span><span class="p">)</span>
-
-<div class="viewcode-block" id="PowerGridDataSet.get_sizes"><a class="viewcode-back" href="../../../lips.dataset.html#lips.dataset.PowerGridDataSet.get_sizes">[docs]</a>    <span class="k">def</span> <span class="nf">get_sizes</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;Get the sizes of the dataset</span>
-
-<span class="sd">        Returns</span>
-<span class="sd">        -------</span>
-<span class="sd">        tuple</span>
-<span class="sd">            A tuple of size (nb_sample, size_x, size_tau, size_y)</span>
-
-<span class="sd">        &quot;&quot;&quot;</span>
-        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_size_x</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_size_tau</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_size_y</span></div>
-
-<div class="viewcode-block" id="PowerGridDataSet.extract_data"><a class="viewcode-back" href="../../../lips.dataset.html#lips.dataset.PowerGridDataSet.extract_data">[docs]</a>    <span class="k">def</span> <span class="nf">extract_data</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">concat</span><span class="p">:</span> <span class="nb">bool</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">tuple</span><span class="p">:</span>
-        <span class="sd">&quot;&quot;&quot;extract the x and y data from the dataset</span>
-
-<span class="sd">        Parameters</span>
-<span class="sd">        ----------</span>
-<span class="sd">        concat : ``bool``</span>
-<span class="sd">            If True, the data will be concatenated in a single array.</span>
-<span class="sd">        Returns</span>
-<span class="sd">        -------</span>
-<span class="sd">        tuple</span>
-<span class="sd">            extracted inputs and outputs</span>
-<span class="sd">        &quot;&quot;&quot;</span>
-        <span class="c1"># init the sizes and everything</span>
-        <span class="n">data</span> <span class="o">=</span> <span class="n">copy</span><span class="o">.</span><span class="n">deepcopy</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">data</span><span class="p">)</span>
-
-        <span class="k">if</span> <span class="n">concat</span><span class="p">:</span>
-            <span class="n">attr_x</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_attr_tau</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">_attr_x</span>
-            <span class="n">extract_x</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">concatenate</span><span class="p">([</span><span class="n">data</span><span class="p">[</span><span class="n">el</span><span class="p">]</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">float32</span><span class="p">)</span> <span class="k">for</span> <span class="n">el</span> <span class="ow">in</span> <span class="n">attr_x</span><span class="p">],</span> <span class="n">axis</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
-            <span class="n">extract_y</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">concatenate</span><span class="p">([</span><span class="n">data</span><span class="p">[</span><span class="n">el</span><span class="p">]</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">float32</span><span class="p">)</span> <span class="k">for</span> <span class="n">el</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_attr_y</span><span class="p">],</span> <span class="n">axis</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
-            <span class="k">return</span> <span class="n">extract_x</span><span class="p">,</span> <span class="n">extract_y</span>
-        <span class="k">else</span><span class="p">:</span>
-            <span class="n">extract_x</span> <span class="o">=</span> <span class="p">[</span><span class="n">data</span><span class="p">[</span><span class="n">el</span><span class="p">]</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">float32</span><span class="p">)</span> <span class="k">for</span> <span class="n">el</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_attr_x</span><span class="p">]</span>
-            <span class="n">extract_tau</span> <span class="o">=</span> <span class="p">[</span><span class="n">data</span><span class="p">[</span><span class="n">el</span><span class="p">]</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">float32</span><span class="p">)</span> <span class="k">for</span> <span class="n">el</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_attr_tau</span><span class="p">]</span>
-            <span class="n">extract_y</span> <span class="o">=</span> <span class="p">[</span><span class="n">data</span><span class="p">[</span><span class="n">el</span><span class="p">]</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">float32</span><span class="p">)</span> <span class="k">for</span> <span class="n">el</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_attr_y</span><span class="p">]</span>
-            <span class="k">return</span> <span class="p">(</span><span class="n">extract_x</span><span class="p">,</span> <span class="n">extract_tau</span><span class="p">),</span> <span class="n">extract_y</span></div>
-
-
-<div class="viewcode-block" id="PowerGridDataSet.reconstruct_output"><a class="viewcode-back" href="../../../lips.dataset.html#lips.dataset.PowerGridDataSet.reconstruct_output">[docs]</a>    <span class="k">def</span> <span class="nf">reconstruct_output</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">data</span><span class="p">:</span> <span class="s2">&quot;np.ndarray&quot;</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">:</span>
-        <span class="sd">&quot;&quot;&quot;It reconstruct the data from the extracted data</span>
-
-<span class="sd">        Parameters</span>
-<span class="sd">        ----------</span>
-<span class="sd">        data : ``np.ndarray``</span>
-<span class="sd">            the array that should be reconstruted</span>
-
-<span class="sd">        Returns</span>
-<span class="sd">        -------</span>
-<span class="sd">        dict</span>
-<span class="sd">            the reconstructed data with variable names in a dictionary</span>
-<span class="sd">        &quot;&quot;&quot;</span>
-        <span class="n">predictions</span> <span class="o">=</span> <span class="p">{}</span>
-        <span class="n">prev_</span> <span class="o">=</span> <span class="mi">0</span>
-        <span class="k">for</span> <span class="n">var_id</span><span class="p">,</span> <span class="n">this_var_size</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_sizes_y</span><span class="p">):</span>
-            <span class="n">attr_nm</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_attr_y</span><span class="p">[</span><span class="n">var_id</span><span class="p">]</span>
-            <span class="n">predictions</span><span class="p">[</span><span class="n">attr_nm</span><span class="p">]</span> <span class="o">=</span> <span class="n">data</span><span class="p">[:,</span> <span class="n">prev_</span><span class="p">:(</span><span class="n">prev_</span> <span class="o">+</span> <span class="n">this_var_size</span><span class="p">)]</span>
-            <span class="n">prev_</span> <span class="o">+=</span> <span class="n">this_var_size</span>
-        <span class="k">return</span> <span class="n">predictions</span></div></div>
+        <span class="k">return</span> <span class="n">res</span></div></div>
 </pre></div>
 
            </div>
