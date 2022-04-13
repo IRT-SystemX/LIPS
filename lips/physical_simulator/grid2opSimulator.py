@@ -1,38 +1,47 @@
-# copyright (c) 2021-2022, IRT SystemX and RTE (https://www.irt-systemx.fr/)
-# See AUTHORS.txt
-# This Source Code Form is subject to the terms of the Mozilla Public License, version 2.0.
-# If a copy of the Mozilla Public License, version 2.0 was not distributed with this file,
-# you can obtain one at http://mozilla.org/MPL/2.0/.
-# SPDX-License-Identifier: MPL-2.0
-# This file is part of LIPS, LIPS is a python platform for power networks benchmarking
+"""
+Usage:
+    Grid2opSimulator implementing powergrid physical simulator
+Licence:
+    copyright (c) 2021-2022, IRT SystemX and RTE (https://www.irt-systemx.fr/)
+    See AUTHORS.txt
+    This Source Code Form is subject to the terms of the Mozilla Public License, version 2.0.
+    If a copy of the Mozilla Public License, version 2.0 was not distributed with this file,
+    you can obtain one at http://mozilla.org/MPL/2.0/.
+    SPDX-License-Identifier: MPL-2.0
+    This file is part of LIPS, LIPS is a python platform for power networks benchmarking
+"""
 
+import re
 from typing import Union
 
 import grid2op
-import re
-
 from grid2op.Action import BaseAction
 from grid2op.Agent import BaseAgent
-from grid2op.Runner import Runner
 from grid2op.PlotGrid import PlotMatplot
 
-from lips.physical_simulator.physicalSimulator import PhysicalSimulator
-
+from . import PhysicalSimulator
 
 class Grid2opSimulator(PhysicalSimulator):
     """
     This simulator uses the `grid2op` package to implement a physical simulator.
-
     It accepts both grid2op BaseAction and grid2op BaseAgent to modify the internal state of the simulator
+
+    Parameters
+    ----------
+    env_kwargs : dict
+        Grid2op.Environment parameters
+    initial_chronics_id : Union[int, None], optional
+        the initial episode identifier, by default None
+    chronics_selected_regex : str, optional
+        the chronics to keep for this simulator, by default None
     """
     def __init__(self,
                  env_kwargs: dict,
-                 initial_chronics_id: Union[int, None] = None,  # the initial chronic id
-                 chronics_selected_regex: str = None,  # the chronics to keep for this simulator
+                 initial_chronics_id: Union[int, None] = None,
+                 chronics_selected_regex: str = None,
                  ):
         PhysicalSimulator.__init__(self, actor_types=(BaseAction, BaseAgent))
-        self._simulator = grid2op.make(**env_kwargs)
-        self._simulator.deactivate_forecast()
+        self._simulator = get_env(env_kwargs)
         if chronics_selected_regex is not None:
             # special case of the grid2Op environment: data are read from chronics that should be part of the dataset
             # here i keep only certain chronics for the training, and the other for the test
@@ -49,7 +58,7 @@ class Grid2opSimulator(PhysicalSimulator):
         self._info = None
         self._reset_simulator()
         self._plot_helper = None
-        
+
 
         self._nb_divergence = 0  # number of failures of modify_state
         self._nb_output = 0  # number of time get_state is called
@@ -60,32 +69,53 @@ class Grid2opSimulator(PhysicalSimulator):
     def seed(self, seed: int):
         """
         It seeds the environment, for reproducible experiments.
+
         Parameters
         ----------
-        seed:
+        seed: int
             An integer representing the seed.
-
         """
         seeds = self._simulator.seed(seed)
         self._reset_simulator()
         return seeds
 
-    def get_state(self):
+    def get_state(self) -> tuple:
         """
         The state of the powergrid is, for this class, represented by a tuple:
         - grid2op observation.
         - extra information (can be empty)
 
+        Returns
+        -------
+        tuple
+            observation and extra information
         """
         self._nb_output += 1
-        return self._obs, self._info, self._simulator.backend.get_theta()
+        return self._obs, self._info
 
-    def _get_time_powerflow(self):
+    def _get_time_powerflow(self) -> tuple:
+        """getter for powerflow execution time
+
+        Returns
+        -------
+        tuple
+            powerflow execution time & computation time
+        """
         return self._time_powerflow, self.comp_time
 
-    def modify_state(self, actor):
+    def modify_state(self, actor: BaseAgent):
         """
         It calls `env.step` until a convergence is obtained.
+
+        Parameters
+        ----------
+        actor : BaseAgent
+            a grid2op agent which performs a specific action on the grid
+
+        Raises
+        ------
+        RuntimeError
+            _description_
         """
         super().modify_state(actor)  # perform the check that the actor is legit
         done = True
@@ -99,7 +129,7 @@ class Grid2opSimulator(PhysicalSimulator):
             _end_time_pf = self._simulator._time_powerflow
             _diff_time_pf = _end_time_pf - _beg_time_pf
             _diff_time_cp = _end_time_cp - _beg_time_cp
-            
+
             self._time_powerflow += _diff_time_pf
             self.comp_time += _diff_time_cp
 
@@ -115,7 +145,7 @@ class Grid2opSimulator(PhysicalSimulator):
                 self._time_powerflow -= _diff_time_pf
                 self.comp_time -= _diff_time_cp
 
-    def visualize_network(self):
+    def visualize_network(self) -> PlotMatplot:
         """
         This functions shows the network state evolution over time for a given dataset
         """
@@ -149,3 +179,20 @@ class Grid2opSimulator(PhysicalSimulator):
             self._obs = self._simulator.get_obs()
         self._reward = self._simulator.reward_range[0]
         self._info = {}
+
+def get_env(env_kwargs: dict):
+    """Getter for the environment
+
+    Parameters
+    ----------
+    env_kwargs : dict
+        environment parameters
+
+    Returns
+    -------
+    grid2op.Environment
+        A grid2op environment with the given parameters
+    """
+    env = grid2op.make(**env_kwargs)
+    env.deactivate_forecast()
+    return env

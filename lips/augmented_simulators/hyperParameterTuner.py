@@ -5,35 +5,63 @@
 # you can obtain one at http://mozilla.org/MPL/2.0/.
 # SPDX-License-Identifier: MPL-2.0
 # This file is part of LIPS, LIPS is a python platform for power networks benchmarking
-
+from . import AugmentedSimulator
 
 class HyperParameterTuner(object):
     """
     A class providing the functionality to tune the hyper-parameters of the "fullyConnectedAS"
     augmented simulator.
 
-    params
-    ------
-        augmented_simulator: ``object`` of class ``AugmentedSimulator``
-            an augmented simulator like fullyConnectedAs or LeapNet
+    Attributes
+    ----------
+    augmented_simulator: AugmentedSimulator
+        an augmented simulator like fullyConnectedAs or LeapNet
     """
-    def __init__(self, augmented_simulator):
+    def __init__(self, augmented_simulator: AugmentedSimulator):
         self.augmented_simulator = augmented_simulator
 
     def tune(self,
-             dataset, 
-             sizes_layer=[(150,150)], 
-             layer_act=["relu"], 
-             lr=[3e-4], 
-             batch_size=[128], 
-             epochs=[5], 
-             loss=["mse"], 
-             n_folds=3, 
-             verbose=1, 
-             n_jobs=1):
-        """
+             dataset: dict,
+             sizes_layer: tuple=((150,150),),
+             layer_act: tuple=("relu",),
+             lr: tuple=(3e-4,),
+             batch_size: tuple=(128,),
+             epochs: tuple=(5,),
+             loss: tuple=("mse",),
+             n_folds: int=3,
+             verbose: int=1,
+             n_jobs: int=1) -> dict:
+        """function to tune the hyper-parameters
         This function allows to run a grid search cross validation over a set of hyper parameters
         All the parameters of this function except for dataset, epochs and number of folds could be a list
+
+        Parameters
+        ----------
+        dataset : dict
+            dataset on which fine tuning should be performed
+        sizes_layer : tuple, optional
+            various layer sizes, by default ((150,150))
+        layer_act : tuple, optional
+            various activations, by default ("relu")
+        lr : tuple, optional
+            various learning rates, by default (3e-4)
+        batch_size : tuple, optional
+            batch size used for training, by default (128)
+        epochs : tuple, optional
+            number of epochs for augmented simulator, by default (5)
+        loss : tuple, optional
+            the loss function of training phase, by default ("mse")
+        n_folds : int, optional
+            number of folds in cross validation, by default 3
+        verbose : int, optional
+            verbosity, by default 1
+        n_jobs : int, optional
+            number of jobs used for parallelization, by default 1
+
+        Returns
+        -------
+        dict
+            grid search results
         """
         processed_x, processed_y = self.augmented_simulator._process_all_dataset(dataset, training=True)
 
@@ -62,10 +90,28 @@ class HyperParameterTuner(object):
                        layer_act="relu",
                        lr=3e-4,
                        loss="mse"):
+        """create the model
+
+        Parameters
+        ----------
+        sizes_layer : tuple, optional
+            model layer sizes, by default (150,150)
+        layer_act : str, optional
+            activation function, by default "relu"
+        lr : _type_, optional
+            learning rate, by default 3e-4
+        loss : str, optional
+            loss function, by default "mse"
+
+        Returns
+        -------
+        AugmentedSimulator._model
+            the model to be finetuned
+        """
         import tensorflow.keras.optimizers as tfko
         self.augmented_simulator.sizes_layer = sizes_layer
         self.augmented_simulator.layer_act = layer_act
-        
+
         self.augmented_simulator.init()
         optimizer = tfko.Adam(learning_rate=lr)
         self.augmented_simulator._model.compile(optimizer=optimizer, loss=loss, metrics=["mae"])
