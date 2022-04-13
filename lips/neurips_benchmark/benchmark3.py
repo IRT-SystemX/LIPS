@@ -14,10 +14,10 @@ import copy
 import logging
 
 from lips.neurips_benchmark import NeuripsBenchmark1
-from lips.neurips_benchmark.scen1_utils import (get_kwargs_simulator_scenario1,
-                                                get_actor_training_scenario1,
-                                                get_actor_test_ood_topo_scenario1,
-                                                get_actor_test_scenario1)
+from lips.benchmark.utils.scen1_utils import (get_kwargs_simulator_scenario,
+                                                get_actor_training_scenario,
+                                                get_actor_test_ood_topo_scenario,
+                                                get_actor_test_scenario)
 
 from lips.physical_simulator import Grid2opSimulator
 from lips.dataset import PowerGridDataSet
@@ -75,6 +75,16 @@ class NeuripsBenchmark3(NeuripsBenchmark1):
             self.evaluation.active_dict["evaluate_physic"]["verify_LCE"] = True
             self.evaluation.active_dict["evaluate_physic"]["verify_KCL"] = True
             #self.evaluation.active_dict["evaluate_physics"] = {}
-
         else:
             self.evaluate = evaluation
+
+        self.train_dataset = PowerGridDataSet("train") # Integrate the theta variables in the analysis
+        self.val_dataset = PowerGridDataSet("val")
+        self._test_dataset = PowerGridDataSet("test")
+        self._test_ood_topo_dataset = PowerGridDataSet("test_ood_topo")
+        
+        self.path_datasets = None
+        if load_data_set:
+            self.load()
+        else:
+            self.is_loaded = False

@@ -9,8 +9,6 @@
 __all__ = ["DataSet"]
 
 from lips.dataset.dataSet import DataSet
-
-
 try:
     from lips.dataset.powergridDataSet import PowerGridDataSet
     __all__.append("PowerGridDataSet")

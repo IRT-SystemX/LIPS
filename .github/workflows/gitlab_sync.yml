@@ -5,7 +5,7 @@ on:
     branches:
       - main
       - 'ml-*'
-      - 'bd-dev'
+      - 'bd-*'
       - 'dd-*'
       - 'jp-*'
       - 'am-*'
@@ -13,7 +13,7 @@ on:
     branches:
       - main
       - 'ml-*'
-      - 'bd-dev'
+      - 'bd-*'
       - 'dd-*'
       - 'jp-*'
       - 'am-*'
@@ -21,12 +21,12 @@ on:
     branches:
       - main
       - 'ml-*'
-      - 'bd-dev'
+      - 'bd-*'
       - 'dd-*'
       - 'jp-*'
       - 'am-*'
-  issues:
-    types: [opened, edited, milestoned, closed, deleted, reopened]
+  #issues:
+    #types: [opened, edited, milestoned, closed, deleted, reopened]
 
 jobs:
   sync:
