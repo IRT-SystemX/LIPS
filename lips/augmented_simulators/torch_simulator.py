@@ -16,13 +16,14 @@ from torch import optim
 from torch import nn
 from torch import Tensor
 #from torch.nn.modules.loss import _Loss as Loss
-from torch.utils.data import TensorDataset, DataLoader
+from torch.utils.data import DataLoader
 
 from . import AugmentedSimulator
-from .torch_models.utils import LOSSES, OPTIMIZERS, NpEncoder
+from .torch_models.utils import LOSSES, OPTIMIZERS
 from ..dataset import DataSet
-from ..dataset import Scaler
+from ..dataset.scaler import Scaler
 from ..logger import CustomLogger
+from ..utils import NpEncoder
 
 class TorchSimulator(AugmentedSimulator):
     """Pytorch based simulators
@@ -57,18 +58,17 @@ class TorchSimulator(AugmentedSimulator):
                  scaler: Union[Scaler, None]=None,
                  log_path: Union[str, None] = None,
                  **kwargs):
-        super().__init__(model, name, scaler, log_path, **kwargs)
+        #super().__init__(model, name, scaler, log_path, **kwargs)
+        super().__init__(name, log_path, model, **kwargs)
         # logger
         self.logger = CustomLogger(__class__.__name__, self.log_path).logger
+        # scaler
+        self.scaler = scaler() if scaler else None
+        self._model = self.model(name, self.scaler, **kwargs)
+        self.params.update(self._model.params)
 
-        self._model = self._build_model(**kwargs)
 
-        if name is not None:
-            self.name = name
-        else:
-            self.name = self._model.name
-
-    def _build_model(self, **kwargs) -> nn.Module:
+    def build_model(self):
         """build torch model
 
         Parameters
@@ -81,9 +81,9 @@ class TorchSimulator(AugmentedSimulator):
         nn.Module
             a torch model
         """
-        model_ = self.model(**kwargs)
-        self.params.update(model_.params)
-        return model_
+        #model_ = self.torch_model(**kwargs)
+        #self.params.update(self.torch_model.params)
+        self._model.build_model()
 
     def train(self,
               train_dataset: DataSet,
@@ -101,11 +101,15 @@ class TorchSimulator(AugmentedSimulator):
         save_path : Union[None, str], optional
             the path where the trained model should be saved, by default None
         """
-        super().train(train_dataset, val_dataset)
         self.params.update(kwargs)
-        train_loader = self._process_all_dataset(train_dataset, training=True)
+        super().train(train_dataset, val_dataset)
+        train_loader = self._model.process_dataset(train_dataset, training=True)
         if val_dataset is not None:
-            val_loader = self._process_all_dataset(val_dataset, training=False)
+            val_loader = self._model.process_dataset(val_dataset, training=False)
+
+        # build the model
+        self.build_model()
+
         optimizer = self._get_optimizer(optimizer=OPTIMIZERS[self.params["optimizer"]["name"]],
                                         **self.params["optimizer"]["params"])
         for metric_ in self.params["metrics"]:
@@ -264,7 +268,7 @@ class TorchSimulator(AugmentedSimulator):
             self.params["eval_batch_size"] = kwargs["batch_size"]
         self.params.update(kwargs)
 
-        test_loader = self._process_all_dataset(dataset, training=False)
+        test_loader = self._model.process_dataset(dataset, training=False)
         # activate the evaluation mode
         self._model.eval()
         predictions = []
@@ -292,9 +296,8 @@ class TorchSimulator(AugmentedSimulator):
                 _beg = time.time()
                 prediction = self._model(data)
                 total_time += time.time() - _beg
-                if self.scaler is not None:
-                    prediction = self.scaler.inverse_transform(prediction)
-                    target = self.scaler.inverse_transform(target)
+                prediction = self._model._post_process(prediction)
+                target = self._model._post_process(target)
                 predictions.append(prediction.numpy())
                 observations.append(target.numpy())
 
@@ -319,9 +322,11 @@ class TorchSimulator(AugmentedSimulator):
         #print(f"Eval:   Avg_Loss: {mean_loss:.5f}",
         #      [f"{metric}: {metric_dict[metric]:.5f}" for metric in self.params["metrics"]])
 
-        predictions = dataset.reconstruct_output(np.concatenate(predictions))
+        predictions = np.concatenate(predictions)
+        predictions = dataset.reconstruct_output(predictions)
         self._predictions[dataset.name] = predictions
-        self._observations[dataset.name] = dataset.reconstruct_output(np.concatenate(observations))
+        observations = np.concatenate(observations)
+        self._observations[dataset.name] = dataset.reconstruct_output(observations)
         self.predict_time = total_time
         return predictions#mean_loss, metric_dict
 
@@ -352,47 +357,6 @@ class TorchSimulator(AugmentedSimulator):
         """
         return optimizer(self._model.parameters(), **kwargs)
 
-    def _process_all_dataset(self, dataset: DataSet, training: bool=False) -> DataLoader:
-
-        """process the datasets for training and evaluation
-
-        This function transforms all the dataset into something that can be used by the neural network (for example)
-
-        Parameters
-        ----------
-        dataset : DataSet
-            _description_
-        scaler : Scaler, optional
-            _description_, by default True
-        training : bool, optional
-            _description_, by default False
-
-        Returns
-        -------
-        DataLoader
-            _description_
-        """
-        if training:
-            batch_size = self.params["train_batch_size"]
-            extract_x, extract_y = dataset.extract_data()
-            if self.scaler is not None:
-                extract_x, extract_y = self.scaler.fit_transform(extract_x, extract_y)
-        else:
-            batch_size = self.params["eval_batch_size"]
-            extract_x, extract_y = dataset.extract_data()
-            if dataset._size_x is None:
-                raise RuntimeError("Model cannot be used, we don't know the size of the input vector. Either train it "
-                                "or load its meta data properly.")
-            if dataset._size_y is None:
-                raise RuntimeError("Model cannot be used, we don't know the size of the output vector. Either train it "
-                                "or load its meta data properly.")
-            if self.scaler is not None:
-                extract_x, extract_y = self.scaler.transform(extract_x, extract_y)
-
-        torch_dataset = TensorDataset(torch.from_numpy(extract_x).float(), torch.from_numpy(extract_y).float())
-        data_loader = DataLoader(torch_dataset, batch_size=batch_size, shuffle=self.params["shuffle"])
-        return data_loader
-
     ###############################################
     # function used to save and restore the model #
     ###############################################
@@ -412,43 +376,66 @@ class TorchSimulator(AugmentedSimulator):
         super().save(save_path)
 
         epoch_ = str(epoch) if epoch is not None else "_last"
+        self._save_model(epoch_, save_path)
 
-        file_name = save_path / ("model" + epoch_ + ".pt")
-        torch.save(self._model.state_dict(), file_name)
 
         if epoch is None and save_metadata:
             self._save_metadata(save_path)
 
         self.logger.info("Model {%s} is saved at {%s}", self.name, save_path)
 
+    def _save_model(self, epoch: str, path: str):
+        file_name = path / ("model" + epoch + ".pt")
+        torch.save(self._model.state_dict(), file_name)
+
     def _save_metadata(self, path: Union[str, pathlib.Path]):
         """save model's metadata
-
-        #TODO: save Scaler parameters (mean, std) -> OK
-        #TODO: save dataset infos (sizes, etc) -> maybe not necessary
         """
         if not isinstance(path, pathlib.Path):
             path = pathlib.Path(path)
-        self.scaler.save(path)
+        if self.scaler is not None:
+            self.scaler.save(path)
+        self._model._save_metadata(path)
         self._save_losses(path)
-        with open((path / "metadata.json"), "w", encoding="utf-8") as f:
+        with open((path / "config.json"), "w", encoding="utf-8") as f:
             json.dump(obj=self.params, fp=f, indent=4, sort_keys=True, cls=NpEncoder)
 
     def restore(self, path: Union[str, pathlib.Path], epoch: Union[int, None]=None):
         """
         restore the model
         """
-        epoch = str(epoch) if epoch is not None else "_last"
-        nm_file = "model" + epoch + ".pt"
         if not isinstance(path, pathlib.Path):
             path = pathlib.Path(path)
-        path_weights = path / self.name / nm_file
+        full_path = path / self.name
+        if not full_path.exists():
+            raise FileNotFoundError(f"path {full_path} not found")
+        # load the metadata
+        self._load_metadata(full_path)
+        self._load_model(epoch, full_path)
+        self.logger.info("Model {%s} is loaded from {%s}", self.name, full_path)
+
+    def _load_metadata(self, path: str):
+        """
+        load the model metadata
+        """
+        # load scaler parameters
+        if self.scaler is not None:
+            self.scaler.load(path)
+        self._load_losses(path)
+        with open((path / "config.json"), "r", encoding="utf-8") as f:
+            res_json = json.load(fp=f)
+        self.params.update(res_json)
+        return self.params
+
+    def _load_model(self, epoch, path: str):
+        epoch = str(epoch) if epoch is not None else "_last"
+        nm_file = "model" + epoch + ".pt"
+        path_weights = path / nm_file
         if not path_weights.exists():
             raise FileNotFoundError(f"Weights file {path_weights} not found")
-        # load the metadata
-        params = self._load_metadata(path)
-        # build the model
-        self._model = self._build_model(**params)
+        #self.build_model(**self.params)
+        self._model._load_metadata(path)
+        self.build_model()
         # load the weights
         with tempfile.TemporaryDirectory() as path_tmp:
             nm_tmp = os.path.join(path_tmp, nm_file)
@@ -456,23 +443,6 @@ class TorchSimulator(AugmentedSimulator):
             shutil.copy(path_weights, nm_tmp)
             # load this copy (make sure the proper file is not corrupted even if the loading fails)
             self._model.load_state_dict(torch.load(nm_tmp))
-
-        self.logger.info("Model {%s} is loaded from {%s}", self.name, path_weights)
-
-    def _load_metadata(self, path: str):
-        """
-        load the model metadata
-        """
-        if not isinstance(path, pathlib.Path):
-            path = pathlib.Path(path)
-        full_path = path / self.name
-        # load scaler parameters
-        self.scaler.load(full_path)
-        self._load_losses(full_path)
-        with open((full_path / "metadata.json"), "r", encoding="utf-8") as f:
-            res_json = json.load(fp=f)
-        self.params.update(res_json)
-        return self.params
 
     def _save_losses(self, path: Union[str, pathlib.Path]):
         """
@@ -541,4 +511,3 @@ class TorchSimulator(AugmentedSimulator):
         # save the figure
         if save_path is not None:
             fig.savefig(save_path)
-

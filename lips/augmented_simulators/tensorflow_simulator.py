@@ -8,20 +8,15 @@ import shutil
 import time
 import json
 import tempfile
-import warnings
 import importlib
+import pydantic.json
 
-import numpy as np
 from matplotlib import pyplot as plt
-with warnings.catch_warnings():
-    warnings.filterwarnings("ignore", category=FutureWarning)
-    import tensorflow as tf
-    from tensorflow import keras
+import tensorflow as tf
 
 from . import AugmentedSimulator
-from .tensorflow_models.utils import NpEncoder
+from ..utils import NpEncoder
 from ..dataset import DataSet
-from ..dataset import Scaler
 from ..logger import CustomLogger
 
 class TensorflowSimulator(AugmentedSimulator):
@@ -29,41 +24,24 @@ class TensorflowSimulator(AugmentedSimulator):
 
         Parameters
         ----------
-        model : Union[Model, Sequential]
-            _description_
         name : str, optional
             _description_, by default None
-        scaler : Scaler, optional
-            scaler used to scale the data, by default None
         config : ConfigManager
             _description_
         """
     def __init__(self,
-                 model: keras.Model,
                  name: Union[str, None]=None,
-                 scaler: Union[Scaler, None]=None,
                  log_path: Union[str, None] = None,
                  **kwargs):
-        super().__init__(model, name, scaler, log_path, **kwargs)
+        super().__init__(name=name, log_path=log_path, **kwargs)
         # logger
         self.logger = CustomLogger(__class__.__name__, self.log_path).logger
+        self._optimizer = None
 
-        self._model = self._build_model(**kwargs)
+        self.input_size = None
+        self.output_size = None
 
-        if name is not None:
-            self.name = name
-        else:
-            self.name = self._model.name
-
-        # optimizer
-        if "optimizer" in kwargs:
-            if not isinstance(kwargs["optimizer"], keras.optimizers.Optimizer):
-                raise RuntimeError("If an optimizer is provided, it should be a type tensorflow.keras.optimizers")
-            self._optimizer = kwargs["optimizer"](self.params["optimizers"]["params"])
-        else:
-            self._optimizer = keras.optimizers.Adam(learning_rate=self.params["optimizers"]["params"]["lr"])
-
-    def _build_model(self, **kwargs) -> keras.Model:
+    def build_model(self):
         """build tensorflow model
 
         Parameters
@@ -76,9 +54,9 @@ class TensorflowSimulator(AugmentedSimulator):
         keras.Model
             _description_
         """
-        model_tmp = self.model(**kwargs)
-        self.params.update(model_tmp.params)
-        return model_tmp._model
+        if self.input_size is None or self.output_size is None:
+            raise RuntimeError("input_size is not set")
+
 
     def train(self,
               train_dataset: DataSet,
@@ -97,10 +75,14 @@ class TensorflowSimulator(AugmentedSimulator):
             the path where the trained model should be saved, by default None
             #TODO: a callback for tensorboard and another for saving the model
         """
+        super().train(train_dataset, val_dataset)
         self.params.update(kwargs)
-        processed_x, processed_y = self._process_all_dataset(train_dataset, training=True)
+        processed_x, processed_y = self.process_dataset(train_dataset, training=True)
         if val_dataset is not None:
-            processed_x_val, processed_y_val = self._process_all_dataset(val_dataset, training=False)
+            processed_x_val, processed_y_val = self.process_dataset(val_dataset, training=False)
+
+        # init the model
+        self.build_model()
 
         self._model.compile(optimizer=self._optimizer,
                             loss=self.params["loss"]["name"],
@@ -133,32 +115,31 @@ class TensorflowSimulator(AugmentedSimulator):
         dataset : DataSet
             test datasets to evaluate
         """
+        super().evaluate(dataset)
+
         if "batch_size" in kwargs:
             self.params["eval_batch_size"] = kwargs["batch_size"]
         self.params.update(kwargs)
 
-        processed_x, processed_y = self._process_all_dataset(dataset, training=False)
+        #processed_x, processed_y = self._process_all_dataset(dataset, training=False)
+        processed_x, _ = self.process_dataset(dataset, training=False)
 
         # make the predictions
         _beg = time.time()
-        tmp_res_y = self._model.predict(processed_x, batch_size=self.params["eval_batch_size"])
+        predictions = self._model.predict(processed_x, batch_size=self.params["eval_batch_size"])
         self.predict_time = time.time() - _beg
 
-        if self.scaler is not None:
-            observations = self.scaler.inverse_transform(processed_y)
-            predictions = self.scaler.inverse_transform(tmp_res_y)
-
-        predictions = dataset.reconstruct_output(predictions)
-        observations = dataset.reconstruct_output(observations)
+        predictions = self._post_process(dataset, predictions)
 
         self._predictions[dataset.name] = predictions
         self._observations[dataset.name] = dataset.data
 
         return predictions
 
-
-    def _process_all_dataset(self, dataset: DataSet, training: bool=False) -> tuple:
+    def process_dataset(self, dataset: DataSet, training: bool) -> tuple:
         """process the datasets for training and evaluation
+
+        each augmented simulator requires its owan data preparation
 
         This function transforms all the dataset into something that can be used by the neural network (for example)
 
@@ -166,8 +147,6 @@ class TensorflowSimulator(AugmentedSimulator):
         ----------
         dataset : DataSet
             _description_
-        Scaler : bool, optional
-            _description_, by default True
         training : bool, optional
             _description_, by default False
 
@@ -176,22 +155,26 @@ class TensorflowSimulator(AugmentedSimulator):
         tuple
             the normalized dataset with features and labels
         """
-        if training:
-            extract_x, extract_y = dataset.extract_data()
-            if self.scaler is not None:
-                extract_x, extract_y = self.scaler.fit_transform(extract_x, extract_y)
-        else:
-            extract_x, extract_y = dataset.extract_data()
-            if dataset._size_x is None:
-                raise RuntimeError("Model cannot be used, we don't know the size of the input vector. Either train it "
-                                "or load its meta data properly.")
-            if dataset._size_y is None:
-                raise RuntimeError("Model cannot be used, we don't know the size of the output vector. Either train it "
-                                "or load its meta data properly.")
-            if self.scaler is not None:
-                extract_x, extract_y = self.scaler.transform(extract_x, extract_y)
+        super().process_dataset(dataset, training)
+        inputs, outputs = dataset.extract_data()
 
-        return extract_x, extract_y
+        return inputs, outputs
+
+    def _post_process(self, dataset, predictions):
+        """Do some post processing on the predictions
+
+        Parameters
+        ----------
+        predictions : _type_
+            _description_
+
+        Returns
+        -------
+        _type_
+            _description_
+        """
+        return dataset.reconstruct_output(predictions)
+
 
     ###############################################
     # function used to save and restore the model #
@@ -209,34 +192,45 @@ class TensorflowSimulator(AugmentedSimulator):
         save_path =  pathlib.Path(path) / self.name
         super().save(save_path)
 
-        file_name = save_path / ("model" + ".h5")
-        self._model.save(file_name)
+        self._save_model(save_path)
 
         if save_metadata:
             self._save_metadata(save_path)
 
         self.logger.info("Model {%s} is saved at {%s}", self.name, save_path)
 
+    def _save_model(self, path: str):
+        file_name = path / ("weights" + ".h5")
+        self._model.save(file_name)
+
     def _save_metadata(self, path: str):
         if not isinstance(path, pathlib.Path):
             path = pathlib.Path(path)
-        self.scaler.save(path)
+        # for json serialization of paths
+        #pydantic.json.ENCODERS_BY_TYPE[pathlib.PosixPath] = str
+        #pydantic.json.ENCODERS_BY_TYPE[pathlib.WindowsPath] = str
         self._save_losses(path)
-        with open((path / "metadata.json"), "w", encoding="utf-8") as f:
+        with open((path / "config.json"), "w", encoding="utf-8") as f:
             json.dump(obj=self.params, fp=f, indent=4, sort_keys=True, cls=NpEncoder)
 
     def restore(self, path: str):
-
-        nm_file = "model.h5"
         if not isinstance(path, pathlib.Path):
             path = pathlib.Path(path)
-        path_weights = path / self.name / nm_file
+        full_path = path / self.name
+        if not full_path.exists():
+            raise FileNotFoundError(f"path {full_path} not found")
+        # load the metadata
+        self._load_metadata(full_path)
+        self._load_model(full_path)
+
+        self.logger.info("Model {%s} is loaded from {%s}", self.name, full_path)
+
+    def _load_model(self, path: str):
+        nm_file = "weights.h5"
+        path_weights = path / nm_file
         if not path_weights.exists():
             raise FileNotFoundError(f"Weights file {path_weights} not found")
-        # load the metadata
-        params = self._load_metadata(path)
-        # build the model
-        self._model = self._build_model(**params)
+        self.build_model()
         # load the weights
         with tempfile.TemporaryDirectory() as path_tmp:
             nm_tmp = os.path.join(path_tmp, nm_file)
@@ -245,19 +239,14 @@ class TensorflowSimulator(AugmentedSimulator):
             # load this copy (make sure the proper file is not corrupted even if the loading fails)
             self._model.load_weights(nm_tmp)
 
-        self.logger.info("Model {%s} is loaded from {%s}", self.name, path_weights)
-
     def _load_metadata(self, path: str):
         """
         load the model metadata
         """
-        if not isinstance(path, pathlib.Path):
-            path = pathlib.Path(path)
-        full_path = path / self.name
         # load scaler parameters
-        self.scaler.load(full_path)
-        self._load_losses(full_path)
-        with open((full_path / "metadata.json"), "r", encoding="utf-8") as f:
+        #self.scaler.load(full_path)
+        self._load_losses(path)
+        with open((path / "config.json"), "r", encoding="utf-8") as f:
             res_json = json.load(fp=f)
         self.params.update(res_json)
         return self.params
@@ -323,7 +312,7 @@ class TensorflowSimulator(AugmentedSimulator):
             show_layer_activations=False,
         )
 
-    def write_history(self, history_callback):
+    def write_history(self, history: dict):
         """write the history of the training
 
         Parameters
@@ -331,12 +320,12 @@ class TensorflowSimulator(AugmentedSimulator):
         history_callback : keras.callbacks.History
             the history of the training
         """
-        self.train_losses = history_callback.history["loss"]
-        self.val_losses = history_callback.history["val_loss"]
+        self.train_losses = history.history["loss"]
+        self.val_losses = history.history["val_loss"]
 
         for metric in self.params["metrics"]:
-            self.train_metrics[metric] = history_callback.history[metric]
-            self.val_metrics[metric] = history_callback.history["val_" + metric]
+            self.train_metrics[metric] = history.history[metric]
+            self.val_metrics[metric] = history.history["val_" + metric]
 
     def count_parameters(self):
         """count the number of parameters of the model
