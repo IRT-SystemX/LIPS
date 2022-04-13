@@ -5,7 +5,7 @@ on:
     branches:
       - main
       - 'ml-*'
-      - 'bd-dev'
+      - 'bd-*'
       - 'dd-*'
       - 'jp-*'
       - 'am-*'
@@ -13,7 +13,7 @@ on:
     branches:
       - main
       - 'ml-*'
-      - 'bd-dev'
+      - 'bd-*'
       - 'dd-*'
       - 'jp-*'
       - 'am-*'
@@ -21,7 +21,7 @@ on:
     branches:
       - main
       - 'ml-*'
-      - 'bd-dev'
+      - 'bd-*'
       - 'dd-*'
       - 'jp-*'
       - 'am-*'
