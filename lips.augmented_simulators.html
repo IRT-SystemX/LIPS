@@ -45,10 +45,10 @@
 <ul class="current">
 <li class="toctree-l1 current"><a class="current reference internal" href="#">lips.augmented_simulators package</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="#submodules">Submodules</a></li>
-<li class="toctree-l2"><a class="reference internal" href="#module-lips.augmented_simulators.augmentedSimulator">lips.augmented_simulators.augmentedSimulator module</a></li>
-<li class="toctree-l2"><a class="reference internal" href="#module-lips.augmented_simulators.fullyConnectedAS">lips.augmented_simulators.fullyConnectedAS module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#lips-augmented-simulators-augmentedsimulator-module">lips.augmented_simulators.augmentedSimulator module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#lips-augmented-simulators-fullyconnectedas-module">lips.augmented_simulators.fullyConnectedAS module</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#module-lips.augmented_simulators.hyperParameterTuner">lips.augmented_simulators.hyperParameterTuner module</a></li>
-<li class="toctree-l2"><a class="reference internal" href="#module-lips.augmented_simulators.leapNetAS">lips.augmented_simulators.leapNetAS module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#lips-augmented-simulators-leapnetas-module">lips.augmented_simulators.leapNetAS module</a></li>
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="lips.benchmark.html">lips.benchmark package</a></li>
@@ -99,24 +99,15 @@
 <col style="width: 90%" />
 </colgroup>
 <tbody>
-<tr class="row-odd"><td><p><a class="reference internal" href="#lips.augmented_simulators.AugmentedSimulator" title="lips.augmented_simulators.AugmentedSimulator"><code class="xref py py-obj docutils literal notranslate"><span class="pre">AugmentedSimulator</span></code></a>(name)</p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="#lips.augmented_simulators.AugmentedSimulator" title="lips.augmented_simulators.AugmentedSimulator"><code class="xref py py-obj docutils literal notranslate"><span class="pre">AugmentedSimulator</span></code></a>([name, log_path, model])</p></td>
 <td><p>This class is the Base class that is used to create some &quot;augmented simulator&quot;.</p></td>
-</tr>
-<tr class="row-even"><td><p><a class="reference internal" href="#lips.augmented_simulators.HyperParameterTuner" title="lips.augmented_simulators.HyperParameterTuner"><code class="xref py py-obj docutils literal notranslate"><span class="pre">HyperParameterTuner</span></code></a>(augmented_simulator)</p></td>
-<td><p>A class providing the functionality to tune the hyper-parameters of the &quot;fullyConnectedAS&quot; augmented simulator.</p></td>
-</tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="#lips.augmented_simulators.FullyConnectedAS" title="lips.augmented_simulators.FullyConnectedAS"><code class="xref py py-obj docutils literal notranslate"><span class="pre">FullyConnectedAS</span></code></a>(name, benchmark_name, ...)</p></td>
-<td><p>Fully Connected neural network (tensorflow)</p></td>
-</tr>
-<tr class="row-even"><td><p><a class="reference internal" href="#lips.augmented_simulators.LeapNetAS" title="lips.augmented_simulators.LeapNetAS"><code class="xref py py-obj docutils literal notranslate"><span class="pre">LeapNetAS</span></code></a>(name, benchmark_name, config_path, ...)</p></td>
-<td><p>LeapNet architecture</p></td>
 </tr>
 </tbody>
 </table>
 <dl class="py class">
 <dt class="sig sig-object py" id="lips.augmented_simulators.AugmentedSimulator">
-<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">lips.augmented_simulators.</span></span><span class="sig-name descname"><span class="pre">AugmentedSimulator</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">name</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/lips/augmented_simulators/augmentedSimulator.html#AugmentedSimulator"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#lips.augmented_simulators.AugmentedSimulator" title="Permalink to this definition"></a></dt>
-<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">lips.augmented_simulators.</span></span><span class="sig-name descname"><span class="pre">AugmentedSimulator</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">name</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">log_path</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">model</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><span class="pre">torch.nn.Module</span><span class="p"><span class="pre">]</span></span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/lips/augmented_simulators/augmented_simulator.html#AugmentedSimulator"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#lips.augmented_simulators.AugmentedSimulator" title="Permalink to this definition"></a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">abc.ABC</span></code></p>
 <p>This class is the Base class that is used to create some “augmented simulator”. These “augmented simulator” can be
 anything that emulates the behaviour of some “simulator”.</p>
 <p>They are meant to use data coming from a <cite>DataSet</cite> to learn from it.</p>
@@ -127,523 +118,64 @@ anything that emulates the behaviour of some “simulator”.</p>
 <col style="width: 90%" />
 </colgroup>
 <tbody>
-<tr class="row-odd"><td><p><a class="reference internal" href="#lips.augmented_simulators.AugmentedSimulator.train" title="lips.augmented_simulators.AugmentedSimulator.train"><code class="xref py py-obj docutils literal notranslate"><span class="pre">train</span></code></a>(nb_iter, train_dataset[, val_dataset])</p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="#lips.augmented_simulators.AugmentedSimulator.train" title="lips.augmented_simulators.AugmentedSimulator.train"><code class="xref py py-obj docutils literal notranslate"><span class="pre">train</span></code></a>(train_dataset[, val_dataset])</p></td>
 <td><p>Train the Augmented simulator using the provided datasets (parameters <cite>train_dataset</cite> and <cite>val_dataset</cite>) for a given number of iterations (<cite>nb_iter</cite>)</p></td>
 </tr>
 <tr class="row-even"><td><p><a class="reference internal" href="#lips.augmented_simulators.AugmentedSimulator.evaluate" title="lips.augmented_simulators.AugmentedSimulator.evaluate"><code class="xref py py-obj docutils literal notranslate"><span class="pre">evaluate</span></code></a>(dataset)</p></td>
 <td><p>evaluate the model on the full dataset</p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="#lips.augmented_simulators.AugmentedSimulator.init" title="lips.augmented_simulators.AugmentedSimulator.init"><code class="xref py py-obj docutils literal notranslate"><span class="pre">init</span></code></a>(**kwargs)</p></td>
-<td><p>initialize the &quot;augmented simulator&quot;.</p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="#lips.augmented_simulators.AugmentedSimulator.build_model" title="lips.augmented_simulators.AugmentedSimulator.build_model"><code class="xref py py-obj docutils literal notranslate"><span class="pre">build_model</span></code></a>()</p></td>
+<td><p>Build the model</p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="#lips.augmented_simulators.AugmentedSimulator.process_dataset" title="lips.augmented_simulators.AugmentedSimulator.process_dataset"><code class="xref py py-obj docutils literal notranslate"><span class="pre">process_dataset</span></code></a>(one_example)</p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="#lips.augmented_simulators.AugmentedSimulator.process_dataset" title="lips.augmented_simulators.AugmentedSimulator.process_dataset"><code class="xref py py-obj docutils literal notranslate"><span class="pre">process_dataset</span></code></a>(dataset, training)</p></td>
 <td><p>This function transforms one state of a dataset (one row if you want) into something that can be used by the neural network (for example)</p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="#lips.augmented_simulators.AugmentedSimulator.data_to_dict" title="lips.augmented_simulators.AugmentedSimulator.data_to_dict"><code class="xref py py-obj docutils literal notranslate"><span class="pre">data_to_dict</span></code></a>()</p></td>
-<td><p>This function should return two dictionaries in the following order</p></td>
-</tr>
-<tr class="row-even"><td><p><a class="reference internal" href="#lips.augmented_simulators.AugmentedSimulator.save" title="lips.augmented_simulators.AugmentedSimulator.save"><code class="xref py py-obj docutils literal notranslate"><span class="pre">save</span></code></a>(path_out)</p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="#lips.augmented_simulators.AugmentedSimulator.save" title="lips.augmented_simulators.AugmentedSimulator.save"><code class="xref py py-obj docutils literal notranslate"><span class="pre">save</span></code></a>(path)</p></td>
 <td><p>save the model at a given path</p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="#lips.augmented_simulators.AugmentedSimulator.restore" title="lips.augmented_simulators.AugmentedSimulator.restore"><code class="xref py py-obj docutils literal notranslate"><span class="pre">restore</span></code></a>(path)</p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="#lips.augmented_simulators.AugmentedSimulator.restore" title="lips.augmented_simulators.AugmentedSimulator.restore"><code class="xref py py-obj docutils literal notranslate"><span class="pre">restore</span></code></a>(path)</p></td>
 <td><p>restore the model from the given path.</p></td>
-</tr>
-<tr class="row-even"><td><p><a class="reference internal" href="#lips.augmented_simulators.AugmentedSimulator.save_metadata" title="lips.augmented_simulators.AugmentedSimulator.save_metadata"><code class="xref py py-obj docutils literal notranslate"><span class="pre">save_metadata</span></code></a>(path_out)</p></td>
-<td><p>Saves the &quot;metadata&quot; of the model.</p></td>
-</tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="#lips.augmented_simulators.AugmentedSimulator.load_metadata" title="lips.augmented_simulators.AugmentedSimulator.load_metadata"><code class="xref py py-obj docutils literal notranslate"><span class="pre">load_metadata</span></code></a>(path)</p></td>
-<td><p>load the metada from the given path.</p></td>
 </tr>
 </tbody>
 </table>
 <dl class="py method">
 <dt class="sig sig-object py" id="lips.augmented_simulators.AugmentedSimulator.train">
-<span class="sig-name descname"><span class="pre">train</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">nb_iter</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">train_dataset</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="lips.dataset.html#lips.dataset.dataSet.DataSet" title="lips.dataset.dataSet.DataSet"><span class="pre">lips.dataset.dataSet.DataSet</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">val_dataset</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Union</span><span class="p"><span class="pre">[</span></span><span class="pre">None</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference internal" href="lips.dataset.html#lips.dataset.dataSet.DataSet" title="lips.dataset.dataSet.DataSet"><span class="pre">lips.dataset.dataSet.DataSet</span></a><span class="p"><span class="pre">]</span></span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/lips/augmented_simulators/augmentedSimulator.html#AugmentedSimulator.train"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#lips.augmented_simulators.AugmentedSimulator.train" title="Permalink to this definition"></a></dt>
+<em class="property"><span class="pre">abstractmethod</span> </em><span class="sig-name descname"><span class="pre">train</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">train_dataset</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="lips.dataset.html#lips.dataset.dataSet.DataSet" title="lips.dataset.dataSet.DataSet"><span class="pre">lips.dataset.dataSet.DataSet</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">val_dataset</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Union</span><span class="p"><span class="pre">[</span></span><span class="pre">None</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference internal" href="lips.dataset.html#lips.dataset.dataSet.DataSet" title="lips.dataset.dataSet.DataSet"><span class="pre">lips.dataset.dataSet.DataSet</span></a><span class="p"><span class="pre">]</span></span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/lips/augmented_simulators/augmented_simulator.html#AugmentedSimulator.train"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#lips.augmented_simulators.AugmentedSimulator.train" title="Permalink to this definition"></a></dt>
 <dd><p>Train the Augmented simulator using the provided datasets (parameters <cite>train_dataset</cite> and
 <cite>val_dataset</cite>) for a given number of iterations (<cite>nb_iter</cite>)</p>
 </dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="lips.augmented_simulators.AugmentedSimulator.evaluate">
-<span class="sig-name descname"><span class="pre">evaluate</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">dataset</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="lips.dataset.html#lips.dataset.dataSet.DataSet" title="lips.dataset.dataSet.DataSet"><span class="pre">lips.dataset.dataSet.DataSet</span></a></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/lips/augmented_simulators/augmentedSimulator.html#AugmentedSimulator.evaluate"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#lips.augmented_simulators.AugmentedSimulator.evaluate" title="Permalink to this definition"></a></dt>
+<em class="property"><span class="pre">abstractmethod</span> </em><span class="sig-name descname"><span class="pre">evaluate</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">dataset</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="lips.dataset.html#lips.dataset.dataSet.DataSet" title="lips.dataset.dataSet.DataSet"><span class="pre">lips.dataset.dataSet.DataSet</span></a></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/lips/augmented_simulators/augmented_simulator.html#AugmentedSimulator.evaluate"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#lips.augmented_simulators.AugmentedSimulator.evaluate" title="Permalink to this definition"></a></dt>
 <dd><p>evaluate the model on the full dataset</p>
 </dd></dl>
 
 <dl class="py method">
-<dt class="sig sig-object py" id="lips.augmented_simulators.AugmentedSimulator.init">
-<span class="sig-name descname"><span class="pre">init</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/lips/augmented_simulators/augmentedSimulator.html#AugmentedSimulator.init"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#lips.augmented_simulators.AugmentedSimulator.init" title="Permalink to this definition"></a></dt>
-<dd><p>initialize the “augmented simulator”.</p>
-<p>For example, this is where the model should be built in case the augmented simulator used a neural network.</p>
+<dt class="sig sig-object py" id="lips.augmented_simulators.AugmentedSimulator.build_model">
+<em class="property"><span class="pre">abstractmethod</span> </em><span class="sig-name descname"><span class="pre">build_model</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/lips/augmented_simulators/augmented_simulator.html#AugmentedSimulator.build_model"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#lips.augmented_simulators.AugmentedSimulator.build_model" title="Permalink to this definition"></a></dt>
+<dd><p>Build the model</p>
+<p>This is where a neural network is initialized or built.</p>
 </dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="lips.augmented_simulators.AugmentedSimulator.process_dataset">
-<span class="sig-name descname"><span class="pre">process_dataset</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">one_example</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/lips/augmented_simulators/augmentedSimulator.html#AugmentedSimulator.process_dataset"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#lips.augmented_simulators.AugmentedSimulator.process_dataset" title="Permalink to this definition"></a></dt>
+<span class="sig-name descname"><span class="pre">process_dataset</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">dataset</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="lips.dataset.html#lips.dataset.dataSet.DataSet" title="lips.dataset.dataSet.DataSet"><span class="pre">lips.dataset.dataSet.DataSet</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">training</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/lips/augmented_simulators/augmented_simulator.html#AugmentedSimulator.process_dataset"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#lips.augmented_simulators.AugmentedSimulator.process_dataset" title="Permalink to this definition"></a></dt>
 <dd><p>This function transforms one state of a dataset (one row if you want) into something that can be used by
 the neural network (for example)</p>
 </dd></dl>
 
 <dl class="py method">
-<dt class="sig sig-object py" id="lips.augmented_simulators.AugmentedSimulator.data_to_dict">
-<span class="sig-name descname"><span class="pre">data_to_dict</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/lips/augmented_simulators/augmentedSimulator.html#AugmentedSimulator.data_to_dict"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#lips.augmented_simulators.AugmentedSimulator.data_to_dict" title="Permalink to this definition"></a></dt>
-<dd><dl class="simple">
-<dt>This function should return two dictionaries in the following order</dt><dd><ul class="simple">
-<li><p>the observations used for evaluation</p></li>
-<li><p>corresponding predictions</p></li>
-</ul>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="py method">
 <dt class="sig sig-object py" id="lips.augmented_simulators.AugmentedSimulator.save">
-<span class="sig-name descname"><span class="pre">save</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">path_out</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/lips/augmented_simulators/augmentedSimulator.html#AugmentedSimulator.save"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#lips.augmented_simulators.AugmentedSimulator.save" title="Permalink to this definition"></a></dt>
+<span class="sig-name descname"><span class="pre">save</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">path</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Union</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">pathlib.Path</span><span class="p"><span class="pre">]</span></span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/lips/augmented_simulators/augmented_simulator.html#AugmentedSimulator.save"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#lips.augmented_simulators.AugmentedSimulator.save" title="Permalink to this definition"></a></dt>
 <dd><p>save the model at a given path</p>
 </dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="lips.augmented_simulators.AugmentedSimulator.restore">
-<span class="sig-name descname"><span class="pre">restore</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">path</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/lips/augmented_simulators/augmentedSimulator.html#AugmentedSimulator.restore"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#lips.augmented_simulators.AugmentedSimulator.restore" title="Permalink to this definition"></a></dt>
+<span class="sig-name descname"><span class="pre">restore</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">path</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/lips/augmented_simulators/augmented_simulator.html#AugmentedSimulator.restore"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#lips.augmented_simulators.AugmentedSimulator.restore" title="Permalink to this definition"></a></dt>
 <dd><p>restore the model from the given path. It is expected to raise an error if it cannot be initialized
 by the data located at <cite>path</cite></p>
-</dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="lips.augmented_simulators.AugmentedSimulator.save_metadata">
-<span class="sig-name descname"><span class="pre">save_metadata</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">path_out</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/lips/augmented_simulators/augmentedSimulator.html#AugmentedSimulator.save_metadata"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#lips.augmented_simulators.AugmentedSimulator.save_metadata" title="Permalink to this definition"></a></dt>
-<dd><p>Saves the “metadata” of the model.</p>
-<p>Metadata should be, if possible, serializable to json.</p>
-<p>For example, this is the perfect function to save the meta parameters of a neural network</p>
-</dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="lips.augmented_simulators.AugmentedSimulator.load_metadata">
-<span class="sig-name descname"><span class="pre">load_metadata</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">path</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/lips/augmented_simulators/augmentedSimulator.html#AugmentedSimulator.load_metadata"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#lips.augmented_simulators.AugmentedSimulator.load_metadata" title="Permalink to this definition"></a></dt>
-<dd><p>load the metada from the given path.</p>
-</dd></dl>
-
-</dd></dl>
-
-<dl class="py class">
-<dt class="sig sig-object py" id="lips.augmented_simulators.HyperParameterTuner">
-<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">lips.augmented_simulators.</span></span><span class="sig-name descname"><span class="pre">HyperParameterTuner</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">augmented_simulator</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#lips.augmented_simulators.augmentedSimulator.AugmentedSimulator" title="lips.augmented_simulators.augmentedSimulator.AugmentedSimulator"><span class="pre">lips.augmented_simulators.augmentedSimulator.AugmentedSimulator</span></a></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/lips/augmented_simulators/hyperParameterTuner.html#HyperParameterTuner"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#lips.augmented_simulators.HyperParameterTuner" title="Permalink to this definition"></a></dt>
-<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
-<p>A class providing the functionality to tune the hyper-parameters of the “fullyConnectedAS”
-augmented simulator.</p>
-<dl class="py attribute">
-<dt class="sig sig-object py" id="lips.augmented_simulators.HyperParameterTuner.augmented_simulator">
-<span class="sig-name descname"><span class="pre">augmented_simulator</span></span><a class="headerlink" href="#lips.augmented_simulators.HyperParameterTuner.augmented_simulator" title="Permalink to this definition"></a></dt>
-<dd><p>an augmented simulator like fullyConnectedAs or LeapNet</p>
-<dl class="field-list simple">
-<dt class="field-odd">Type</dt>
-<dd class="field-odd"><p><a class="reference internal" href="#lips.augmented_simulators.AugmentedSimulator" title="lips.augmented_simulators.AugmentedSimulator">AugmentedSimulator</a></p>
-</dd>
-</dl>
-</dd></dl>
-
-<p><strong>Methods:</strong></p>
-<table class="autosummary longtable docutils align-default">
-<colgroup>
-<col style="width: 10%" />
-<col style="width: 90%" />
-</colgroup>
-<tbody>
-<tr class="row-odd"><td><p><a class="reference internal" href="#lips.augmented_simulators.HyperParameterTuner.tune" title="lips.augmented_simulators.HyperParameterTuner.tune"><code class="xref py py-obj docutils literal notranslate"><span class="pre">tune</span></code></a>(dataset[, sizes_layer, layer_act, lr, ...])</p></td>
-<td><p>function to tune the hyper-parameters This function allows to run a grid search cross validation over a set of hyper parameters All the parameters of this function except for dataset, epochs and number of folds could be a list</p></td>
-</tr>
-</tbody>
-</table>
-<dl class="py method">
-<dt class="sig sig-object py" id="lips.augmented_simulators.HyperParameterTuner.tune">
-<span class="sig-name descname"><span class="pre">tune</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">dataset</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">dict</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">sizes_layer</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">tuple</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">((150,</span> <span class="pre">150),)</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">layer_act</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">tuple</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">('relu',)</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">lr</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">tuple</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">(0.0003,)</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">batch_size</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">tuple</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">(128,)</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">epochs</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">tuple</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">(5,)</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">loss</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">tuple</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">('mse',)</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">n_folds</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">3</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">verbose</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">n_jobs</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">1</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">dict</span></span></span><a class="reference internal" href="_modules/lips/augmented_simulators/hyperParameterTuner.html#HyperParameterTuner.tune"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#lips.augmented_simulators.HyperParameterTuner.tune" title="Permalink to this definition"></a></dt>
-<dd><p>function to tune the hyper-parameters
-This function allows to run a grid search cross validation over a set of hyper parameters
-All the parameters of this function except for dataset, epochs and number of folds could be a list</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><ul class="simple">
-<li><p><strong>dataset</strong> (<em>dict</em>) – dataset on which fine tuning should be performed</p></li>
-<li><p><strong>sizes_layer</strong> (<em>tuple</em><em>, </em><em>optional</em>) – various layer sizes, by default ((150,150))</p></li>
-<li><p><strong>layer_act</strong> (<em>tuple</em><em>, </em><em>optional</em>) – various activations, by default (“relu”)</p></li>
-<li><p><strong>lr</strong> (<em>tuple</em><em>, </em><em>optional</em>) – various learning rates, by default (3e-4)</p></li>
-<li><p><strong>batch_size</strong> (<em>tuple</em><em>, </em><em>optional</em>) – batch size used for training, by default (128)</p></li>
-<li><p><strong>epochs</strong> (<em>tuple</em><em>, </em><em>optional</em>) – number of epochs for augmented simulator, by default (5)</p></li>
-<li><p><strong>loss</strong> (<em>tuple</em><em>, </em><em>optional</em>) – the loss function of training phase, by default (“mse”)</p></li>
-<li><p><strong>n_folds</strong> (<em>int</em><em>, </em><em>optional</em>) – number of folds in cross validation, by default 3</p></li>
-<li><p><strong>verbose</strong> (<em>int</em><em>, </em><em>optional</em>) – verbosity, by default 1</p></li>
-<li><p><strong>n_jobs</strong> (<em>int</em><em>, </em><em>optional</em>) – number of jobs used for parallelization, by default 1</p></li>
-</ul>
-</dd>
-<dt class="field-even">Returns</dt>
-<dd class="field-even"><p>grid search results</p>
-</dd>
-<dt class="field-odd">Return type</dt>
-<dd class="field-odd"><p>dict</p>
-</dd>
-</dl>
-</dd></dl>
-
-</dd></dl>
-
-<dl class="py class">
-<dt class="sig sig-object py" id="lips.augmented_simulators.FullyConnectedAS">
-<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">lips.augmented_simulators.</span></span><span class="sig-name descname"><span class="pre">FullyConnectedAS</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">name:</span> <span class="pre">str</span> <span class="pre">=</span> <span class="pre">'FullyConnected'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">benchmark_name:</span> <span class="pre">str</span> <span class="pre">=</span> <span class="pre">'Benchmark1'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">config_path:</span> <span class="pre">typing.Optional[str]</span> <span class="pre">=</span> <span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">attr_x:</span> <span class="pre">typing.Optional[tuple]</span> <span class="pre">=</span> <span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">attr_y:</span> <span class="pre">typing.Optional[tuple]</span> <span class="pre">=</span> <span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">sizes_layer=(150</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">150)</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">lr:</span> <span class="pre">float</span> <span class="pre">=</span> <span class="pre">0.0003</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">layer:</span> <span class="pre">keras.engine.base_layer.Layer</span> <span class="pre">=</span> <span class="pre">&lt;class</span> <span class="pre">'keras.layers.core.dense.Dense'&gt;</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">layer_act:</span> <span class="pre">str</span> <span class="pre">=</span> <span class="pre">'relu'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">optimizer:</span> <span class="pre">typing.Optional[keras.optimizer_v2.optimizer_v2.OptimizerV2]</span> <span class="pre">=</span> <span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">loss:</span> <span class="pre">str</span> <span class="pre">=</span> <span class="pre">'mse'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">batch_size:</span> <span class="pre">int</span> <span class="pre">=</span> <span class="pre">128</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">log_path:</span> <span class="pre">typing.Optional[str]</span> <span class="pre">=</span> <span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/lips/augmented_simulators/fullyConnectedAS.html#FullyConnectedAS"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#lips.augmented_simulators.FullyConnectedAS" title="Permalink to this definition"></a></dt>
-<dd><p>Bases: <a class="reference internal" href="#lips.augmented_simulators.augmentedSimulator.AugmentedSimulator" title="lips.augmented_simulators.augmentedSimulator.AugmentedSimulator"><code class="xref py py-class docutils literal notranslate"><span class="pre">lips.augmented_simulators.augmentedSimulator.AugmentedSimulator</span></code></a></p>
-<p>Fully Connected neural network (tensorflow)</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><ul class="simple">
-<li><p><strong>name</strong> (<code class="docutils literal notranslate"><span class="pre">str</span></code>, optional) – the name of the model, to be used for saving, by default “FullyConnected”</p></li>
-<li><p><strong>benchmark_name</strong> (<code class="docutils literal notranslate"><span class="pre">str</span></code>, optional) – the name of the scenario for which the model should be used. It is used
-to restore the configurations from config section, by default “Benchmark1”</p></li>
-<li><p><strong>config_path</strong> (Union[<code class="docutils literal notranslate"><span class="pre">str</span></code>, <code class="docutils literal notranslate"><span class="pre">None</span></code>], optional) – The path where the config file is available. If <code class="docutils literal notranslate"><span class="pre">None</span></code>, the default config
-will be used, by default <code class="docutils literal notranslate"><span class="pre">None</span></code></p></li>
-<li><p><strong>attr_x</strong> (Union[<code class="docutils literal notranslate"><span class="pre">tuple</span></code>, <code class="docutils literal notranslate"><span class="pre">None</span></code>], optional) – the list of input variables to be declared. If <code class="docutils literal notranslate"><span class="pre">None</span></code> the input variables
-are restored from the config file, by default None</p></li>
-<li><p><strong>attr_y</strong> (Union[<code class="docutils literal notranslate"><span class="pre">tuple</span></code>, <code class="docutils literal notranslate"><span class="pre">None</span></code>], optional) – The list of output variables to be declared. If <code class="docutils literal notranslate"><span class="pre">None</span></code> the output variables
-are restored from config file, by default None</p></li>
-<li><p><strong>sizes_layer</strong> (<code class="docutils literal notranslate"><span class="pre">tuple</span></code>, optional) – the number of layers and neurones in each layer, by default (150, 150)</p></li>
-<li><p><strong>lr</strong> (<code class="docutils literal notranslate"><span class="pre">float</span></code>, optional) – the learning rate for the optimizer, by default 3e-4</p></li>
-<li><p><strong>layer_act</strong> (<code class="docutils literal notranslate"><span class="pre">str</span></code>, optional) – the layers activation, by default “relu”</p></li>
-<li><p><strong>optimizer</strong> (Union[<code class="docutils literal notranslate"><span class="pre">Optimizer</span></code>, <code class="docutils literal notranslate"><span class="pre">None</span></code>], optional) – the optimizer used for optimizing network weights, by default None</p></li>
-<li><p><strong>loss</strong> (<code class="docutils literal notranslate"><span class="pre">str</span></code>, optional) – The loss criteria used during training procedure, by default “mse”</p></li>
-<li><p><strong>log_path</strong> (Union[<code class="docutils literal notranslate"><span class="pre">str</span></code>, <code class="docutils literal notranslate"><span class="pre">None</span></code>], optional) – the path where the logs should be stored, by default None</p></li>
-</ul>
-</dd>
-<dt class="field-even">Raises</dt>
-<dd class="field-even"><p><strong>RuntimeError</strong> – If an optimizer is provided, it should be a type tensorflow.keras.optimizers</p>
-</dd>
-</dl>
-<p><strong>Methods:</strong></p>
-<table class="autosummary longtable docutils align-default">
-<colgroup>
-<col style="width: 10%" />
-<col style="width: 90%" />
-</colgroup>
-<tbody>
-<tr class="row-odd"><td><p><a class="reference internal" href="#lips.augmented_simulators.FullyConnectedAS.init" title="lips.augmented_simulators.FullyConnectedAS.init"><code class="xref py py-obj docutils literal notranslate"><span class="pre">init</span></code></a>(**kwargs)</p></td>
-<td><p>this function will build the neural network</p></td>
-</tr>
-<tr class="row-even"><td><p><a class="reference internal" href="#lips.augmented_simulators.FullyConnectedAS.train" title="lips.augmented_simulators.FullyConnectedAS.train"><code class="xref py py-obj docutils literal notranslate"><span class="pre">train</span></code></a>(nb_iter, train_dataset[, val_dataset])</p></td>
-<td><p>function used to train the model</p></td>
-</tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="#lips.augmented_simulators.FullyConnectedAS.evaluate" title="lips.augmented_simulators.FullyConnectedAS.evaluate"><code class="xref py py-obj docutils literal notranslate"><span class="pre">evaluate</span></code></a>(dataset[, batch_size, save_values])</p></td>
-<td><p>evaluate the model on the given dataset</p></td>
-</tr>
-<tr class="row-even"><td><p><a class="reference internal" href="#lips.augmented_simulators.FullyConnectedAS.save" title="lips.augmented_simulators.FullyConnectedAS.save"><code class="xref py py-obj docutils literal notranslate"><span class="pre">save</span></code></a>(path_out)</p></td>
-<td><p>This saves the weights of the neural network.</p></td>
-</tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="#lips.augmented_simulators.FullyConnectedAS.restore" title="lips.augmented_simulators.FullyConnectedAS.restore"><code class="xref py py-obj docutils literal notranslate"><span class="pre">restore</span></code></a>(path)</p></td>
-<td><p>Restores the model from a saved one</p></td>
-</tr>
-<tr class="row-even"><td><p><a class="reference internal" href="#lips.augmented_simulators.FullyConnectedAS.save_metadata" title="lips.augmented_simulators.FullyConnectedAS.save_metadata"><code class="xref py py-obj docutils literal notranslate"><span class="pre">save_metadata</span></code></a>(path_out)</p></td>
-<td><p>This is used to save the meta data of the augmented simulator</p></td>
-</tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="#lips.augmented_simulators.FullyConnectedAS.load_metadata" title="lips.augmented_simulators.FullyConnectedAS.load_metadata"><code class="xref py py-obj docutils literal notranslate"><span class="pre">load_metadata</span></code></a>(path)</p></td>
-<td><p>this is used to load the meta parameters from the model</p></td>
-</tr>
-<tr class="row-even"><td><p><a class="reference internal" href="#lips.augmented_simulators.FullyConnectedAS.data_to_dict" title="lips.augmented_simulators.FullyConnectedAS.data_to_dict"><code class="xref py py-obj docutils literal notranslate"><span class="pre">data_to_dict</span></code></a>()</p></td>
-<td><p>This functions return the observations and corresponding predictions of the last evaluation</p></td>
-</tr>
-</tbody>
-</table>
-<dl class="py method">
-<dt class="sig sig-object py" id="lips.augmented_simulators.FullyConnectedAS.init">
-<span class="sig-name descname"><span class="pre">init</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/lips/augmented_simulators/fullyConnectedAS.html#FullyConnectedAS.init"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#lips.augmented_simulators.FullyConnectedAS.init" title="Permalink to this definition"></a></dt>
-<dd><p>this function will build the neural network</p>
-</dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="lips.augmented_simulators.FullyConnectedAS.train">
-<span class="sig-name descname"><span class="pre">train</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">nb_iter</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">train_dataset</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="lips.dataset.html#lips.dataset.dataSet.DataSet" title="lips.dataset.dataSet.DataSet"><span class="pre">lips.dataset.dataSet.DataSet</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">val_dataset</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Union</span><span class="p"><span class="pre">[</span></span><span class="pre">None</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference internal" href="lips.dataset.html#lips.dataset.dataSet.DataSet" title="lips.dataset.dataSet.DataSet"><span class="pre">lips.dataset.dataSet.DataSet</span></a><span class="p"><span class="pre">]</span></span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">dict</span></span></span><a class="reference internal" href="_modules/lips/augmented_simulators/fullyConnectedAS.html#FullyConnectedAS.train"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#lips.augmented_simulators.FullyConnectedAS.train" title="Permalink to this definition"></a></dt>
-<dd><p>function used to train the model</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><ul class="simple">
-<li><p><strong>nb_iter</strong> (<code class="docutils literal notranslate"><span class="pre">int</span></code>) – number of epochs</p></li>
-<li><p><strong>train_dataset</strong> (<a class="reference internal" href="lips.dataset.html#lips.dataset.DataSet" title="lips.dataset.DataSet"><em>DataSet</em></a>) – the training dataset used to train the model</p></li>
-<li><p><strong>val_dataset</strong> (Union[<code class="docutils literal notranslate"><span class="pre">None</span></code>, DataSet], optional) – the validation dataset used to validate the model, by default None</p></li>
-<li><p><strong>**kwargs</strong> (<code class="docutils literal notranslate"><span class="pre">dict</span></code>) – supplementary arguments for <code class="docutils literal notranslate"><span class="pre">fit</span></code> method of <code class="docutils literal notranslate"><span class="pre">tf.keras.Model</span></code></p></li>
-</ul>
-</dd>
-<dt class="field-even">Returns</dt>
-<dd class="field-even"><p>history of the tensorflow model (losses)</p>
-</dd>
-<dt class="field-odd">Return type</dt>
-<dd class="field-odd"><p>dict</p>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="lips.augmented_simulators.FullyConnectedAS.evaluate">
-<span class="sig-name descname"><span class="pre">evaluate</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">dataset</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="lips.dataset.html#lips.dataset.dataSet.DataSet" title="lips.dataset.dataSet.DataSet"><span class="pre">lips.dataset.dataSet.DataSet</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">batch_size</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">32</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">save_values</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">dict</span></span></span><a class="reference internal" href="_modules/lips/augmented_simulators/fullyConnectedAS.html#FullyConnectedAS.evaluate"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#lips.augmented_simulators.FullyConnectedAS.evaluate" title="Permalink to this definition"></a></dt>
-<dd><p>evaluate the model on the given dataset</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><ul class="simple">
-<li><p><strong>dataset</strong> (<a class="reference internal" href="lips.dataset.html#lips.dataset.DataSet" title="lips.dataset.DataSet"><em>DataSet</em></a>) – the dataset used for evaluation of the model</p></li>
-<li><p><strong>batch_size</strong> (<code class="docutils literal notranslate"><span class="pre">int</span></code>, optional) – the batch size used during inference phase, by default 32</p></li>
-<li><p><strong>save_values</strong> (<code class="docutils literal notranslate"><span class="pre">bool</span></code>, optional) – whether to save the evaluation resutls (predictions), by default False</p></li>
-</ul>
-</dd>
-</dl>
-<div class="admonition-todo admonition" id="id1">
-<p class="admonition-title">Todo</p>
-<p>TODO : Save the predictions (not implemented yet)</p>
-</div>
-<dl class="field-list simple">
-<dt class="field-odd">Returns</dt>
-<dd class="field-odd"><p>the predictions of the model</p>
-</dd>
-<dt class="field-even">Return type</dt>
-<dd class="field-even"><p>dict</p>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="lips.augmented_simulators.FullyConnectedAS.save">
-<span class="sig-name descname"><span class="pre">save</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">path_out</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/lips/augmented_simulators/fullyConnectedAS.html#FullyConnectedAS.save"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#lips.augmented_simulators.FullyConnectedAS.save" title="Permalink to this definition"></a></dt>
-<dd><p>This saves the weights of the neural network.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><p><strong>path_out</strong> (<code class="docutils literal notranslate"><span class="pre">str</span></code>) – path where the model should be saved</p>
-</dd>
-<dt class="field-even">Raises</dt>
-<dd class="field-even"><ul class="simple">
-<li><p><strong>RuntimeError</strong> – The path does not exist</p></li>
-<li><p><strong>RuntimeError</strong> – The model is not initialized, it cannot be saved</p></li>
-</ul>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="lips.augmented_simulators.FullyConnectedAS.restore">
-<span class="sig-name descname"><span class="pre">restore</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">path</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/lips/augmented_simulators/fullyConnectedAS.html#FullyConnectedAS.restore"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#lips.augmented_simulators.FullyConnectedAS.restore" title="Permalink to this definition"></a></dt>
-<dd><p>Restores the model from a saved one</p>
-<p>We first copy the weights file into a temporary directory, and then load from this one. This is avoid
-file corruption in case the model fails to load.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><p><strong>path</strong> (<code class="docutils literal notranslate"><span class="pre">str</span></code>) – path from where the  model should be restored</p>
-</dd>
-<dt class="field-even">Raises</dt>
-<dd class="field-even"><p><strong>RuntimeError</strong> – Impossible to find a saved model at the indicated path</p>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="lips.augmented_simulators.FullyConnectedAS.save_metadata">
-<span class="sig-name descname"><span class="pre">save_metadata</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">path_out</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/lips/augmented_simulators/fullyConnectedAS.html#FullyConnectedAS.save_metadata"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#lips.augmented_simulators.FullyConnectedAS.save_metadata" title="Permalink to this definition"></a></dt>
-<dd><p>This is used to save the meta data of the augmented simulator</p>
-<p>In this case it saves the sizes, the scalers etc.
-The only difficulty here is that i need to serialize, as json, numpy arrays</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><p><strong>path_out</strong> (<code class="docutils literal notranslate"><span class="pre">str</span></code>) – path where the model metadata should be saved</p>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="lips.augmented_simulators.FullyConnectedAS.load_metadata">
-<span class="sig-name descname"><span class="pre">load_metadata</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">path</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/lips/augmented_simulators/fullyConnectedAS.html#FullyConnectedAS.load_metadata"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#lips.augmented_simulators.FullyConnectedAS.load_metadata" title="Permalink to this definition"></a></dt>
-<dd><p>this is used to load the meta parameters from the model</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><p><strong>path</strong> (<code class="docutils literal notranslate"><span class="pre">str</span></code>) – path from where the  model should be restored</p>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="lips.augmented_simulators.FullyConnectedAS.data_to_dict">
-<span class="sig-name descname"><span class="pre">data_to_dict</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/lips/augmented_simulators/fullyConnectedAS.html#FullyConnectedAS.data_to_dict"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#lips.augmented_simulators.FullyConnectedAS.data_to_dict" title="Permalink to this definition"></a></dt>
-<dd><p>This functions return the observations and corresponding predictions of the last evaluation</p>
-</dd></dl>
-
-</dd></dl>
-
-<dl class="py class">
-<dt class="sig sig-object py" id="lips.augmented_simulators.LeapNetAS">
-<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">lips.augmented_simulators.</span></span><span class="sig-name descname"><span class="pre">LeapNetAS</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">name:</span> <span class="pre">str</span> <span class="pre">=</span> <span class="pre">'LeapNetAS'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">benchmark_name:</span> <span class="pre">str</span> <span class="pre">=</span> <span class="pre">'Benchmark1'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">config_path:</span> <span class="pre">typing.Optional[str]</span> <span class="pre">=</span> <span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">attr_x:</span> <span class="pre">typing.Optional[tuple]</span> <span class="pre">=</span> <span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">attr_tau:</span> <span class="pre">typing.Optional[tuple]</span> <span class="pre">=</span> <span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">attr_y:</span> <span class="pre">typing.Optional[tuple]</span> <span class="pre">=</span> <span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">sizes_layer=(150</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">150)</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">sizes_enc=(20</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">20</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">20)</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">sizes_out=(100</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">40)</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">lr:</span> <span class="pre">float</span> <span class="pre">=</span> <span class="pre">0.0003</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">layer:</span> <span class="pre">keras.engine.base_layer.Layer</span> <span class="pre">=</span> <span class="pre">&lt;class</span> <span class="pre">'keras.layers.core.dense.Dense'&gt;</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">layer_act:</span> <span class="pre">str</span> <span class="pre">=</span> <span class="pre">'relu'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">optimizer:</span> <span class="pre">typing.Optional[keras.optimizer_v2.optimizer_v2.OptimizerV2]</span> <span class="pre">=</span> <span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">loss:</span> <span class="pre">str</span> <span class="pre">=</span> <span class="pre">'mse'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">batch_size:</span> <span class="pre">int</span> <span class="pre">=</span> <span class="pre">128</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">topo_vect_to_tau='raw'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">kwargs_tau=None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">mult_by_zero_lines_pred=True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">log_path:</span> <span class="pre">typing.Optional[str]</span> <span class="pre">=</span> <span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/lips/augmented_simulators/leapNetAS.html#LeapNetAS"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#lips.augmented_simulators.LeapNetAS" title="Permalink to this definition"></a></dt>
-<dd><p>Bases: <a class="reference internal" href="#lips.augmented_simulators.augmentedSimulator.AugmentedSimulator" title="lips.augmented_simulators.augmentedSimulator.AugmentedSimulator"><code class="xref py py-class docutils literal notranslate"><span class="pre">lips.augmented_simulators.augmentedSimulator.AugmentedSimulator</span></code></a></p>
-<p>LeapNet architecture</p>
-<p>This class wraps the <cite>ProxyLeapNet</cite> of the <cite>leap_net</cite> module (see <a class="reference external" href="https://github.com/BDonnot/leap_net">https://github.com/BDonnot/leap_net</a>) to be
-used as an <cite>AugmentedSimulator</cite>.</p>
-<p>This is just a wrapper, for modification of said “leap_net” or its description, please visit the original
-github repository.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><ul class="simple">
-<li><p><strong>name</strong> (<code class="docutils literal notranslate"><span class="pre">str</span></code>, optional) – the name of the model, to be used for saving, by default “FullyConnected”</p></li>
-<li><p><strong>benchmark_name</strong> (<code class="docutils literal notranslate"><span class="pre">str</span></code>, optional) – the name of the scenario for which the model should be used. It is used
-to restore the configurations from config section, by default “Benchmark1”</p></li>
-<li><p><strong>config_path</strong> (Union[<code class="docutils literal notranslate"><span class="pre">str</span></code>, <code class="docutils literal notranslate"><span class="pre">None</span></code>], optional) – The path where the config file is available. If <code class="docutils literal notranslate"><span class="pre">None</span></code>, the default config
-will be used, by default <code class="docutils literal notranslate"><span class="pre">None</span></code></p></li>
-<li><p><strong>attr_x</strong> (Union[<code class="docutils literal notranslate"><span class="pre">tuple</span></code>, <code class="docutils literal notranslate"><span class="pre">None</span></code>], optional) – the list of input variables to be declared. If <code class="docutils literal notranslate"><span class="pre">None</span></code> the input variables
-are restored from the config file, by default None</p></li>
-<li><p><strong>attr_y</strong> (Union[<code class="docutils literal notranslate"><span class="pre">tuple</span></code>, <code class="docutils literal notranslate"><span class="pre">None</span></code>], optional) – The list of output variables to be declared. If <code class="docutils literal notranslate"><span class="pre">None</span></code> the output variables
-are restored from config file, by default None</p></li>
-<li><p><strong>sizes_layer</strong> (<code class="docutils literal notranslate"><span class="pre">tuple</span></code>, optional) – the number of layers and neurones in each layer, by default (150, 150)</p></li>
-<li><p><strong>lr</strong> (<code class="docutils literal notranslate"><span class="pre">float</span></code>, optional) – the learning rate for the optimizer, by default 3e-4</p></li>
-<li><p><strong>layer_act</strong> (<code class="docutils literal notranslate"><span class="pre">str</span></code>, optional) – the layers activation, by default “relu”</p></li>
-<li><p><strong>optimizer</strong> (Union[<code class="docutils literal notranslate"><span class="pre">Optimizer</span></code>, <code class="docutils literal notranslate"><span class="pre">None</span></code>], optional) – the optimizer used for optimizing network weights, by default None</p></li>
-<li><p><strong>loss</strong> (<code class="docutils literal notranslate"><span class="pre">str</span></code>, optional) – The loss criteria used during training procedure, by default “mse”</p></li>
-<li><p><strong>batch_size</strong> (<code class="docutils literal notranslate"><span class="pre">int</span></code>) – the batch size used during training, by default 128</p></li>
-<li><p><strong>topo_vect_to_tau</strong> (<code class="docutils literal notranslate"><span class="pre">str</span></code>) – the method to used to encode the topo vector, by default “raw”</p></li>
-<li><p><strong>kwargs_tau</strong> (<code class="docutils literal notranslate"><span class="pre">dict</span></code>, optional) – the keyword arguments to be passed to the topo vector encoding method, by default <code class="docutils literal notranslate"><span class="pre">None</span></code></p></li>
-<li><p><strong>mult_by_zero_lines_pred</strong> (<code class="docutils literal notranslate"><span class="pre">bool</span></code>) – if <code class="docutils literal notranslate"><span class="pre">True</span></code>, the prediction of the model are multiplied by zero for disconnected lines, by default <code class="docutils literal notranslate"><span class="pre">True</span></code></p></li>
-<li><p><strong>log_path</strong> (Union[<code class="docutils literal notranslate"><span class="pre">str</span></code>, <code class="docutils literal notranslate"><span class="pre">None</span></code>], optional) – the path where the logs should be stored, by default None</p></li>
-</ul>
-</dd>
-<dt class="field-even">Raises</dt>
-<dd class="field-even"><p><strong>RuntimeError</strong> – If an optimizer is provided, it should be a type tensorflow.keras.optimizers</p>
-</dd>
-</dl>
-<p><strong>Methods:</strong></p>
-<table class="autosummary longtable docutils align-default">
-<colgroup>
-<col style="width: 10%" />
-<col style="width: 90%" />
-</colgroup>
-<tbody>
-<tr class="row-odd"><td><p><a class="reference internal" href="#lips.augmented_simulators.LeapNetAS.init" title="lips.augmented_simulators.LeapNetAS.init"><code class="xref py py-obj docutils literal notranslate"><span class="pre">init</span></code></a>(**kwargs)</p></td>
-<td><p>this function will build the neural network</p></td>
-</tr>
-<tr class="row-even"><td><p><a class="reference internal" href="#lips.augmented_simulators.LeapNetAS.train" title="lips.augmented_simulators.LeapNetAS.train"><code class="xref py py-obj docutils literal notranslate"><span class="pre">train</span></code></a>(nb_iter, train_dataset[, val_dataset])</p></td>
-<td><p>function used to train the model</p></td>
-</tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="#lips.augmented_simulators.LeapNetAS.evaluate" title="lips.augmented_simulators.LeapNetAS.evaluate"><code class="xref py py-obj docutils literal notranslate"><span class="pre">evaluate</span></code></a>(dataset[, batch_size])</p></td>
-<td><p>evaluate the model on the given dataset</p></td>
-</tr>
-<tr class="row-even"><td><p><a class="reference internal" href="#lips.augmented_simulators.LeapNetAS.save" title="lips.augmented_simulators.LeapNetAS.save"><code class="xref py py-obj docutils literal notranslate"><span class="pre">save</span></code></a>(path_out)</p></td>
-<td><p>This saves the weights of the neural network.</p></td>
-</tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="#lips.augmented_simulators.LeapNetAS.restore" title="lips.augmented_simulators.LeapNetAS.restore"><code class="xref py py-obj docutils literal notranslate"><span class="pre">restore</span></code></a>(path)</p></td>
-<td><p>Restores the model from a saved one</p></td>
-</tr>
-<tr class="row-even"><td><p><a class="reference internal" href="#lips.augmented_simulators.LeapNetAS.save_metadata" title="lips.augmented_simulators.LeapNetAS.save_metadata"><code class="xref py py-obj docutils literal notranslate"><span class="pre">save_metadata</span></code></a>(path_out)</p></td>
-<td><p>This is used to save the meta data of the augmented simulator</p></td>
-</tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="#lips.augmented_simulators.LeapNetAS.load_metadata" title="lips.augmented_simulators.LeapNetAS.load_metadata"><code class="xref py py-obj docutils literal notranslate"><span class="pre">load_metadata</span></code></a>(path)</p></td>
-<td><p>this is used to load the meta parameters from the model</p></td>
-</tr>
-</tbody>
-</table>
-<dl class="py method">
-<dt class="sig sig-object py" id="lips.augmented_simulators.LeapNetAS.init">
-<span class="sig-name descname"><span class="pre">init</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/lips/augmented_simulators/leapNetAS.html#LeapNetAS.init"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#lips.augmented_simulators.LeapNetAS.init" title="Permalink to this definition"></a></dt>
-<dd><p>this function will build the neural network</p>
-</dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="lips.augmented_simulators.LeapNetAS.train">
-<span class="sig-name descname"><span class="pre">train</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">nb_iter</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">train_dataset</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="lips.dataset.html#lips.dataset.dataSet.DataSet" title="lips.dataset.dataSet.DataSet"><span class="pre">lips.dataset.dataSet.DataSet</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">val_dataset</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Union</span><span class="p"><span class="pre">[</span></span><span class="pre">None</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference internal" href="lips.dataset.html#lips.dataset.dataSet.DataSet" title="lips.dataset.dataSet.DataSet"><span class="pre">lips.dataset.dataSet.DataSet</span></a><span class="p"><span class="pre">]</span></span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">dict</span></span></span><a class="reference internal" href="_modules/lips/augmented_simulators/leapNetAS.html#LeapNetAS.train"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#lips.augmented_simulators.LeapNetAS.train" title="Permalink to this definition"></a></dt>
-<dd><p>function used to train the model</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><ul class="simple">
-<li><p><strong>nb_iter</strong> (<code class="docutils literal notranslate"><span class="pre">int</span></code>) – number of epochs</p></li>
-<li><p><strong>train_dataset</strong> (<a class="reference internal" href="lips.dataset.html#lips.dataset.DataSet" title="lips.dataset.DataSet"><em>DataSet</em></a>) – the training dataset used to train the model</p></li>
-<li><p><strong>val_dataset</strong> (Union[<code class="docutils literal notranslate"><span class="pre">None</span></code>, DataSet], optional) – the validation dataset used to validate the model, by default None</p></li>
-<li><p><strong>**kwargs</strong> (<code class="docutils literal notranslate"><span class="pre">dict</span></code>) – supplementary arguments for <code class="docutils literal notranslate"><span class="pre">fit</span></code> method of <code class="docutils literal notranslate"><span class="pre">tf.keras.Model</span></code></p></li>
-</ul>
-</dd>
-<dt class="field-even">Returns</dt>
-<dd class="field-even"><p>history of the tensorflow model (losses)</p>
-</dd>
-<dt class="field-odd">Return type</dt>
-<dd class="field-odd"><p>dict</p>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="lips.augmented_simulators.LeapNetAS.evaluate">
-<span class="sig-name descname"><span class="pre">evaluate</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">dataset</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="lips.dataset.html#lips.dataset.dataSet.DataSet" title="lips.dataset.dataSet.DataSet"><span class="pre">lips.dataset.dataSet.DataSet</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">batch_size</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">32</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">dict</span></span></span><a class="reference internal" href="_modules/lips/augmented_simulators/leapNetAS.html#LeapNetAS.evaluate"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#lips.augmented_simulators.LeapNetAS.evaluate" title="Permalink to this definition"></a></dt>
-<dd><p>evaluate the model on the given dataset</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><ul class="simple">
-<li><p><strong>dataset</strong> (<a class="reference internal" href="lips.dataset.html#lips.dataset.DataSet" title="lips.dataset.DataSet"><em>DataSet</em></a>) – the dataset used for evaluation of the model</p></li>
-<li><p><strong>batch_size</strong> (<code class="docutils literal notranslate"><span class="pre">int</span></code>, optional) – the batch size used during inference phase, by default 32</p></li>
-<li><p><strong>save_values</strong> (<code class="docutils literal notranslate"><span class="pre">bool</span></code>, optional) – whether to save the evaluation resutls (predictions), by default False</p></li>
-</ul>
-</dd>
-</dl>
-<div class="admonition-todo admonition" id="id2">
-<p class="admonition-title">Todo</p>
-<p>TODO : Save the predictions (not implemented yet)</p>
-</div>
-<dl class="field-list simple">
-<dt class="field-odd">Returns</dt>
-<dd class="field-odd"><p>the predictions of the model</p>
-</dd>
-<dt class="field-even">Return type</dt>
-<dd class="field-even"><p>dict</p>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="lips.augmented_simulators.LeapNetAS.save">
-<span class="sig-name descname"><span class="pre">save</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">path_out</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/lips/augmented_simulators/leapNetAS.html#LeapNetAS.save"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#lips.augmented_simulators.LeapNetAS.save" title="Permalink to this definition"></a></dt>
-<dd><p>This saves the weights of the neural network.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><p><strong>path_out</strong> (<code class="docutils literal notranslate"><span class="pre">str</span></code>) – path where the model should be saved</p>
-</dd>
-<dt class="field-even">Raises</dt>
-<dd class="field-even"><ul class="simple">
-<li><p><strong>RuntimeError</strong> – The path does not exist</p></li>
-<li><p><strong>RuntimeError</strong> – The model is not initialized, it cannot be saved</p></li>
-</ul>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="lips.augmented_simulators.LeapNetAS.restore">
-<span class="sig-name descname"><span class="pre">restore</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">path</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/lips/augmented_simulators/leapNetAS.html#LeapNetAS.restore"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#lips.augmented_simulators.LeapNetAS.restore" title="Permalink to this definition"></a></dt>
-<dd><p>Restores the model from a saved one</p>
-<p>We first copy the weights file into a temporary directory, and then load from this one. This is avoid
-file corruption in case the model fails to load.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><p><strong>path</strong> (<code class="docutils literal notranslate"><span class="pre">str</span></code>) – path from where the  model should be restored</p>
-</dd>
-<dt class="field-even">Raises</dt>
-<dd class="field-even"><p><strong>RuntimeError</strong> – Impossible to find a saved model at the indicated path</p>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="lips.augmented_simulators.LeapNetAS.save_metadata">
-<span class="sig-name descname"><span class="pre">save_metadata</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">path_out</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/lips/augmented_simulators/leapNetAS.html#LeapNetAS.save_metadata"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#lips.augmented_simulators.LeapNetAS.save_metadata" title="Permalink to this definition"></a></dt>
-<dd><p>This is used to save the meta data of the augmented simulator</p>
-<p>In this case it saves the sizes, the scalers etc.
-The only difficulty here is that i need to serialize, as json, numpy arrays</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><p><strong>path_out</strong> (<code class="docutils literal notranslate"><span class="pre">str</span></code>) – path where the model metadata should be saved</p>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="lips.augmented_simulators.LeapNetAS.load_metadata">
-<span class="sig-name descname"><span class="pre">load_metadata</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">path</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/lips/augmented_simulators/leapNetAS.html#LeapNetAS.load_metadata"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#lips.augmented_simulators.LeapNetAS.load_metadata" title="Permalink to this definition"></a></dt>
-<dd><p>this is used to load the meta parameters from the model</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><p><strong>path</strong> (<code class="docutils literal notranslate"><span class="pre">str</span></code>) – path from where the  model should be restored</p>
-</dd>
-</dl>
 </dd></dl>
 
 </dd></dl>
@@ -651,328 +183,11 @@ The only difficulty here is that i need to serialize, as json, numpy arrays</p>
 <section id="submodules">
 <h2>Submodules<a class="headerlink" href="#submodules" title="Permalink to this headline"></a></h2>
 </section>
-<section id="module-lips.augmented_simulators.augmentedSimulator">
-<span id="lips-augmented-simulators-augmentedsimulator-module"></span><h2>lips.augmented_simulators.augmentedSimulator module<a class="headerlink" href="#module-lips.augmented_simulators.augmentedSimulator" title="Permalink to this headline"></a></h2>
-<p><strong>Classes:</strong></p>
-<table class="autosummary longtable docutils align-default">
-<colgroup>
-<col style="width: 10%" />
-<col style="width: 90%" />
-</colgroup>
-<tbody>
-<tr class="row-odd"><td><p><a class="reference internal" href="#lips.augmented_simulators.augmentedSimulator.AugmentedSimulator" title="lips.augmented_simulators.augmentedSimulator.AugmentedSimulator"><code class="xref py py-obj docutils literal notranslate"><span class="pre">AugmentedSimulator</span></code></a>(name)</p></td>
-<td><p>This class is the Base class that is used to create some &quot;augmented simulator&quot;.</p></td>
-</tr>
-</tbody>
-</table>
-<dl class="py class">
-<dt class="sig sig-object py" id="lips.augmented_simulators.augmentedSimulator.AugmentedSimulator">
-<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">lips.augmented_simulators.augmentedSimulator.</span></span><span class="sig-name descname"><span class="pre">AugmentedSimulator</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">name</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/lips/augmented_simulators/augmentedSimulator.html#AugmentedSimulator"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#lips.augmented_simulators.augmentedSimulator.AugmentedSimulator" title="Permalink to this definition"></a></dt>
-<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
-<p>This class is the Base class that is used to create some “augmented simulator”. These “augmented simulator” can be
-anything that emulates the behaviour of some “simulator”.</p>
-<p>They are meant to use data coming from a <cite>DataSet</cite> to learn from it.</p>
-<p><strong>Methods:</strong></p>
-<table class="autosummary longtable docutils align-default">
-<colgroup>
-<col style="width: 10%" />
-<col style="width: 90%" />
-</colgroup>
-<tbody>
-<tr class="row-odd"><td><p><a class="reference internal" href="#lips.augmented_simulators.augmentedSimulator.AugmentedSimulator.train" title="lips.augmented_simulators.augmentedSimulator.AugmentedSimulator.train"><code class="xref py py-obj docutils literal notranslate"><span class="pre">train</span></code></a>(nb_iter, train_dataset[, val_dataset])</p></td>
-<td><p>Train the Augmented simulator using the provided datasets (parameters <cite>train_dataset</cite> and <cite>val_dataset</cite>) for a given number of iterations (<cite>nb_iter</cite>)</p></td>
-</tr>
-<tr class="row-even"><td><p><a class="reference internal" href="#lips.augmented_simulators.augmentedSimulator.AugmentedSimulator.evaluate" title="lips.augmented_simulators.augmentedSimulator.AugmentedSimulator.evaluate"><code class="xref py py-obj docutils literal notranslate"><span class="pre">evaluate</span></code></a>(dataset)</p></td>
-<td><p>evaluate the model on the full dataset</p></td>
-</tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="#lips.augmented_simulators.augmentedSimulator.AugmentedSimulator.init" title="lips.augmented_simulators.augmentedSimulator.AugmentedSimulator.init"><code class="xref py py-obj docutils literal notranslate"><span class="pre">init</span></code></a>(**kwargs)</p></td>
-<td><p>initialize the &quot;augmented simulator&quot;.</p></td>
-</tr>
-<tr class="row-even"><td><p><a class="reference internal" href="#lips.augmented_simulators.augmentedSimulator.AugmentedSimulator.process_dataset" title="lips.augmented_simulators.augmentedSimulator.AugmentedSimulator.process_dataset"><code class="xref py py-obj docutils literal notranslate"><span class="pre">process_dataset</span></code></a>(one_example)</p></td>
-<td><p>This function transforms one state of a dataset (one row if you want) into something that can be used by the neural network (for example)</p></td>
-</tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="#lips.augmented_simulators.augmentedSimulator.AugmentedSimulator.data_to_dict" title="lips.augmented_simulators.augmentedSimulator.AugmentedSimulator.data_to_dict"><code class="xref py py-obj docutils literal notranslate"><span class="pre">data_to_dict</span></code></a>()</p></td>
-<td><p>This function should return two dictionaries in the following order</p></td>
-</tr>
-<tr class="row-even"><td><p><a class="reference internal" href="#lips.augmented_simulators.augmentedSimulator.AugmentedSimulator.save" title="lips.augmented_simulators.augmentedSimulator.AugmentedSimulator.save"><code class="xref py py-obj docutils literal notranslate"><span class="pre">save</span></code></a>(path_out)</p></td>
-<td><p>save the model at a given path</p></td>
-</tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="#lips.augmented_simulators.augmentedSimulator.AugmentedSimulator.restore" title="lips.augmented_simulators.augmentedSimulator.AugmentedSimulator.restore"><code class="xref py py-obj docutils literal notranslate"><span class="pre">restore</span></code></a>(path)</p></td>
-<td><p>restore the model from the given path.</p></td>
-</tr>
-<tr class="row-even"><td><p><a class="reference internal" href="#lips.augmented_simulators.augmentedSimulator.AugmentedSimulator.save_metadata" title="lips.augmented_simulators.augmentedSimulator.AugmentedSimulator.save_metadata"><code class="xref py py-obj docutils literal notranslate"><span class="pre">save_metadata</span></code></a>(path_out)</p></td>
-<td><p>Saves the &quot;metadata&quot; of the model.</p></td>
-</tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="#lips.augmented_simulators.augmentedSimulator.AugmentedSimulator.load_metadata" title="lips.augmented_simulators.augmentedSimulator.AugmentedSimulator.load_metadata"><code class="xref py py-obj docutils literal notranslate"><span class="pre">load_metadata</span></code></a>(path)</p></td>
-<td><p>load the metada from the given path.</p></td>
-</tr>
-</tbody>
-</table>
-<dl class="py method">
-<dt class="sig sig-object py" id="lips.augmented_simulators.augmentedSimulator.AugmentedSimulator.train">
-<span class="sig-name descname"><span class="pre">train</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">nb_iter</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">train_dataset</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="lips.dataset.html#lips.dataset.dataSet.DataSet" title="lips.dataset.dataSet.DataSet"><span class="pre">lips.dataset.dataSet.DataSet</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">val_dataset</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Union</span><span class="p"><span class="pre">[</span></span><span class="pre">None</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference internal" href="lips.dataset.html#lips.dataset.dataSet.DataSet" title="lips.dataset.dataSet.DataSet"><span class="pre">lips.dataset.dataSet.DataSet</span></a><span class="p"><span class="pre">]</span></span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/lips/augmented_simulators/augmentedSimulator.html#AugmentedSimulator.train"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#lips.augmented_simulators.augmentedSimulator.AugmentedSimulator.train" title="Permalink to this definition"></a></dt>
-<dd><p>Train the Augmented simulator using the provided datasets (parameters <cite>train_dataset</cite> and
-<cite>val_dataset</cite>) for a given number of iterations (<cite>nb_iter</cite>)</p>
-</dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="lips.augmented_simulators.augmentedSimulator.AugmentedSimulator.evaluate">
-<span class="sig-name descname"><span class="pre">evaluate</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">dataset</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="lips.dataset.html#lips.dataset.dataSet.DataSet" title="lips.dataset.dataSet.DataSet"><span class="pre">lips.dataset.dataSet.DataSet</span></a></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/lips/augmented_simulators/augmentedSimulator.html#AugmentedSimulator.evaluate"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#lips.augmented_simulators.augmentedSimulator.AugmentedSimulator.evaluate" title="Permalink to this definition"></a></dt>
-<dd><p>evaluate the model on the full dataset</p>
-</dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="lips.augmented_simulators.augmentedSimulator.AugmentedSimulator.init">
-<span class="sig-name descname"><span class="pre">init</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/lips/augmented_simulators/augmentedSimulator.html#AugmentedSimulator.init"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#lips.augmented_simulators.augmentedSimulator.AugmentedSimulator.init" title="Permalink to this definition"></a></dt>
-<dd><p>initialize the “augmented simulator”.</p>
-<p>For example, this is where the model should be built in case the augmented simulator used a neural network.</p>
-</dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="lips.augmented_simulators.augmentedSimulator.AugmentedSimulator.process_dataset">
-<span class="sig-name descname"><span class="pre">process_dataset</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">one_example</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/lips/augmented_simulators/augmentedSimulator.html#AugmentedSimulator.process_dataset"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#lips.augmented_simulators.augmentedSimulator.AugmentedSimulator.process_dataset" title="Permalink to this definition"></a></dt>
-<dd><p>This function transforms one state of a dataset (one row if you want) into something that can be used by
-the neural network (for example)</p>
-</dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="lips.augmented_simulators.augmentedSimulator.AugmentedSimulator.data_to_dict">
-<span class="sig-name descname"><span class="pre">data_to_dict</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/lips/augmented_simulators/augmentedSimulator.html#AugmentedSimulator.data_to_dict"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#lips.augmented_simulators.augmentedSimulator.AugmentedSimulator.data_to_dict" title="Permalink to this definition"></a></dt>
-<dd><dl class="simple">
-<dt>This function should return two dictionaries in the following order</dt><dd><ul class="simple">
-<li><p>the observations used for evaluation</p></li>
-<li><p>corresponding predictions</p></li>
-</ul>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="lips.augmented_simulators.augmentedSimulator.AugmentedSimulator.save">
-<span class="sig-name descname"><span class="pre">save</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">path_out</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/lips/augmented_simulators/augmentedSimulator.html#AugmentedSimulator.save"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#lips.augmented_simulators.augmentedSimulator.AugmentedSimulator.save" title="Permalink to this definition"></a></dt>
-<dd><p>save the model at a given path</p>
-</dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="lips.augmented_simulators.augmentedSimulator.AugmentedSimulator.restore">
-<span class="sig-name descname"><span class="pre">restore</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">path</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/lips/augmented_simulators/augmentedSimulator.html#AugmentedSimulator.restore"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#lips.augmented_simulators.augmentedSimulator.AugmentedSimulator.restore" title="Permalink to this definition"></a></dt>
-<dd><p>restore the model from the given path. It is expected to raise an error if it cannot be initialized
-by the data located at <cite>path</cite></p>
-</dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="lips.augmented_simulators.augmentedSimulator.AugmentedSimulator.save_metadata">
-<span class="sig-name descname"><span class="pre">save_metadata</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">path_out</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/lips/augmented_simulators/augmentedSimulator.html#AugmentedSimulator.save_metadata"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#lips.augmented_simulators.augmentedSimulator.AugmentedSimulator.save_metadata" title="Permalink to this definition"></a></dt>
-<dd><p>Saves the “metadata” of the model.</p>
-<p>Metadata should be, if possible, serializable to json.</p>
-<p>For example, this is the perfect function to save the meta parameters of a neural network</p>
-</dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="lips.augmented_simulators.augmentedSimulator.AugmentedSimulator.load_metadata">
-<span class="sig-name descname"><span class="pre">load_metadata</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">path</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/lips/augmented_simulators/augmentedSimulator.html#AugmentedSimulator.load_metadata"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#lips.augmented_simulators.augmentedSimulator.AugmentedSimulator.load_metadata" title="Permalink to this definition"></a></dt>
-<dd><p>load the metada from the given path.</p>
-</dd></dl>
-
-</dd></dl>
-
+<section id="lips-augmented-simulators-augmentedsimulator-module">
+<h2>lips.augmented_simulators.augmentedSimulator module<a class="headerlink" href="#lips-augmented-simulators-augmentedsimulator-module" title="Permalink to this headline"></a></h2>
 </section>
-<section id="module-lips.augmented_simulators.fullyConnectedAS">
-<span id="lips-augmented-simulators-fullyconnectedas-module"></span><h2>lips.augmented_simulators.fullyConnectedAS module<a class="headerlink" href="#module-lips.augmented_simulators.fullyConnectedAS" title="Permalink to this headline"></a></h2>
-<p><strong>Classes:</strong></p>
-<table class="autosummary longtable docutils align-default">
-<colgroup>
-<col style="width: 10%" />
-<col style="width: 90%" />
-</colgroup>
-<tbody>
-<tr class="row-odd"><td><p><a class="reference internal" href="#lips.augmented_simulators.fullyConnectedAS.FullyConnectedAS" title="lips.augmented_simulators.fullyConnectedAS.FullyConnectedAS"><code class="xref py py-obj docutils literal notranslate"><span class="pre">FullyConnectedAS</span></code></a>(name, benchmark_name, ...)</p></td>
-<td><p>Fully Connected neural network (tensorflow)</p></td>
-</tr>
-</tbody>
-</table>
-<dl class="py class">
-<dt class="sig sig-object py" id="lips.augmented_simulators.fullyConnectedAS.FullyConnectedAS">
-<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">lips.augmented_simulators.fullyConnectedAS.</span></span><span class="sig-name descname"><span class="pre">FullyConnectedAS</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">name:</span> <span class="pre">str</span> <span class="pre">=</span> <span class="pre">'FullyConnected'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">benchmark_name:</span> <span class="pre">str</span> <span class="pre">=</span> <span class="pre">'Benchmark1'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">config_path:</span> <span class="pre">typing.Optional[str]</span> <span class="pre">=</span> <span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">attr_x:</span> <span class="pre">typing.Optional[tuple]</span> <span class="pre">=</span> <span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">attr_y:</span> <span class="pre">typing.Optional[tuple]</span> <span class="pre">=</span> <span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">sizes_layer=(150</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">150)</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">lr:</span> <span class="pre">float</span> <span class="pre">=</span> <span class="pre">0.0003</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">layer:</span> <span class="pre">keras.engine.base_layer.Layer</span> <span class="pre">=</span> <span class="pre">&lt;class</span> <span class="pre">'keras.layers.core.dense.Dense'&gt;</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">layer_act:</span> <span class="pre">str</span> <span class="pre">=</span> <span class="pre">'relu'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">optimizer:</span> <span class="pre">typing.Optional[keras.optimizer_v2.optimizer_v2.OptimizerV2]</span> <span class="pre">=</span> <span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">loss:</span> <span class="pre">str</span> <span class="pre">=</span> <span class="pre">'mse'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">batch_size:</span> <span class="pre">int</span> <span class="pre">=</span> <span class="pre">128</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">log_path:</span> <span class="pre">typing.Optional[str]</span> <span class="pre">=</span> <span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/lips/augmented_simulators/fullyConnectedAS.html#FullyConnectedAS"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#lips.augmented_simulators.fullyConnectedAS.FullyConnectedAS" title="Permalink to this definition"></a></dt>
-<dd><p>Bases: <a class="reference internal" href="#lips.augmented_simulators.augmentedSimulator.AugmentedSimulator" title="lips.augmented_simulators.augmentedSimulator.AugmentedSimulator"><code class="xref py py-class docutils literal notranslate"><span class="pre">lips.augmented_simulators.augmentedSimulator.AugmentedSimulator</span></code></a></p>
-<p>Fully Connected neural network (tensorflow)</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><ul class="simple">
-<li><p><strong>name</strong> (<code class="docutils literal notranslate"><span class="pre">str</span></code>, optional) – the name of the model, to be used for saving, by default “FullyConnected”</p></li>
-<li><p><strong>benchmark_name</strong> (<code class="docutils literal notranslate"><span class="pre">str</span></code>, optional) – the name of the scenario for which the model should be used. It is used
-to restore the configurations from config section, by default “Benchmark1”</p></li>
-<li><p><strong>config_path</strong> (Union[<code class="docutils literal notranslate"><span class="pre">str</span></code>, <code class="docutils literal notranslate"><span class="pre">None</span></code>], optional) – The path where the config file is available. If <code class="docutils literal notranslate"><span class="pre">None</span></code>, the default config
-will be used, by default <code class="docutils literal notranslate"><span class="pre">None</span></code></p></li>
-<li><p><strong>attr_x</strong> (Union[<code class="docutils literal notranslate"><span class="pre">tuple</span></code>, <code class="docutils literal notranslate"><span class="pre">None</span></code>], optional) – the list of input variables to be declared. If <code class="docutils literal notranslate"><span class="pre">None</span></code> the input variables
-are restored from the config file, by default None</p></li>
-<li><p><strong>attr_y</strong> (Union[<code class="docutils literal notranslate"><span class="pre">tuple</span></code>, <code class="docutils literal notranslate"><span class="pre">None</span></code>], optional) – The list of output variables to be declared. If <code class="docutils literal notranslate"><span class="pre">None</span></code> the output variables
-are restored from config file, by default None</p></li>
-<li><p><strong>sizes_layer</strong> (<code class="docutils literal notranslate"><span class="pre">tuple</span></code>, optional) – the number of layers and neurones in each layer, by default (150, 150)</p></li>
-<li><p><strong>lr</strong> (<code class="docutils literal notranslate"><span class="pre">float</span></code>, optional) – the learning rate for the optimizer, by default 3e-4</p></li>
-<li><p><strong>layer_act</strong> (<code class="docutils literal notranslate"><span class="pre">str</span></code>, optional) – the layers activation, by default “relu”</p></li>
-<li><p><strong>optimizer</strong> (Union[<code class="docutils literal notranslate"><span class="pre">Optimizer</span></code>, <code class="docutils literal notranslate"><span class="pre">None</span></code>], optional) – the optimizer used for optimizing network weights, by default None</p></li>
-<li><p><strong>loss</strong> (<code class="docutils literal notranslate"><span class="pre">str</span></code>, optional) – The loss criteria used during training procedure, by default “mse”</p></li>
-<li><p><strong>log_path</strong> (Union[<code class="docutils literal notranslate"><span class="pre">str</span></code>, <code class="docutils literal notranslate"><span class="pre">None</span></code>], optional) – the path where the logs should be stored, by default None</p></li>
-</ul>
-</dd>
-<dt class="field-even">Raises</dt>
-<dd class="field-even"><p><strong>RuntimeError</strong> – If an optimizer is provided, it should be a type tensorflow.keras.optimizers</p>
-</dd>
-</dl>
-<p><strong>Methods:</strong></p>
-<table class="autosummary longtable docutils align-default">
-<colgroup>
-<col style="width: 10%" />
-<col style="width: 90%" />
-</colgroup>
-<tbody>
-<tr class="row-odd"><td><p><a class="reference internal" href="#lips.augmented_simulators.fullyConnectedAS.FullyConnectedAS.init" title="lips.augmented_simulators.fullyConnectedAS.FullyConnectedAS.init"><code class="xref py py-obj docutils literal notranslate"><span class="pre">init</span></code></a>(**kwargs)</p></td>
-<td><p>this function will build the neural network</p></td>
-</tr>
-<tr class="row-even"><td><p><a class="reference internal" href="#lips.augmented_simulators.fullyConnectedAS.FullyConnectedAS.train" title="lips.augmented_simulators.fullyConnectedAS.FullyConnectedAS.train"><code class="xref py py-obj docutils literal notranslate"><span class="pre">train</span></code></a>(nb_iter, train_dataset[, val_dataset])</p></td>
-<td><p>function used to train the model</p></td>
-</tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="#lips.augmented_simulators.fullyConnectedAS.FullyConnectedAS.evaluate" title="lips.augmented_simulators.fullyConnectedAS.FullyConnectedAS.evaluate"><code class="xref py py-obj docutils literal notranslate"><span class="pre">evaluate</span></code></a>(dataset[, batch_size, save_values])</p></td>
-<td><p>evaluate the model on the given dataset</p></td>
-</tr>
-<tr class="row-even"><td><p><a class="reference internal" href="#lips.augmented_simulators.fullyConnectedAS.FullyConnectedAS.save" title="lips.augmented_simulators.fullyConnectedAS.FullyConnectedAS.save"><code class="xref py py-obj docutils literal notranslate"><span class="pre">save</span></code></a>(path_out)</p></td>
-<td><p>This saves the weights of the neural network.</p></td>
-</tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="#lips.augmented_simulators.fullyConnectedAS.FullyConnectedAS.restore" title="lips.augmented_simulators.fullyConnectedAS.FullyConnectedAS.restore"><code class="xref py py-obj docutils literal notranslate"><span class="pre">restore</span></code></a>(path)</p></td>
-<td><p>Restores the model from a saved one</p></td>
-</tr>
-<tr class="row-even"><td><p><a class="reference internal" href="#lips.augmented_simulators.fullyConnectedAS.FullyConnectedAS.save_metadata" title="lips.augmented_simulators.fullyConnectedAS.FullyConnectedAS.save_metadata"><code class="xref py py-obj docutils literal notranslate"><span class="pre">save_metadata</span></code></a>(path_out)</p></td>
-<td><p>This is used to save the meta data of the augmented simulator</p></td>
-</tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="#lips.augmented_simulators.fullyConnectedAS.FullyConnectedAS.load_metadata" title="lips.augmented_simulators.fullyConnectedAS.FullyConnectedAS.load_metadata"><code class="xref py py-obj docutils literal notranslate"><span class="pre">load_metadata</span></code></a>(path)</p></td>
-<td><p>this is used to load the meta parameters from the model</p></td>
-</tr>
-<tr class="row-even"><td><p><a class="reference internal" href="#lips.augmented_simulators.fullyConnectedAS.FullyConnectedAS.data_to_dict" title="lips.augmented_simulators.fullyConnectedAS.FullyConnectedAS.data_to_dict"><code class="xref py py-obj docutils literal notranslate"><span class="pre">data_to_dict</span></code></a>()</p></td>
-<td><p>This functions return the observations and corresponding predictions of the last evaluation</p></td>
-</tr>
-</tbody>
-</table>
-<dl class="py method">
-<dt class="sig sig-object py" id="lips.augmented_simulators.fullyConnectedAS.FullyConnectedAS.init">
-<span class="sig-name descname"><span class="pre">init</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/lips/augmented_simulators/fullyConnectedAS.html#FullyConnectedAS.init"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#lips.augmented_simulators.fullyConnectedAS.FullyConnectedAS.init" title="Permalink to this definition"></a></dt>
-<dd><p>this function will build the neural network</p>
-</dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="lips.augmented_simulators.fullyConnectedAS.FullyConnectedAS.train">
-<span class="sig-name descname"><span class="pre">train</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">nb_iter</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">train_dataset</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="lips.dataset.html#lips.dataset.dataSet.DataSet" title="lips.dataset.dataSet.DataSet"><span class="pre">lips.dataset.dataSet.DataSet</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">val_dataset</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Union</span><span class="p"><span class="pre">[</span></span><span class="pre">None</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference internal" href="lips.dataset.html#lips.dataset.dataSet.DataSet" title="lips.dataset.dataSet.DataSet"><span class="pre">lips.dataset.dataSet.DataSet</span></a><span class="p"><span class="pre">]</span></span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">dict</span></span></span><a class="reference internal" href="_modules/lips/augmented_simulators/fullyConnectedAS.html#FullyConnectedAS.train"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#lips.augmented_simulators.fullyConnectedAS.FullyConnectedAS.train" title="Permalink to this definition"></a></dt>
-<dd><p>function used to train the model</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><ul class="simple">
-<li><p><strong>nb_iter</strong> (<code class="docutils literal notranslate"><span class="pre">int</span></code>) – number of epochs</p></li>
-<li><p><strong>train_dataset</strong> (<a class="reference internal" href="lips.dataset.html#lips.dataset.DataSet" title="lips.dataset.DataSet"><em>DataSet</em></a>) – the training dataset used to train the model</p></li>
-<li><p><strong>val_dataset</strong> (Union[<code class="docutils literal notranslate"><span class="pre">None</span></code>, DataSet], optional) – the validation dataset used to validate the model, by default None</p></li>
-<li><p><strong>**kwargs</strong> (<code class="docutils literal notranslate"><span class="pre">dict</span></code>) – supplementary arguments for <code class="docutils literal notranslate"><span class="pre">fit</span></code> method of <code class="docutils literal notranslate"><span class="pre">tf.keras.Model</span></code></p></li>
-</ul>
-</dd>
-<dt class="field-even">Returns</dt>
-<dd class="field-even"><p>history of the tensorflow model (losses)</p>
-</dd>
-<dt class="field-odd">Return type</dt>
-<dd class="field-odd"><p>dict</p>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="lips.augmented_simulators.fullyConnectedAS.FullyConnectedAS.evaluate">
-<span class="sig-name descname"><span class="pre">evaluate</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">dataset</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="lips.dataset.html#lips.dataset.dataSet.DataSet" title="lips.dataset.dataSet.DataSet"><span class="pre">lips.dataset.dataSet.DataSet</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">batch_size</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">32</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">save_values</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">dict</span></span></span><a class="reference internal" href="_modules/lips/augmented_simulators/fullyConnectedAS.html#FullyConnectedAS.evaluate"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#lips.augmented_simulators.fullyConnectedAS.FullyConnectedAS.evaluate" title="Permalink to this definition"></a></dt>
-<dd><p>evaluate the model on the given dataset</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><ul class="simple">
-<li><p><strong>dataset</strong> (<a class="reference internal" href="lips.dataset.html#lips.dataset.DataSet" title="lips.dataset.DataSet"><em>DataSet</em></a>) – the dataset used for evaluation of the model</p></li>
-<li><p><strong>batch_size</strong> (<code class="docutils literal notranslate"><span class="pre">int</span></code>, optional) – the batch size used during inference phase, by default 32</p></li>
-<li><p><strong>save_values</strong> (<code class="docutils literal notranslate"><span class="pre">bool</span></code>, optional) – whether to save the evaluation resutls (predictions), by default False</p></li>
-</ul>
-</dd>
-</dl>
-<div class="admonition-todo admonition" id="id3">
-<p class="admonition-title">Todo</p>
-<p>TODO : Save the predictions (not implemented yet)</p>
-</div>
-<dl class="field-list simple">
-<dt class="field-odd">Returns</dt>
-<dd class="field-odd"><p>the predictions of the model</p>
-</dd>
-<dt class="field-even">Return type</dt>
-<dd class="field-even"><p>dict</p>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="lips.augmented_simulators.fullyConnectedAS.FullyConnectedAS.save">
-<span class="sig-name descname"><span class="pre">save</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">path_out</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/lips/augmented_simulators/fullyConnectedAS.html#FullyConnectedAS.save"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#lips.augmented_simulators.fullyConnectedAS.FullyConnectedAS.save" title="Permalink to this definition"></a></dt>
-<dd><p>This saves the weights of the neural network.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><p><strong>path_out</strong> (<code class="docutils literal notranslate"><span class="pre">str</span></code>) – path where the model should be saved</p>
-</dd>
-<dt class="field-even">Raises</dt>
-<dd class="field-even"><ul class="simple">
-<li><p><strong>RuntimeError</strong> – The path does not exist</p></li>
-<li><p><strong>RuntimeError</strong> – The model is not initialized, it cannot be saved</p></li>
-</ul>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="lips.augmented_simulators.fullyConnectedAS.FullyConnectedAS.restore">
-<span class="sig-name descname"><span class="pre">restore</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">path</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/lips/augmented_simulators/fullyConnectedAS.html#FullyConnectedAS.restore"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#lips.augmented_simulators.fullyConnectedAS.FullyConnectedAS.restore" title="Permalink to this definition"></a></dt>
-<dd><p>Restores the model from a saved one</p>
-<p>We first copy the weights file into a temporary directory, and then load from this one. This is avoid
-file corruption in case the model fails to load.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><p><strong>path</strong> (<code class="docutils literal notranslate"><span class="pre">str</span></code>) – path from where the  model should be restored</p>
-</dd>
-<dt class="field-even">Raises</dt>
-<dd class="field-even"><p><strong>RuntimeError</strong> – Impossible to find a saved model at the indicated path</p>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="lips.augmented_simulators.fullyConnectedAS.FullyConnectedAS.save_metadata">
-<span class="sig-name descname"><span class="pre">save_metadata</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">path_out</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/lips/augmented_simulators/fullyConnectedAS.html#FullyConnectedAS.save_metadata"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#lips.augmented_simulators.fullyConnectedAS.FullyConnectedAS.save_metadata" title="Permalink to this definition"></a></dt>
-<dd><p>This is used to save the meta data of the augmented simulator</p>
-<p>In this case it saves the sizes, the scalers etc.
-The only difficulty here is that i need to serialize, as json, numpy arrays</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><p><strong>path_out</strong> (<code class="docutils literal notranslate"><span class="pre">str</span></code>) – path where the model metadata should be saved</p>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="lips.augmented_simulators.fullyConnectedAS.FullyConnectedAS.load_metadata">
-<span class="sig-name descname"><span class="pre">load_metadata</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">path</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/lips/augmented_simulators/fullyConnectedAS.html#FullyConnectedAS.load_metadata"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#lips.augmented_simulators.fullyConnectedAS.FullyConnectedAS.load_metadata" title="Permalink to this definition"></a></dt>
-<dd><p>this is used to load the meta parameters from the model</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><p><strong>path</strong> (<code class="docutils literal notranslate"><span class="pre">str</span></code>) – path from where the  model should be restored</p>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="lips.augmented_simulators.fullyConnectedAS.FullyConnectedAS.data_to_dict">
-<span class="sig-name descname"><span class="pre">data_to_dict</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/lips/augmented_simulators/fullyConnectedAS.html#FullyConnectedAS.data_to_dict"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#lips.augmented_simulators.fullyConnectedAS.FullyConnectedAS.data_to_dict" title="Permalink to this definition"></a></dt>
-<dd><p>This functions return the observations and corresponding predictions of the last evaluation</p>
-</dd></dl>
-
-</dd></dl>
-
+<section id="lips-augmented-simulators-fullyconnectedas-module">
+<h2>lips.augmented_simulators.fullyConnectedAS module<a class="headerlink" href="#lips-augmented-simulators-fullyconnectedas-module" title="Permalink to this headline"></a></h2>
 </section>
 <section id="module-lips.augmented_simulators.hyperParameterTuner">
 <span id="lips-augmented-simulators-hyperparametertuner-module"></span><h2>lips.augmented_simulators.hyperParameterTuner module<a class="headerlink" href="#module-lips.augmented_simulators.hyperParameterTuner" title="Permalink to this headline"></a></h2>
@@ -990,7 +205,7 @@ The only difficulty here is that i need to serialize, as json, numpy arrays</p>
 </table>
 <dl class="py class">
 <dt class="sig sig-object py" id="lips.augmented_simulators.hyperParameterTuner.HyperParameterTuner">
-<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">lips.augmented_simulators.hyperParameterTuner.</span></span><span class="sig-name descname"><span class="pre">HyperParameterTuner</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">augmented_simulator</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#lips.augmented_simulators.augmentedSimulator.AugmentedSimulator" title="lips.augmented_simulators.augmentedSimulator.AugmentedSimulator"><span class="pre">lips.augmented_simulators.augmentedSimulator.AugmentedSimulator</span></a></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/lips/augmented_simulators/hyperParameterTuner.html#HyperParameterTuner"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#lips.augmented_simulators.hyperParameterTuner.HyperParameterTuner" title="Permalink to this definition"></a></dt>
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">lips.augmented_simulators.hyperParameterTuner.</span></span><span class="sig-name descname"><span class="pre">HyperParameterTuner</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">augmented_simulator</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#lips.augmented_simulators.AugmentedSimulator" title="lips.augmented_simulators.augmented_simulator.AugmentedSimulator"><span class="pre">lips.augmented_simulators.augmented_simulator.AugmentedSimulator</span></a></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/lips/augmented_simulators/hyperParameterTuner.html#HyperParameterTuner"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#lips.augmented_simulators.hyperParameterTuner.HyperParameterTuner" title="Permalink to this definition"></a></dt>
 <dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
 <p>A class providing the functionality to tune the hyper-parameters of the “fullyConnectedAS”
 augmented simulator.</p>
@@ -1050,201 +265,8 @@ All the parameters of this function except for dataset, epochs and number of fol
 </dd></dl>
 
 </section>
-<section id="module-lips.augmented_simulators.leapNetAS">
-<span id="lips-augmented-simulators-leapnetas-module"></span><h2>lips.augmented_simulators.leapNetAS module<a class="headerlink" href="#module-lips.augmented_simulators.leapNetAS" title="Permalink to this headline"></a></h2>
-<p><strong>Classes:</strong></p>
-<table class="autosummary longtable docutils align-default">
-<colgroup>
-<col style="width: 10%" />
-<col style="width: 90%" />
-</colgroup>
-<tbody>
-<tr class="row-odd"><td><p><a class="reference internal" href="#lips.augmented_simulators.leapNetAS.LeapNetAS" title="lips.augmented_simulators.leapNetAS.LeapNetAS"><code class="xref py py-obj docutils literal notranslate"><span class="pre">LeapNetAS</span></code></a>(name, benchmark_name, config_path, ...)</p></td>
-<td><p>LeapNet architecture</p></td>
-</tr>
-</tbody>
-</table>
-<dl class="py class">
-<dt class="sig sig-object py" id="lips.augmented_simulators.leapNetAS.LeapNetAS">
-<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">lips.augmented_simulators.leapNetAS.</span></span><span class="sig-name descname"><span class="pre">LeapNetAS</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">name:</span> <span class="pre">str</span> <span class="pre">=</span> <span class="pre">'LeapNetAS'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">benchmark_name:</span> <span class="pre">str</span> <span class="pre">=</span> <span class="pre">'Benchmark1'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">config_path:</span> <span class="pre">typing.Optional[str]</span> <span class="pre">=</span> <span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">attr_x:</span> <span class="pre">typing.Optional[tuple]</span> <span class="pre">=</span> <span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">attr_tau:</span> <span class="pre">typing.Optional[tuple]</span> <span class="pre">=</span> <span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">attr_y:</span> <span class="pre">typing.Optional[tuple]</span> <span class="pre">=</span> <span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">sizes_layer=(150</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">150)</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">sizes_enc=(20</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">20</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">20)</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">sizes_out=(100</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">40)</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">lr:</span> <span class="pre">float</span> <span class="pre">=</span> <span class="pre">0.0003</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">layer:</span> <span class="pre">keras.engine.base_layer.Layer</span> <span class="pre">=</span> <span class="pre">&lt;class</span> <span class="pre">'keras.layers.core.dense.Dense'&gt;</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">layer_act:</span> <span class="pre">str</span> <span class="pre">=</span> <span class="pre">'relu'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">optimizer:</span> <span class="pre">typing.Optional[keras.optimizer_v2.optimizer_v2.OptimizerV2]</span> <span class="pre">=</span> <span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">loss:</span> <span class="pre">str</span> <span class="pre">=</span> <span class="pre">'mse'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">batch_size:</span> <span class="pre">int</span> <span class="pre">=</span> <span class="pre">128</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">topo_vect_to_tau='raw'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">kwargs_tau=None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">mult_by_zero_lines_pred=True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">log_path:</span> <span class="pre">typing.Optional[str]</span> <span class="pre">=</span> <span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/lips/augmented_simulators/leapNetAS.html#LeapNetAS"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#lips.augmented_simulators.leapNetAS.LeapNetAS" title="Permalink to this definition"></a></dt>
-<dd><p>Bases: <a class="reference internal" href="#lips.augmented_simulators.augmentedSimulator.AugmentedSimulator" title="lips.augmented_simulators.augmentedSimulator.AugmentedSimulator"><code class="xref py py-class docutils literal notranslate"><span class="pre">lips.augmented_simulators.augmentedSimulator.AugmentedSimulator</span></code></a></p>
-<p>LeapNet architecture</p>
-<p>This class wraps the <cite>ProxyLeapNet</cite> of the <cite>leap_net</cite> module (see <a class="reference external" href="https://github.com/BDonnot/leap_net">https://github.com/BDonnot/leap_net</a>) to be
-used as an <cite>AugmentedSimulator</cite>.</p>
-<p>This is just a wrapper, for modification of said “leap_net” or its description, please visit the original
-github repository.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><ul class="simple">
-<li><p><strong>name</strong> (<code class="docutils literal notranslate"><span class="pre">str</span></code>, optional) – the name of the model, to be used for saving, by default “FullyConnected”</p></li>
-<li><p><strong>benchmark_name</strong> (<code class="docutils literal notranslate"><span class="pre">str</span></code>, optional) – the name of the scenario for which the model should be used. It is used
-to restore the configurations from config section, by default “Benchmark1”</p></li>
-<li><p><strong>config_path</strong> (Union[<code class="docutils literal notranslate"><span class="pre">str</span></code>, <code class="docutils literal notranslate"><span class="pre">None</span></code>], optional) – The path where the config file is available. If <code class="docutils literal notranslate"><span class="pre">None</span></code>, the default config
-will be used, by default <code class="docutils literal notranslate"><span class="pre">None</span></code></p></li>
-<li><p><strong>attr_x</strong> (Union[<code class="docutils literal notranslate"><span class="pre">tuple</span></code>, <code class="docutils literal notranslate"><span class="pre">None</span></code>], optional) – the list of input variables to be declared. If <code class="docutils literal notranslate"><span class="pre">None</span></code> the input variables
-are restored from the config file, by default None</p></li>
-<li><p><strong>attr_y</strong> (Union[<code class="docutils literal notranslate"><span class="pre">tuple</span></code>, <code class="docutils literal notranslate"><span class="pre">None</span></code>], optional) – The list of output variables to be declared. If <code class="docutils literal notranslate"><span class="pre">None</span></code> the output variables
-are restored from config file, by default None</p></li>
-<li><p><strong>sizes_layer</strong> (<code class="docutils literal notranslate"><span class="pre">tuple</span></code>, optional) – the number of layers and neurones in each layer, by default (150, 150)</p></li>
-<li><p><strong>lr</strong> (<code class="docutils literal notranslate"><span class="pre">float</span></code>, optional) – the learning rate for the optimizer, by default 3e-4</p></li>
-<li><p><strong>layer_act</strong> (<code class="docutils literal notranslate"><span class="pre">str</span></code>, optional) – the layers activation, by default “relu”</p></li>
-<li><p><strong>optimizer</strong> (Union[<code class="docutils literal notranslate"><span class="pre">Optimizer</span></code>, <code class="docutils literal notranslate"><span class="pre">None</span></code>], optional) – the optimizer used for optimizing network weights, by default None</p></li>
-<li><p><strong>loss</strong> (<code class="docutils literal notranslate"><span class="pre">str</span></code>, optional) – The loss criteria used during training procedure, by default “mse”</p></li>
-<li><p><strong>batch_size</strong> (<code class="docutils literal notranslate"><span class="pre">int</span></code>) – the batch size used during training, by default 128</p></li>
-<li><p><strong>topo_vect_to_tau</strong> (<code class="docutils literal notranslate"><span class="pre">str</span></code>) – the method to used to encode the topo vector, by default “raw”</p></li>
-<li><p><strong>kwargs_tau</strong> (<code class="docutils literal notranslate"><span class="pre">dict</span></code>, optional) – the keyword arguments to be passed to the topo vector encoding method, by default <code class="docutils literal notranslate"><span class="pre">None</span></code></p></li>
-<li><p><strong>mult_by_zero_lines_pred</strong> (<code class="docutils literal notranslate"><span class="pre">bool</span></code>) – if <code class="docutils literal notranslate"><span class="pre">True</span></code>, the prediction of the model are multiplied by zero for disconnected lines, by default <code class="docutils literal notranslate"><span class="pre">True</span></code></p></li>
-<li><p><strong>log_path</strong> (Union[<code class="docutils literal notranslate"><span class="pre">str</span></code>, <code class="docutils literal notranslate"><span class="pre">None</span></code>], optional) – the path where the logs should be stored, by default None</p></li>
-</ul>
-</dd>
-<dt class="field-even">Raises</dt>
-<dd class="field-even"><p><strong>RuntimeError</strong> – If an optimizer is provided, it should be a type tensorflow.keras.optimizers</p>
-</dd>
-</dl>
-<p><strong>Methods:</strong></p>
-<table class="autosummary longtable docutils align-default">
-<colgroup>
-<col style="width: 10%" />
-<col style="width: 90%" />
-</colgroup>
-<tbody>
-<tr class="row-odd"><td><p><a class="reference internal" href="#lips.augmented_simulators.leapNetAS.LeapNetAS.init" title="lips.augmented_simulators.leapNetAS.LeapNetAS.init"><code class="xref py py-obj docutils literal notranslate"><span class="pre">init</span></code></a>(**kwargs)</p></td>
-<td><p>this function will build the neural network</p></td>
-</tr>
-<tr class="row-even"><td><p><a class="reference internal" href="#lips.augmented_simulators.leapNetAS.LeapNetAS.train" title="lips.augmented_simulators.leapNetAS.LeapNetAS.train"><code class="xref py py-obj docutils literal notranslate"><span class="pre">train</span></code></a>(nb_iter, train_dataset[, val_dataset])</p></td>
-<td><p>function used to train the model</p></td>
-</tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="#lips.augmented_simulators.leapNetAS.LeapNetAS.evaluate" title="lips.augmented_simulators.leapNetAS.LeapNetAS.evaluate"><code class="xref py py-obj docutils literal notranslate"><span class="pre">evaluate</span></code></a>(dataset[, batch_size])</p></td>
-<td><p>evaluate the model on the given dataset</p></td>
-</tr>
-<tr class="row-even"><td><p><a class="reference internal" href="#lips.augmented_simulators.leapNetAS.LeapNetAS.save" title="lips.augmented_simulators.leapNetAS.LeapNetAS.save"><code class="xref py py-obj docutils literal notranslate"><span class="pre">save</span></code></a>(path_out)</p></td>
-<td><p>This saves the weights of the neural network.</p></td>
-</tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="#lips.augmented_simulators.leapNetAS.LeapNetAS.restore" title="lips.augmented_simulators.leapNetAS.LeapNetAS.restore"><code class="xref py py-obj docutils literal notranslate"><span class="pre">restore</span></code></a>(path)</p></td>
-<td><p>Restores the model from a saved one</p></td>
-</tr>
-<tr class="row-even"><td><p><a class="reference internal" href="#lips.augmented_simulators.leapNetAS.LeapNetAS.save_metadata" title="lips.augmented_simulators.leapNetAS.LeapNetAS.save_metadata"><code class="xref py py-obj docutils literal notranslate"><span class="pre">save_metadata</span></code></a>(path_out)</p></td>
-<td><p>This is used to save the meta data of the augmented simulator</p></td>
-</tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="#lips.augmented_simulators.leapNetAS.LeapNetAS.load_metadata" title="lips.augmented_simulators.leapNetAS.LeapNetAS.load_metadata"><code class="xref py py-obj docutils literal notranslate"><span class="pre">load_metadata</span></code></a>(path)</p></td>
-<td><p>this is used to load the meta parameters from the model</p></td>
-</tr>
-</tbody>
-</table>
-<dl class="py method">
-<dt class="sig sig-object py" id="lips.augmented_simulators.leapNetAS.LeapNetAS.init">
-<span class="sig-name descname"><span class="pre">init</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/lips/augmented_simulators/leapNetAS.html#LeapNetAS.init"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#lips.augmented_simulators.leapNetAS.LeapNetAS.init" title="Permalink to this definition"></a></dt>
-<dd><p>this function will build the neural network</p>
-</dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="lips.augmented_simulators.leapNetAS.LeapNetAS.train">
-<span class="sig-name descname"><span class="pre">train</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">nb_iter</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">train_dataset</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="lips.dataset.html#lips.dataset.dataSet.DataSet" title="lips.dataset.dataSet.DataSet"><span class="pre">lips.dataset.dataSet.DataSet</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">val_dataset</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Union</span><span class="p"><span class="pre">[</span></span><span class="pre">None</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference internal" href="lips.dataset.html#lips.dataset.dataSet.DataSet" title="lips.dataset.dataSet.DataSet"><span class="pre">lips.dataset.dataSet.DataSet</span></a><span class="p"><span class="pre">]</span></span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">dict</span></span></span><a class="reference internal" href="_modules/lips/augmented_simulators/leapNetAS.html#LeapNetAS.train"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#lips.augmented_simulators.leapNetAS.LeapNetAS.train" title="Permalink to this definition"></a></dt>
-<dd><p>function used to train the model</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><ul class="simple">
-<li><p><strong>nb_iter</strong> (<code class="docutils literal notranslate"><span class="pre">int</span></code>) – number of epochs</p></li>
-<li><p><strong>train_dataset</strong> (<a class="reference internal" href="lips.dataset.html#lips.dataset.DataSet" title="lips.dataset.DataSet"><em>DataSet</em></a>) – the training dataset used to train the model</p></li>
-<li><p><strong>val_dataset</strong> (Union[<code class="docutils literal notranslate"><span class="pre">None</span></code>, DataSet], optional) – the validation dataset used to validate the model, by default None</p></li>
-<li><p><strong>**kwargs</strong> (<code class="docutils literal notranslate"><span class="pre">dict</span></code>) – supplementary arguments for <code class="docutils literal notranslate"><span class="pre">fit</span></code> method of <code class="docutils literal notranslate"><span class="pre">tf.keras.Model</span></code></p></li>
-</ul>
-</dd>
-<dt class="field-even">Returns</dt>
-<dd class="field-even"><p>history of the tensorflow model (losses)</p>
-</dd>
-<dt class="field-odd">Return type</dt>
-<dd class="field-odd"><p>dict</p>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="lips.augmented_simulators.leapNetAS.LeapNetAS.evaluate">
-<span class="sig-name descname"><span class="pre">evaluate</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">dataset</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="lips.dataset.html#lips.dataset.dataSet.DataSet" title="lips.dataset.dataSet.DataSet"><span class="pre">lips.dataset.dataSet.DataSet</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">batch_size</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">32</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">dict</span></span></span><a class="reference internal" href="_modules/lips/augmented_simulators/leapNetAS.html#LeapNetAS.evaluate"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#lips.augmented_simulators.leapNetAS.LeapNetAS.evaluate" title="Permalink to this definition"></a></dt>
-<dd><p>evaluate the model on the given dataset</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><ul class="simple">
-<li><p><strong>dataset</strong> (<a class="reference internal" href="lips.dataset.html#lips.dataset.DataSet" title="lips.dataset.DataSet"><em>DataSet</em></a>) – the dataset used for evaluation of the model</p></li>
-<li><p><strong>batch_size</strong> (<code class="docutils literal notranslate"><span class="pre">int</span></code>, optional) – the batch size used during inference phase, by default 32</p></li>
-<li><p><strong>save_values</strong> (<code class="docutils literal notranslate"><span class="pre">bool</span></code>, optional) – whether to save the evaluation resutls (predictions), by default False</p></li>
-</ul>
-</dd>
-</dl>
-<div class="admonition-todo admonition" id="id4">
-<p class="admonition-title">Todo</p>
-<p>TODO : Save the predictions (not implemented yet)</p>
-</div>
-<dl class="field-list simple">
-<dt class="field-odd">Returns</dt>
-<dd class="field-odd"><p>the predictions of the model</p>
-</dd>
-<dt class="field-even">Return type</dt>
-<dd class="field-even"><p>dict</p>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="lips.augmented_simulators.leapNetAS.LeapNetAS.save">
-<span class="sig-name descname"><span class="pre">save</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">path_out</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/lips/augmented_simulators/leapNetAS.html#LeapNetAS.save"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#lips.augmented_simulators.leapNetAS.LeapNetAS.save" title="Permalink to this definition"></a></dt>
-<dd><p>This saves the weights of the neural network.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><p><strong>path_out</strong> (<code class="docutils literal notranslate"><span class="pre">str</span></code>) – path where the model should be saved</p>
-</dd>
-<dt class="field-even">Raises</dt>
-<dd class="field-even"><ul class="simple">
-<li><p><strong>RuntimeError</strong> – The path does not exist</p></li>
-<li><p><strong>RuntimeError</strong> – The model is not initialized, it cannot be saved</p></li>
-</ul>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="lips.augmented_simulators.leapNetAS.LeapNetAS.restore">
-<span class="sig-name descname"><span class="pre">restore</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">path</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/lips/augmented_simulators/leapNetAS.html#LeapNetAS.restore"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#lips.augmented_simulators.leapNetAS.LeapNetAS.restore" title="Permalink to this definition"></a></dt>
-<dd><p>Restores the model from a saved one</p>
-<p>We first copy the weights file into a temporary directory, and then load from this one. This is avoid
-file corruption in case the model fails to load.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><p><strong>path</strong> (<code class="docutils literal notranslate"><span class="pre">str</span></code>) – path from where the  model should be restored</p>
-</dd>
-<dt class="field-even">Raises</dt>
-<dd class="field-even"><p><strong>RuntimeError</strong> – Impossible to find a saved model at the indicated path</p>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="lips.augmented_simulators.leapNetAS.LeapNetAS.save_metadata">
-<span class="sig-name descname"><span class="pre">save_metadata</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">path_out</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/lips/augmented_simulators/leapNetAS.html#LeapNetAS.save_metadata"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#lips.augmented_simulators.leapNetAS.LeapNetAS.save_metadata" title="Permalink to this definition"></a></dt>
-<dd><p>This is used to save the meta data of the augmented simulator</p>
-<p>In this case it saves the sizes, the scalers etc.
-The only difficulty here is that i need to serialize, as json, numpy arrays</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><p><strong>path_out</strong> (<code class="docutils literal notranslate"><span class="pre">str</span></code>) – path where the model metadata should be saved</p>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="lips.augmented_simulators.leapNetAS.LeapNetAS.load_metadata">
-<span class="sig-name descname"><span class="pre">load_metadata</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">path</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/lips/augmented_simulators/leapNetAS.html#LeapNetAS.load_metadata"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#lips.augmented_simulators.leapNetAS.LeapNetAS.load_metadata" title="Permalink to this definition"></a></dt>
-<dd><p>this is used to load the meta parameters from the model</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><p><strong>path</strong> (<code class="docutils literal notranslate"><span class="pre">str</span></code>) – path from where the  model should be restored</p>
-</dd>
-</dl>
-</dd></dl>
-
-</dd></dl>
-
+<section id="lips-augmented-simulators-leapnetas-module">
+<h2>lips.augmented_simulators.leapNetAS module<a class="headerlink" href="#lips-augmented-simulators-leapnetas-module" title="Permalink to this headline"></a></h2>
 </section>
 </section>
 
