@@ -12,7 +12,6 @@ import pathlib
 import shutil
 
 from ..dataset import DataSet
-from ..dataset import Scaler
 
 class AugmentedSimulator(ABC):
     """
@@ -22,17 +21,14 @@ class AugmentedSimulator(ABC):
     They are meant to use data coming from a `DataSet` to learn from it.
     """
     def __init__(self,
-                 model: Union["tensorflow.keras.Model", "torch.nn.Module"],
                  name: Union[str, None]=None,
-                 scaler: Union[Scaler, None]=None,
                  log_path: Union[str, None]=None,
+                 model: Union["torch.nn.Module", None]=None,
                  **kwargs):
-        self.model = model
         self.name = name
+        self.model = model #unused for tensorflow models
         self.trained = False
-        # scaler class
-        if scaler is not None:
-            self.scaler = scaler()
+        self._model = None
         self.log_path = log_path
         self.params = kwargs
 
@@ -73,27 +69,25 @@ class AugmentedSimulator(ABC):
                                f"We found {type(dataset)}")
 
     @abstractmethod
-    def _build_model(self, **kwargs):
+    def build_model(self):
         """Build the model
 
-        This is where a neural network is built.
+        This is where a neural network is initialized or built.
         """
         pass
 
-    def process_dataset(self, one_example):
+    def process_dataset(self, dataset: DataSet, training: bool):
         """
         This function transforms one state of a dataset (one row if you want) into something that can be used by
         the neural network (for example)
         """
-        pass
+        if not isinstance(dataset, DataSet):
+            raise RuntimeError(f"The \"dataset\" should be an instance of DataSet. "
+                               f"We found {type(dataset)}")
 
-    def data_to_dict(self):
-        """
-        This function should return two dictionaries in the following order
-            - the observations used for evaluation
-            - corresponding predictions
-        """
-        pass
+        if not isinstance(training, bool):
+            raise RuntimeError(f"The \"training\" should be a boolean. "
+                               f"We found {type(training)}")
 
     def save(self, path: Union['str', pathlib.Path]):
         """save the model at a given path"""
