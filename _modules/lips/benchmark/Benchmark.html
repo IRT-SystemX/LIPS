@@ -1,0 +1,263 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>lips.benchmark.Benchmark &mdash; LIPS 0.1 documentation</title>
+      <link rel="stylesheet" href="../../../_static/pygments.css" type="text/css" />
+      <link rel="stylesheet" href="../../../_static/css/theme.css" type="text/css" />
+  <!--[if lt IE 9]>
+    <script src="../../../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script data-url_root="../../../" id="documentation_options" src="../../../_static/documentation_options.js"></script>
+        <script src="../../../_static/jquery.js"></script>
+        <script src="../../../_static/underscore.js"></script>
+        <script src="../../../_static/doctools.js"></script>
+    <script src="../../../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+            <a href="../../../index.html" class="icon icon-home"> LIPS
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">GETTING STARTED</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../quickstart.html">Getting started</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">TECHNICAL DOCUMENTATION</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../lips.augmented_simulators.html">lips.augmented_simulators package</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../lips.benchmark.html">lips.benchmark package</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../lips.config.html">lips.config package</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../lips.dataset.html">lips.dataset package</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../lips.evaluation.html">lips.evaluation package</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../lips.logger.html">lips.logger package</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../lips.metrics.html">lips.metrics package</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../lips.neurips_benchmark.html">lips.neurips_benchmark package</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../lips.physical_simulator.html">lips.physical_simulator package</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">GUIDE</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../license.html">License</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../help.html">Help</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../../index.html">LIPS</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../../../index.html" class="icon icon-home"></a> &raquo;</li>
+          <li><a href="../../index.html">Module code</a> &raquo;</li>
+      <li>lips.benchmark.Benchmark</li>
+      <li class="wy-breadcrumbs-aside">
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <h1>Source code for lips.benchmark.Benchmark</h1><div class="highlight"><pre>
+<span></span><span class="c1"># Copyright (c) 2021, IRT SystemX (https://www.irt-systemx.fr/en/)</span>
+<span class="c1"># See AUTHORS.txt</span>
+<span class="c1"># This Source Code Form is subject to the terms of the Mozilla Public License, version 2.0.</span>
+<span class="c1"># If a copy of the Mozilla Public License, version 2.0 was not distributed with this file,</span>
+<span class="c1"># you can obtain one at http://mozilla.org/MPL/2.0/.</span>
+<span class="c1"># SPDX-License-Identifier: MPL-2.0</span>
+<span class="c1"># This file is part of LIPS, LIPS is a python platform for power networks benchmarking</span>
+
+<span class="kn">import</span> <span class="nn">os</span>
+<span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Union</span>
+<span class="kn">from</span> <span class="nn">abc</span> <span class="kn">import</span> <span class="n">ABC</span><span class="p">,</span> <span class="n">abstractmethod</span>
+
+<span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+
+<span class="kn">from</span> <span class="nn">..evaluation</span> <span class="kn">import</span> <span class="n">Evaluation</span>
+<span class="kn">from</span> <span class="nn">..augmented_simulators</span> <span class="kn">import</span> <span class="n">AugmentedSimulator</span>
+<span class="kn">from</span> <span class="nn">..physical_simulator</span> <span class="kn">import</span> <span class="n">PhysicalSimulator</span>
+<span class="kn">from</span> <span class="nn">..physical_simulator</span> <span class="kn">import</span> <span class="n">PhysicsSolver</span>
+<span class="kn">from</span> <span class="nn">..config</span> <span class="kn">import</span> <span class="n">ConfigManager</span>
+<span class="kn">from</span> <span class="nn">..logger</span> <span class="kn">import</span> <span class="n">CustomLogger</span>
+<span class="kn">from</span> <span class="nn">..dataset</span> <span class="kn">import</span> <span class="n">DataSet</span>
+
+
+<div class="viewcode-block" id="Benchmark"><a class="viewcode-back" href="../../../lips.benchmark.html#lips.benchmark.Benchmark">[docs]</a><span class="k">class</span> <span class="nc">Benchmark</span><span class="p">(</span><span class="n">ABC</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Benchmark Base Class</span>
+
+<span class="sd">    Benchmark class that takes a test dataset, a simulator (physical or augmented) and an</span>
+<span class="sd">    evaluator object and evaluates the simulator on test dataset with respect to required</span>
+<span class="sd">    metrics requested by evaluator</span>
+
+<span class="sd">    Attributes</span>
+<span class="sd">    ----------</span>
+<span class="sd">    benchmark_name : ``str``</span>
+<span class="sd">        a name attributed to the corresponding experiment</span>
+<span class="sd">    dataset : Union[``DataSet``, ``None``], optional</span>
+<span class="sd">        an object of ``DataSet`` class which containing the data for training, validation and testing, by default None</span>
+<span class="sd">    augmented_simulator : Union[``AugmentedSimulator``, ``PhysicsSolver``, ``None``], optional</span>
+<span class="sd">        This is an object of Physical or Augmneted simulator including the prediction results, by default None</span>
+<span class="sd">    evaluation : Evaluation, optional</span>
+<span class="sd">        It allows to evaluate the performance of the simulator with respect to various point of views</span>
+<span class="sd">        It should be parameterized before passing to benchmark class to include appropriate metrics</span>
+<span class="sd">        otherwise, it is initialized using an empty dictionary, by default None</span>
+<span class="sd">    benchmark_path : Union[``str``, ``None``], optional</span>
+<span class="sd">        the path used to save the benchmark results, by default None</span>
+<span class="sd">    log_path : Union[``str``, ``None``], optional</span>
+<span class="sd">        the path of logger, by default None</span>
+<span class="sd">    config_path : Union[``str``, ``None``], optional</span>
+<span class="sd">        the path of config file, by default None</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span>
+                 <span class="n">benchmark_name</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
+                 <span class="n">dataset</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="n">DataSet</span><span class="p">,</span> <span class="kc">None</span><span class="p">]</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+                 <span class="n">augmented_simulator</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="n">AugmentedSimulator</span><span class="p">,</span> <span class="n">PhysicsSolver</span><span class="p">,</span> <span class="kc">None</span><span class="p">]</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+                 <span class="n">evaluation</span><span class="p">:</span> <span class="n">Evaluation</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+                 <span class="n">benchmark_path</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="kc">None</span><span class="p">]</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+                 <span class="n">log_path</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="kc">None</span><span class="p">]</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+                 <span class="n">config_path</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="kc">None</span><span class="p">]</span><span class="o">=</span><span class="kc">None</span>
+                 <span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">benchmark_name</span> <span class="o">=</span> <span class="n">benchmark_name</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">benchmark_path</span> <span class="o">=</span> <span class="n">benchmark_path</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">path_datasets</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">benchmark_path</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">benchmark_name</span><span class="p">)</span>
+
+        <span class="c1"># Object of class DataSet contianing datasets for testing</span>
+        <span class="c1"># It contains the last dataset used for evaluation</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">dataset</span> <span class="o">=</span> <span class="n">dataset</span>
+
+        <span class="c1"># Store the test data sets and simulator predictions for further investigations</span>
+        <span class="c1"># Each evaluated dataset added to the dictionary (`key` corresponds to `dataset.name`)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">observations</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">predictions</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">()</span>
+
+        <span class="c1"># object of class AugmentedSimulator allowing to train a neural net and to predict, load and save it</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">augmented_simulator</span> <span class="o">=</span> <span class="n">augmented_simulator</span>
+
+        <span class="c1"># logger</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">log_path</span> <span class="o">=</span> <span class="n">log_path</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">logger</span> <span class="o">=</span> <span class="n">CustomLogger</span><span class="p">(</span><span class="vm">__class__</span><span class="o">.</span><span class="vm">__name__</span><span class="p">,</span> <span class="n">log_path</span><span class="p">)</span><span class="o">.</span><span class="n">logger</span>
+
+        <span class="c1"># config file</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">config</span> <span class="o">=</span> <span class="n">ConfigManager</span><span class="p">(</span><span class="n">section_name</span><span class="o">=</span><span class="n">benchmark_name</span><span class="p">,</span> <span class="n">path</span><span class="o">=</span><span class="n">config_path</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="n">evaluation</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="c1"># use the user-defined evaluation object</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">evaluation</span> <span class="o">=</span> <span class="n">evaluation</span>
+
+<div class="viewcode-block" id="Benchmark.evaluate_simulator"><a class="viewcode-back" href="../../../lips.benchmark.html#lips.benchmark.Benchmark.evaluate_simulator">[docs]</a>    <span class="nd">@abstractmethod</span>
+    <span class="k">def</span> <span class="nf">evaluate_simulator</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span>
+                           <span class="n">dataset</span><span class="p">:</span> <span class="n">DataSet</span><span class="p">,</span>
+                           <span class="n">augmented_simulator</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="n">PhysicalSimulator</span><span class="p">,</span> <span class="n">AugmentedSimulator</span><span class="p">,</span> <span class="kc">None</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+                           <span class="n">batch_size</span><span class="p">:</span> <span class="nb">int</span><span class="o">=</span><span class="mi">32</span><span class="p">,</span>
+                           <span class="n">save_path</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="kc">None</span><span class="p">]</span><span class="o">=</span><span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        This function will evalute a simulator (physical or augmented) using various criteria predefined in evaluator object</span>
+<span class="sd">        on a ``single test dataset``. It can be overloaded or called to evaluate the performance on multiple datasets</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        dataset: DataSet</span>
+<span class="sd">            a test dataset on which the augmented simulator should be performed and evaluated by</span>
+<span class="sd">        augmented_simulator: AugmentedSimulator</span>
+<span class="sd">            a trained augmented simulator which should be evaluated</span>
+<span class="sd">        batch_size: ``int``</span>
+<span class="sd">            evaluation batch size</span>
+<span class="sd">        save_path: Union[``str``, ``None``]</span>
+<span class="sd">            if indicated the evaluation results will be saved to indicated path</span>
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        ``dict``</span>
+<span class="sd">            a dictionary containing the evaluation results</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">augmented_simulator</span> <span class="o">=</span> <span class="n">augmented_simulator</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">dataset</span> <span class="o">=</span> <span class="n">dataset</span>
+        <span class="n">predictions</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">augmented_simulator</span><span class="o">.</span><span class="n">evaluate</span><span class="p">(</span><span class="n">dataset</span><span class="p">,</span> <span class="n">batch_size</span><span class="p">)</span>
+        <span class="n">observations</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">dataset</span><span class="o">.</span><span class="n">get_data</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">dataset</span><span class="p">)))</span>
+        <span class="n">res</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">evaluation</span><span class="o">.</span><span class="n">evaluate</span><span class="p">(</span><span class="n">observations</span><span class="o">=</span><span class="n">observations</span><span class="p">,</span>
+                                       <span class="n">predictions</span><span class="o">=</span><span class="n">predictions</span><span class="p">,</span>
+                                       <span class="n">save_path</span><span class="o">=</span><span class="n">save_path</span>
+                                      <span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">predictions</span><span class="p">[</span><span class="n">dataset</span><span class="o">.</span><span class="n">name</span><span class="p">]</span> <span class="o">=</span> <span class="n">predictions</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">observations</span><span class="p">[</span><span class="n">dataset</span><span class="o">.</span><span class="n">name</span><span class="p">]</span> <span class="o">=</span> <span class="n">observations</span>
+
+        <span class="k">return</span> <span class="n">res</span></div>
+
+    <span class="k">def</span> <span class="nf">__save_augmented_simulator</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">path</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">ext</span><span class="o">=</span><span class="s2">&quot;.h5&quot;</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        save the augmented simulator related data on model_path</span>
+
+<span class="sd">        the data concerns the meta data and model itself</span>
+
+<span class="sd">        !! we recommend to save to the default path for a better organisation (keep path=None)</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ------</span>
+<span class="sd">        path: ``str``</span>
+<span class="sd">            if not indicated, the data will be saved in predefined path</span>
+<span class="sd">        ext: ``str``</span>
+<span class="sd">            extension</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="n">path</span><span class="p">:</span>
+            <span class="k">if</span> <span class="ow">not</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">exists</span><span class="p">(</span><span class="n">path</span><span class="p">):</span>
+                <span class="n">os</span><span class="o">.</span><span class="n">mkdir</span><span class="p">(</span><span class="n">path</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">augmented_simulator</span><span class="o">.</span><span class="n">_save_metadata</span><span class="p">(</span><span class="n">path</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">augmented_simulator</span><span class="o">.</span><span class="n">save_data</span><span class="p">(</span><span class="n">path</span><span class="o">=</span><span class="n">path</span><span class="p">,</span> <span class="n">ext</span><span class="o">=</span><span class="n">ext</span><span class="p">)</span>
+
+        <span class="k">elif</span> <span class="bp">self</span><span class="o">.</span><span class="n">augmented_simulator</span><span class="o">.</span><span class="n">model_path</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">augmented_simulator</span><span class="o">.</span><span class="n">_save_metadata</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">augmented_simulator</span><span class="o">.</span><span class="n">model_path</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">augmented_simulator</span><span class="o">.</span><span class="n">save_data</span><span class="p">(</span><span class="n">path</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">augmented_simulator</span><span class="o">.</span><span class="n">model_path</span><span class="p">,</span> <span class="n">ext</span><span class="o">=</span><span class="n">ext</span><span class="p">)</span>
+
+        <span class="k">else</span><span class="p">:</span>
+            <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;the augmented simulator could not be saved&quot;</span><span class="p">)</span></div>
+</pre></div>
+
+           </div>
+          </div>
+          <footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2021, IRT SystemX.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>
