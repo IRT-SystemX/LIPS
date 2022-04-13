@@ -14,10 +14,10 @@ import copy
 import logging
 
 from lips.benchmark import Benchmark
-from lips.neurips_benchmark.scen1_utils import (get_kwargs_simulator_scenario1,
-                                                get_actor_training_scenario1,
-                                                get_actor_test_ood_topo_scenario1,
-                                                get_actor_test_scenario1)
+from lips.benchmark.utils.scen1_utils import (get_kwargs_simulator_scenario,
+                                              get_actor_training_scenario,
+                                              get_actor_test_ood_topo_scenario,
+                                              get_actor_test_scenario)
 
 from lips.physical_simulator import Grid2opSimulator
 from lips.dataset import PowerGridDataSet
@@ -43,6 +43,10 @@ class NeuripsBenchmark1(Benchmark):
                  test_ood_topo_actor_seed: int = 8,
                  evaluation=None
                  ):
+        # FIXME: [JP] these properties were not correctly initialized, on call super constructor somehow
+        self.observations = dict()
+        self.predictions = dict()
+
         self.benchmark_name = benchmark_name
         self.path_benchmark = path_benchmark
         self.is_loaded = False
@@ -65,7 +69,7 @@ class NeuripsBenchmark1(Benchmark):
             #self.evaluation.active_dict["evaluate_physics"] = {}
 
         else:
-            self.evaluate = evaluation
+            self.evaluation = evaluation
 
         self.training_simulator = None
         self.val_simulator = None
@@ -89,22 +93,30 @@ class NeuripsBenchmark1(Benchmark):
 
         self.initial_chronics_id = initial_chronics_id
 
-        self.train_dataset = PowerGridDataSet("train", 
-                #attr_names=("prod_p", "prod_v", "load_p", "load_q", "line_status", "topo_vect", "a_or", "a_ex"),
-                theta_attr_names=()
-                )
-        self.val_dataset = PowerGridDataSet("val",
-                #attr_names=("prod_p", "prod_v", "load_p", "load_q", "line_status", "topo_vect", "a_or", "a_ex"),
-                theta_attr_names=()
-                )
-        self._test_dataset = PowerGridDataSet("test",
-                #attr_names=("prod_p", "prod_v", "load_p", "load_q", "line_status", "topo_vect", "a_or", "a_ex"),
-                theta_attr_names=()  
-                )
-        self._test_ood_topo_dataset = PowerGridDataSet("test_ood_topo",
-                #attr_names=("prod_p", "prod_v", "load_p", "load_q", "line_status", "topo_vect", "a_or", "a_ex"),
-                theta_attr_names=()
-                )
+        self.train_dataset = PowerGridDataSet("train",
+                                              attr_names=("prod_p", "prod_v", "load_p", "load_q", 
+                                                          "line_status", "topo_vect",
+                                                          "a_or", "a_ex"), # consider only currents as the variables
+                                              theta_attr_names=()) # set the theta to empty, not used for benchmark 1
+                                              
+        self.val_dataset = PowerGridDataSet("val", 
+                                            attr_names=("prod_p", "prod_v", "load_p", "load_q", 
+                                                         "line_status", "topo_vect",
+                                                         "a_or", "a_ex"),
+                                            theta_attr_names=())
+
+        self._test_dataset = PowerGridDataSet("test", 
+                                              attr_names=("prod_p", "prod_v", "load_p", "load_q", 
+                                                          "line_status", "topo_vect",
+                                                          "a_or", "a_ex"),
+                                              theta_attr_names=())
+
+        self._test_ood_topo_dataset = PowerGridDataSet("test_ood_topo", 
+                                                       attr_names=("prod_p", "prod_v", "load_p", "load_q", 
+                                                                   "line_status", "topo_vect",
+                                                                   "a_or", "a_ex"), 
+                                                       theta_attr_names=())
+
         self.path_datasets = None
         if load_data_set:
             self.load()
@@ -123,7 +135,7 @@ class NeuripsBenchmark1(Benchmark):
     def load(self):
         if self.is_loaded:
             print("Previously saved data will be erased and new data will be reloaded")
-
+        # TODO: set this attribute in class constructor
         self.path_datasets = os.path.join(self.path_benchmark, self.benchmark_name)
         if not os.path.exists(self.path_datasets):
             raise RuntimeError(f"No data are found in {self.path_datasets}. Have you generated or downloaded "
@@ -141,6 +153,7 @@ class NeuripsBenchmark1(Benchmark):
         with warnings.catch_warnings():
             warnings.filterwarnings("ignore")
             self._fills_actor_simulator()
+        # TODO : to set this variable in constructor
         self.path_datasets = os.path.join(self.path_benchmark, self.benchmark_name)
         if os.path.exists(self.path_datasets):
             print(f"Deleting path {self.path_datasets} that might contain previous runs")  # TODO logger
@@ -202,15 +215,17 @@ class NeuripsBenchmark1(Benchmark):
         res = {}
         for dataset_, nm in zip(li_dataset, keys):
             logging.info("Experiment on dataset : {}".format(nm))
-            tmp = self._aux_evaluate_on_single_dataset(dataset_,
-                                                       augmented_simulator=augmented_simulator,
-                                                       batch_size=batch_size,
-                                                       EL_tolerance=EL_tolerance,
-                                                       LCE_tolerance=LCE_tolerance,
-                                                       KCL_tolerance=KCL_tolerance,
-                                                       active_flow=active_flow
-                                                       )
+            tmp, ref_data, predictions = self._aux_evaluate_on_single_dataset(dataset_,
+                                                                              augmented_simulator=augmented_simulator,
+                                                                              batch_size=batch_size,
+                                                                              EL_tolerance=EL_tolerance,
+                                                                              LCE_tolerance=LCE_tolerance,
+                                                                              KCL_tolerance=KCL_tolerance,
+                                                                              active_flow=active_flow
+                                                                             )
             res[nm] = copy.deepcopy(tmp)
+            self.observations[nm] = copy.deepcopy(ref_data)
+            self.predictions[nm] = copy.deepcopy(predictions)
         return res
 
     def _aux_evaluate_on_single_dataset(self,
@@ -239,12 +254,12 @@ class NeuripsBenchmark1(Benchmark):
                                              active_flow=active_flow,
                                              save_path=None  # TODO currently not used
                                              )
-        return res
+        return res, ref_data, predictions
 
     def _create_training_simulator(self):
         """"""
         if self.training_simulator is None:
-            self.training_simulator = Grid2opSimulator(get_kwargs_simulator_scenario1(),
+            self.training_simulator = Grid2opSimulator(get_kwargs_simulator_scenario(),
                                                        initial_chronics_id=self.initial_chronics_id,
                                                        # i use 994 chronics out of the 904 for training
                                                        chronics_selected_regex="^((?!(.*9[0-9][0-9].*)).)*$"
@@ -255,32 +270,32 @@ class NeuripsBenchmark1(Benchmark):
         self._create_training_simulator()
         self.training_simulator.seed(self.train_env_seed)
 
-        self.val_simulator = Grid2opSimulator(get_kwargs_simulator_scenario1(),
+        self.val_simulator = Grid2opSimulator(get_kwargs_simulator_scenario(),
                                               initial_chronics_id=self.initial_chronics_id,
                                               # i use 50 full chronics for testing
                                               chronics_selected_regex=".*9[0-4][0-9].*")
         self.val_simulator.seed(self.val_env_seed)
 
-        self.test_simulator = Grid2opSimulator(get_kwargs_simulator_scenario1(),
+        self.test_simulator = Grid2opSimulator(get_kwargs_simulator_scenario(),
                                                initial_chronics_id=self.initial_chronics_id,
                                                # i use 25 full chronics for testing
                                                chronics_selected_regex=".*9[5-9][0-4].*")
         self.test_simulator.seed(self.test_env_seed)
 
-        self.test_ood_topo_simulator = Grid2opSimulator(get_kwargs_simulator_scenario1(),
+        self.test_ood_topo_simulator = Grid2opSimulator(get_kwargs_simulator_scenario(),
                                                         initial_chronics_id=self.initial_chronics_id,
                                                         # i use 25 full chronics for testing
                                                         chronics_selected_regex=".*9[5-9][5-9].*")
         self.test_ood_topo_simulator.seed(self.test_ood_topo_env_seed)
 
-        self.training_actor = get_actor_training_scenario1(self.training_simulator)
+        self.training_actor = get_actor_training_scenario(self.training_simulator)
         self.training_actor.seed(self.train_actor_seed)
 
-        self.val_actor = get_actor_test_scenario1(self.val_simulator)
+        self.val_actor = get_actor_test_scenario(self.val_simulator)
         self.val_actor.seed(self.val_actor_seed)
 
-        self.test_actor = get_actor_test_scenario1(self.test_simulator)
+        self.test_actor = get_actor_test_scenario(self.test_simulator)
         self.test_actor.seed(self.test_actor_seed)
 
-        self.test_ood_topo_actor = get_actor_test_ood_topo_scenario1(self.test_ood_topo_simulator)
+        self.test_ood_topo_actor = get_actor_test_ood_topo_scenario(self.test_ood_topo_simulator)
         self.test_ood_topo_actor.seed(self.test_ood_topo_actor_seed)

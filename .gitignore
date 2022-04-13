@@ -135,24 +135,51 @@ dmypy.json
 # Pyre type checker
 .pyre/
 
+# ignore all the bkp files
+*.bkp
+
 #custom ignore folders
 .vscode
 
-ActorTest.ipynb
+# CI/CD
+.circleci/config.yml.bkp
+process.yml
 
-lips/benchmark/Benchmark copy.py
-lips/benchmark/Benchmark copy 2.py
-lips/dataset/DataSet copy.py
-lips/dataset/DataSet copy 2.py
-lips/models/*
-lips/models
+# linters
+.config
 
-lips/simulators/augmentedSimulator copy.py
-lips/simulators/DCApproximation copy.py
+# documentations
+docs/source/conf.py.bkp
+docs/_templates
+docs/build
 
-temporary.ipynb
-temporary1.ipynb
-Notebook_Benchmark2.ipynb
+# getting started
+getting_started/Analyzing_Benchmark_class.ipynb
+getting_started/03_TrainAnAugmentedSimulator-Copy1.ipynb
+getting_started/3_EvaluateBenchmark2.ipynb
+getting_started/4_EvaluateBenchmark3.ipynb
+getting_started/Untitled.ipynb
+
+# metrics
+lips/metrics/power_grid/BasicVerifier.py.bkp
+lips/metrics/power_grid/Check_energy_conservation.py.bkp
+lips/metrics/power_grid/Check_KCL.py.bkp
+lips/metrics/power_grid/Check_Kirchhoff_current_law.py.bkp
+lips/metrics/power_grid/Check_loss.py.bkp
+lips/metrics/power_grid/metric_percentage.py
+
+# evaluation
+lips/evaluation/Evaluation.py.bkp
+lips/evaluation/Evaluation_new.py.bkp
+lips/evaluation/conf.ini
+lips/evaluation/__init__.py.bkp
+
+# tests
+lips/tests/Evaluation/test_evaluation.py
+
+# LIPS
+logs.log
+lips_logs.log
 
 lips/Outputs/Scenario1/Data/super_test
 lips/Outputs/Scenario1/Data/test
@@ -177,4 +204,9 @@ test_dc_proxy.py
 test_fully_connected.py
 trained_models/
 test_leap_net.py
-logs.log
+
+
+# test files
+pytest_report.html
+assets/
+requirements copy.txt

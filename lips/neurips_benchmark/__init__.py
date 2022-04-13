@@ -8,6 +8,7 @@
 
 __all_ = ['NeuripsBenchmark1', 'NeuripsBenchmark2', 'NeuripsBenchmark3']
 
+
 from lips.neurips_benchmark.benchmark1 import NeuripsBenchmark1
 from lips.neurips_benchmark.benchmark2 import NeuripsBenchmark2
 from lips.neurips_benchmark.benchmark3 import NeuripsBenchmark3
