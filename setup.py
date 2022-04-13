@@ -32,7 +32,7 @@ with open("README.md", "r", encoding="utf-8") as fh:
 
 setup(name='lips',
       version='0.0.1',
-      description='TODO',
+      description='LIPS : Learning Industrial Physical Simulation benchmark suite',
       long_description=long_description,
       long_description_content_type="text/markdown",
       classifiers=[
@@ -47,9 +47,9 @@ setup(name='lips',
           "Intended Audience :: Science/Research",
           "Natural Language :: English"
       ],
-      keywords='lips, augmented simulator',
-      author='TODO',
-      author_email='TODO',
+      keywords='Physical system solver, augmented simulator, benchmarking',
+      author='Milad Leyli-abadi',
+      author_email='milad.leyli-abadi@irt-systemx.fr',
       url="https://github.com/Mleyliabadi/LIPS",
       license='MPL',
       packages=setuptools.find_packages(),

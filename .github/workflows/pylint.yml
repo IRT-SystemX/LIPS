@@ -5,7 +5,7 @@ on:
     branches:
       - main
       - 'ml-*'
-      - 'bd-dev'
+      - 'bd-*'
       - 'dd-*'
       - 'jp-*'
       - 'am-*'

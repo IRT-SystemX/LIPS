@@ -6,9 +6,17 @@
 # SPDX-License-Identifier: MPL-2.0
 # This file is part of LIPS, LIPS is a python platform for power networks benchmarking
 
-__all__ = ["PhysicalSimulator"]
+__all__ = ["PhysicalSimulator", "PhysicsSolver"]
 
 from lips.physical_simulator.physicalSimulator import PhysicalSimulator
+from lips.physical_simulator.physicsSolver import PhysicsSolver
+
+try:
+    from lips.physical_simulator.dcApproximationAS import DCApproximationAS
+    __all__.append("DCApproximationAS")
+except ImportError:
+    # grid2op or lightsim2grid package is not installed i cannot used this augmented simulator
+    pass
 
 try:
     from lips.physical_simulator.grid2opSimulator import Grid2opSimulator
@@ -16,3 +24,4 @@ try:
 except ImportError as exc_:
     # grid2op or lightsim2grid are not installed
     pass
+
