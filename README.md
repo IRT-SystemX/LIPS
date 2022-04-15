@@ -34,41 +34,46 @@ The learning industrial physical simulation benchmark suite allows to evaluate t
 ![Scheme](./img/Benchmarking_scheme_v2.png)
 
 ## Usage example
-### Train a simulator
+### Instantiate a benchmark for power grid use case
+The paths should correctly point-out to generated data ([DATA_PATH](https://github.com/Mleyliabadi/LIPS/tree/main/reference_data)) and benchmark associated config file ([CONFIG_PATH](https://github.com/Mleyliabadi/LIPS/blob/main/lips/config/conf.ini)). The log path (`LOG_PATH`) could be set by the user.
 
-A simulator could be instantiated and trained if required easily as follows :
 ```python
-from lips.augmented_simulators import FullyConnectedAS
+from lips.benchmark import PowerGridBenchmark
 
-my_simulator = FullyConnectedAS(name="test_FullyConnectedAS",
-                                attr_x=("prod_p", "prod_v", "load_p", "load_q", "line_status", "topo_vect"),
-                                attr_y=("a_or", "a_ex"),
-                                sizes_layer=(300, 300, 300, 300),
-                                lr=3e-4, 
-                                layer=Dense,
-                                layer_act="relu",
-                                loss,
-                                batch_size)
+benchmark1 = PowerGridBenchmark(benchmark_name="Benchmark1",
+                                benchmark_path=DATA_PATH,
+                                load_data_set=True,
+                                log_path=LOG_PATH,
+                                config_path=CONFIG_PATH
+                               )
+```
+### Train a simulator
+A simulator (based on tensorflow) could be instantiated and trained if required easily as follows:
+```python
+from lips.augmented_simulators.tensorflow_models import TfFullyConnected
+from lips.dataset.scaler import StandardScaler
+
+tf_fc = TfFullyConnected(name="tf_fc",
+                         bench_config_name="Benchmark1",
+                         scaler=StandardScaler,
+                         log_path=LOG_PATH)
                            
-my_simulator.train(nb_iter,
-                   train_dataset,
-                   val_dataset)
+tf_fc.train(train_dataset=benchmark1.train_dataset,
+            val_dataset=benchmark1.val_dataset,
+            epochs=100
+           )
 
 ```
-
+For each architecture a config file is attached which are available [here](https://github.com/Mleyliabadi/LIPS/tree/main/lips/augmented_simulators/configurations).
 ### Reproducibility and evaluation 
-To reproduce the results of the submitted paper at _NeurIPS2021 Benchmark and Dataset track_, a class called `NeuripsBenchmark1` is provided which is sub class of a more general `Benchmark` class and whose purpose is to facilitate the data generation and the evaluation process. All the experimented datasets are already generated and provided under the _reference_data_ folder. The following script show how to use it quickly to reproduce the results : 
+The following script show how to use the evaluation capacity of the platform to reproduce the results on all the datasets. A config file (see [here](https://github.com/Mleyliabadi/LIPS/blob/main/lips/config/conf.ini)) is associated with this benchmark and all the required evaluation criteria can be set in this configuration file. 
 
 ```Python
-from lips.neurips_benchmark import NeuripsBenchmark1
-
-# load the data from the provided path
-path_benchmark = os.path.join("reference_data")
-neurips_benchmark1 = NeuripsBenchmark1(path_benchmark=path_benchmark,
-                                       load_data_set=True)
-
-# evaluate an augmented simulator
-metrics_per_dataset = neurips_benchmark1.evaluate_augmented_simulator(my_simulator)                   
+tf_fc_metrics = benchmark1.evaluate_simulator(augmented_simulator=tf_fc,
+                                              eval_batch_size=128,
+                                              dataset="all",
+                                              shuffle=False
+                                             )                  
 ```
 
 ## Installation
@@ -94,7 +99,6 @@ source venv_lips/bin/activate
 ```commandline
 git clone https://github.com/Mleyliabadi/LIPS
 cd LIPS
-git checkout ml-dev
 pip3 install -U .
 cd ..
 ```
