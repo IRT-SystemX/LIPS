@@ -67,6 +67,10 @@ class TorchSimulator(AugmentedSimulator):
         self.scaler = scaler() if scaler else None
         self._model = self.model(name, self.scaler, **kwargs)
         self.params.update(self._model.params)
+
+        # torch devices
+        self.device = torch.device(self.params["device"])        
+        # torch seeds
         torch.manual_seed(seed)
         torch.cuda.manual_seed(seed)
 
@@ -112,7 +116,7 @@ class TorchSimulator(AugmentedSimulator):
 
         # build the model
         self.build_model()
-        self.model.to(self.params["device"])
+        self._model.to(self.params["device"])
 
         optimizer = self._get_optimizer(optimizer=OPTIMIZERS[self.params["optimizer"]["name"]],
                                         **self.params["optimizer"]["params"])
@@ -314,8 +318,8 @@ class TorchSimulator(AugmentedSimulator):
                 _beg = time.time()
                 prediction = self._model(data)
                 total_time += time.time() - _beg
-                prediction = self._model._post_process(prediction)
-                target = self._model._post_process(target)
+                prediction = self._model._post_process(prediction.cpu())
+                target = self._model._post_process(target.cpu())
                 predictions.append(prediction.numpy())
                 observations.append(target.numpy())
 
@@ -447,6 +451,7 @@ class TorchSimulator(AugmentedSimulator):
         with open((path / "config.json"), "r", encoding="utf-8") as f:
             res_json = json.load(fp=f)
         self.params.update(res_json)
+        self.device = torch.device(self.params["device"])
         return self.params
 
     def _load_model(self, epoch, path: str):
