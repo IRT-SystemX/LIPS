@@ -56,7 +56,8 @@ class TorchSimulator(AugmentedSimulator):
                  model: nn.Module,
                  name: Union[str, None]=None,
                  scaler: Union[Scaler, None]=None,
-                 log_path: Union[str, None] = None,
+                 log_path: Union[str, None]=None,
+                 seed: int=42,
                  **kwargs):
         #super().__init__(model, name, scaler, log_path, **kwargs)
         super().__init__(name, log_path, model, **kwargs)
@@ -66,6 +67,8 @@ class TorchSimulator(AugmentedSimulator):
         self.scaler = scaler() if scaler else None
         self._model = self.model(name, self.scaler, **kwargs)
         self.params.update(self._model.params)
+        torch.manual_seed(seed)
+        torch.cuda.manual_seed(seed)
 
 
     def build_model(self):
@@ -109,6 +112,7 @@ class TorchSimulator(AugmentedSimulator):
 
         # build the model
         self.build_model()
+        self.model.to(self.params["device"])
 
         optimizer = self._get_optimizer(optimizer=OPTIMIZERS[self.params["optimizer"]["name"]],
                                         **self.params["optimizer"]["params"])
@@ -155,14 +159,16 @@ class TorchSimulator(AugmentedSimulator):
             metric_dict[metric] = 0
 
         for _, batch_ in enumerate(train_loader):
-            if len(batch_) == 2:
-                data, target = batch_
-                loss_func = self._get_loss_func()
-            elif len(batch_) == 3:
-                data, target, seq_len = batch_
-                loss_func = self._get_loss_func(seq_len)
-            else:
-                raise NotImplementedError("each batch should contain at most 3 tensors")
+            data, target = batch_
+            loss_func = self._get_loss_func()
+            # if len(batch_) == 2:
+            #     data, target = batch_
+            #     loss_func = self._get_loss_func()
+            # elif len(batch_) == 3:
+            #     data, target, seq_len = batch_
+            #     loss_func = self._get_loss_func(seq_len)
+            # else:
+            #     raise NotImplementedError("each batch should contain at most 3 tensors")
             data, target = data.to(self.params["device"]), target.to(self.params["device"])
             optimizer.zero_grad()
             # h_0 = self.model.init_hidden(data.size(0))
@@ -173,16 +179,20 @@ class TorchSimulator(AugmentedSimulator):
             optimizer.step()
             total_loss += loss.item()*len(data)
             for metric in self.params["metrics"]:
-                if len(batch_) == 2:
-                    metric_func = LOSSES[metric](reduction="mean")
-                    metric_value = metric_func(prediction, target)
-                    metric_value = metric_value.item()*len(data)
-                    metric_dict[metric] += metric_value
-                elif len(batch_) == 3:
-                    metric_func = LOSSES[metric](seq_len, self.params["device"], reduction="mean")
-                    metric_value = metric_func(prediction, target)
-                    metric_value = metric_value.item()*len(data)
-                    metric_dict[metric] += metric_value
+                metric_func = LOSSES[metric](reduction="mean")
+                metric_value = metric_func(prediction, target)
+                metric_value = metric_value.item()*len(data)
+                metric_dict[metric] += metric_value
+                # if len(batch_) == 2:
+                #     metric_func = LOSSES[metric](reduction="mean")
+                #     metric_value = metric_func(prediction, target)
+                #     metric_value = metric_value.item()*len(data)
+                #     metric_dict[metric] += metric_value
+                # elif len(batch_) == 3:
+                #     metric_func = LOSSES[metric](seq_len, self.params["device"], reduction="mean")
+                #     metric_value = metric_func(prediction, target)
+                #     metric_value = metric_value.item()*len(data)
+                #     metric_dict[metric] += metric_value
 
         mean_loss = total_loss/len(train_loader.dataset)
         for metric in self.params["metrics"]:
@@ -220,14 +230,16 @@ class TorchSimulator(AugmentedSimulator):
 
         with torch.no_grad():
             for _, batch_ in enumerate(val_loader):
-                if len(batch_) == 2:
-                    data, target = batch_
-                    loss_func = self._get_loss_func()
-                elif len(batch_) == 3:
-                    data, target, seq_len = batch_
-                    loss_func = self._get_loss_func(seq_len)
-                else:
-                    raise NotImplementedError("each batch should contain at most 3 tensors")
+                data, target = batch_
+                loss_func = self._get_loss_func()
+                # if len(batch_) == 2:
+                #     data, target = batch_
+                #     loss_func = self._get_loss_func()
+                # elif len(batch_) == 3:
+                #     data, target, seq_len = batch_
+                #     loss_func = self._get_loss_func(seq_len)
+                # else:
+                #     raise NotImplementedError("each batch should contain at most 3 tensors")
                 data, target = data.to(self.params["device"]), target.to(self.params["device"])
                 #h_0 = self.model.init_hidden(data.size(0))
                 #prediction, _ = self.model(data, h_0)
@@ -236,16 +248,20 @@ class TorchSimulator(AugmentedSimulator):
                 total_loss += loss.item()*len(data)
 
                 for metric in self.params["metrics"]:
-                    if len(batch_) == 2:
-                        metric_func = LOSSES[metric](reduction="mean")
-                        metric_value = metric_func(prediction, target)
-                        metric_value = metric_value.item()*len(data)
-                        metric_dict[metric] += metric_value
-                    elif len(batch_) == 3:
-                        metric_func = LOSSES[metric](seq_len, self.params["device"], reduction="mean")
-                        metric_value = metric_func(prediction, target)
-                        metric_value = metric_value.item()*len(data)
-                        metric_dict[metric] += metric_value
+                    metric_func = LOSSES[metric](reduction="mean")
+                    metric_value = metric_func(prediction, target)
+                    metric_value = metric_value.item()*len(data)
+                    metric_dict[metric] += metric_value
+                    # if len(batch_) == 2:
+                    #     metric_func = LOSSES[metric](reduction="mean")
+                    #     metric_value = metric_func(prediction, target)
+                    #     metric_value = metric_value.item()*len(data)
+                    #     metric_dict[metric] += metric_value
+                    # elif len(batch_) == 3:
+                    #     metric_func = LOSSES[metric](seq_len, self.params["device"], reduction="mean")
+                    #     metric_value = metric_func(prediction, target)
+                    #     metric_value = metric_value.item()*len(data)
+                    #     metric_dict[metric] += metric_value
 
         mean_loss = total_loss/len(val_loader.dataset)
         for metric in self.params["metrics"]:
@@ -281,14 +297,16 @@ class TorchSimulator(AugmentedSimulator):
         total_time = 0
         with torch.no_grad():
             for _, batch_ in enumerate(test_loader):
-                if len(batch_) == 2:
-                    data, target = batch_
-                    loss_func = self._get_loss_func()
-                elif len(batch_) == 3:
-                    data, target, seq_len = batch_
-                    loss_func = self._get_loss_func(seq_len)
-                else:
-                    raise NotImplementedError("each batch should contain at most 3 tensors")
+                data, target = batch_
+                loss_func = self._get_loss_func()
+                # if len(batch_) == 2:
+                #     data, target = batch_
+                #     loss_func = self._get_loss_func()
+                # elif len(batch_) == 3:
+                #     data, target, seq_len = batch_
+                #     loss_func = self._get_loss_func(seq_len)
+                # else:
+                #     raise NotImplementedError("each batch should contain at most 3 tensors")
                 data, target = data.to(self.params["device"]), target.to(self.params["device"])
                 #TODO : for RNN, we need to initialize hidden state, but it should be done inside the model
                 #h_0 = self.model.init_hidden(data.size(0))
@@ -305,16 +323,20 @@ class TorchSimulator(AugmentedSimulator):
                 total_loss += loss.item()*len(data)
 
                 for metric in self.params["metrics"]:
-                    if len(batch_) == 2:
-                        metric_func = LOSSES[metric](reduction="mean")
-                        metric_value = metric_func(prediction, target)
-                        metric_value = metric_value.item()*len(data)
-                        metric_dict[metric] += metric_value
-                    elif len(batch_) == 3:
-                        metric_func = LOSSES[metric](seq_len, self.params["device"], reduction="mean")
-                        metric_value = metric_func(prediction, target)
-                        metric_value = metric_value.item()*len(data)
-                        metric_dict[metric] += metric_value
+                    metric_func = LOSSES[metric](reduction="mean")
+                    metric_value = metric_func(prediction, target)
+                    metric_value = metric_value.item()*len(data)
+                    metric_dict[metric] += metric_value
+                    # if len(batch_) == 2:
+                    #     metric_func = LOSSES[metric](reduction="mean")
+                    #     metric_value = metric_func(prediction, target)
+                    #     metric_value = metric_value.item()*len(data)
+                    #     metric_dict[metric] += metric_value
+                    # elif len(batch_) == 3:
+                    #     metric_func = LOSSES[metric](seq_len, self.params["device"], reduction="mean")
+                    #     metric_value = metric_func(prediction, target)
+                    #     metric_value = metric_value.item()*len(data)
+                    #     metric_dict[metric] += metric_value
 
         mean_loss = total_loss/len(test_loader.dataset)
         for metric in self.params["metrics"]:
@@ -436,6 +458,7 @@ class TorchSimulator(AugmentedSimulator):
         #self.build_model(**self.params)
         self._model._load_metadata(path)
         self.build_model()
+        self._model.to(self.params["device"])
         # load the weights
         with tempfile.TemporaryDirectory() as path_tmp:
             nm_tmp = os.path.join(path_tmp, nm_file)
