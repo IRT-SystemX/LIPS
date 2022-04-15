@@ -9,9 +9,10 @@ import time
 import json
 import tempfile
 import importlib
-import pydantic.json
+#import pydantic.json
 
 from matplotlib import pyplot as plt
+import numpy
 import tensorflow as tf
 
 from . import AugmentedSimulator
@@ -40,6 +41,11 @@ class TensorflowSimulator(AugmentedSimulator):
 
         self.input_size = None
         self.output_size = None
+
+        # setting seeds
+        numpy.random.seed(1)
+        tf.random.set_seed(2)
+
 
     def build_model(self):
         """build tensorflow model
@@ -199,11 +205,13 @@ class TensorflowSimulator(AugmentedSimulator):
 
         self.logger.info("Model {%s} is saved at {%s}", self.name, save_path)
 
-    def _save_model(self, path: str):
-        file_name = path / ("weights" + ".h5")
-        self._model.save(file_name)
+    def _save_model(self, path: Union[str, pathlib.Path], ext: str=".h5"):
+        if not isinstance(path, pathlib.Path):
+            path = pathlib.Path(path)
+        file_name = path / ("weights" + ext)
+        self._model.save_weights(file_name)
 
-    def _save_metadata(self, path: str):
+    def _save_metadata(self, path: Union[str, pathlib.Path]):
         if not isinstance(path, pathlib.Path):
             path = pathlib.Path(path)
         # for json serialization of paths
