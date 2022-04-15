@@ -22,7 +22,8 @@ pkgs = {
             "lightsim2grid>=0.5.3",
             "leap_net @ https://github.com/BDonnot/leap_net/tarball/master#egg=leap_net",
             "numba",
-            "jupyter"
+            "jupyter",
+            "torch"
         ]
     }
 }
