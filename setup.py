@@ -55,6 +55,10 @@ setup(name='lips',
       license='MPL',
       packages=setuptools.find_packages(),
       include_package_data=True,
+      package_data={
+            # If any package contains *.txt or *.rst files, include them:
+            "": ["*.ini"],
+            },
       install_requires=pkgs["required"],
       extras_require=pkgs["extras"],
       zip_safe=False,
