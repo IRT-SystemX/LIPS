@@ -15,10 +15,12 @@ import shutil
 import warnings
 import copy
 from typing import Union
-import importlib
+#import importlib
+
+import grid2op
 
 from . import Benchmark
-from .utils.powergrid_utils import get_kwargs_simulator_scenario
+from .utils.powergrid_utils import get_kwargs_simulator_scenario, XDepthAgent
 from ..augmented_simulators import AugmentedSimulator
 from ..physical_simulator import PhysicalSimulator
 from ..physical_simulator import Grid2opSimulator
@@ -92,6 +94,7 @@ class PowerGridBenchmark(Benchmark):
             self.evaluation = PowerGridEvaluation.from_benchmark(self)
 
         # importing the right module from which the scenarios and actors could be used
+        """
         if self.config.get_option("utils_lib") is not None:
             try:
                 module_name = self.config.get_option("utils_lib")
@@ -99,8 +102,9 @@ class PowerGridBenchmark(Benchmark):
                 self.utils = importlib.import_module(module)
             except ImportError as error:
                 self.logger.error("The module %s could not be accessed! %s", module_name, error)
-
+        """
         self.env_name = self.config.get_option("env_name")
+        self.env = None
         self.training_simulator = None
         self.val_simulator = None
         self.test_simulator = None
@@ -330,6 +334,7 @@ class PowerGridBenchmark(Benchmark):
 
     def _fills_actor_simulator(self):
         """This function is only called when the data are simulated"""
+        self.env = get_env(get_kwargs_simulator_scenario(self.config))
         self._create_training_simulator()
         self.training_simulator.seed(self.train_env_seed)
 
@@ -350,7 +355,7 @@ class PowerGridBenchmark(Benchmark):
                                                         # i use 25 full chronics for testing
                                                         chronics_selected_regex=".*9[5-9][5-9].*")
         self.test_ood_topo_simulator.seed(self.test_ood_topo_env_seed)
-
+        """
         self.training_actor = self.utils.get_actor_training_scenario(self.training_simulator)
         self.training_actor.seed(self.train_actor_seed)
 
@@ -362,3 +367,35 @@ class PowerGridBenchmark(Benchmark):
 
         self.test_ood_topo_actor = self.utils.get_actor_test_ood_topo_scenario(self.test_ood_topo_simulator)
         self.test_ood_topo_actor.seed(self.test_ood_topo_actor_seed)
+        """
+        self.training_actor = XDepthAgent(self.env.action_space,
+                                          self.config.get_option("dataset_create_params")["train"])
+        self.training_actor.seed(self.train_actor_seed)
+        self.val_actor = XDepthAgent(self.env.action_space,
+                                     self.config.get_option("dataset_create_params")["test"])
+        self.val_actor.seed(self.val_actor_seed)
+        self.test_actor = XDepthAgent(self.env.action_space,
+                                      self.config.get_option("dataset_create_params")["test"])
+        self.test_actor.seed(self.test_actor_seed)
+        self.test_ood_topo_actor = XDepthAgent(self.env.action_space,
+                                               self.config.get_option("dataset_create_params")["test_ood"])
+        self.test_ood_topo_actor.seed(self.test_ood_topo_actor_seed)
+
+def get_env(env_kwargs: dict):
+    """Getter for the environment
+
+    Parameters
+    ----------
+    env_kwargs : dict
+        environment parameters
+
+    Returns
+    -------
+    grid2op.Environment
+        A grid2op environment with the given parameters
+    """
+    with warnings.catch_warnings():
+        warnings.filterwarnings("ignore")
+        env = grid2op.make(**env_kwargs)
+    env.deactivate_forecast()
+    return env
