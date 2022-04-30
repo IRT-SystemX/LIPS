@@ -397,5 +397,5 @@ def get_env(env_kwargs: dict):
     with warnings.catch_warnings():
         warnings.filterwarnings("ignore")
         env = grid2op.make(**env_kwargs)
-    env.deactivate_forecast()
+    # env.deactivate_forecast()
     return env
