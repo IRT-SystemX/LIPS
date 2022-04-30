@@ -142,12 +142,9 @@ class XDepthAgent(BaseAgent):
         self.disconnected_lines_id = []
         self.impacted_subs_id = []
 
-        # get a list of all the substations on which we can do topology actions
-        self.sub_ids = np.arange(action_space.n_sub)
         # get a list of all the line actions (line identifiers)
         self.line_ids = np.arange(action_space.n_line) if lines_to_disc is None else lines_to_disc
         self._remaining_lines = self.line_ids # if it remains some lines in the list to disconnect
-        # self.line_ids = np.arange(action_space.n_line)
         self._disc_actions = [{"set_line_status": [(l_id, -1)]} for l_id in self.line_ids]#range(self.action_space.n_line)]
         self._disc_actions = [self.action_space(el) for el in self._disc_actions]
         # get a DoNothing action
