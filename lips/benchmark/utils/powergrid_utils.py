@@ -119,7 +119,7 @@ class XDepthAgent(BaseAgent):
         max_disc = self.params.get("max_disc", 1)
         reference_args = self.params.get("reference_args", None)
 
-        if (round(sum(prob_depth)) != float(1)) or (round(sum(prob_type)) != float(1)):
+        if (1. - sum(prob_depth) > 1e-3) or (1. - sum(prob_type) > 1e-3):
             raise RuntimeError("The probabilities should sum to one")
 
         self.subs_to_change = subs_to_change
@@ -165,27 +165,41 @@ class XDepthAgent(BaseAgent):
 
     def act(self, obs=None, reward=None, done=None):
         if self.reference_args is not None:
-            self.ref_topo = self._apply_reference_topo()
+            self.ref_topo = self._apply_reference_topo(obs)
 
         uniform_prob = self.space_prng.uniform()
         if uniform_prob < (1. - self.prob_do_nothing):
-            # reset the counters for each action
-            self.disconnected_lines_id = []
-            self.impacted_subs_id = []
-
-            current_depth = self.space_prng.choice(range(1,self.max_depth+1), 1, p=self.prob_depth)[0]
+            selected_depth = self.space_prng.choice(range(1,self.max_depth+1), 1, p=self.prob_depth)[0]
             #print("current_depth : ", current_depth)
-
-            previous_action = self.ref_topo
-            for i in range(current_depth):
-                action = self.sample_act()
-                action = self._combine_actions(previous_action, action)
-                previous_action = action
+            # ensure that an action is provided from this depth 
+            done = True
+            while done:
+                action = self._combine_at_depth(selected_depth)
+                done = self._verify_convergence(obs, action)            
         else:
             # DoNothing
             action = self.ref_topo
 
         return action
+
+    def _combine_at_depth(self, selected_depth):
+        # reset the counters for each action
+        self.disconnected_lines_id = []
+        self.impacted_subs_id = []
+
+        previous_action = self.ref_topo
+        current_depth = 0
+        while current_depth < selected_depth:
+            action = self.sample_act()
+            action = self._combine_actions(previous_action, action)
+            previous_action = action
+            current_depth += 1
+
+        return action
+
+    def _verify_convergence(self, obs, action):
+        _, _, done, _ = obs.simulate(action)
+        return done
 
     def sample_act(self):
         """
@@ -261,7 +275,7 @@ class XDepthAgent(BaseAgent):
 
         return scen_action_subs
 
-    def _apply_reference_topo(self):
+    def _apply_reference_topo(self, obs):
         self.ref_lines_to_disc = self.reference_args.get("lines_to_disc", None)
         self.ref_subs_to_change = self.reference_args.get("subs_to_change", None)
         self.ref_prob_depth = self.reference_args.get("prob_depth", (0.4, 0.3, 0.3))
@@ -284,7 +298,7 @@ class XDepthAgent(BaseAgent):
                                    prob_do_nothing=self.ref_prob_do_nothing,
                                    max_disc=self.ref_max_disc
                                   )
-        action = ref_agent.act()
+        action = ref_agent.act(obs)
         return action
 
     ######################################################
