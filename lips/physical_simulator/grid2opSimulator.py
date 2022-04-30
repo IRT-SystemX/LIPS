@@ -194,5 +194,5 @@ def get_env(env_kwargs: dict):
         A grid2op environment with the given parameters
     """
     env = grid2op.make(**env_kwargs)
-    env.deactivate_forecast()
+    # env.deactivate_forecast()
     return env
