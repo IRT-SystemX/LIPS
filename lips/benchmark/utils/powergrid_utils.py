@@ -119,7 +119,7 @@ class XDepthAgent(BaseAgent):
         max_disc = self.params.get("max_disc", 1)
         reference_args = self.params.get("reference_args", None)
 
-        if (sum(prob_depth) != 1) or (sum(prob_type) != 1):
+        if (round(sum(prob_depth)) != float(1)) or (round(sum(prob_type)) != float(1)):
             raise RuntimeError("The probabilities should sum to one")
 
         self.subs_to_change = subs_to_change
@@ -262,12 +262,12 @@ class XDepthAgent(BaseAgent):
         return scen_action_subs
 
     def _apply_reference_topo(self):
-        self.ref_lines_to_disc = self.reference_args["lines_to_disc"]
-        self.ref_subs_to_change = self.reference_args["subs_to_change"]
-        self.ref_prob_depth = self.reference_args["prob_depth"]
-        self.ref_prob_type = self.reference_args["prob_type"]
-        self.ref_prob_do_nothing = self.reference_args["prob_do_nothing"]
-        self.ref_max_disc = self.reference_args["max_disc"]
+        self.ref_lines_to_disc = self.reference_args.get("lines_to_disc", None)
+        self.ref_subs_to_change = self.reference_args.get("subs_to_change", None)
+        self.ref_prob_depth = self.reference_args.get("prob_depth", (0.4, 0.3, 0.3))
+        self.ref_prob_type = self.reference_args.get("prob_type", (0.7, 0.3))
+        self.ref_prob_do_nothing = self.reference_args.get("prob_do_nothing", 0.2)
+        self.ref_max_disc = self.reference_args.get("max_disc", 1)
 
         # REMOVED FOR BETTER PERFORMANCE
         # append line disconnection action
