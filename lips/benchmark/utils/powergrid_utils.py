@@ -50,30 +50,50 @@ def get_kwargs_simulator_scenario(config: ConfigManager) -> dict:
             "backend": BkCls()}
 
 class XDepthAgent(BaseAgent):
-    """
-    This agent allows to generate the combinatory action of any depth based on probabilities.
+    """This agent allows to generate the combinatory action of any depth based on probabilities.
 
+    This new agent works as follows:
+
+    1. Apply the reference topology if reference_args is not None by doing following steps
+    2. Uniformly based on probability (`prob_do_nothing`) select a DoNothing or a combinatory action.
+    3. If uniform prob is less than $1 - $`prob_do_nothing`:
+        - Select a depth on the basis of probability vector `prob_depth`
+            1. if the maximum number of authorized disconnections is reached
+                - sample an action from provided topology actions
+            2. Otherwise
+                - sample among the disconnection actions and topology action based on `prob_type` probability vector
+    4. Apply a scenario based combinatory action based on the given ``subs_to_change`` and ``lines_to_change`` (from step 2)
 
     Parameters
     ----------
-    action_space: ``Environment.action_space``
+    action_space : ``Environment.action_space``
         Grid2Op environment action space
-    topo_actions: ``list``
-        the list of possible actions per substation
-    prob_depth: `list`
-        a list of probabilities with length `k`, corresponding to the sampling probability of a combinatory action
-        with a specific depth. [P_depth_1, P_depth_2, ..., P_depth_k]
-    prob_type: ``list``
-        Porbability to select an action from types ``DoNothing``, ``topo_change`` and ``line_disc``
-        It should contain two or three probabilities, one for each of these types in order
-    prob_do_nothing: ``float``
-        Probability to select a do nothing action
-    max_disc: ``int``
-        Maximum disconnection allowed per combinatory action
+    params : Union[dict, None], optional
+        a dictionary containing all the required parameters for this agent, by default None
+        reference_args : Union[``dict``, None], optional
+            if provided the reference topology will be applied to the generated action, by default None
+        prob_depth: `list`
+            a list of probabilities with length `k`, corresponding to the sampling probability of a combinatory action
+            with a specific depth. [P_depth_1, P_depth_2, ..., P_depth_k]
+        prob_type: ``list``
+            Porbability to select an action from types ``DoNothing``, ``topo_change`` and ``line_disc``
+            It should contain two or three probabilities, one for each of these types in order
+        prob_do_nothing: ``float``
+            Probability to select a do nothing action
+        max_disc: ``int``
+            Maximum disconnection allowed per combinatory action
+    **kwargs: ``dict``
+        the parameters provided by the user will replace the default parameters of this agent
 
+    Raises
+    ------
+    RuntimeError
+        _description_
+
+    Todo
+    -----
     # TODO: verify that number of actions listed in subs_to_change is more than ``prob_depth``
     # TODO: verify that when params is None, kwargs include all the required parameters
-
     """
     def __init__(self,
                  action_space,
@@ -87,6 +107,7 @@ class XDepthAgent(BaseAgent):
                 #  reference_args: Union[None, dict]=None,
                  **kwargs
                 ):
+
         super().__init__(action_space)
         self.params = params if params is not None else {}
         self.params.update(kwargs)
@@ -145,7 +166,7 @@ class XDepthAgent(BaseAgent):
         self.ref_max_disc = None
 
 
-    def act(self):
+    def act(self, obs=None, reward=None, done=None):
         if self.reference_args is not None:
             self.ref_topo = self._apply_reference_topo()
 
@@ -156,7 +177,7 @@ class XDepthAgent(BaseAgent):
             self.impacted_subs_id = []
 
             current_depth = self.space_prng.choice(range(1,self.max_depth+1), 1, p=self.prob_depth)[0]
-            print("current_depth : ", current_depth)
+            #print("current_depth : ", current_depth)
 
             previous_action = self.ref_topo
             for i in range(current_depth):
@@ -183,11 +204,11 @@ class XDepthAgent(BaseAgent):
                                                      set(self._sub_empty_action_list)))
                 self.impacted_subs_id.append(sub_id)
                 action = self._select_topo_action(sub_id)
-                print(f"Sub {sub_id} changed")
+                #print(f"Sub {sub_id} changed")
             elif current_type == 1:
                 line_id, action = self._select_line_action()
                 self.disconnected_lines_id.append(line_id)
-                print(f"line {line_id} disconnected")
+                #print(f"line {line_id} disconnected")
         else:
             # the maximum authorized disconnection is reached
             # select a substation among those not yet selected
@@ -196,7 +217,7 @@ class XDepthAgent(BaseAgent):
                                                  set(self._sub_empty_action_list)))
             self.impacted_subs_id.append(sub_id)
             action = self._select_topo_action(sub_id)
-            print(f"Sub {sub_id} changed")
+            #print(f"Sub {sub_id} changed")
 
         return action
 
@@ -251,10 +272,11 @@ class XDepthAgent(BaseAgent):
         self.ref_prob_do_nothing = self.reference_args["prob_do_nothing"]
         self.ref_max_disc = self.reference_args["max_disc"]
 
+        # REMOVED FOR BETTER PERFORMANCE
         # append line disconnection action
-        for i in self.ref_lines_to_disc:
-            if i > self.action_space.n_line:
-                raise RuntimeError(f"Line with id {i} does not exist.")
+        #for i in self.ref_lines_to_disc:
+        #    if i > self.action_space.n_line:
+        #        raise RuntimeError(f"Line with id {i} does not exist.")
         #    self.ref_action_lines.append(self._disc_actions[i])
 
         ref_agent = self.__class__(action_space=self.action_space,
