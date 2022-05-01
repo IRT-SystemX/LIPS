@@ -4,11 +4,14 @@ PowerGrid general scenario utilities
 from typing import Union
 import itertools
 import warnings
+import copy
 import numpy as np
 from grid2op.Agent import BaseAgent
 from grid2op.Parameters import Parameters
 
+from ...logger import CustomLogger
 from ...config import ConfigManager
+
 
 def get_kwargs_simulator_scenario(config: ConfigManager) -> dict:
     """Return environment parameters for Benchmark1
@@ -98,6 +101,7 @@ class XDepthAgent(BaseAgent):
     def __init__(self,
                  action_space,
                  params: Union[dict, None] = None,
+                 log_path: Union[str, None] = None,
                 #  subs_to_change: Union[list, None]=None,
                 #  lines_to_disc: Union[list, None]=None,
                 #  prob_depth: list=(0.4, 0.3, 0.3), # max_depth : len(prob_depth)
@@ -118,6 +122,10 @@ class XDepthAgent(BaseAgent):
         prob_do_nothing = self.params.get("prob_do_nothing", 0.2)
         max_disc = self.params.get("max_disc", 1)
         reference_args = self.params.get("reference_args", None)
+
+        # logger
+        self.log_path = log_path
+        self.logger = CustomLogger(__class__.__name__, log_path).logger
 
         if (1. - sum(prob_depth) > 1e-3) or (1. - sum(prob_type) > 1e-3):
             raise RuntimeError("The probabilities should sum to one")
@@ -162,20 +170,35 @@ class XDepthAgent(BaseAgent):
         self.ref_prob_do_nothing = None
         self.ref_max_disc = None
 
+        # it allows to avoid a depth if struggling to find a combination
+        self._depth_tries = 30 # try max 30 times to find a combination
+        self._depth_fails = 0 # count the number of fails to find a combination
+
 
     def act(self, obs=None, reward=None, done=None):
         if self.reference_args is not None:
+            # self.logger.info("BEGIN REF")
             self.ref_topo = self._apply_reference_topo(obs)
+            # self.logger.info("END REF")
 
         uniform_prob = self.space_prng.uniform()
         if uniform_prob < (1. - self.prob_do_nothing):
             selected_depth = self.space_prng.choice(range(1,self.max_depth+1), 1, p=self.prob_depth)[0]
-            #print("current_depth : ", current_depth)
-            # ensure that an action is provided from this depth 
+            #self.logger.info("current_depth : %s", selected_depth)
+            # ensure that an action is provided from this depth
+            # and don't stuck here if the combination is impossible
             done = True
-            while done:
+            nb_try = 0
+            while done and (nb_try < self._depth_tries):
                 action = self._combine_at_depth(selected_depth)
-                done = self._verify_convergence(obs, action)            
+                done = self._verify_convergence(obs, action)
+                nb_try += 1
+                if (nb_try >= self._depth_tries) and (done is True):
+                    self.logger.error("Impossible to find an action at depth %s", selected_depth)
+                    self._depth_fails += 1
+                    #action = self._do_nothing
+                # self.logger.info("nb_try : %s", str(nb_try))
+                # self.logger.info("done : %s", done)
         else:
             # DoNothing
             action = self.ref_topo
@@ -183,6 +206,7 @@ class XDepthAgent(BaseAgent):
         return action
 
     def _combine_at_depth(self, selected_depth):
+        # self.logger.info("combine at depth : %s", selected_depth)
         # reset the counters for each action
         self.disconnected_lines_id = []
         self.impacted_subs_id = []
@@ -198,7 +222,11 @@ class XDepthAgent(BaseAgent):
         return action
 
     def _verify_convergence(self, obs, action):
+        ambiguous, _ = action.is_ambiguous()
+        if ambiguous:
+            return True
         _, _, done, _ = obs.simulate(action)
+        
         return done
 
     def sample_act(self):
@@ -215,11 +243,11 @@ class XDepthAgent(BaseAgent):
                                                      set(self._sub_empty_action_list)))
                 self.impacted_subs_id.append(sub_id)
                 action = self._select_topo_action(sub_id)
-                #print(f"Sub {sub_id} changed")
+                # self.logger.info("Sub %s changed", sub_id)
             elif current_type == 1:
                 line_id, action = self._select_line_action()
                 self.disconnected_lines_id.append(line_id)
-                #print(f"line {line_id} disconnected")
+                # self.logger.info("line %s disconnected", line_id)
         else:
             # the maximum authorized disconnection is reached
             # select a substation among those not yet selected
@@ -228,7 +256,7 @@ class XDepthAgent(BaseAgent):
                                                  set(self._sub_empty_action_list)))
             self.impacted_subs_id.append(sub_id)
             action = self._select_topo_action(sub_id)
-            #print(f"Sub {sub_id} changed")
+            # self.logger.info("Sub %s changed", sub_id)
 
         return action
 
@@ -298,7 +326,7 @@ class XDepthAgent(BaseAgent):
                                    prob_do_nothing=self.ref_prob_do_nothing,
                                    max_disc=self.ref_max_disc
                                   )
-        action = ref_agent.act(obs)
+        action = ref_agent.act(obs=obs)
         return action
 
     ######################################################
