@@ -369,16 +369,20 @@ class PowerGridBenchmark(Benchmark):
         self.test_ood_topo_actor.seed(self.test_ood_topo_actor_seed)
         """
         self.training_actor = XDepthAgent(self.env.action_space,
-                                          self.config.get_option("dataset_create_params")["train"])
+                                          self.config.get_option("dataset_create_params")["train"],
+                                          self.log_path)
         self.training_actor.seed(self.train_actor_seed)
         self.val_actor = XDepthAgent(self.env.action_space,
-                                     self.config.get_option("dataset_create_params")["test"])
+                                     self.config.get_option("dataset_create_params")["test"],
+                                     self.log_path)
         self.val_actor.seed(self.val_actor_seed)
         self.test_actor = XDepthAgent(self.env.action_space,
-                                      self.config.get_option("dataset_create_params")["test"])
+                                      self.config.get_option("dataset_create_params")["test"],
+                                      self.log_path)
         self.test_actor.seed(self.test_actor_seed)
         self.test_ood_topo_actor = XDepthAgent(self.env.action_space,
-                                               self.config.get_option("dataset_create_params")["test_ood"])
+                                               self.config.get_option("dataset_create_params")["test_ood"],
+                                               self.log_path)
         self.test_ood_topo_actor.seed(self.test_ood_topo_actor_seed)
 
 def get_env(env_kwargs: dict):
