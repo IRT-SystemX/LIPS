@@ -221,11 +221,12 @@ class XDepthAgent(BaseAgent):
         return action
 
     def _verify_convergence(self, obs, action):
+        _, _, done, info = obs.simulate(action)
         ambiguous, _ = action.is_ambiguous()
         if ambiguous:
-            return True
-        _, _, done, _ = obs.simulate(action)
-
+            done = True
+        if info["is_illegal"]:
+            done = True
         return done
 
     def sample_act(self):
