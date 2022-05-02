@@ -4,7 +4,6 @@ PowerGrid general scenario utilities
 from typing import Union
 import itertools
 import warnings
-import copy
 import numpy as np
 from grid2op.Agent import BaseAgent
 from grid2op.Parameters import Parameters
@@ -71,6 +70,8 @@ class XDepthAgent(BaseAgent):
     ----------
     action_space : ``Environment.action_space``
         Grid2Op environment action space
+    reference_params: Union[dict, None], optional
+        a dictionary including the reference topology parameters
     params : Union[dict, None], optional
         a dictionary containing all the required parameters for this agent, by default None
         reference_args : Union[``dict``, None], optional
@@ -97,10 +98,12 @@ class XDepthAgent(BaseAgent):
     -----
     # TODO: verify that number of actions listed in subs_to_change is more than ``prob_depth``
     # TODO: verify that when params is None, kwargs include all the required parameters
+    # TODO: verify that we do not disconnect the same lines and change the same subs as the reference
     """
     def __init__(self,
                  action_space,
-                 params: Union[dict, None] = None,
+                 reference_params: Union[dict, None] = None,
+                 scenario_params: Union[dict, None] = None,
                  log_path: Union[str, None] = None,
                 #  subs_to_change: Union[list, None]=None,
                 #  lines_to_disc: Union[list, None]=None,
@@ -113,36 +116,32 @@ class XDepthAgent(BaseAgent):
                 ):
 
         super().__init__(action_space)
-        self.params = params if params is not None else {}
+        self.params = scenario_params if scenario_params is not None else {}
         self.params.update(kwargs)
-        subs_to_change = self.params.get("subs_to_change", None)
-        lines_to_disc = self.params.get("lines_to_disc", None)
-        prob_depth = self.params.get("prob_depth", (0.4, 0.3, 0.3))
-        prob_type = self.params.get("prob_type", (0.7, 0.3))
-        prob_do_nothing = self.params.get("prob_do_nothing", 0.2)
-        max_disc = self.params.get("max_disc", 1)
-        reference_args = self.params.get("reference_args", None)
+        self.topo_actions = self.params.get("topo_actions", None)
+        self.lines_to_disc = self.params.get("lines_to_disc", None)
+        self.prob_depth = self.params.get("prob_depth", (0.4, 0.3, 0.3))
+        self.prob_type = self.params.get("prob_type", (0.7, 0.3))
+        self.prob_do_nothing = self.params.get("prob_do_nothing", 0.2)
+        self.max_disc = self.params.get("max_disc", 1)
+        self.reference_args = reference_params
 
         # logger
         self.log_path = log_path
         self.logger = CustomLogger(__class__.__name__, log_path).logger
 
-        if (1. - sum(prob_depth) > 1e-3) or (1. - sum(prob_type) > 1e-3):
+        if (1. - sum(self.prob_depth) > 1e-3) or (1. - sum(self.prob_type) > 1e-3):
             raise RuntimeError("The probabilities should sum to one")
 
-        self.subs_to_change = subs_to_change
         self.all_topo_actions = self.get_action_list()
-        if self.subs_to_change is None:
+        if self.topo_actions is None:
             self.topo_actions = self.all_topo_actions
         else:
             self.topo_actions = self._filter_topo_actions()
-        self.prob_depth = prob_depth
         self.max_depth = len(self.prob_depth)
-        self.prob_type = prob_type
-        self.prob_do_nothing = prob_do_nothing
-        self.max_disc = max_disc
 
         # find the substations for which there is no actions
+        # TODO : it may not work if grid2op actions are provided
         self._sub_empty_action_list = np.where([(len(action_list) == 0) for action_list in self.topo_actions])[0]
 
         # it aims to verify if the maximum number of authorized line disconnections is reached
@@ -151,7 +150,7 @@ class XDepthAgent(BaseAgent):
         self.impacted_subs_id = []
 
         # get a list of all the line actions (line identifiers)
-        self.line_ids = np.arange(action_space.n_line) if lines_to_disc is None else lines_to_disc
+        self.line_ids = np.arange(action_space.n_line) if self.lines_to_disc is None else self.lines_to_disc
         self._remaining_lines = self.line_ids # if it remains some lines in the list to disconnect
         self._disc_actions = [{"set_line_status": [(l_id, -1)]} for l_id in self.line_ids]#range(self.action_space.n_line)]
         self._disc_actions = [self.action_space(el) for el in self._disc_actions]
@@ -162,9 +161,9 @@ class XDepthAgent(BaseAgent):
                                            {"substations_id":
                                             [(sub_id, np.ones(self.action_space.sub_info[sub_id], dtype=int))
                                              for sub_id in range(self.action_space.n_sub)]}})
-        self.reference_args = reference_args
+
         self.ref_lines_to_disc = None
-        self.ref_subs_to_change = None
+        self.ref_topo_actions = None
         self.ref_prob_depth = None
         self.ref_prob_type = None
         self.ref_prob_do_nothing = None
@@ -226,7 +225,7 @@ class XDepthAgent(BaseAgent):
         if ambiguous:
             return True
         _, _, done, _ = obs.simulate(action)
-        
+
         return done
 
     def sample_act(self):
@@ -289,8 +288,17 @@ class XDepthAgent(BaseAgent):
         return self.topo_actions[sub_id][id_]
 
     def _filter_topo_actions(self):
+        action_list = [[] for i in range(self.action_space.n_sub)]
+        for action in self.topo_actions:
+            action = self.action_space(action)
+            impacted_sub = int(np.where(action.get_topological_impact()[1])[0])
+            action_list[impacted_sub].append(action)
+        return action_list
+
+        """
         scen_action_subs = [[] for i in range(self.action_space.n_sub)]
         # append the sub topo changes from topo_change list of actions
+
         for i,j in self.subs_to_change:
             if not self.all_topo_actions[i]:
                 warnings.warn('We did not find any action for substation {i}.' \
@@ -302,10 +310,11 @@ class XDepthAgent(BaseAgent):
                 scen_action_subs[i].append(self.all_topo_actions[i][j])
 
         return scen_action_subs
+        """
 
     def _apply_reference_topo(self, obs):
         self.ref_lines_to_disc = self.reference_args.get("lines_to_disc", None)
-        self.ref_subs_to_change = self.reference_args.get("subs_to_change", None)
+        self.ref_topo_actions = self.reference_args.get("topo_actions", None)
         self.ref_prob_depth = self.reference_args.get("prob_depth", (0.4, 0.3, 0.3))
         self.ref_prob_type = self.reference_args.get("prob_type", (0.7, 0.3))
         self.ref_prob_do_nothing = self.reference_args.get("prob_do_nothing", 0.2)
@@ -319,7 +328,8 @@ class XDepthAgent(BaseAgent):
         #    self.ref_action_lines.append(self._disc_actions[i])
 
         ref_agent = self.__class__(action_space=self.action_space,
-                                   subs_to_change=self.ref_subs_to_change,
+                                   log_path=self.log_path,
+                                   topo_actions=self.ref_topo_actions,
                                    lines_to_disc=self.ref_lines_to_disc,
                                    prob_depth=self.ref_prob_depth,
                                    prob_type=self.ref_prob_type,
