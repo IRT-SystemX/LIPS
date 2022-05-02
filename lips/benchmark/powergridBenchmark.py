@@ -329,7 +329,7 @@ class PowerGridBenchmark(Benchmark):
             self.training_simulator = Grid2opSimulator(get_kwargs_simulator_scenario(self.config),
                                                        initial_chronics_id=self.initial_chronics_id,
                                                        # i use 994 chronics out of the 904 for training
-                                                       chronics_selected_regex="^((?!(.*9[0-9][0-9].*)).)*$"
+                                                       chronics_selected_regex=self.config.get_option("chronics")["train"]
                                                        )
 
     def _fills_actor_simulator(self):
@@ -341,19 +341,19 @@ class PowerGridBenchmark(Benchmark):
         self.val_simulator = Grid2opSimulator(get_kwargs_simulator_scenario(self.config),
                                               initial_chronics_id=self.initial_chronics_id,
                                               # i use 50 full chronics for testing
-                                              chronics_selected_regex=".*9[0-4][0-9].*")
+                                              chronics_selected_regex=self.config.get_option("chronics")["val"])
         self.val_simulator.seed(self.val_env_seed)
 
         self.test_simulator = Grid2opSimulator(get_kwargs_simulator_scenario(self.config),
                                                initial_chronics_id=self.initial_chronics_id,
                                                # i use 25 full chronics for testing
-                                               chronics_selected_regex=".*9[5-9][0-4].*")
+                                               chronics_selected_regex=self.config.get_option("chronics")["test"])
         self.test_simulator.seed(self.test_env_seed)
 
         self.test_ood_topo_simulator = Grid2opSimulator(get_kwargs_simulator_scenario(self.config),
                                                         initial_chronics_id=self.initial_chronics_id,
                                                         # i use 25 full chronics for testing
-                                                        chronics_selected_regex=".*9[5-9][5-9].*")
+                                                        chronics_selected_regex=self.config.get_option("chronics")["test_ood"])
         self.test_ood_topo_simulator.seed(self.test_ood_topo_env_seed)
         """
         self.training_actor = self.utils.get_actor_training_scenario(self.training_simulator)
@@ -368,21 +368,26 @@ class PowerGridBenchmark(Benchmark):
         self.test_ood_topo_actor = self.utils.get_actor_test_ood_topo_scenario(self.test_ood_topo_simulator)
         self.test_ood_topo_actor.seed(self.test_ood_topo_actor_seed)
         """
+        # TODO: One improvment will be to compute once all the topology actions before instantiating the agent for each dataset
         self.training_actor = XDepthAgent(self.env.action_space,
-                                          self.config.get_option("dataset_create_params")["train"],
-                                          self.log_path)
+                                          reference_params=self.config.get_option("dataset_create_params").get("reference_args", None),
+                                          scenario_params=self.config.get_option("dataset_create_params")["train"],
+                                          log_path=self.log_path)
         self.training_actor.seed(self.train_actor_seed)
         self.val_actor = XDepthAgent(self.env.action_space,
-                                     self.config.get_option("dataset_create_params")["test"],
-                                     self.log_path)
+                                     reference_params=self.config.get_option("dataset_create_params").get("reference_args", None),
+                                     scenario_params=self.config.get_option("dataset_create_params")["test"],
+                                     log_path=self.log_path)
         self.val_actor.seed(self.val_actor_seed)
         self.test_actor = XDepthAgent(self.env.action_space,
-                                      self.config.get_option("dataset_create_params")["test"],
-                                      self.log_path)
+                                      reference_params=self.config.get_option("dataset_create_params").get("reference_args", None),
+                                      scenario_params=self.config.get_option("dataset_create_params")["test"],
+                                      log_path=self.log_path)
         self.test_actor.seed(self.test_actor_seed)
         self.test_ood_topo_actor = XDepthAgent(self.env.action_space,
-                                               self.config.get_option("dataset_create_params")["test_ood"],
-                                               self.log_path)
+                                               reference_params=self.config.get_option("dataset_create_params").get("reference_args", None),
+                                               scenario_params=self.config.get_option("dataset_create_params")["test_ood"],
+                                               log_path=self.log_path)
         self.test_ood_topo_actor.seed(self.test_ood_topo_actor_seed)
 
 def get_env(env_kwargs: dict):
