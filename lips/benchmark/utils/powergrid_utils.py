@@ -162,10 +162,11 @@ class XDepthAgent(BaseAgent):
         # get a DoNothing action
         self._do_nothing = self.action_space({})
         # Connect all the elements to busbar one (reference topology)
-        self.ref_topo = self.action_space({"set_bus":
-                                           {"substations_id":
-                                            [(sub_id, np.ones(self.action_space.sub_info[sub_id], dtype=int))
-                                             for sub_id in range(self.action_space.n_sub)]}})
+        self.ref_topo = self._do_nothing
+        # self.ref_topo = self.action_space({"set_bus":
+        #                                    {"substations_id":
+        #                                     [(sub_id, np.ones(self.action_space.sub_info[sub_id], dtype=int))
+        #                                      for sub_id in range(self.action_space.n_sub)]}})
 
         # it allows to avoid a depth if struggling to find a combination
         self._depth_tries = 30 # try max 30 times to find a combination
