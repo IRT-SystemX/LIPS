@@ -393,7 +393,8 @@ class XDepthAgent(BaseAgent):
         if n_elements == 0 or n_elements == 1:
             raise ValueError("Cannot generate combinations out of a configuration with len = 1 or 2")
         elif n_elements == 2:
-            return np.array([[2, 2], [1, 1]])
+            #return np.array([[2, 2], [1, 1]])
+            return np.array([[2, 2]])
         else:
             l = [0, 1]
             allcomb = [list(i) for i in itertools.product(l, repeat=n_elements)]
@@ -494,7 +495,8 @@ def compute_all_combinations(action_space, sub_id):
     if n_elements == 0 or n_elements == 1:
         raise ValueError("Cannot generate combinations out of a configuration with len = 1 or 2")
     elif n_elements == 2:
-        return np.array([[2, 2], [1, 1]])
+        #return np.array([[2, 2], [1, 1]])
+        return np.array([[2, 2]])
     else:
         l = [0, 1]
         allcomb = [list(i) for i in itertools.product(l, repeat=n_elements)]
