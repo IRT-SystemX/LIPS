@@ -107,13 +107,6 @@ class XDepthAgent(BaseAgent):
                  scenario_params: Union[dict, None]=None,
                  log_path: Union[str, None]=None,
                  seed: Union[int, None]=None,
-                #  subs_to_change: Union[list, None]=None,
-                #  lines_to_disc: Union[list, None]=None,
-                #  prob_depth: list=(0.4, 0.3, 0.3), # max_depth : len(prob_depth)
-                #  prob_type: list=(0.7, 0.3), # (TopoChange, LineDisc)
-                #  prob_do_nothing=0.2,
-                #  max_disc: int=1, # max authorized disconnection per action
-                #  reference_args: Union[None, dict]=None,
                  **kwargs
                 ):
 
@@ -140,11 +133,6 @@ class XDepthAgent(BaseAgent):
 
         self.all_topo_actions =  self.get_action_list() if all_topo_actions is None else all_topo_actions
         self.topo_actions = self.all_topo_actions if self.topo_actions is None else self._filter_topo_actions()
-        # if self.topo_actions is None:
-        #     self.topo_actions = self.all_topo_actions
-        # else:
-        #     self.topo_actions = self._filter_topo_actions()
-
 
         # find the substations for which there is no actions
         self._sub_empty_action_list = np.where([(len(action_list) == 0) for action_list in self.topo_actions])[0]
@@ -162,8 +150,10 @@ class XDepthAgent(BaseAgent):
         self._disc_actions = [self.action_space(el) for el in self._disc_actions]
         # get a DoNothing action
         self._do_nothing = self.action_space({})
-        # Connect all the elements to busbar one (reference topology)
+        # use do nothing as reference topology, because connecting the elements to busbar one can produce some illegal
+        # action reports when the environment present some opponent attacks on the grid
         self.ref_topo = self._do_nothing
+        # Connect all the elements to busbar one (reference topology)
         # self.ref_topo = self.action_space({"set_bus":
         #                                    {"substations_id":
         #                                     [(sub_id, np.ones(self.action_space.sub_info[sub_id], dtype=int))
@@ -322,47 +312,7 @@ class XDepthAgent(BaseAgent):
             action_list[impacted_sub].append(action)
         return action_list
 
-        """
-        scen_action_subs = [[] for i in range(self.action_space.n_sub)]
-        # append the sub topo changes from topo_change list of actions
-
-        for i,j in self.subs_to_change:
-            if not self.all_topo_actions[i]:
-                warnings.warn('We did not find any action for substation {i}.' \
-                             ' It has been skipped.'
-                            )
-            else:
-                if j > len(self.all_topo_actions[i]):
-                    raise RuntimeError(f"The action id {j} does not exist.")
-                scen_action_subs[i].append(self.all_topo_actions[i][j])
-
-        return scen_action_subs
-        """
-
     def _apply_reference_topo(self, obs):
-        # self.ref_lines_to_disc = self.reference_args.get("lines_to_disc", None)
-        # self.ref_topo_actions = self.reference_args.get("topo_actions", None)
-        # self.ref_prob_depth = self.reference_args.get("prob_depth", (0.4, 0.3, 0.3))
-        # self.ref_prob_type = self.reference_args.get("prob_type", (0.7, 0.3))
-        # self.ref_prob_do_nothing = self.reference_args.get("prob_do_nothing", 0.2)
-        # self.ref_max_disc = self.reference_args.get("max_disc", 1)
-
-        # REMOVED FOR BETTER PERFORMANCE
-        # append line disconnection action
-        #for i in self.ref_lines_to_disc:
-        #    if i > self.action_space.n_line:
-        #        raise RuntimeError(f"Line with id {i} does not exist.")
-        #    self.ref_action_lines.append(self._disc_actions[i])
-
-        # ref_agent = self.__class__(action_space=self.action_space,
-        #                            log_path=self.log_path,
-        #                            topo_actions=self.ref_topo_actions,
-        #                            lines_to_disc=self.ref_lines_to_disc,
-        #                            prob_depth=self.ref_prob_depth,
-        #                            prob_type=self.ref_prob_type,
-        #                            prob_do_nothing=self.ref_prob_do_nothing,
-        #                            max_disc=self.ref_max_disc
-        #                           )
         action = self.ref_agent.act(obs=obs)
         return action
 
