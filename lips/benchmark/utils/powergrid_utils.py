@@ -102,9 +102,11 @@ class XDepthAgent(BaseAgent):
     """
     def __init__(self,
                  action_space,
-                 reference_params: Union[dict, None] = None,
-                 scenario_params: Union[dict, None] = None,
-                 log_path: Union[str, None] = None,
+                 all_topo_actions: Union[list, None]=None,
+                 reference_params: Union[dict, None]=None,
+                 scenario_params: Union[dict, None]=None,
+                 log_path: Union[str, None]=None,
+                 seed: Union[int, None]=None,
                 #  subs_to_change: Union[list, None]=None,
                 #  lines_to_disc: Union[list, None]=None,
                 #  prob_depth: list=(0.4, 0.3, 0.3), # max_depth : len(prob_depth)
@@ -121,10 +123,13 @@ class XDepthAgent(BaseAgent):
         self.topo_actions = self.params.get("topo_actions", None)
         self.lines_to_disc = self.params.get("lines_to_disc", None)
         self.prob_depth = self.params.get("prob_depth", (0.4, 0.3, 0.3))
+        self.max_depth = len(self.prob_depth)
         self.prob_type = self.params.get("prob_type", (0.7, 0.3))
         self.prob_do_nothing = self.params.get("prob_do_nothing", 0.2)
         self.max_disc = self.params.get("max_disc", 1)
         self.reference_args = reference_params
+        self.seed(seed)
+
 
         # logger
         self.log_path = log_path
@@ -133,15 +138,15 @@ class XDepthAgent(BaseAgent):
         if (1. - sum(self.prob_depth) > 1e-3) or (1. - sum(self.prob_type) > 1e-3):
             raise RuntimeError("The probabilities should sum to one")
 
-        self.all_topo_actions = self.get_action_list()
-        if self.topo_actions is None:
-            self.topo_actions = self.all_topo_actions
-        else:
-            self.topo_actions = self._filter_topo_actions()
-        self.max_depth = len(self.prob_depth)
+        self.all_topo_actions =  self.get_action_list() if all_topo_actions is None else all_topo_actions
+        self.topo_actions = self.all_topo_actions if self.topo_actions is None else self._filter_topo_actions()
+        # if self.topo_actions is None:
+        #     self.topo_actions = self.all_topo_actions
+        # else:
+        #     self.topo_actions = self._filter_topo_actions()
+
 
         # find the substations for which there is no actions
-        # TODO : it may not work if grid2op actions are provided
         self._sub_empty_action_list = np.where([(len(action_list) == 0) for action_list in self.topo_actions])[0]
 
         # it aims to verify if the maximum number of authorized line disconnections is reached
@@ -162,17 +167,29 @@ class XDepthAgent(BaseAgent):
                                             [(sub_id, np.ones(self.action_space.sub_info[sub_id], dtype=int))
                                              for sub_id in range(self.action_space.n_sub)]}})
 
-        self.ref_lines_to_disc = None
-        self.ref_topo_actions = None
-        self.ref_prob_depth = None
-        self.ref_prob_type = None
-        self.ref_prob_do_nothing = None
-        self.ref_max_disc = None
-
         # it allows to avoid a depth if struggling to find a combination
         self._depth_tries = 30 # try max 30 times to find a combination
         self._depth_fails = 0 # count the number of fails to find a combination
 
+        if self.reference_args is not None:
+            self.ref_lines_to_disc = self.reference_args.get("lines_to_disc", None)
+            self.ref_topo_actions = self.reference_args.get("topo_actions", None)
+            self.ref_prob_depth = self.reference_args.get("prob_depth", (0.4, 0.3, 0.3))
+            self.ref_prob_type = self.reference_args.get("prob_type", (0.7, 0.3))
+            self.ref_prob_do_nothing = self.reference_args.get("prob_do_nothing", 0.2)
+            self.ref_max_disc = self.reference_args.get("max_disc", 1)
+
+            self.ref_agent = self.__class__(action_space=self.action_space,
+                                            all_topo_actions=self.all_topo_actions,
+                                            log_path=self.log_path,
+                                            seed=seed,
+                                            topo_actions=self.ref_topo_actions,
+                                            lines_to_disc=self.ref_lines_to_disc,
+                                            prob_depth=self.ref_prob_depth,
+                                            prob_type=self.ref_prob_type,
+                                            prob_do_nothing=self.ref_prob_do_nothing,
+                                            max_disc=self.ref_max_disc
+                                            )
 
     def act(self, obs=None, reward=None, done=None):
         if self.reference_args is not None:
@@ -314,12 +331,12 @@ class XDepthAgent(BaseAgent):
         """
 
     def _apply_reference_topo(self, obs):
-        self.ref_lines_to_disc = self.reference_args.get("lines_to_disc", None)
-        self.ref_topo_actions = self.reference_args.get("topo_actions", None)
-        self.ref_prob_depth = self.reference_args.get("prob_depth", (0.4, 0.3, 0.3))
-        self.ref_prob_type = self.reference_args.get("prob_type", (0.7, 0.3))
-        self.ref_prob_do_nothing = self.reference_args.get("prob_do_nothing", 0.2)
-        self.ref_max_disc = self.reference_args.get("max_disc", 1)
+        # self.ref_lines_to_disc = self.reference_args.get("lines_to_disc", None)
+        # self.ref_topo_actions = self.reference_args.get("topo_actions", None)
+        # self.ref_prob_depth = self.reference_args.get("prob_depth", (0.4, 0.3, 0.3))
+        # self.ref_prob_type = self.reference_args.get("prob_type", (0.7, 0.3))
+        # self.ref_prob_do_nothing = self.reference_args.get("prob_do_nothing", 0.2)
+        # self.ref_max_disc = self.reference_args.get("max_disc", 1)
 
         # REMOVED FOR BETTER PERFORMANCE
         # append line disconnection action
@@ -328,16 +345,16 @@ class XDepthAgent(BaseAgent):
         #        raise RuntimeError(f"Line with id {i} does not exist.")
         #    self.ref_action_lines.append(self._disc_actions[i])
 
-        ref_agent = self.__class__(action_space=self.action_space,
-                                   log_path=self.log_path,
-                                   topo_actions=self.ref_topo_actions,
-                                   lines_to_disc=self.ref_lines_to_disc,
-                                   prob_depth=self.ref_prob_depth,
-                                   prob_type=self.ref_prob_type,
-                                   prob_do_nothing=self.ref_prob_do_nothing,
-                                   max_disc=self.ref_max_disc
-                                  )
-        action = ref_agent.act(obs=obs)
+        # ref_agent = self.__class__(action_space=self.action_space,
+        #                            log_path=self.log_path,
+        #                            topo_actions=self.ref_topo_actions,
+        #                            lines_to_disc=self.ref_lines_to_disc,
+        #                            prob_depth=self.ref_prob_depth,
+        #                            prob_type=self.ref_prob_type,
+        #                            prob_do_nothing=self.ref_prob_do_nothing,
+        #                            max_disc=self.ref_max_disc
+        #                           )
+        action = self.ref_agent.act(obs=obs)
         return action
 
     ######################################################
@@ -443,3 +460,103 @@ class XDepthAgent(BaseAgent):
                 action_list.append(tmp_action)
                 action_list_sub[s_id].append(tmp_action)
         return action_list_sub
+
+def compute_all_combinations(action_space, sub_id):
+    """
+    It computes all the possible combination of topological changes at a substation
+    - It prunes the symetrical topologies
+    - It ignore the cases where a node is only connected to loads or productions
+
+    Parameters
+    ----------
+    obs: ``Grid2Op.Observation``
+        an observation of Grid2Op environment
+    sub_id: ``int``
+        substation identifier for which we want get all the topological combinations
+    Returns
+    -------
+    ``np.ndarray``
+        a 2d array including all the possible (legal) combinations at a node
+        Each vector is binary, where 0 means no change from the reference (busbar 1)
+        and 1 represented a topology change (busbar 2)
+    """
+    sub_topo = get_sub_topo(action_space, sub_id=sub_id)
+    n_elements = len(sub_topo)
+    if n_elements == 0 or n_elements == 1:
+        raise ValueError("Cannot generate combinations out of a configuration with len = 1 or 2")
+    elif n_elements == 2:
+        return np.array([[2, 2], [1, 1]])
+    else:
+        l = [0, 1]
+        allcomb = [list(i) for i in itertools.product(l, repeat=n_elements)]
+
+        #we also want to filter combs that only have prods and loads connected to a node
+        n_load = sum(action_space.load_to_subid==sub_id)
+        n_prod = sum(action_space.gen_to_subid==sub_id)
+        nProd_loads= n_load + n_prod
+
+        # we get rid of symetrical topologies by fixing the first element to busbar 0.
+        uniqueComb = [np.array(allcomb[i])+1 for i in range(len(allcomb)) if legal_comb(allcomb[i], n_elements, nProd_loads)]
+
+    return np.array(uniqueComb)
+
+def legal_comb(comb, n_elements, nProd_loads):
+    """
+    verify if all the combination is legal
+    """
+    sum_comb=np.sum(comb)
+    busBar_prods_loads=set(comb[0:nProd_loads])
+    busBar_lines = set(comb[nProd_loads:])
+
+    areProdsLoadsIsolated=False
+    if(nProd_loads>=2) and (sum_comb != 1) and (sum_comb != n_elements - 1):
+        busbar_diff=set(busBar_prods_loads)-set(busBar_lines)
+        if(len(busbar_diff)!=0):
+            areProdsLoadsIsolated=True
+
+    legal_condition=((comb[0] == 0) & # Keep only actions starting by 0 for symmetrical reasons
+                        (sum_comb != 1) &
+                        (sum_comb != n_elements - 1) &
+                        (areProdsLoadsIsolated==False) &
+                        (sum_comb != 0)) # remove the first doNothing (all elements to busbar one) action
+
+    return legal_condition
+
+def get_sub_topo(action_space, sub_id):
+    """
+    This function give the topology vector per substation
+    The same functionality is implemented in Grid2Op as ``obs.sub_topology``
+
+    Parameters
+    ----------
+    obs: ``grid2op.Observation``
+        An observation of the environment
+    sub_id: ``int``
+        The identifier of a substation for which required its topology vector
+
+    Return
+    ------
+    ``np.ndarray``
+        the topology vector for substation ``sub_id``
+    """
+    sub_info = action_space.sub_info
+    return np.ones(sub_info[sub_id], dtype=int)
+
+def get_action(action_space, sub_id, comb):
+    """
+    Gets the corresponding action for a topological combination
+    """
+    reconfig_sub = action_space({"set_bus": {"substations_id": [(sub_id, comb)] } })
+    return reconfig_sub
+
+def get_action_list(action_space):
+    action_list = []
+    action_list_sub = []
+    for s_id in range(action_space.n_sub):
+        action_list_sub.append([])
+        all_comb = compute_all_combinations(action_space, sub_id=s_id)
+        for comb in all_comb:
+            tmp_action = get_action(action_space, sub_id=s_id, comb=comb)
+            action_list.append(tmp_action)
+            action_list_sub[s_id].append(tmp_action)
+    return action_list_sub
