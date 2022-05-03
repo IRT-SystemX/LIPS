@@ -20,7 +20,7 @@ from typing import Union
 import grid2op
 
 from . import Benchmark
-from .utils.powergrid_utils import get_kwargs_simulator_scenario, XDepthAgent
+from .utils.powergrid_utils import get_kwargs_simulator_scenario, XDepthAgent, get_action_list
 from ..augmented_simulators import AugmentedSimulator
 from ..physical_simulator import PhysicalSimulator
 from ..physical_simulator import Grid2opSimulator
@@ -328,8 +328,7 @@ class PowerGridBenchmark(Benchmark):
         if self.training_simulator is None:
             self.training_simulator = Grid2opSimulator(get_kwargs_simulator_scenario(self.config),
                                                        initial_chronics_id=self.initial_chronics_id,
-                                                       # i use 994 chronics out of the 904 for training
-                                                       chronics_selected_regex=self.config.get_option("chronics")["train"]
+                                                       chronics_selected_regex=self.config.get_option("chronics").get("train")
                                                        )
 
     def _fills_actor_simulator(self):
@@ -340,55 +339,47 @@ class PowerGridBenchmark(Benchmark):
 
         self.val_simulator = Grid2opSimulator(get_kwargs_simulator_scenario(self.config),
                                               initial_chronics_id=self.initial_chronics_id,
-                                              # i use 50 full chronics for testing
-                                              chronics_selected_regex=self.config.get_option("chronics")["val"])
+                                              chronics_selected_regex=self.config.get_option("chronics").get("val")
+                                              )
         self.val_simulator.seed(self.val_env_seed)
 
         self.test_simulator = Grid2opSimulator(get_kwargs_simulator_scenario(self.config),
                                                initial_chronics_id=self.initial_chronics_id,
-                                               # i use 25 full chronics for testing
-                                               chronics_selected_regex=self.config.get_option("chronics")["test"])
+                                               chronics_selected_regex=self.config.get_option("chronics").get("test")
+                                               )
         self.test_simulator.seed(self.test_env_seed)
 
         self.test_ood_topo_simulator = Grid2opSimulator(get_kwargs_simulator_scenario(self.config),
                                                         initial_chronics_id=self.initial_chronics_id,
-                                                        # i use 25 full chronics for testing
-                                                        chronics_selected_regex=self.config.get_option("chronics")["test_ood"])
+                                                        chronics_selected_regex=self.config.get_option("chronics").get("test_ood")
+                                                        )
         self.test_ood_topo_simulator.seed(self.test_ood_topo_env_seed)
-        """
-        self.training_actor = self.utils.get_actor_training_scenario(self.training_simulator)
-        self.training_actor.seed(self.train_actor_seed)
 
-        self.val_actor = self.utils.get_actor_test_scenario(self.val_simulator)
-        self.val_actor.seed(self.val_actor_seed)
-
-        self.test_actor = self.utils.get_actor_test_scenario(self.test_simulator)
-        self.test_actor.seed(self.test_actor_seed)
-
-        self.test_ood_topo_actor = self.utils.get_actor_test_ood_topo_scenario(self.test_ood_topo_simulator)
-        self.test_ood_topo_actor.seed(self.test_ood_topo_actor_seed)
-        """
-        # TODO: One improvment will be to compute once all the topology actions before instantiating the agent for each dataset
+        all_topo_actions = get_action_list(self.env.action_space)
         self.training_actor = XDepthAgent(self.env.action_space,
+                                          all_topo_actions=all_topo_actions,
                                           reference_params=self.config.get_option("dataset_create_params").get("reference_args", None),
                                           scenario_params=self.config.get_option("dataset_create_params")["train"],
+                                          seed=self.train_actor_seed,
                                           log_path=self.log_path)
-        self.training_actor.seed(self.train_actor_seed)
         self.val_actor = XDepthAgent(self.env.action_space,
+                                     all_topo_actions=all_topo_actions,
                                      reference_params=self.config.get_option("dataset_create_params").get("reference_args", None),
                                      scenario_params=self.config.get_option("dataset_create_params")["test"],
+                                     seed=self.val_actor_seed,
                                      log_path=self.log_path)
-        self.val_actor.seed(self.val_actor_seed)
         self.test_actor = XDepthAgent(self.env.action_space,
+                                      all_topo_actions=all_topo_actions,
                                       reference_params=self.config.get_option("dataset_create_params").get("reference_args", None),
                                       scenario_params=self.config.get_option("dataset_create_params")["test"],
+                                      seed=self.test_actor_seed,
                                       log_path=self.log_path)
-        self.test_actor.seed(self.test_actor_seed)
         self.test_ood_topo_actor = XDepthAgent(self.env.action_space,
+                                               all_topo_actions=all_topo_actions,
                                                reference_params=self.config.get_option("dataset_create_params").get("reference_args", None),
                                                scenario_params=self.config.get_option("dataset_create_params")["test_ood"],
+                                               seed=self.test_ood_topo_actor_seed,
                                                log_path=self.log_path)
-        self.test_ood_topo_actor.seed(self.test_ood_topo_actor_seed)
 
 def get_env(env_kwargs: dict):
     """Getter for the environment
