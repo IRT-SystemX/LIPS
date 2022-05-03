@@ -99,6 +99,7 @@ class XDepthAgent(BaseAgent):
     # TODO: verify that number of actions listed in subs_to_change is more than ``prob_depth``
     # TODO: verify that when params is None, kwargs include all the required parameters
     # TODO: verify that we do not disconnect the same lines and change the same subs as the reference
+    # TODO: Do not take the same actions as the opponent
     """
     def __init__(self,
                  action_space,
@@ -142,6 +143,7 @@ class XDepthAgent(BaseAgent):
         self.disconnected_lines_id = []
         self.impacted_subs_id = []
         self.opponent_attack_line = []
+        self._info = {}
 
         # get a list of all the line actions (line identifiers)
         self.line_ids = np.arange(action_space.n_line) if self.lines_to_disc is None else self.lines_to_disc
@@ -152,12 +154,12 @@ class XDepthAgent(BaseAgent):
         self._do_nothing = self.action_space({})
         # use do nothing as reference topology, because connecting the elements to busbar one can produce some illegal
         # action reports when the environment present some opponent attacks on the grid
-        self.ref_topo = self._do_nothing
+        # self.ref_topo = self._do_nothing # IT IS NOT GOOD
         # Connect all the elements to busbar one (reference topology)
-        # self.ref_topo = self.action_space({"set_bus":
-        #                                    {"substations_id":
-        #                                     [(sub_id, np.ones(self.action_space.sub_info[sub_id], dtype=int))
-        #                                      for sub_id in range(self.action_space.n_sub)]}})
+        self.ref_topo = self.action_space({"set_bus":
+                                           {"substations_id":
+                                            [(sub_id, np.ones(self.action_space.sub_info[sub_id], dtype=int))
+                                             for sub_id in range(self.action_space.n_sub)]}})
 
         # it allows to avoid a depth if struggling to find a combination
         self._depth_tries = 30 # try max 30 times to find a combination
@@ -198,8 +200,9 @@ class XDepthAgent(BaseAgent):
             done = True
             nb_try = 0
             while done and (nb_try < self._depth_tries):
-                action = self._combine_at_depth(obs, selected_depth)
+                action = self._combine_at_depth(selected_depth)
                 done = self._verify_convergence(obs, action)
+                action = self._apply_opponent_topo(action) # this aims to avoid the illegal actions
                 nb_try += 1
                 if (nb_try >= self._depth_tries) and (done is True):
                     self.logger.error("Impossible to find an action at depth %s", selected_depth)
@@ -210,15 +213,17 @@ class XDepthAgent(BaseAgent):
         else:
             # DoNothing
             action = self.ref_topo
+            done = self._verify_convergence(obs, action)
+            action = self._apply_opponent_topo(action)
 
         return action
 
-    def _combine_at_depth(self, obs, selected_depth):
+    def _combine_at_depth(self, selected_depth):
         # self.logger.info("combine at depth : %s", selected_depth)
         # reset the counters for each action
         self.disconnected_lines_id = []
         self.impacted_subs_id = []
-        self.opponent_attack_line = [int(el) for el in np.where(~obs.line_status)[0] if el.size > 0] # include the opponent attacks in the list
+        #self.opponent_attack_line = [int(el) for el in np.where(~obs.line_status)[0] if el.size > 0] # include the opponent attacks in the list
 
         previous_action = self.ref_topo
         current_depth = 0
@@ -231,13 +236,40 @@ class XDepthAgent(BaseAgent):
         return action
 
     def _verify_convergence(self, obs, action):
-        _, _, done, info = obs.simulate(action)
+        _, _, done, self._info = obs.simulate(action)
         ambiguous, _ = action.is_ambiguous()
         if ambiguous:
             done = True
-        if info["is_illegal"]:
-            done = True
+        # if info["is_illegal"]:
+        #     done = True
         return done
+
+    def _apply_opponent_topo(self, action):
+        """re-apply the opponent action to avoid illegal action report
+
+        Parameters
+        ----------
+        action : ``grid2op.Action``
+            the final action to be proposed after verification of its convergence
+        info : dict
+            supplementary information after applying an action in an environment
+
+        Returns
+        -------
+        ``grid2op.Action``
+            the modified action if the ``is_illegal`` flag is true
+            the original action if no illegal action
+        """
+        #if self._info["is_illegal"]:
+        lines_attacked = (np.where(self._info["opponent_attack_line"])[0])
+        if lines_attacked.size > 0:
+            for line_id in lines_attacked:
+                action_or = self.action_space({"set_bus": {"lines_or_id": [(line_id,-1)]}})
+                action_ex = self.action_space({"set_bus": {"lines_ex_id": [(line_id,-1)]}})
+                line_action = self._combine_actions(action_or, action_ex)
+                action = self._combine_actions(action, line_action)
+
+        return action
 
     def sample_act(self):
         """
@@ -274,7 +306,8 @@ class XDepthAgent(BaseAgent):
 
         return action
 
-    def _combine_actions(self, act1, act2):
+    @staticmethod
+    def _combine_actions(act1, act2):
         """some kind of "overload" of the `+` operator of grid2op to take into account the disconnected powerline"""
         res = act1 + act2
         for act in (act1, act2):
@@ -292,8 +325,8 @@ class XDepthAgent(BaseAgent):
         select randomly one line to disconnect
         """
         self._remaining_lines = list(set(np.arange(len(self.line_ids))) -
-                                     set(self.disconnected_lines_id) -
-                                     set(self.opponent_attack_line))
+                                     set(self.disconnected_lines_id)) #-
+                                     #set(self.opponent_attack_line))
         id_ = self.space_prng.choice(self._remaining_lines)
         return self.line_ids[id_], self._disc_actions[id_]
 
