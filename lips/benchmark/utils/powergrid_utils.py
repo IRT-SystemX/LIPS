@@ -153,6 +153,7 @@ class XDepthAgent(BaseAgent):
         # and to avoid the duplicate actions
         self.disconnected_lines_id = []
         self.impacted_subs_id = []
+        self.opponent_attack_line = []
 
         # get a list of all the line actions (line identifiers)
         self.line_ids = np.arange(action_space.n_line) if self.lines_to_disc is None else self.lines_to_disc
@@ -207,7 +208,7 @@ class XDepthAgent(BaseAgent):
             done = True
             nb_try = 0
             while done and (nb_try < self._depth_tries):
-                action = self._combine_at_depth(selected_depth)
+                action = self._combine_at_depth(obs, selected_depth)
                 done = self._verify_convergence(obs, action)
                 nb_try += 1
                 if (nb_try >= self._depth_tries) and (done is True):
@@ -222,11 +223,12 @@ class XDepthAgent(BaseAgent):
 
         return action
 
-    def _combine_at_depth(self, selected_depth):
+    def _combine_at_depth(self, obs, selected_depth):
         # self.logger.info("combine at depth : %s", selected_depth)
         # reset the counters for each action
         self.disconnected_lines_id = []
         self.impacted_subs_id = []
+        self.opponent_attack_line = [int(el) for el in np.where(~obs.line_status)[0] if el.size > 0] # include the opponent attacks in the list
 
         previous_action = self.ref_topo
         current_depth = 0
@@ -269,12 +271,16 @@ class XDepthAgent(BaseAgent):
         else:
             # the maximum authorized disconnection is reached
             # select a substation among those not yet selected
-            sub_id = self.space_prng.choice(list(set(np.arange(self.action_space.n_sub)) -
-                                                 set(self.impacted_subs_id) -
-                                                 set(self._sub_empty_action_list)))
-            self.impacted_subs_id.append(sub_id)
-            action = self._select_topo_action(sub_id)
-            # self.logger.info("Sub %s changed", sub_id)
+            # check if sub change is authorized
+            if self.prob_type[0] > 0.:
+                sub_id = self.space_prng.choice(list(set(np.arange(self.action_space.n_sub)) -
+                                                    set(self.impacted_subs_id) -
+                                                    set(self._sub_empty_action_list)))
+                self.impacted_subs_id.append(sub_id)
+                action = self._select_topo_action(sub_id)
+                # self.logger.info("Sub %s changed", sub_id)
+            else:
+                action = self._do_nothing
 
         return action
 
@@ -295,7 +301,9 @@ class XDepthAgent(BaseAgent):
         """
         select randomly one line to disconnect
         """
-        self._remaining_lines = list(set(np.arange(len(self.line_ids))) - set(self.disconnected_lines_id))
+        self._remaining_lines = list(set(np.arange(len(self.line_ids))) -
+                                     set(self.disconnected_lines_id) -
+                                     set(self.opponent_attack_line))
         id_ = self.space_prng.choice(self._remaining_lines)
         return self.line_ids[id_], self._disc_actions[id_]
 
