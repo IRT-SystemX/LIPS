@@ -253,21 +253,32 @@ class XDepthAgent(BaseAgent):
         """
         Sample an action among the X required actions
         """
-        current_type = self.space_prng.choice(range(2), 1, p=self.prob_type)[0]
-        if current_type == 0:
-            # select a substation among those not yet selected
-            sub_id = self.space_prng.choice(list(set(np.arange(self.action_space.n_sub)) -
-                                                    set(self.impacted_subs_id) -
-                                                    set(self._sub_empty_action_list)))
-            self.impacted_subs_id.append(sub_id)
-            action = self._select_topo_action(sub_id)
-            # self.logger.info("Sub %s changed", sub_id)
-        elif current_type == 1:
-            if (len(self.disconnected_lines_id) < self.max_disc) and np.any(self._remaining_lines):
-                # the maximum authorized number of disconnections is not yet reached
+        if (len(self.disconnected_lines_id) < self.max_disc) and np.any(self._remaining_lines):
+            # the maximum authorized number of disconnections is not yet reached
+            current_type = self.space_prng.choice(range(2), 1, p=self.prob_type)[0]
+            if current_type == 0:
+                # select a substation among those not yet selected
+                sub_id = self.space_prng.choice(list(set(np.arange(self.action_space.n_sub)) -
+                                                     set(self.impacted_subs_id) -
+                                                     set(self._sub_empty_action_list)))
+                self.impacted_subs_id.append(sub_id)
+                action = self._select_topo_action(sub_id)
+                # self.logger.info("Sub %s changed", sub_id)
+            elif current_type == 1:
                 line_id, action = self._select_line_action()
                 self.disconnected_lines_id.append(line_id)
                 # self.logger.info("line %s disconnected", line_id)
+        else:
+            # the maximum authorized disconnection is reached
+            # select a substation among those not yet selected
+            # check if sub change is authorized
+            if self.prob_type[0] > 0.:
+                sub_id = self.space_prng.choice(list(set(np.arange(self.action_space.n_sub)) -
+                                                    set(self.impacted_subs_id) -
+                                                    set(self._sub_empty_action_list)))
+                self.impacted_subs_id.append(sub_id)
+                action = self._select_topo_action(sub_id)
+                # self.logger.info("Sub %s changed", sub_id)
             else:
                 action = self._do_nothing
 
