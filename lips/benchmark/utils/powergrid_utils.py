@@ -5,6 +5,10 @@ from typing import Union
 import itertools
 import warnings
 import numpy as np
+
+from grid2op.Chronics import GridStateFromFile
+from grid2op.Action.DontAct import DontAct
+from grid2op.Action import PlayableAction
 from grid2op.Agent import BaseAgent
 from grid2op.Parameters import Parameters
 
@@ -34,21 +38,15 @@ def get_kwargs_simulator_scenario(config: ConfigManager) -> dict:
     env_name = config.get_option("env_name")
     param = Parameters()
     param.init_from_dict(config.get_option("env_params"))
-    # env_name = "l2rpn_case14_sandbox"
-    # create a temporary environment to retrieve the default parameters of this specific environment
-    #with warnings.catch_warnings():
-    #    warnings.filterwarnings("ignore")
-    #    env_tmp = grid2op.make(config.get_option("env_name"))
-    #param = env_tmp.parameters
-    #param.NO_OVERFLOW_DISCONNECTION = True
-    # i can act on all powerline / substation at once
-    #param.MAX_LINE_STATUS_CHANGED = 999999
-    #param.MAX_SUB_CHANGED = 999999
-    # i can act every step on every line / substation (no cooldown)
-    #param.NB_TIMESTEP_COOLDOWN_LINE = 0
-    #param.NB_TIMESTEP_COOLDOWN_SUB = 0
+
     return {"dataset": env_name,
             "param": param,
+            # disable maintenances
+            "data_feeding_kwargs": {"gridvalueClass": GridStateFromFile},
+            # inhibit the opponent
+            "action_class": PlayableAction,
+            "opponent_init_budget": 0,
+            "opponent_action_class": DontAct,
             "backend": BkCls()}
 
 class XDepthAgent(BaseAgent):
@@ -99,7 +97,7 @@ class XDepthAgent(BaseAgent):
     # TODO: verify that number of actions listed in subs_to_change is more than ``prob_depth``
     # TODO: verify that when params is None, kwargs include all the required parameters
     # TODO: verify that we do not disconnect the same lines and change the same subs as the reference
-    # TODO: Do not take the same actions as the opponent
+    # TODO: Do not take the same actions as the opponent (if opponent is avoided, this is not necessary)
     """
     def __init__(self,
                  action_space,
@@ -202,19 +200,18 @@ class XDepthAgent(BaseAgent):
             while done and (nb_try < self._depth_tries):
                 action = self._combine_at_depth(selected_depth)
                 done = self._verify_convergence(obs, action)
-                action = self._apply_opponent_topo(action) # this aims to avoid the illegal actions
+                #action = self._apply_opponent_topo(action) # this aims to avoid the illegal actions
                 nb_try += 1
                 if (nb_try >= self._depth_tries) and (done is True):
                     self.logger.error("Impossible to find an action at depth %s", selected_depth)
                     self._depth_fails += 1
-                    #action = self._do_nothing
                 # self.logger.info("nb_try : %s", str(nb_try))
                 # self.logger.info("done : %s", done)
         else:
             # DoNothing
             action = self.ref_topo
-            done = self._verify_convergence(obs, action)
-            action = self._apply_opponent_topo(action)
+            #done = self._verify_convergence(obs, action)
+            #action = self._apply_opponent_topo(action)
 
         return action
 
@@ -236,7 +233,7 @@ class XDepthAgent(BaseAgent):
         return action
 
     def _verify_convergence(self, obs, action):
-        _, _, done, self._info = obs.simulate(action)
+        _, _, done, self._info = obs.simulate(action, time_step=0)
         ambiguous, _ = action.is_ambiguous()
         if ambiguous:
             done = True
@@ -377,7 +374,8 @@ class XDepthAgent(BaseAgent):
             raise ValueError("Cannot generate combinations out of a configuration with len = 1 or 2")
         elif n_elements == 2:
             #return np.array([[2, 2], [1, 1]])
-            return np.array([[2, 2]])
+            #return np.array([[2, 2]])
+            return np.array([]) # issue #80
         else:
             l = [0, 1]
             allcomb = [list(i) for i in itertools.product(l, repeat=n_elements)]
@@ -479,7 +477,8 @@ def compute_all_combinations(action_space, sub_id):
         raise ValueError("Cannot generate combinations out of a configuration with len = 1 or 2")
     elif n_elements == 2:
         #return np.array([[2, 2], [1, 1]])
-        return np.array([[2, 2]])
+        #return np.array([[2, 2]])
+        return np.array([])
     else:
         l = [0, 1]
         allcomb = [list(i) for i in itertools.product(l, repeat=n_elements)]
