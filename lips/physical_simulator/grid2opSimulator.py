@@ -133,11 +133,11 @@ class Grid2opSimulator(PhysicalSimulator):
             self._time_powerflow += _diff_time_pf
             self.comp_time += _diff_time_cp
 
-            # if self._info["is_illegal"]:
-            #     self._time_powerflow -= _diff_time_pf
-            #     self.comp_time -= _diff_time_cp
-            #     raise RuntimeError("Your `actor` should not take illegal action. Please modify the environment "
-            #                        "or your actor.")
+            if self._info["is_illegal"]:
+                self._time_powerflow -= _diff_time_pf
+                self.comp_time -= _diff_time_cp
+                raise RuntimeError("Your `actor` should not take illegal action. Please modify the environment "
+                                   "or your actor.")
 
             if done:
                 self._nb_divergence += 1
