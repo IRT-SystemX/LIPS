@@ -20,12 +20,13 @@ from typing import Union
 import grid2op
 
 from . import Benchmark
-from .utils.powergrid_utils import get_kwargs_simulator_scenario, XDepthAgent, get_action_list
 from ..augmented_simulators import AugmentedSimulator
 from ..physical_simulator import PhysicalSimulator
 from ..physical_simulator import Grid2opSimulator
 from ..physical_simulator.dcApproximationAS import DCApproximationAS
 from ..dataset import PowerGridDataSet
+from ..dataset.utils.powergrid_utils import get_kwargs_simulator_scenario
+from ..dataset.utils.powergrid_utils import XDepthAgent, get_action_list
 from ..evaluation import PowerGridEvaluation
 
 
