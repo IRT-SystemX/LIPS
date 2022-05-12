@@ -8,7 +8,7 @@ import numpy as np
 import grid2op
 from grid2op import Observation
 from ...logger import CustomLogger
-from ...benchmark.utils.powergrid_utils import get_kwargs_simulator_scenario
+from ...dataset.utils.powergrid_utils import get_kwargs_simulator_scenario
 
 # helper functions
 def _get_fake_obs(config) -> Observation:
