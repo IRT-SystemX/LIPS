@@ -28,7 +28,6 @@ commands:
             pip install pytest
             pip install nbmake pytest-xdist
             pip install ipykernel
-            python -m ipykernel install --user --name "venv"
             pip install pylint
             pip install pylint-exit
             pip install jupytext --upgrade
@@ -100,12 +99,16 @@ jobs:
           name: "run pytest"
           command: |
             . venv/bin/activate
-            jupytext ./getting_started/*.ipynb --update-metadata '{"kernelspec":null}'
-            jupytext ./getting_started/*.ipynb --update-metadata '{"kernelspec":{}}'
+            python -m ipykernel install --user --name "venv"
+            jupytext ./getting_started/*.ipynb --update-metadata '{"execution" : {"allow_errors": true, "timeout":300}}'
+            jupytext ./getting_started/*.ipynb --update-metadata '{"kernelspec": {"name": "venv", "display_name": "venv", "language": "python"}}'
+            # jupytext ./getting_started/*.ipynb --update-metadata '{"kernelspec":null}'
+            # jupytext ./getting_started/*.ipynb --update-metadata '{"kernelspec":{}}'
             python -m pytest --nbmake -n=auto ./getting_started --ignore=./getting_started/01_GenerateData.ipynb \
                                                                 --ignore=./getting_started/02_EvaluateBaseline.ipynb \
                                                                 --ignore=./getting_started/03_TrainAnAugmentedSimulator.ipynb \
-                                                                --ignore=./getting_started/04_HyperParameterTuning.ipynb
+                                                                --ignore=./getting_started/04_HyperParameterTuning.ipynb \
+                                                                --ignore=./getting_started/05-Complete_example.ipynb
       - store_artifacts_test_results
 
   run_pylint:
