@@ -14,9 +14,11 @@ import os
 import shutil
 import warnings
 import copy
+import json
 from typing import Union
-#import importlib
+import pathlib
 
+import numpy as np
 import grid2op
 
 from . import Benchmark
@@ -28,6 +30,7 @@ from ..dataset import PowerGridDataSet
 from ..dataset.utils.powergrid_utils import get_kwargs_simulator_scenario
 from ..dataset.utils.powergrid_utils import XDepthAgent, get_action_list
 from ..evaluation import PowerGridEvaluation
+from ..utils import NpEncoder
 
 
 
@@ -218,6 +221,7 @@ class PowerGridBenchmark(Benchmark):
                            dataset: str = "all",
                            augmented_simulator: Union[PhysicalSimulator, AugmentedSimulator, None] = None,
                            save_path: Union[str, None]=None,
+                           save_predictions: bool=False,
                            **kwargs) -> dict:
         """evaluate a trained augmented simulator on one or multiple test datasets
 
@@ -229,6 +233,10 @@ class PowerGridBenchmark(Benchmark):
             An instance of the class augmented simulator, by default None
         save_path : Union[str, None], optional
             the path that the evaluation results should be saved, by default None
+        save_predictions: bool
+            Whether to save the predictions made by an augmented simulator
+            The predictions will be saved at the same directory of the generated data
+            # TODO : to save predictions, the directory shoud look like ``benchmark_name\augmented_simulator.name\``
         **kwargs: ``dict``
             additional arguments that will be passed to the augmented simulator
         Todo
@@ -269,14 +277,17 @@ class PowerGridBenchmark(Benchmark):
             tmp = self._aux_evaluate_on_single_dataset(dataset=dataset_,
                                                        augmented_simulator=augmented_simulator,
                                                        save_path=save_path,
+                                                       save_predictions=save_predictions,
                                                        **kwargs)
             res[nm_] = copy.deepcopy(tmp)
+
         return res
 
     def _aux_evaluate_on_single_dataset(self,
                                         dataset: PowerGridDataSet,
-                                        augmented_simulator: Union[PhysicalSimulator, AugmentedSimulator, None] = None,
+                                        augmented_simulator: Union[PhysicalSimulator, AugmentedSimulator, None]=None,
                                         save_path: Union[str, None]=None,
+                                        save_predictions: bool=False,
                                         **kwargs) -> dict:
         """Evaluate a single dataset
         This function will evalute a simulator (physical or augmented) using various criteria predefined in evaluator object
@@ -293,8 +304,10 @@ class PowerGridBenchmark(Benchmark):
         active_flow : bool, optional
             whether to compute KCL on active (True) or reactive (False) powers, by default True
         save_path : Union[str, None], optional
-            if indicated the evaluation results will be saved to indicated path, by default None
-
+            the path where the predictions should be saved, by default None
+        save_predictions: bool
+            Whether to save the predictions made by an augmented simulator
+            The predictions will be saved at the same directory of the generated data
         Returns
         -------
         dict
@@ -316,9 +329,27 @@ class PowerGridBenchmark(Benchmark):
         self.dataset = dataset
 
         res = self.evaluation.evaluate(observations=dataset.data,
-                                       predictions=predictions,
-                                       save_path=save_path
+                                       predictions=predictions
                                        )
+
+        if save_path:
+            if not isinstance(save_path, pathlib.Path):
+                save_path = pathlib.Path(save_path)
+            save_path = save_path / augmented_simulator.name / dataset.name
+            if save_path.exists():
+                self.logger.warning("Deleting path %s that might contain previous runs", save_path)
+                shutil.rmtree(save_path)
+            save_path.mkdir(parents=True, exist_ok=True)
+
+            with open((save_path / "eval_res.json"), "w", encoding="utf-8") as f:
+                json.dump(obj=res, fp=f, indent=4, sort_keys=True, cls=NpEncoder)
+            if save_predictions:
+                for attr_nm in predictions.keys():
+                    np.savez_compressed(f"{os.path.join(save_path, attr_nm)}.npz", data=predictions[attr_nm])
+        elif save_predictions:
+            warnings.warn(message="You indicate to save the predictions, without providing a path. No predictions will be saved!")
+
+
         return res
 
     def _create_training_simulator(self):

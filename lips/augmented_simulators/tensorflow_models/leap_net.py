@@ -84,6 +84,7 @@ class LeapNet(TensorflowSimulator):
         sim_config_path = sim_config_path if sim_config_path is not None else sim_config_path_default
         self.sim_config = ConfigManager(section_name=sim_config_name, path=sim_config_path)
         self.name = name if name is not None else self.sim_config.get_option("name")
+        self.name = name + '_' + sim_config_name
         # scaler
         self.scaler = scaler() if scaler else None
         # Logger
