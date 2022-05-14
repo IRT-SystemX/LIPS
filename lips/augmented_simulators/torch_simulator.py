@@ -66,10 +66,12 @@ class TorchSimulator(AugmentedSimulator):
         # scaler
         self.scaler = scaler() if scaler else None
         self._model = self.model(name, self.scaler, **kwargs)
+        sim_config_name = self._model.sim_config.section_name
+        self.name = self.name + '_' + sim_config_name
         self.params.update(self._model.params)
 
         # torch devices
-        self.device = torch.device(self.params["device"])        
+        self.device = torch.device(self.params["device"])
         # torch seeds
         torch.manual_seed(seed)
         torch.cuda.manual_seed(seed)
