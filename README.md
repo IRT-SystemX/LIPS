@@ -128,6 +128,34 @@ make html
 * Supplementary features could be requested using github issues. 
 * Other contributions are welcomed and can be integrated using pull requests.
 
+# FAQ
+To be able to use the torch library with GPU, you should consider multiple factors: 
+* if you have a compatible GPU, in this case you can install the last cuda driver (11.6) and install torch using the following command:
+```commandline
+pip install torch --pre --extra-index-url https://download.pytorch.org/whl/nightly/cu116
+```
+To take the advantage of the GPU when training models, you should indicate it via the `device` parameter as follows:
+```python
+from lips.augmented_simulators.torch_models.fully_connected import TorchFullyConnected
+from lips.augmented_simulators.torch_simulator import TorchSimulator
+from lips.dataset.scaler import StandardScaler
+
+torch_sim = TorchSimulator(name="torch_fc",
+                           model=TorchFullyConnected,
+                           scaler=StandardScaler,
+                           device="cuda:0",
+                          )
+```
+
+* Otherwise, if you want use only CPU for the training of augmented simulators, you could simply use the version installed following the the requirements and set the device parameter to `cpu` when training as follows:
+```python
+torch_sim = TorchSimulator(name="torch_fc",
+                           model=TorchFullyConnected,
+                           scaler=StandardScaler,
+                           device="cpu",
+                          )
+```
+
 # License information
 Copyright 2022-2023 IRT SystemX & RTE
 
