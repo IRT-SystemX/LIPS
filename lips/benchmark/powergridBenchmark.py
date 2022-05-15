@@ -26,10 +26,10 @@ from ..augmented_simulators import AugmentedSimulator
 from ..physical_simulator import PhysicalSimulator
 from ..physical_simulator import Grid2opSimulator
 from ..physical_simulator.dcApproximationAS import DCApproximationAS
-from ..dataset import PowerGridDataSet
+from ..dataset.powergridDataSet import PowerGridDataSet
 from ..dataset.utils.powergrid_utils import get_kwargs_simulator_scenario
 from ..dataset.utils.powergrid_utils import XDepthAgent, get_action_list
-from ..evaluation import PowerGridEvaluation
+from ..evaluation.powergrid_evaluation import PowerGridEvaluation
 from ..utils import NpEncoder
 
 
