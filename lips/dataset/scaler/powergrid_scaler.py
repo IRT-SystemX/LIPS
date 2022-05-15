@@ -3,7 +3,7 @@ import pathlib
 import numpy as np
 
 from . import Scaler
-from .. import PowerGridDataSet
+from ..powergridDataSet import PowerGridDataSet
 from ...utils import NpEncoder
 
 class PowerGridScaler(Scaler):

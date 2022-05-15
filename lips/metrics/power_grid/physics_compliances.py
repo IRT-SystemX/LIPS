@@ -388,7 +388,7 @@ def verify_energy_conservation(predictions: dict,
         else:
             tolerance = float(tolerance)
     else:
-        tolerance = float(config.get_option("eval_params")["EL_tolerance"])
+        tolerance = float(config.get_option("eval_params")["LCE_tolerance"])
 
 
     try:
