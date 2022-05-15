@@ -9,9 +9,9 @@
 __all__ = ["DataSet"]
 
 from lips.dataset.dataSet import DataSet
-try:
-    from lips.dataset.powergridDataSet import PowerGridDataSet
-    __all__.append("PowerGridDataSet")
-except ImportError as exc_:
-    # grid2op package is not installed i cannot used this augmented simulator
-    pass
+# try:
+#     from lips.dataset.powergridDataSet import PowerGridDataSet
+#     __all__.append("PowerGridDataSet")
+# except ImportError as exc_:
+#     # grid2op package is not installed i cannot used this augmented simulator
+#     pass

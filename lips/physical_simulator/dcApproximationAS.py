@@ -19,7 +19,7 @@ from grid2op.Action import CompleteAction
 
 from . import Grid2opSimulator
 from . import PhysicsSolver
-from ..dataset import PowerGridDataSet
+from ..dataset.powergridDataSet import PowerGridDataSet
 from ..config import ConfigManager
 
 

@@ -1,0 +1,1 @@
+This folder contains the benchmarks and simulators configurations for Power Grid (RTE) use case.
