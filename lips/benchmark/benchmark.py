@@ -58,7 +58,8 @@ class Benchmark(ABC):
                  ):
         self.benchmark_name = benchmark_name
         self.benchmark_path = benchmark_path
-        self.path_datasets = os.path.join(benchmark_path, self.benchmark_name)
+        self.path_datasets = os.path.join(benchmark_path, self.benchmark_name) if benchmark_path else None
+
 
         # Object of class DataSet contianing datasets for testing
         # It contains the last dataset used for evaluation
