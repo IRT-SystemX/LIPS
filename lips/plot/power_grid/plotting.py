@@ -7,6 +7,7 @@
 # This file is part of LIPS, LIPS is a python platform for power networks benchmarking
 
 from typing import Union
+import numpy as np
 from matplotlib import pyplot as plt
 
 import grid2op
@@ -14,6 +15,9 @@ from grid2op.PlotGrid import PlotMatplot
 
 class PlotData():
     def __init__(self, dataset: dict, env_name="l2rpn_case14_sandbox"):
+        self.dataset = dataset
+        self.chronics_name = self.dataset.chronics_info["chronics_name"]
+        self.time_stamps = np.hstack(self.dataset.chronics_info["time_stamps"])
         self.data = dataset.data
         self.size = dataset.size
         self.env_name = env_name
@@ -30,7 +34,9 @@ class PlotData():
                                           load_info=None,  # i don't plot anything concerning the load
                                           gen_info="v"  # i draw the voltage setpoint of the generators
                                           )
-        plt.title(f"Time stamp {self.id_obs}")
+        plt.title(f"Chronic: {self.chronics_name[self.id_obs]}, "
+                  f"Time stamp: {str(self.time_stamps[self.id_obs])}, "
+                  f"index {self.id_obs}")
 
     def visualize_next(self):
         self.id_obs += 1
