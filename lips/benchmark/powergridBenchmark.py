@@ -41,8 +41,9 @@ class PowerGridBenchmark(Benchmark):
 
     Parameters
     ----------
-    benchmark_path : ``str``
-        path to the benchmark
+    benchmark_path : Union[``str``, ``None``], optional
+        path to the benchmark, it should be indicated
+        if not indicated, the data remains only in the memory
     config_path : Union[``str``, ``None``], optional
         path to the configuration file. If config_path is ``None``, the default config file
         present in config module will be used by using the benchmark_name as the section, by default None
@@ -56,10 +57,6 @@ class PowerGridBenchmark(Benchmark):
     log_path : Union[``str``, ``None``], optional
         path to the logs, by default None
 
-    Todo
-    ----
-    Add all the seeds into the config file
-
     Warnings
     --------
     An independent class for each benchmark is maybe a better idea.
@@ -67,21 +64,13 @@ class PowerGridBenchmark(Benchmark):
     can extend this class.
     """
     def __init__(self,
-                 benchmark_path: str,
+                 benchmark_path: Union[str, None],
                  config_path: Union[str, None]=None,
                  benchmark_name: str="Benchmark1",
                  load_data_set: bool=False,
                  evaluation: Union[PowerGridEvaluation, None]=None,
                  log_path: Union[str, None]=None,
-                 train_env_seed: int = 1,
-                 val_env_seed: int = 2,
-                 test_env_seed: int = 3,
-                 test_ood_topo_env_seed: int = 4,
-                 initial_chronics_id: int = 0,
-                 train_actor_seed: int = 5,
-                 val_actor_seed: int = 6,
-                 test_actor_seed: int = 7,
-                 test_ood_topo_actor_seed: int = 8,
+                 **kwargs
                  ):
         super().__init__(benchmark_name=benchmark_name,
                          dataset=None,
@@ -97,16 +86,6 @@ class PowerGridBenchmark(Benchmark):
         if evaluation is None:
             self.evaluation = PowerGridEvaluation.from_benchmark(self)
 
-        # importing the right module from which the scenarios and actors could be used
-        """
-        if self.config.get_option("utils_lib") is not None:
-            try:
-                module_name = self.config.get_option("utils_lib")
-                module = ".".join(("lips", "benchmark", "utils", module_name))
-                self.utils = importlib.import_module(module)
-            except ImportError as error:
-                self.logger.error("The module %s could not be accessed! %s", module_name, error)
-        """
         self.env_name = self.config.get_option("env_name")
         self.env = None
         self.training_simulator = None
@@ -119,17 +98,18 @@ class PowerGridBenchmark(Benchmark):
         self.test_actor = None
         self.test_ood_topo_actor = None
 
-        self.train_env_seed = train_env_seed
-        self.val_env_seed = val_env_seed
-        self.test_env_seed = test_env_seed
-        self.test_ood_topo_env_seed = test_ood_topo_env_seed
+        self.train_env_seed = kwargs.get("train_env_seed") if "train_env_seed" in kwargs else self.config.get_option("benchmark_seeds").get("train_env_seed", 0)
+        self.val_env_seed = kwargs.get("val_env_seed") if "val_env_seed" in kwargs else self.config.get_option("benchmark_seeds").get("val_env_seed", 1)
+        self.test_env_seed = kwargs.get("test_env_seed") if "test_env_seed" in kwargs else self.config.get_option("benchmark_seeds").get("test_env_seed", 2)
+        self.test_ood_topo_env_seed = kwargs.get("test_ood_topo_env_seed") if "test_ood_topo_env_seed" in kwargs else self.config.get_option("benchmark_seeds").get("test_ood_topo_env_seed", 3)
 
-        self.train_actor_seed = train_actor_seed
-        self.val_actor_seed = val_actor_seed
-        self.test_actor_seed = test_actor_seed
-        self.test_ood_topo_actor_seed = test_ood_topo_actor_seed
+        self.train_actor_seed = kwargs.get("train_actor_seed") if "train_actor_seed" in kwargs else self.config.get_option("benchmark_seeds").get("train_actor_seed", 4)
+        self.val_actor_seed = kwargs.get("val_actor_seed") if "val_actor_seed" in kwargs else self.config.get_option("benchmark_seeds").get("val_actor_seed", 5)
+        self.test_actor_seed = kwargs.get("test_actor_seed") if "test_actor_seed" in kwargs else self.config.get_option("benchmark_seeds").get("test_actor_seed", 6)
+        self.test_ood_topo_actor_seed = kwargs.get("test_ood_topo_actor_seed") if "test_ood_topo_actor_seed" in kwargs else self.config.get_option("benchmark_seeds").get("test_ood_topo_actor_seed", 7)
 
-        self.initial_chronics_id = initial_chronics_id
+        self.initial_chronics_id = kwargs.get("initial_chronics_id") if "initial_chronics_id" in kwargs else self.config.get_option("benchmark_seeds").get("initial_chronics_id", 0)
+
         # concatenate all the variables for data generation
         attr_names = self.config.get_option("attr_x") + \
                      self.config.get_option("attr_tau") + \
@@ -184,37 +164,42 @@ class PowerGridBenchmark(Benchmark):
         """
         generate the different datasets required for the benchmark
         """
-        if self.is_loaded:
-            self.logger.warning("Previously saved data will be erased by this new generation")
+        if self.path_datasets is not None:
+            if self.is_loaded:
+                self.logger.warning("Previously saved data will be erased by this new generation")
+            if os.path.exists(self.path_datasets):
+                self.logger.warning("Deleting path %s that might contain previous runs", self.path_datasets)
+                shutil.rmtree(self.path_datasets)
+            self.logger.info("Creating path %s to save the current data", self.path_datasets)
+            os.mkdir(self.path_datasets)
+
         with warnings.catch_warnings():
             warnings.filterwarnings("ignore")
             self._fills_actor_simulator()
-        if os.path.exists(self.path_datasets):
-            self.logger.warning("Deleting path %s that might contain previous runs", self.path_datasets)
-            shutil.rmtree(self.path_datasets)
-
-        self.logger.info("Creating path %s to save the current data", self.path_datasets)
-        os.mkdir(self.path_datasets)
 
         self.train_dataset.generate(simulator=self.training_simulator,
                                     actor=self.training_actor,
                                     path_out=self.path_datasets,
-                                    nb_samples=nb_sample_train
+                                    nb_samples=nb_sample_train,
+                                    nb_samples_per_chronic=self.config.get_option("samples_per_chronic").get("train", 864)
                                     )
         self.val_dataset.generate(simulator=self.val_simulator,
                                   actor=self.val_actor,
                                   path_out=self.path_datasets,
-                                  nb_samples=nb_sample_val
+                                  nb_samples=nb_sample_val,
+                                  nb_samples_per_chronic=self.config.get_option("samples_per_chronic").get("val", 288)
                                   )
         self._test_dataset.generate(simulator=self.test_simulator,
                                     actor=self.test_actor,
                                     path_out=self.path_datasets,
-                                    nb_samples=nb_sample_test
+                                    nb_samples=nb_sample_test,
+                                    nb_samples_per_chronic=self.config.get_option("samples_per_chronic").get("test", 288)
                                     )
         self._test_ood_topo_dataset.generate(simulator=self.test_ood_topo_simulator,
                                              actor=self.test_ood_topo_actor,
                                              path_out=self.path_datasets,
-                                             nb_samples=nb_sample_test_ood_topo
+                                             nb_samples=nb_sample_test_ood_topo,
+                                             nb_samples_per_chronic=self.config.get_option("samples_per_chronic").get("test_ood", 288)
                                              )
 
     def evaluate_simulator(self,

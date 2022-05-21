@@ -13,6 +13,7 @@ Licence:
 
 import re
 from typing import Union
+import numpy as np
 
 import grid2op
 from grid2op.Action import BaseAction
@@ -38,7 +39,7 @@ class Grid2opSimulator(PhysicalSimulator):
     def __init__(self,
                  env_kwargs: dict,
                  initial_chronics_id: Union[int, None] = None,
-                 chronics_selected_regex: str = None,
+                 chronics_selected_regex: str = None
                  ):
         PhysicalSimulator.__init__(self, actor_types=(BaseAction, BaseAgent))
         self._simulator = get_env(env_kwargs)
@@ -53,9 +54,19 @@ class Grid2opSimulator(PhysicalSimulator):
         if initial_chronics_id is not None:
             self._simulator.set_id(initial_chronics_id)
 
+        self._chronic_id = 0
+        self.chronics_id = list()
+        self.chronics_name = list()
+        self.chronics_name_unique = list()
+        self.time_stamps = list()
+        self._chronic_counter = -1
+        self._max_episode_duration = None
+        self._visited_ts = list()
+
         self._obs = None
         self._reward = None
         self._info = None
+        self._max_episode_duration = self._simulator.chronics_handler.max_episode_duration()
         self._reset_simulator()
         self._plot_helper = None
 
@@ -78,6 +89,19 @@ class Grid2opSimulator(PhysicalSimulator):
         seeds = self._simulator.seed(seed)
         self._reset_simulator()
         return seeds
+
+    def sample_chronics(self):
+        """Sample a chronic among all the chronics available
+        """
+        self._chronic_id = self._simulator.chronics_handler.real_data.sample_next_chronics()[0]
+        self._simulator.set_id(self._chronic_id)
+        self._obs = self._simulator.reset()
+        self.time_stamps.append([])
+        self.chronics_name_unique.append(self._simulator.chronics_handler.get_name())
+        self._max_episode_duration = self._simulator.chronics_handler.max_episode_duration()
+        self._visited_ts = []
+        self._chronic_counter += 1
+        self._reset_simulator()
 
     def get_state(self) -> tuple:
         """
@@ -144,6 +168,10 @@ class Grid2opSimulator(PhysicalSimulator):
                 self._reset_simulator()
                 self._time_powerflow -= _diff_time_pf
                 self.comp_time -= _diff_time_cp
+            else:
+                self.time_stamps[self._chronic_counter].append(self._simulator.chronics_handler.real_data.data.current_datetime)
+                self.chronics_id.append(self._chronic_id)
+                self.chronics_name.append(self._simulator.chronics_handler.get_name())
 
     def visualize_network(self) -> PlotMatplot:
         """
@@ -170,13 +198,19 @@ class Grid2opSimulator(PhysicalSimulator):
         fig = self._plot_helper.plot_obs(obs, **plot_kwargs)
         return fig
 
-    def _reset_simulator(self):
+    def _reset_simulator(self, fast_forward: bool = True):
         self._obs = self._simulator.reset()
-        # randomly skip a given number of steps in the first day (to improve the randomness)
-        nb_ff = self._simulator.space_prng.randint(288)
-        if nb_ff > 0:
-            self._simulator.fast_forward_chronics(nb_ff)
-            self._obs = self._simulator.get_obs()
+        if fast_forward:
+            # exclude the already selected time stamps from which the scenario should started
+            remaining_timesteps = set(np.arange(self._max_episode_duration)) - set(self._visited_ts)
+            # randomly skip a given number of steps in the first day (to improve the randomness)
+            nb_ff = self._simulator.space_prng.choice(list(remaining_timesteps))
+            if nb_ff > 0:
+                self._simulator.fast_forward_chronics(nb_ff)
+                self._obs = self._simulator.get_obs()
+                self._visited_ts.append(nb_ff)
+            else:
+                self._visited_ts.append(0)
         self._reward = self._simulator.reward_range[0]
         self._info = {}
 
