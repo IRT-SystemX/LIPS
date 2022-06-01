@@ -31,7 +31,8 @@ from lips.benchmark.powergridBenchmark import PowerGridBenchmark
 LIPS_PATH = pathlib.Path(__file__).parent.parent.parent.absolute()
 CONFIG_PATH = LIPS_PATH / "configurations" / "powergrid" / "benchmarks" / "l2rpn_case14_sandbox.ini"
 #DATA_PATH = LIPS_PATH / "reference_data" / "test"
-DATA_PATH = LIPS_PATH / "reference_data" / "powergrid" / "l2rpn_case14_sandbox"
+#DATA_PATH = LIPS_PATH / "reference_data" / "powergrid" / "l2rpn_case14_sandbox"
+DATA_PATH = LIPS_PATH / "lips" / "tests" / "data" / "powergrid" / "l2rpn_case14_sandbox"
 LOG_PATH = LIPS_PATH / "lips_logs.log"
 
 def test_generation_reproducibiltiy():
@@ -252,36 +253,3 @@ def test_bench3_data_reproducibility():
             error = mean_absolute_error(data_ex1.get(key_)[:data_size, :], data_ex2.get(key_))
             errors.append(error)
         assert(np.sum(errors) < 1e-3)
-
-
-# if __name__ == "__main__":
-#     benchmark_seeds = {
-#     "train_env_seed": 7,
-#     "val_env_seed": 2,
-#     "test_env_seed": 3,
-#     "test_ood_topo_env_seed": 4,
-#     "train_actor_seed": 5,
-#     "val_actor_seed": 6,
-#     "test_actor_seed": 7,
-#     "test_ood_topo_actor_seed": 8,
-#     }
-
-#     benchmark1_ex1 = PowerGridBenchmark(benchmark_path=None,
-#                                         benchmark_name="Benchmark1",
-#                                         load_data_set=False,
-#                                         config_path=CONFIG_PATH,
-#                                         log_path=LOG_PATH,
-#                                         #**benchmark_seeds
-#                                         )
-#     print(benchmark1_ex1.train_env_seed)
-#     #test_generation_reproducibiltiy()
-#     #test_generation_seeds()
-#     print(CONFIG_PATH)
-#     config = ConfigManager(path=CONFIG_PATH, section_name="Benchmark1")
-#     seed = config.get_option("benchmark_seeds").get("train_env_seed", 0)
-#     print(seed)
-#     benchmark1_ex1 = PowerGridBenchmark(benchmark_path=None,
-#                                         benchmark_name="Benchmark1",
-#                                         load_data_set=False,
-#                                         config_path=CONFIG_PATH,
-#                                         log_path=LOG_PATH)
