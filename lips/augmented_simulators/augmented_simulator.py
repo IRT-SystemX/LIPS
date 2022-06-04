@@ -60,7 +60,7 @@ class AugmentedSimulator(ABC):
                                    f"We found {type(val_dataset)}")
 
     @abstractmethod
-    def evaluate(self, dataset: DataSet):
+    def predict(self, dataset: DataSet):
         """
         evaluate the model on the full dataset
         """
