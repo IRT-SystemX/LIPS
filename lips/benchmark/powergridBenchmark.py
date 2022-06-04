@@ -239,6 +239,7 @@ class PowerGridBenchmark(Benchmark):
             Unknown dataset selected
 
         """
+        self.augmented_simulator = augmented_simulator
         self._create_training_simulator()
         li_dataset = []
         if dataset == "all":
@@ -302,19 +303,21 @@ class PowerGridBenchmark(Benchmark):
                                                                             augmented_simulator.name,
                                                                             dataset.name
                                                                             )
-        self.augmented_simulator = augmented_simulator
         # TODO: however, we can introduce the batch concept in DC, to have equitable comparison for time complexity
         if isinstance(self.augmented_simulator, DCApproximationAS):
             predictions = self.augmented_simulator.evaluate(dataset)
         else:
-            predictions = self.augmented_simulator.evaluate(dataset, **kwargs)
+            predictions = self.augmented_simulator.predict(dataset, **kwargs)
 
         self.predictions[dataset.name] = predictions
         self.observations[dataset.name] = dataset.data
         self.dataset = dataset
 
+        kwargs["augmented_simulator"] = self.augmented_simulator
+        kwargs["dataset"] = dataset
         res = self.evaluation.evaluate(observations=dataset.data,
-                                       predictions=predictions
+                                       predictions=predictions,
+                                       **kwargs
                                        )
 
         if save_path:
@@ -333,7 +336,6 @@ class PowerGridBenchmark(Benchmark):
                     np.savez_compressed(f"{os.path.join(save_path, attr_nm)}.npz", data=predictions[attr_nm])
         elif save_predictions:
             warnings.warn(message="You indicate to save the predictions, without providing a path. No predictions will be saved!")
-
 
         return res
 

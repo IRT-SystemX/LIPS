@@ -277,7 +277,7 @@ class TorchSimulator(AugmentedSimulator):
 
         return mean_loss, metric_dict
 
-    def evaluate(self, dataset: DataSet, **kwargs) -> dict:
+    def predict(self, dataset: DataSet, **kwargs) -> dict:
         """_summary_
 
         Parameters
@@ -285,9 +285,9 @@ class TorchSimulator(AugmentedSimulator):
         dataset : DataSet
             test datasets to evaluate
         """
-        super().evaluate(dataset)
-        if "batch_size" in kwargs:
-            self.params["eval_batch_size"] = kwargs["batch_size"]
+        super().predict(dataset)
+        if "eval_batch_size" in kwargs:
+            self.params["eval_batch_size"] = kwargs["eval_batch_size"]
         self.params.update(kwargs)
 
         test_loader = self._model.process_dataset(dataset, training=False)
@@ -317,9 +317,7 @@ class TorchSimulator(AugmentedSimulator):
                 #TODO : for RNN, we need to initialize hidden state, but it should be done inside the model
                 #h_0 = self.model.init_hidden(data.size(0))
                 #prediction, _ = self.model(data, h_0)
-                _beg = time.time()
                 prediction = self._model(data)
-                total_time += time.time() - _beg
                 prediction = self._model._post_process(prediction.cpu())
                 target = self._model._post_process(target.cpu())
                 predictions.append(prediction.numpy())
@@ -355,7 +353,6 @@ class TorchSimulator(AugmentedSimulator):
         self._predictions[dataset.name] = predictions
         observations = np.concatenate(observations)
         self._observations[dataset.name] = dataset.reconstruct_output(observations)
-        self.predict_time = total_time
         return predictions#mean_loss, metric_dict
 
     def _get_loss_func(self, *args) -> Tensor:
