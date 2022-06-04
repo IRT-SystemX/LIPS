@@ -13,6 +13,7 @@ Licence:
 
 from typing import Union
 from collections.abc import Iterable
+import time
 
 from .evaluation import Evaluation
 #from ..benchmark import PowerGridBenchmark
@@ -73,7 +74,8 @@ class PowerGridEvaluation(Evaluation):
     def evaluate(self,
                  observations: dict,
                  predictions: dict,
-                 save_path: Union[str, None]=None) -> dict:
+                 save_path: Union[str, None]=None,
+                 **kwargs) -> dict:
         """The main function which evaluates all the required criteria noted in config file
 
         Parameters
@@ -90,7 +92,7 @@ class PowerGridEvaluation(Evaluation):
 
         # evaluate powergrid specific evaluations based on config
         for cat in self.eval_dict.keys():
-            self._dispatch_evaluation(cat)
+            self._dispatch_evaluation(cat, **kwargs)
 
         # TODO: save the self.metrics variable
         if save_path:
@@ -98,7 +100,7 @@ class PowerGridEvaluation(Evaluation):
 
         return self.metrics
 
-    def _dispatch_evaluation(self, category: str):
+    def _dispatch_evaluation(self, category: str, **kwargs):
         """
         This helper function select the evaluation function with respect to the category
 
@@ -112,36 +114,51 @@ class PowerGridEvaluation(Evaluation):
         """
         if category == self.MACHINE_LEARNING:
             if self.eval_dict[category]:
-                self.evaluate_ml()
+                self.evaluate_ml(**kwargs)
         if category == self.PHYSICS_COMPLIANCES:
             if self.eval_dict[category]:
-                self.evaluate_physics()
+                self.evaluate_physics(**kwargs)
         if category == self.INDUSTRIAL_READINESS:
             if self.eval_dict[category]:
-                self.evaluate_industrial_readiness()
+                self.evaluate_industrial_readiness(**kwargs)
 
-    def evaluate_ml(self):
+    def evaluate_ml(self, **kwargs):
         """
         Verify PowerGrid Specific Machine Learning metrics such as MAPE90
         """
         metric_dict = self.metrics[self.MACHINE_LEARNING]
         for metric_name in self.eval_dict[self.MACHINE_LEARNING]:
-            metric_fun = self.criteria.get(metric_name)
-            metric_dict[metric_name] = {}
-            for nm_, pred_ in self.predictions.items():
-                if nm_ == "__prod_p_dc":
-                    # fix for the DC approximation
-                    continue
-                true_ = self.observations[nm_]
-                tmp = metric_fun(true_, pred_)
-                if isinstance(tmp, Iterable):
-                    metric_dict[metric_name][nm_] = [float(el) for el in tmp]
-                    self.logger.info("%s for %s: %s", metric_name, nm_, tmp)
-                else:
-                    metric_dict[metric_name][nm_] = float(tmp)
-                    self.logger.info("%s for %s: %.2f", metric_name, nm_, tmp)
+            if metric_name == "TIME_INF":
+                try:
+                    augmented_simulator = kwargs["augmented_simulator"]
+                    dataset = kwargs["dataset"]
+                except KeyError:
+                    self.logger.error("The augmented simulator or dataset are not provided to estimate the inference time.")
 
-    def evaluate_physics(self):
+                # using the machine learning point of view (max possible batch_size)
+                beg_ = time.perf_counter()
+                _ = augmented_simulator.predict(dataset, eval_batch_size=dataset.size)
+                end_ = time.perf_counter()
+                total_time = end_ - beg_
+                metric_dict["time_inf"] = total_time
+                self.logger.info("%s for %s: %s", metric_name, augmented_simulator.name, total_time)
+            else:
+                metric_fun = self.criteria.get(metric_name)
+                metric_dict[metric_name] = {}
+                for nm_, pred_ in self.predictions.items():
+                    if nm_ == "__prod_p_dc":
+                        # fix for the DC approximation
+                        continue
+                    true_ = self.observations[nm_]
+                    tmp = metric_fun(true_, pred_)
+                    if isinstance(tmp, Iterable):
+                        metric_dict[metric_name][nm_] = [float(el) for el in tmp]
+                        self.logger.info("%s for %s: %s", metric_name, nm_, tmp)
+                    else:
+                        metric_dict[metric_name][nm_] = float(tmp)
+                        self.logger.info("%s for %s: %.2f", metric_name, nm_, tmp)
+
+    def evaluate_physics(self, **kwargs):
         """
         function that evaluates the physics compliances on given observations
         It comprises various verifications which are:
@@ -162,7 +179,7 @@ class PowerGridEvaluation(Evaluation):
                              config=self.config)
             metric_dict[metric_name] = tmp
 
-    def evaluate_industrial_readiness(self):
+    def evaluate_industrial_readiness(self, **kwargs):
         """
         Evaluate the augmented simulators from Industrial Readiness point of view
 
@@ -171,3 +188,24 @@ class PowerGridEvaluation(Evaluation):
 
         """
         metric_dict = self.metrics[self.INDUSTRIAL_READINESS]
+        for metric_name in self.eval_dict[self.INDUSTRIAL_READINESS]:
+            if metric_name == "TIME_INF":
+                try:
+                    augmented_simulator = kwargs["augmented_simulator"]
+                    dataset = kwargs["dataset"]
+                except KeyError:
+                    self.logger.error("The augmented simulator or dataset are not provided to estimate the inference time.")
+
+                try:
+                    eval_batch_size = self.eval_params["inf_batch_size"]
+                except KeyError:
+                    eval_batch_size = kwargs.get("eval_batch_size", augmented_simulator.params["eval_batch_size"])
+
+                # using the industrial readiness point of view (max possible batch_size)
+                beg_ = time.perf_counter()
+                _ = augmented_simulator.predict(dataset, eval_batch_size=eval_batch_size)
+                end_ = time.perf_counter()
+                total_time = end_ - beg_
+                metric_dict["time_inf"] = total_time
+                self.logger.info("%s for %s: %s", metric_name, augmented_simulator.name, total_time)
+

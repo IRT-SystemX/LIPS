@@ -113,7 +113,7 @@ class TensorflowSimulator(AugmentedSimulator):
             self.save(save_path)
         return history_callback
 
-    def evaluate(self, dataset: DataSet, **kwargs) -> dict:
+    def predict(self, dataset: DataSet, **kwargs) -> dict:
         """_summary_
 
         Parameters
@@ -121,19 +121,17 @@ class TensorflowSimulator(AugmentedSimulator):
         dataset : DataSet
             test datasets to evaluate
         """
-        super().evaluate(dataset)
+        super().predict(dataset)
 
-        if "batch_size" in kwargs:
-            self.params["eval_batch_size"] = kwargs["batch_size"]
+        if "eval_batch_size" in kwargs:
+            self.params["eval_batch_size"] = kwargs["eval_batch_size"]
         self.params.update(kwargs)
 
         #processed_x, processed_y = self._process_all_dataset(dataset, training=False)
         processed_x, _ = self.process_dataset(dataset, training=False)
 
         # make the predictions
-        _beg = time.time()
         predictions = self._model.predict(processed_x, batch_size=self.params["eval_batch_size"])
-        self.predict_time = time.time() - _beg
 
         predictions = self._post_process(dataset, predictions)
 
