@@ -239,6 +239,9 @@ class PowerGridBenchmark(Benchmark):
             Unknown dataset selected
 
         """
+        if self.env is None:
+            self.env = get_env(get_kwargs_simulator_scenario(self.config))
+        kwargs["env"] = self.env
         self.augmented_simulator = augmented_simulator
         self._create_training_simulator()
         li_dataset = []
