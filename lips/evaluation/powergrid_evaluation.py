@@ -140,7 +140,7 @@ class PowerGridEvaluation(Evaluation):
                 _ = augmented_simulator.predict(dataset, eval_batch_size=dataset.size)
                 end_ = time.perf_counter()
                 total_time = end_ - beg_
-                metric_dict["time_inf"] = total_time
+                metric_dict[metric_name] = total_time
                 self.logger.info("%s for %s: %s", metric_name, augmented_simulator.name, total_time)
             else:
                 metric_fun = self.criteria.get(metric_name)
@@ -206,6 +206,6 @@ class PowerGridEvaluation(Evaluation):
                 _ = augmented_simulator.predict(dataset, eval_batch_size=eval_batch_size)
                 end_ = time.perf_counter()
                 total_time = end_ - beg_
-                metric_dict["time_inf"] = total_time
+                metric_dict[metric_name] = total_time
                 self.logger.info("%s for %s: %s", metric_name, augmented_simulator.name, total_time)
 
