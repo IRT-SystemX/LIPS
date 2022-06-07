@@ -169,6 +169,10 @@ class PowerGridEvaluation(Evaluation):
         - Verification of Kirchhoff's current law
         - Verification of Joule's law
         """
+        try:
+            env = kwargs["env"]
+        except KeyError:
+            self.logger.error("The environment (physical solver) is required for some physics critiera and should be provided")
         metric_dict = self.metrics[self.PHYSICS_COMPLIANCES]
         for metric_name in self.eval_dict[self.PHYSICS_COMPLIANCES]:
             metric_fun = self.criteria.get(metric_name)
@@ -176,7 +180,8 @@ class PowerGridEvaluation(Evaluation):
             tmp = metric_fun(self.predictions,
                              log_path=self.log_path,
                              observations=self.observations,
-                             config=self.config)
+                             config=self.config,
+                             env=env)
             metric_dict[metric_name] = tmp
 
     def evaluate_industrial_readiness(self, **kwargs):
