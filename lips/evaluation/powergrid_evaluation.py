@@ -19,6 +19,8 @@ from .evaluation import Evaluation
 #from ..benchmark import PowerGridBenchmark
 from ..logger import CustomLogger
 from ..config import ConfigManager
+from ..physical_simulator.dcApproximationAS import DCApproximationAS
+
 
 class PowerGridEvaluation(Evaluation):
     """Evaluation of the power grid specific metrics
@@ -134,14 +136,18 @@ class PowerGridEvaluation(Evaluation):
                     dataset = kwargs["dataset"]
                 except KeyError:
                     self.logger.error("The augmented simulator or dataset are not provided to estimate the inference time.")
-
-                # using the machine learning point of view (max possible batch_size)
-                beg_ = time.perf_counter()
-                _ = augmented_simulator.predict(dataset, eval_batch_size=dataset.size)
-                end_ = time.perf_counter()
-                total_time = end_ - beg_
-                metric_dict[metric_name] = total_time
-                self.logger.info("%s for %s: %s", metric_name, augmented_simulator.name, total_time)
+                if not isinstance(augmented_simulator, DCApproximationAS):
+                    # using the machine learning point of view (max possible batch_size)
+                    beg_ = time.perf_counter()
+                    _ = augmented_simulator.predict(dataset, eval_batch_size=dataset.size)
+                    end_ = time.perf_counter()
+                    total_time = end_ - beg_
+                    metric_dict["time_inf"] = total_time
+                    self.logger.info("%s for %s: %s", metric_name, augmented_simulator.name, total_time)
+                else:
+                    dc_comp_time = augmented_simulator.comp_time
+                    metric_dict["time_inf"] = dc_comp_time
+                    self.logger.info("%s for %s: %s", metric_name, augmented_simulator.name, dc_comp_time)
             else:
                 metric_fun = self.criteria.get(metric_name)
                 metric_dict[metric_name] = {}
@@ -200,17 +206,22 @@ class PowerGridEvaluation(Evaluation):
                     dataset = kwargs["dataset"]
                 except KeyError:
                     self.logger.error("The augmented simulator or dataset are not provided to estimate the inference time.")
+                if not isinstance(augmented_simulator, DCApproximationAS):
+                    try:
+                        eval_batch_size = self.eval_params["inf_batch_size"]
+                    except KeyError:
+                        eval_batch_size = kwargs.get("eval_batch_size", augmented_simulator.params["eval_batch_size"])
 
-                try:
-                    eval_batch_size = self.eval_params["inf_batch_size"]
-                except KeyError:
-                    eval_batch_size = kwargs.get("eval_batch_size", augmented_simulator.params["eval_batch_size"])
+                    # using the industrial readiness point of view (max possible batch_size)
+                    beg_ = time.perf_counter()
+                    _ = augmented_simulator.predict(dataset, eval_batch_size=eval_batch_size)
+                    end_ = time.perf_counter()
+                    total_time = end_ - beg_
+                    metric_dict["time_inf"] = total_time
+                    self.logger.info("%s for %s: %s", metric_name, augmented_simulator.name, total_time)
 
-                # using the industrial readiness point of view (max possible batch_size)
-                beg_ = time.perf_counter()
-                _ = augmented_simulator.predict(dataset, eval_batch_size=eval_batch_size)
-                end_ = time.perf_counter()
-                total_time = end_ - beg_
-                metric_dict[metric_name] = total_time
-                self.logger.info("%s for %s: %s", metric_name, augmented_simulator.name, total_time)
-
+                else:
+                    dc_comp_time = augmented_simulator.comp_time
+                    metric_dict["time_inf"] = dc_comp_time
+                    self.logger.info("%s for %s: %s", metric_name, augmented_simulator.name, dc_comp_time)
+                    
