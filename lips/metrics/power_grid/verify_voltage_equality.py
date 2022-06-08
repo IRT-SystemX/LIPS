@@ -233,6 +233,9 @@ def verify_voltage_at_bus(predictions: dict,
     #prop_voltages_violation = np.sum(np.nansum(std_matrix_voltage, axis=1) > tol) / len(std_matrix_voltage)
     #prop_theta_violation = np.sum(np.nansum(std_matrix_theta, axis=1) > tol) / len(std_matrix_theta)
     prop_voltages_violation = np.sum(std_matrix_voltage[~np.isnan(std_matrix_voltage)] > tol) / np.sum(~np.isnan(std_matrix_voltage))
-    prop_theta_violation = np.sum(std_matrix_theta[~np.isnan(std_matrix_theta)] > tol) / np.sum(~np.isnan(std_matrix_theta))
+    if verify_theta:
+        prop_theta_violation = np.sum(std_matrix_theta[~np.isnan(std_matrix_theta)] > tol) / np.sum(~np.isnan(std_matrix_theta))
+    else:
+        prop_theta_violation = None
 
     return (mean_matrix_voltage, std_matrix_voltage, prop_voltages_violation), (mean_matrix_theta, std_matrix_theta, prop_theta_violation)
