@@ -308,7 +308,7 @@ class PowerGridBenchmark(Benchmark):
                                                                             )
         # TODO: however, we can introduce the batch concept in DC, to have equitable comparison for time complexity
         if isinstance(self.augmented_simulator, DCApproximationAS):
-            predictions = self.augmented_simulator.evaluate(dataset)
+            predictions = self.augmented_simulator.compute(dataset)
         else:
             predictions = self.augmented_simulator.predict(dataset, **kwargs)
 

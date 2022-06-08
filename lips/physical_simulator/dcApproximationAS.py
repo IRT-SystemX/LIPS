@@ -73,9 +73,9 @@ class DCApproximationAS(PhysicsSolver):
         self._bk_act_class = _BackendAction.init_grid(self._raw_grid_simulator)
         self._act_class = CompleteAction.init_grid(self._raw_grid_simulator)
 
-        self._predict_time = 0
+        self.comp_time = 0
 
-    def evaluate(self, dataset: PowerGridDataSet):
+    def compute(self, dataset: PowerGridDataSet):
         """
         evaluate the model on the whole dataset. It returns a dictionnary with the keys in self._attr_y
         """
@@ -85,7 +85,7 @@ class DCApproximationAS(PhysicsSolver):
         nb_sample = len(dataset)
         res = {el: np.zeros((nb_sample, self._get_attr_size(el))) for el in self._attr_y}
         #res[self._attr_fix_gen_p] = np.zeros((nb_sample, self._get_attr_size("prod_p")))
-        self._predict_time = 0
+        self.comp_time = 0
         for ind in tqdm(range(nb_sample), desc="evaluate dc"):
             # extract the current data
             data_this = dataset.get_data(np.array([ind], dtype=int))
@@ -158,7 +158,7 @@ class DCApproximationAS(PhysicsSolver):
         # start the simulator
         _beg = time.time()
         self._raw_grid_simulator.runpf(is_dc=True)
-        self._predict_time += time.time() - _beg
+        self.comp_time += time.time() - _beg
 
     def save(self, path_out):
         """

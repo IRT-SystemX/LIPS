@@ -20,7 +20,7 @@ class PhysicsSolver(object):
         self._observations = dict()
         self._flow = dict()
 
-    def evaluate(self, dataset: "DataSet"):
+    def compute(self, dataset: "DataSet"):
         """
         evaluate the model on the full dataset
         """
