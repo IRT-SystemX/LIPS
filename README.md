@@ -12,10 +12,11 @@ The Readme file is organized as follows:
     *   [3.1 Setup a Virtualenv (optional)](#setup-a-virtualenv-optional)
     *   [3.2 Install from source](#install-from-source)
     *   [3.3 To contribute](#to-contribute)
-*   [4 Getting Started](#getting-started)
-*   [5 Documentation](#documentation)
-*   [6 Contribution](#contribution)
-*   [7 License information](#license-information)
+*   [4 Access the Codabench page](#codabench)
+*   [5 Getting Started](#getting-started)
+*   [6 Documentation](#documentation)
+*   [7 Contribution](#contribution)
+*   [8 License information](#license-information)
 
 ## Introduction
 Nowdays, the simulators are used in every domain to emulate a real-world situation or event or to reproduce the critical situations for which further investigation may be required. The simulators are based generally on physics equations and are costly in terms of time complexity.
@@ -107,6 +108,8 @@ cd ..
 ```commandline
 pip3 install -e .[recommended]
 ```
+# Codabench
+To see the leaderboard for benchmarking tasks, refer to the codabench page of the framework, accessible from this [link](http://htmlpreview.github.io/?https://github.com/Mleyliabadi/LIPS/blob/main/codabench/codabench.html).
 
 # Getting Started
 Some Jupyter notebook are provided as tutorials for LIPS package. They are located in the
