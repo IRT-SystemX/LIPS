@@ -110,7 +110,8 @@ jobs:
                                                                 --ignore=./getting_started/04_HyperParameterTuning.ipynb \
                                                                 --ignore=./getting_started/05-Complete_example.ipynb \
                                                                 --ignore=./getting_started/06_NIPS_environment.ipynb \
-                                                                --ignore=./getting_started/issue_84.ipynb
+                                                                --ignore=./getting_started/issue_84.ipynb \
+                                                                --ignore=./getting_started/EvaluateDC.ipynb
       - store_artifacts_test_results
 
   run_pylint:
