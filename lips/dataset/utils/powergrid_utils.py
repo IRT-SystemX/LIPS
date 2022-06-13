@@ -114,12 +114,16 @@ class XDepthAgent(BaseAgent):
         self.params.update(kwargs)
         self.topo_actions = self.params.get("topo_actions", None)
         self.lines_to_disc = self.params.get("lines_to_disc", None)
-        self.prob_depth = self.params.get("prob_depth", (0.4, 0.3, 0.3))
+        self.prob_depth = self.params.get("prob_depth", (1., ))
         self.max_depth = len(self.prob_depth)
-        self.prob_type = self.params.get("prob_type", (0.7, 0.3))
-        self.prob_do_nothing = self.params.get("prob_do_nothing", 0.2)
-        self.max_disc = self.params.get("max_disc", 1)
-        self.reference_args = reference_params
+        self.prob_type = self.params.get("prob_type", (1., 0.))
+        self.prob_do_nothing = self.params.get("prob_do_nothing", 1)
+        self.max_disc = self.params.get("max_disc", 0)
+        if reference_params == {}:
+            self.reference_args = None
+        else:
+            self.reference_args = reference_params
+
         self.seed(seed)
 
 
@@ -166,10 +170,10 @@ class XDepthAgent(BaseAgent):
         if self.reference_args is not None:
             self.ref_lines_to_disc = self.reference_args.get("lines_to_disc", None)
             self.ref_topo_actions = self.reference_args.get("topo_actions", None)
-            self.ref_prob_depth = self.reference_args.get("prob_depth", (0.4, 0.3, 0.3))
-            self.ref_prob_type = self.reference_args.get("prob_type", (0.7, 0.3))
-            self.ref_prob_do_nothing = self.reference_args.get("prob_do_nothing", 0.2)
-            self.ref_max_disc = self.reference_args.get("max_disc", 1)
+            self.ref_prob_depth = self.reference_args.get("prob_depth", (1., ))
+            self.ref_prob_type = self.reference_args.get("prob_type", (1., 0.))
+            self.ref_prob_do_nothing = self.reference_args.get("prob_do_nothing", 1.)
+            self.ref_max_disc = self.reference_args.get("max_disc", 0)
 
             self.ref_agent = self.__class__(action_space=self.action_space,
                                             all_topo_actions=self.all_topo_actions,
