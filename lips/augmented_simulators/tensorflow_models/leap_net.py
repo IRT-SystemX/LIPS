@@ -5,9 +5,7 @@
 # you can obtain one at http://mozilla.org/MPL/2.0/.
 # SPDX-License-Identifier: MPL-2.0
 # This file is part of LIPS, LIPS is a python platform for power networks benchmarking
-"""
-The leap_net model
-"""
+
 import os
 import pathlib
 from typing import Union

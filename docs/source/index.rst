@@ -24,7 +24,6 @@ All the requirements and functionalities are explained in this documentation.
    lips.evaluation
    lips.logger
    lips.metrics
-   lips.neurips_benchmark
    lips.physical_simulator
 
 .. toctree::

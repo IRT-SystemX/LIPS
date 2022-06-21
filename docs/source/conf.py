@@ -42,7 +42,8 @@ extensions = [
     'sphinx.ext.napoleon',
     'sphinx.ext.autosummary',
     'sphinxcontrib_trio',
-     "sphinx_rtd_theme",
+    'sphinx_rtd_theme',
+
     # toc of modules
     'autodocsumm',
     # 'sphinx.ext.autosectionlabel',

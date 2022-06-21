@@ -1,42 +1,66 @@
-lips.augmented\_simulators package
-==================================
+Augmented Simulators
+====================
+Objecitves
+----------
+An "Augmented Simulator" is a surrogate model which aims at accelerating the physical solvers computation time,
+using data driven models.
+
+Detailed Documentation by class
+-------------------------------
+.. list-table:: Benchmark classes
+   :widths: 50 50
+   :header-rows: 1
+
+   * - Class
+     - Description
+   * - :ref:`AugmentedSimulator<augmentedsimulator>`
+     - Benchmark class for pneumatic use case
+   * - :ref:`TensorflowSimulator<TensorflowSimulator>`
+     - Tensorflow based simulators base class
+   * - :ref:`Tensorflow models<tensorflow-models>`
+     - Implemented models based on Tensorflow package
+   * - :ref:`TorchSimulator<TorchSimulator>`
+     - Pytorch based simulators base class
+   * - :ref:`Pytorch models<pytorch-models>`
+     - Implemented models based on Pytorch package
+
+.. _augmentedsimulator:
+
+AugmentedSimulator base class
+-----------------------------
 
 .. automodule:: lips.augmented_simulators
    :members:
    :undoc-members:
    :show-inheritance:
+   :autosummary-exclude-members: AugmentedSimulator
 
-Submodules
-----------
+.. _TensorflowSimulator:
 
-lips.augmented\_simulators.augmentedSimulator module
-----------------------------------------------------
+TensorflowSimulator base class
+------------------------------
 
-.. automodule:: lips.augmented_simulators.augmentedSimulator
+.. automodule:: lips.augmented_simulators.tensorflow_simulator
    :members:
    :undoc-members:
    :show-inheritance:
+   :autosummary-exclude-members: TensorflowSimulator
 
-lips.augmented\_simulators.fullyConnectedAS module
---------------------------------------------------
+.. _tensorflow-models:
 
-.. automodule:: lips.augmented_simulators.fullyConnectedAS
+.. include:: lips.augmented_simulators.tensorflow_models.rst
+
+.. _TorchSimulator:
+
+TorchSimulator base class
+------------------------------
+
+.. automodule:: lips.augmented_simulators.torch_simulator
    :members:
    :undoc-members:
    :show-inheritance:
+   :autosummary-exclude-members: TorchSimulator
 
-lips.augmented\_simulators.hyperParameterTuner module
------------------------------------------------------
+.. _pytorch-models:
 
-.. automodule:: lips.augmented_simulators.hyperParameterTuner
-   :members:
-   :undoc-members:
-   :show-inheritance:
-
-lips.augmented\_simulators.leapNetAS module
--------------------------------------------
-
-.. automodule:: lips.augmented_simulators.leapNetAS
-   :members:
-   :undoc-members:
-   :show-inheritance:
+.. include:: lips.augmented_simulators.torch_models.rst

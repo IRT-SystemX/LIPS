@@ -6,10 +6,11 @@
 # SPDX-License-Identifier: MPL-2.0
 # This file is part of LIPS, LIPS is a python platform for power networks benchmarking
 
-__all__ = ["AugmentedSimulator"]
+__all__ = [
+    "AugmentedSimulator",
+]
 
 from lips.augmented_simulators.augmented_simulator import AugmentedSimulator
-
 # try:
 #     from lips.augmented_simulators.hyperParameterTuner import HyperParameterTuner
 #     __all__.append("HyperParameterTuner")

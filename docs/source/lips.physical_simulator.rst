@@ -1,11 +1,6 @@
 lips.physical\_simulator package
 ================================
 
-.. automodule:: lips.physical_simulator
-   :members:
-   :undoc-members:
-   :show-inheritance:
-
 Submodules
 ----------
 
@@ -13,6 +8,14 @@ lips.physical\_simulator.dcApproximationAS module
 -------------------------------------------------
 
 .. automodule:: lips.physical_simulator.dcApproximationAS
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
+lips.physical\_simulator.getfemSimulator module
+-----------------------------------------------
+
+.. automodule:: lips.physical_simulator.getfemSimulator
    :members:
    :undoc-members:
    :show-inheritance:
@@ -37,6 +40,14 @@ lips.physical\_simulator.physicsSolver module
 ---------------------------------------------
 
 .. automodule:: lips.physical_simulator.physicsSolver
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
+Module contents
+---------------
+
+.. automodule:: lips.physical_simulator
    :members:
    :undoc-members:
    :show-inheritance:

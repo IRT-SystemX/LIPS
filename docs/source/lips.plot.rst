@@ -1,5 +1,5 @@
-lips.metrics package
-====================
+lips.plot package
+=================
 
 Subpackages
 -----------
@@ -7,12 +7,12 @@ Subpackages
 .. toctree::
    :maxdepth: 4
 
-   lips.metrics.power_grid
+   lips.plot.power_grid
 
 Module contents
 ---------------
 
-.. automodule:: lips.metrics
+.. automodule:: lips.plot
    :members:
    :undoc-members:
    :show-inheritance:
