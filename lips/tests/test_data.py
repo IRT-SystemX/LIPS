@@ -29,7 +29,7 @@ from lips.config import ConfigManager
 from lips.benchmark.powergridBenchmark import PowerGridBenchmark
 
 LIPS_PATH = pathlib.Path(__file__).parent.parent.parent.absolute()
-CONFIG_PATH = LIPS_PATH / "configurations" / "powergrid" / "benchmarks" / "l2rpn_case14_sandbox.ini"
+CONFIG_PATH = LIPS_PATH / "lips" / "tests" / "configs" / "powergrid" / "benchmarks" / "l2rpn_case14_sandbox.ini"
 #DATA_PATH = LIPS_PATH / "reference_data" / "test"
 #DATA_PATH = LIPS_PATH / "reference_data" / "powergrid" / "l2rpn_case14_sandbox"
 DATA_PATH = LIPS_PATH / "lips" / "tests" / "data" / "powergrid" / "l2rpn_case14_sandbox"
