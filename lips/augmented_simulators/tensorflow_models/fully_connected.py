@@ -24,6 +24,11 @@ class TfFullyConnected(TensorflowSimulator):
 
     Parameters
     ----------
+    sim_config_path : ``str``
+        The path to the configuration file for simulator.
+        It should contain all the required hyperparameters for this model.
+    sim_config_name : Union[str, None], optional
+        _description_, by default None
     name : Union[str, None], optional
         _description_, by default None
     scaler : Union[Scaler, None], optional
@@ -31,10 +36,6 @@ class TfFullyConnected(TensorflowSimulator):
     bench_config_path : Union[str, pathlib.Path, None], optional
         _description_, by default None
     bench_config_name : Union[str, None], optional
-        _description_, by default None
-    sim_config_path : Union[str, None], optional
-        _description_, by default None
-    sim_config_name : Union[str, None], optional
         _description_, by default None
     log_path : Union[None, str], optional
         _description_, by default None
@@ -45,22 +46,20 @@ class TfFullyConnected(TensorflowSimulator):
         _description_
     """
     def __init__(self,
+                 sim_config_path: str,
+                 sim_config_name: Union[str, None]=None,
                  name: Union[str, None]=None,
                  scaler: Union[Scaler, None]=None,
                  bench_config_path: Union[str, pathlib.Path, None]=None,
                  bench_config_name: Union[str, None]=None,
-                 sim_config_path: Union[str, None]=None,
-                 sim_config_name: Union[str, None]=None,
                  log_path: Union[None, str]=None,
                  **kwargs):
         super().__init__(name=name, log_path=log_path, **kwargs)
-        # Benchmark configurations
-        self.bench_config = ConfigManager(section_name=bench_config_name, path=bench_config_path)
-        # The config file associoated to this model
+        if not(sim_config_path.exists()):
+            raise RuntimeError("You should provide a configuration path for the simulator!")
         sim_config_name = sim_config_name if sim_config_name is not None else "DEFAULT"
-        sim_config_path_default = pathlib.Path(__file__).parent.parent / "configurations" / "tf_fc.ini"
-        sim_config_path = sim_config_path if sim_config_path is not None else sim_config_path_default
         self.sim_config = ConfigManager(section_name=sim_config_name, path=sim_config_path)
+        self.bench_config = ConfigManager(section_name=bench_config_name, path=bench_config_path)
         self.name = name if name is not None else self.sim_config.get_option("name")
         self.name = self.name + '_' + sim_config_name
         # scaler
