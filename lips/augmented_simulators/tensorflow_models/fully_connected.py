@@ -1,6 +1,7 @@
 """
 Tensorflow fully connected Model
 """
+import os
 import pathlib
 from typing import Union
 import json
@@ -55,8 +56,10 @@ class TfFullyConnected(TensorflowSimulator):
                  log_path: Union[None, str]=None,
                  **kwargs):
         super().__init__(name=name, log_path=log_path, **kwargs)
-        if not(sim_config_path.exists()):
-            raise RuntimeError("You should provide a configuration path for the simulator!")
+        if not os.path.exists(sim_config_path):
+            raise RuntimeError("Configuration path for the simulator not found!")
+        if not str(sim_config_path).endswith(".ini"):
+            raise RuntimeError("The configuration file should have `.ini` extension!")
         sim_config_name = sim_config_name if sim_config_name is not None else "DEFAULT"
         self.sim_config = ConfigManager(section_name=sim_config_name, path=sim_config_path)
         self.bench_config = ConfigManager(section_name=bench_config_name, path=bench_config_path)

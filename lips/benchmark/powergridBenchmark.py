@@ -44,7 +44,7 @@ class PowerGridBenchmark(Benchmark):
     benchmark_path : Union[``str``, ``None``], optional
         path to the benchmark, it should be indicated
         if not indicated, the data remains only in the memory
-    config_path : Union[``str``, ``None``], optional
+    config_path : Union[``pathlib.Path``, ``str``, ``None``], optional
         path to the configuration file. If config_path is ``None``, the default config file
         present in config module will be used by using the benchmark_name as the section, by default None
     benchmark_name : ``str``, optional
@@ -54,7 +54,7 @@ class PowerGridBenchmark(Benchmark):
     evaluation : Union[``PowerGridEvaluation``, ``None``], optional
         a ``PowerGridEvaluation`` instance. If not indicated, the benchmark creates its
         own evaluation instance using appropriate config, by default None
-    log_path : Union[``str``, ``None``], optional
+    log_path : Union[``pathlib.Path``, ``str``, ``None``], optional
         path to the logs, by default None
 
     Warnings
@@ -64,21 +64,21 @@ class PowerGridBenchmark(Benchmark):
     can extend this class.
     """
     def __init__(self,
-                 benchmark_path: Union[str, None],
-                 config_path: Union[str, None]=None,
+                 benchmark_path: Union[pathlib.Path, str, None],
+                 config_path: Union[pathlib.Path, str],
                  benchmark_name: str="Benchmark1",
                  load_data_set: bool=False,
                  evaluation: Union[PowerGridEvaluation, None]=None,
-                 log_path: Union[str, None]=None,
+                 log_path: Union[pathlib.Path, str, None]=None,
                  **kwargs
                  ):
         super().__init__(benchmark_name=benchmark_name,
+                         benchmark_path=benchmark_path,
+                         config_path=config_path,
                          dataset=None,
                          augmented_simulator=None,
                          evaluation=evaluation,
-                         benchmark_path=benchmark_path,
-                         log_path=log_path,
-                         config_path=config_path
+                         log_path=log_path
                         )
 
         self.is_loaded=False
