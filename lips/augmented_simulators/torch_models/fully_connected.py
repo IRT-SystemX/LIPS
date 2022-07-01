@@ -23,40 +23,45 @@ class TorchFullyConnected(nn.Module):
 
     Parameters
     ----------
-    input_shape : tuple
-        _description_
-    output_size : int
-        _description_
+    sim_config_path : ``str``
+        The path to the configuration file for simulator.
+        It should contain all the required hyperparameters for this model.
+    sim_config_name : Union[str, None], optional
+        _description_, by default None
     name : Union[str, None], optional
+        _description_, by default None
+    scaler : Union[Scaler, None], optional
+        _description_, by default None
+    bench_config_path : Union[str, pathlib.Path, None], optional
+        _description_, by default None
+    bench_config_name : Union[str, None], optional
         _description_, by default None
     log_path : Union[None, str], optional
         _description_, by default None
+
+    Raises
+    ------
+    RuntimeError
+        You should provide a path to the configuration file for this augmented simulator
     """
     def __init__(self,
-                 #input_size: int,
-                 #output_size: int,
+                 sim_config_path: str,
+                 sim_config_name: Union[str, None]=None,
                  name: Union[str, None]=None,
                  scaler: Union[Scaler, None]=None,
                  bench_config_path: Union[str, pathlib.Path, None]=None,
                  bench_config_name: Union[str, None]=None,
-                 sim_config_path: Union[str, None]=None,
-                 sim_config_name: Union[str, None]=None,
                  log_path: Union[None, str]=None,
                  **kwargs):
-        #super(TorchFullyConnected, self).__init__()
-        super().__init__()#name=name, log_path=log_path, **kwargs)
-
-        # Benchmark configurations
-        self.bench_config = ConfigManager(section_name=bench_config_name, path=bench_config_path)
-        # The config file associoated to this model
+        super().__init__()
+        if not(sim_config_path.exists()):
+            raise RuntimeError("You should provide a configuration path for the simulator!")
         sim_config_name = sim_config_name if sim_config_name is not None else "DEFAULT"
-        sim_config_path_default = pathlib.Path(__file__).parent.parent / "configurations" / "torch_fc.ini"
-        sim_config_path = sim_config_path if sim_config_path is not None else sim_config_path_default
         self.sim_config = ConfigManager(section_name=sim_config_name, path=sim_config_path)
+        self.bench_config = ConfigManager(section_name=bench_config_name, path=bench_config_path)
         self.name = name if name is not None else self.sim_config.get_option("name")
         # scaler
         self.scaler = scaler
-        #self.scaler = scaler() if scaler else None
         # Logger
         self.log_path = log_path
         self.logger = CustomLogger(__class__.__name__, log_path).logger
