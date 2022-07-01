@@ -1,6 +1,7 @@
 """
 Torch fully connected model
 """
+import os
 import pathlib
 from typing import Union
 import json
@@ -23,7 +24,7 @@ class TorchFullyConnected(nn.Module):
 
     Parameters
     ----------
-    sim_config_path : ``str``
+    sim_config_path : Union[``pathlib.Path``, ``str``]
         The path to the configuration file for simulator.
         It should contain all the required hyperparameters for this model.
     sim_config_name : Union[str, None], optional
@@ -45,17 +46,19 @@ class TorchFullyConnected(nn.Module):
         You should provide a path to the configuration file for this augmented simulator
     """
     def __init__(self,
-                 sim_config_path: str,
+                 sim_config_path: Union[pathlib.Path, str],
                  sim_config_name: Union[str, None]=None,
                  name: Union[str, None]=None,
                  scaler: Union[Scaler, None]=None,
                  bench_config_path: Union[str, pathlib.Path, None]=None,
                  bench_config_name: Union[str, None]=None,
-                 log_path: Union[None, str]=None,
+                 log_path: Union[None, pathlib.Path, str]=None,
                  **kwargs):
         super().__init__()
-        if not(sim_config_path.exists()):
-            raise RuntimeError("You should provide a configuration path for the simulator!")
+        if not os.path.exists(sim_config_path):
+            raise RuntimeError("Configuration path for the simulator not found!")
+        if not str(sim_config_path).endswith(".ini"):
+            raise RuntimeError("The configuration file should have `.ini` extension!")
         sim_config_name = sim_config_name if sim_config_name is not None else "DEFAULT"
         self.sim_config = ConfigManager(section_name=sim_config_name, path=sim_config_path)
         self.bench_config = ConfigManager(section_name=bench_config_name, path=bench_config_path)
