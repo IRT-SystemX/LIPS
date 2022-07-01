@@ -253,3 +253,60 @@ def test_bench3_data_reproducibility():
             error = mean_absolute_error(data_ex1.get(key_)[:data_size, :], data_ex2.get(key_))
             errors.append(error)
         assert(np.sum(errors) < 1e-3)
+
+def test_bench1_consistency():
+    """Consistency check wrt. config
+
+    This test verifies if generated variables and those indicated in config file are consistent.
+    """
+    benchmark1 = PowerGridBenchmark(benchmark_path=DATA_PATH,
+                                    benchmark_name="Benchmark1",
+                                    load_data_set=True,
+                                    config_path=CONFIG_PATH,
+                                    log_path=LOG_PATH)
+    config_keys = benchmark1.config.get_option("attr_x") + \
+                  benchmark1.config.get_option("attr_tau") + \
+                  benchmark1.config.get_option("attr_y")
+    dataset_labels = ("train_dataset", "val_dataset", "_test_dataset", "_test_ood_topo_dataset")
+    for label_ in dataset_labels:
+        data = getattr(benchmark1, label_).data
+        dataset_keys = tuple(data.keys())
+        assert dataset_keys == config_keys
+
+def test_bench2_consistency():
+    """Consistency check wrt. config
+
+    This test verifies if generated variables and those indicated in config file are consistent.
+    """
+    benchmark2 = PowerGridBenchmark(benchmark_path=DATA_PATH,
+                                    benchmark_name="Benchmark2",
+                                    load_data_set=True,
+                                    config_path=CONFIG_PATH,
+                                    log_path=LOG_PATH)
+    config_keys = benchmark2.config.get_option("attr_x") + \
+                  benchmark2.config.get_option("attr_tau") + \
+                  benchmark2.config.get_option("attr_y")
+    dataset_labels = ("train_dataset", "val_dataset", "_test_dataset", "_test_ood_topo_dataset")
+    for label_ in dataset_labels:
+        data = getattr(benchmark2, label_).data
+        dataset_keys = tuple(data.keys())
+        assert dataset_keys == config_keys
+
+def test_bench3_consistency():
+    """Consistency check wrt. config
+
+    This test verifies if generated variables and those indicated in config file are consistent.
+    """
+    benchmark3 = PowerGridBenchmark(benchmark_path=DATA_PATH,
+                                    benchmark_name="Benchmark3",
+                                    load_data_set=True,
+                                    config_path=CONFIG_PATH,
+                                    log_path=LOG_PATH)
+    config_keys = benchmark3.config.get_option("attr_x") + \
+                  benchmark3.config.get_option("attr_tau") + \
+                  benchmark3.config.get_option("attr_y")
+    dataset_labels = ("train_dataset", "val_dataset", "_test_dataset", "_test_ood_topo_dataset")
+    for label_ in dataset_labels:
+        data = getattr(benchmark3, label_).data
+        dataset_keys = tuple(data.keys())
+        assert dataset_keys == config_keys
