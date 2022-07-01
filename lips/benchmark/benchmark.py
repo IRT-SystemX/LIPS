@@ -10,6 +10,7 @@ import os
 from typing import Union
 from abc import ABC, abstractmethod
 
+import pathlib
 import numpy as np
 
 from ..evaluation import Evaluation
@@ -32,6 +33,10 @@ class Benchmark(ABC):
     ----------
     benchmark_name : ``str``
         a name attributed to the corresponding experiment
+    benchmark_path : Union[``pathlib.Path``, ``str``, ``None``], optional
+        the path to benchmark scenarios and related datasets
+    config_path : Union[``pathlib.Path``, ``str``]
+        the path of config file
     dataset : Union[``DataSet``, ``None``], optional
         an object of ``DataSet`` class which containing the data for training, validation and testing, by default None
     augmented_simulator : Union[``AugmentedSimulator``, ``PhysicsSolver``, ``None``], optional
@@ -40,26 +45,29 @@ class Benchmark(ABC):
         It allows to evaluate the performance of the simulator with respect to various point of views
         It should be parameterized before passing to benchmark class to include appropriate metrics
         otherwise, it is initialized using an empty dictionary, by default None
-    benchmark_path : Union[``str``, ``None``], optional
-        the path used to save the benchmark results, by default None
-    log_path : Union[``str``, ``None``], optional
+    log_path : Union[``pathlib.Path``, ``str``, ``None``], optional
         the path of logger, by default None
-    config_path : Union[``str``, ``None``], optional
-        the path of config file, by default None
     """
     def __init__(self,
                  benchmark_name: str,
+                 benchmark_path: Union[pathlib.Path, str, None],
+                 config_path: Union[pathlib.Path, str],
                  dataset: Union[DataSet, None]=None,
                  augmented_simulator: Union[AugmentedSimulator, PhysicsSolver, None]=None,
                  evaluation: Evaluation=None,
-                 benchmark_path: Union[str, None]=None,
-                 log_path: Union[str, None]=None,
-                 config_path: Union[str, None]=None
+                 log_path: Union[pathlib.Path, str, None]=None,
                  ):
         self.benchmark_name = benchmark_name
         self.benchmark_path = benchmark_path
         self.path_datasets = os.path.join(benchmark_path, self.benchmark_name) if benchmark_path else None
 
+        # config file
+        if not(os.path.exists(config_path)):
+            raise RuntimeError("Configuration path not found for the benchmark!")
+        elif not str(config_path).endswith(".ini"):
+            raise RuntimeError("The configuration file should have `.ini` extension!")
+        else:
+            self.config = ConfigManager(section_name=benchmark_name, path=config_path)
 
         # Object of class DataSet contianing datasets for testing
         # It contains the last dataset used for evaluation
@@ -76,9 +84,6 @@ class Benchmark(ABC):
         # logger
         self.log_path = log_path
         self.logger = CustomLogger(__class__.__name__, log_path).logger
-
-        # config file
-        self.config = ConfigManager(section_name=benchmark_name, path=config_path)
 
         if evaluation is not None:
             # use the user-defined evaluation object

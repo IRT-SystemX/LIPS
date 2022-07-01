@@ -54,6 +54,7 @@ class TorchSimulator(AugmentedSimulator):
         """
     def __init__(self,
                  model: nn.Module,
+                 sim_config_path: Union[pathlib.Path, str],
                  name: Union[str, None]=None,
                  scaler: Union[Scaler, None]=None,
                  log_path: Union[str, None]=None,
@@ -65,7 +66,7 @@ class TorchSimulator(AugmentedSimulator):
         self.logger = CustomLogger(__class__.__name__, self.log_path).logger
         # scaler
         self.scaler = scaler() if scaler else None
-        self._model = self.model(name, self.scaler, **kwargs)
+        self._model = self.model(name=name, sim_config_path=sim_config_path, scaler=self.scaler, **kwargs)
         sim_config_name = self._model.sim_config.section_name
         self.name = self.name + '_' + sim_config_name
         self.params.update(self._model.params)
