@@ -36,7 +36,7 @@ The learning industrial physical simulation benchmark suite allows to evaluate t
 
 ## Usage example
 ### Instantiate a benchmark for power grid use case
-The paths should correctly point-out to generated data ([DATA_PATH](https://github.com/Mleyliabadi/LIPS/tree/main/reference_data)) and benchmark associated config file ([CONFIG_PATH](https://github.com/Mleyliabadi/LIPS/blob/main/lips/config/conf.ini)). The log path (`LOG_PATH`) could be set by the user.
+The paths should correctly point-out to generated data ([DATA_PATH](https://github.com/Mleyliabadi/LIPS/tree/main/reference_data)) and benchmark associated config file ([CONFIG_PATH](https://github.com/Mleyliabadi/LIPS/blob/main/configurations)). The log path (`LOG_PATH`) could be set by the user.
 
 ```python
 from lips.benchmark import PowerGridBenchmark
@@ -65,9 +65,9 @@ tf_fc.train(train_dataset=benchmark1.train_dataset,
            )
 
 ```
-For each architecture a config file is attached which are available [here](https://github.com/Mleyliabadi/LIPS/tree/main/lips/augmented_simulators/configurations).
+For each architecture a config file is attached which are available [here](https://github.com/Mleyliabadi/LIPS/tree/main/configurations/powergrid/simulators) for powergrid use case.
 ### Reproducibility and evaluation
-The following script show how to use the evaluation capacity of the platform to reproduce the results on all the datasets. A config file (see [here](https://github.com/Mleyliabadi/LIPS/blob/main/lips/config/conf.ini)) is associated with this benchmark and all the required evaluation criteria can be set in this configuration file.
+The following script show how to use the evaluation capacity of the platform to reproduce the results on all the datasets. A config file (see [here](https://github.com/Mleyliabadi/LIPS/blob/main/configurations/powergrid/benchmarks/l2rpn_case14_sandbox.ini) for powergrid use case) is associated with this benchmark and all the required evaluation criteria can be set in this configuration file.
 
 ```Python
 tf_fc_metrics = benchmark1.evaluate_simulator(augmented_simulator=tf_fc,
