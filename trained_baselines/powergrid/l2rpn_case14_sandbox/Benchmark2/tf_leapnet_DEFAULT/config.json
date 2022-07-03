@@ -30,7 +30,7 @@
     "scale_input_dec_layer": null,
     "scale_input_enc_layer": null,
     "scale_main_layer": null,
-    "shuffle": false,
+    "shuffle": true,
     "sizes_enc": [
         20,
         20,
