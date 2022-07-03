@@ -32,6 +32,6 @@
         }
     },
     "save_freq": false,
-    "shuffle": false,
+    "shuffle": true,
     "train_batch_size": 128
 }

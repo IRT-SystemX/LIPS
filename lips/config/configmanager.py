@@ -26,7 +26,9 @@ class ConfigManager(object):
                  path: str,
                  section_name: str="DEFAULT",
                 ):
-        if not(path.exists()):
+        if path is None:
+            raise RuntimeError("A path should be indicated!")
+        elif not(path.exists()):
             raise RuntimeError("A path to a configuration file should be indicated!")
         elif not str(path).endswith(".ini"):
             raise RuntimeError("The configuration file should have `.ini` extension!")

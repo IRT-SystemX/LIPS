@@ -3,7 +3,7 @@
     "ckpt_freq": 50,
     "device": "cpu",
     "dropout": 0.0,
-    "epochs": 100,
+    "epochs": 200,
     "eval_batch_size": 128,
     "input_dropout": 0.0,
     "layer": "linear",
@@ -32,6 +32,6 @@
         }
     },
     "save_freq": false,
-    "shuffle": false,
+    "shuffle": true,
     "train_batch_size": 128
 }
