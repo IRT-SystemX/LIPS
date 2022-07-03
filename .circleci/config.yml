@@ -107,11 +107,10 @@ jobs:
             python -m pytest --nbmake -n=auto ./getting_started --ignore=./getting_started/01_GenerateData.ipynb \
                                                                 --ignore=./getting_started/02_EvaluateBaseline.ipynb \
                                                                 --ignore=./getting_started/03_TrainAnAugmentedSimulator.ipynb \
-                                                                --ignore=./getting_started/04_HyperParameterTuning.ipynb \
-                                                                --ignore=./getting_started/05-Complete_example.ipynb \
-                                                                --ignore=./getting_started/06_NIPS_environment.ipynb \
-                                                                --ignore=./getting_started/issue_84.ipynb \
-                                                                --ignore=./getting_started/EvaluateDC.ipynb
+                                                                --ignore=./getting_started/04_Complete_example.ipynb \
+                                                                --ignore=./getting_started/auxiliary/06_NIPS_environment.ipynb \
+                                                                --ignore=./getting_started/auxiliary/07_Complete_example_Nips_Track1.ipynb \
+                                                                --ignore=./getting_started/auxiliary/EvaluateDC.ipynb
       - store_artifacts_test_results
 
   run_pylint:
