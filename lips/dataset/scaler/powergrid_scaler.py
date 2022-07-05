@@ -55,7 +55,7 @@ class PowerGridScaler(Scaler):
             if attr_nm == "line_status":
                 res_tau.append((all_data[attr_nm] - m_) / sd_)
             elif attr_nm == "topo_vect":
-                res_tau.append((all_data[attr_nm] - m_) / sd_)
+                res_tau.append(all_data[attr_nm])#(all_data[attr_nm] - m_) / sd_)
                 # if self.obss is None:
                 #     self.obss = self._make_fake_obs(dataset)
                 # res_tau.append(np.array([leap_net_model.topo_vect_handler(obs)

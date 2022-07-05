@@ -2,7 +2,7 @@ version: 2.1
 
 references:
   dep_key: &dep_key
-              deps2-{{ .Branch }}-{{ checksum "requirements.txt" }}
+              deps4-{{ .Branch }}-{{ checksum "requirements.txt" }}
 
 executors:
   docker-executor:
@@ -23,18 +23,8 @@ commands:
             python3 -m venv venv
             . venv/bin/activate
             pip install --upgrade pip
-            pip install -r requirements.txt
-            pip install -U .
-            pip install pytest
+            pip install -U .[test]
             pip install nbmake pytest-xdist
-            pip install ipykernel
-            pip install pylint
-            pip install pylint-exit
-            pip install jupytext --upgrade
-            pip install sphinx
-            pip install sphinx-rtd-theme
-            pip install sphinxcontrib_trio
-            pip install autodocsumm
       - change_owner
       - save_cache_dep
 
@@ -199,14 +189,6 @@ workflows:
               - gh-pages
 
     - run_python_tests:
-        requires:
-          - build_dep
-        filters:
-          branches:
-            ignore:
-              - gh-pages
-
-    - run_pylint:
         requires:
           - build_dep
         filters:
