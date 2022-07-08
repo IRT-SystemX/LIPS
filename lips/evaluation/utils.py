@@ -18,6 +18,19 @@ import copy
 from sklearn.metrics import mean_squared_error
 from sklearn.metrics import mean_absolute_error
 
+import numpy as np
+#sklearn does not support 4D tensors
+def mean_absolute_error2(sols,preds): 
+    sols,preds=np.array(sols),np.array(preds)
+    absError = np.abs(preds - sols)
+    return np.mean(absError)
+
+def mean_squared_error2(sols,preds): 
+    sols,preds=np.array(sols),np.array(preds)
+    squaredError = (preds - sols)**2
+    return np.mean(squaredError)
+
+
 class Mapper(object):
     """Mapper class
     This class create a mapping dict between evaluation criteria and their respective functions available in metrics module
@@ -40,6 +53,8 @@ class Mapper(object):
         tmp_criteria = {}
         tmp_criteria.update(MSE_avg=mean_squared_error)
         tmp_criteria.update(MAE_avg=mean_absolute_error)
+        tmp_criteria.update(MSE_avg2=mean_squared_error2)
+        tmp_criteria.update(MAE_avg2=mean_absolute_error2)
         self.criteria.update(copy.deepcopy(tmp_criteria))
 
         return copy.deepcopy(tmp_criteria)

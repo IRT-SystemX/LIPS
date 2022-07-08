@@ -74,6 +74,14 @@ class QuasiStaticMecaProblemBase(metaclass=abc.ABCMeta):
     def contact(self, problemContact):
         self._staticProblem.contact = problemContact
 
+    @property
+    def incompressibility(self):
+        return self._staticProblem.incompressibility
+
+    @incompressibility.setter
+    def incompressibility(self, problemIncompressibility):
+        self._staticProblem.incompressibility = problemIncompressibility
+
     def Preprocessing(self):
         self._staticProblem.Preprocessing()
 
@@ -92,7 +100,7 @@ class QuasiStaticMecaProblemBase(metaclass=abc.ABCMeta):
             self.solutions[fieldType].append(staticSolution)
 
     def GetSolution(self,fieldType):
-        return self.solutions[fieldType]
+        return np.array(self.solutions[fieldType])
 
     def SolveStaticProblem(self):
         state=self._staticProblem.RunProblem()
@@ -126,6 +134,9 @@ class QuasiStaticMecaProblemBase(metaclass=abc.ABCMeta):
         self.SolveStaticProblem()
         u = self._staticProblem.GetSolution(PFN.displacement)
         return u
+
+    def SetPhyParams(self,actor):
+        pass
 
     @abc.abstractmethod
     def UpdateStaticProblem(self,time):

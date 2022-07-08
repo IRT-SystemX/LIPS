@@ -138,7 +138,11 @@ class Evaluation(object):
                     # fix for the DC approximation
                     continue
                 true_ = self.observations[nm_]
-                tmp = metric_fun(true_, pred_)
+                try:
+                    tmp = metric_fun(true_, pred_)
+                except ValueError:
+                    #Sklearn fails for 4D tensors, skip generic metric if error raised
+                    continue
                 if isinstance(tmp, Iterable):
                     metric_dict[metric_name][nm_] = [float(el) for el in tmp]
                     # self.logger.info("%s for %s: %s", metric_name, nm_, tmp)
