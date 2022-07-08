@@ -1,25 +1,21 @@
-"""
-Usage:
-    PowerGridEvaluation allows to evaluate the augmented simulators from power grid context
-Licence:
-    Copyright (c) 2021, IRT SystemX (https://www.irt-systemx.fr/en/)
-    See AUTHORS.txt
-    This Source Code Form is subject to the terms of the Mozilla Public License, version 2.0.
-    If a copy of the Mozilla Public License, version 2.0 was not distributed with this file,
-    you can obtain one at http://mozilla.org/MPL/2.0/.
-    SPDX-License-Identifier: MPL-2.0
-    This file is part of LIPS, LIPS is a python platform for power networks benchmarking
-"""
+# Copyright (c) 2021, IRT SystemX (https://www.irt-systemx.fr/en/)
+# See AUTHORS.txt
+# This Source Code Form is subject to the terms of the Mozilla Public License, version 2.0.
+# If a copy of the Mozilla Public License, version 2.0 was not distributed with this file,
+# you can obtain one at http://mozilla.org/MPL/2.0/.
+# SPDX-License-Identifier: MPL-2.0
+# This file is part of LIPS, LIPS is a python platform for power networks benchmarking
 
 from typing import Union
 from collections.abc import Iterable
 import time
 
 from .evaluation import Evaluation
-#from ..benchmark import PowerGridBenchmark
+from .utils import metric_factory
 from ..logger import CustomLogger
 from ..config import ConfigManager
 from ..physical_simulator.dcApproximationAS import DCApproximationAS
+from ..metrics.power_grid import physics_compliances
 
 
 class PowerGridEvaluation(Evaluation):
@@ -54,7 +50,7 @@ class PowerGridEvaluation(Evaluation):
 
         self.logger = CustomLogger(__class__.__name__, self.log_path).logger
         # read the criteria and their mapped functions for power grid
-        self.criteria = self.mapper.map_powergrid_criteria()
+        # self.criteria = self.mapper.map_powergrid_criteria()
 
     @classmethod
     def from_benchmark(cls,
@@ -134,22 +130,23 @@ class PowerGridEvaluation(Evaluation):
                 try:
                     augmented_simulator = kwargs["augmented_simulator"]
                     dataset = kwargs["dataset"]
+                    if not isinstance(augmented_simulator, DCApproximationAS):
+                        # using the machine learning point of view (max possible batch_size)
+                        beg_ = time.perf_counter()
+                        _ = augmented_simulator.predict(dataset, eval_batch_size=dataset.size)
+                        end_ = time.perf_counter()
+                        total_time = end_ - beg_
+                        metric_dict[metric_name] = total_time
+                        self.logger.info("%s for %s: %s", metric_name, augmented_simulator.name, total_time)
+                    else:
+                        dc_comp_time = augmented_simulator.comp_time
+                        metric_dict[metric_name] = dc_comp_time
+                        self.logger.info("%s for %s: %s", metric_name, augmented_simulator.name, dc_comp_time)
                 except KeyError:
                     self.logger.error("The augmented simulator or dataset are not provided to estimate the inference time.")
-                if not isinstance(augmented_simulator, DCApproximationAS):
-                    # using the machine learning point of view (max possible batch_size)
-                    beg_ = time.perf_counter()
-                    _ = augmented_simulator.predict(dataset, eval_batch_size=dataset.size)
-                    end_ = time.perf_counter()
-                    total_time = end_ - beg_
-                    metric_dict[metric_name] = total_time
-                    self.logger.info("%s for %s: %s", metric_name, augmented_simulator.name, total_time)
-                else:
-                    dc_comp_time = augmented_simulator.comp_time
-                    metric_dict[metric_name] = dc_comp_time
-                    self.logger.info("%s for %s: %s", metric_name, augmented_simulator.name, dc_comp_time)
             else:
-                metric_fun = self.criteria.get(metric_name)
+                metric_fun = metric_factory.get_metric(metric_name)
+                # metric_fun = self.criteria.get(metric_name)
                 metric_dict[metric_name] = {}
                 for nm_, pred_ in self.predictions.items():
                     if nm_ == "__prod_p_dc":
@@ -181,13 +178,15 @@ class PowerGridEvaluation(Evaluation):
             self.logger.error("The environment (physical solver) is required for some physics critiera and should be provided")
         metric_dict = self.metrics[self.PHYSICS_COMPLIANCES]
         for metric_name in self.eval_dict[self.PHYSICS_COMPLIANCES]:
-            metric_fun = self.criteria.get(metric_name)
+            metric_fun = metric_factory.get_metric(metric_name)
+            #metric_fun = self.criteria.get(metric_name)
             metric_dict[metric_name] = {}
             tmp = metric_fun(self.predictions,
                              log_path=self.log_path,
                              observations=self.observations,
                              config=self.config,
-                             env=env)
+                             **kwargs)
+                             #env=env)
             metric_dict[metric_name] = tmp
 
     def evaluate_industrial_readiness(self, **kwargs):
@@ -204,23 +203,24 @@ class PowerGridEvaluation(Evaluation):
                 try:
                     augmented_simulator = kwargs["augmented_simulator"]
                     dataset = kwargs["dataset"]
+
+                    if not isinstance(augmented_simulator, DCApproximationAS):
+                        try:
+                            eval_batch_size = self.eval_params["inf_batch_size"]
+                        except KeyError:
+                            eval_batch_size = kwargs.get("eval_batch_size", augmented_simulator.params["eval_batch_size"])
+
+                        # using the industrial readiness point of view (max possible batch_size)
+                        beg_ = time.perf_counter()
+                        _ = augmented_simulator.predict(dataset, eval_batch_size=eval_batch_size)
+                        end_ = time.perf_counter()
+                        total_time = end_ - beg_
+                        metric_dict[metric_name] = total_time
+                        self.logger.info("%s for %s: %s", metric_name, augmented_simulator.name, total_time)
+
+                    else:
+                        dc_comp_time = augmented_simulator.comp_time
+                        metric_dict[metric_name] = dc_comp_time
+                        self.logger.info("%s for %s: %s", metric_name, augmented_simulator.name, dc_comp_time)
                 except KeyError:
                     self.logger.error("The augmented simulator or dataset are not provided to estimate the inference time.")
-                if not isinstance(augmented_simulator, DCApproximationAS):
-                    try:
-                        eval_batch_size = self.eval_params["inf_batch_size"]
-                    except KeyError:
-                        eval_batch_size = kwargs.get("eval_batch_size", augmented_simulator.params["eval_batch_size"])
-
-                    # using the industrial readiness point of view (max possible batch_size)
-                    beg_ = time.perf_counter()
-                    _ = augmented_simulator.predict(dataset, eval_batch_size=eval_batch_size)
-                    end_ = time.perf_counter()
-                    total_time = end_ - beg_
-                    metric_dict[metric_name] = total_time
-                    self.logger.info("%s for %s: %s", metric_name, augmented_simulator.name, total_time)
-
-                else:
-                    dc_comp_time = augmented_simulator.comp_time
-                    metric_dict[metric_name] = dc_comp_time
-                    self.logger.info("%s for %s: %s", metric_name, augmented_simulator.name, dc_comp_time)

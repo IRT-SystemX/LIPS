@@ -14,10 +14,15 @@ import numpy as np
 # TODO : implement a mean_absolute_error independently from sklearn
 from sklearn.metrics import mean_absolute_error
 
+from ...evaluation.utils import metric_factory
+from ...metrics.power_grid.global_conservation import global_conservation
+from ...metrics.power_grid.local_conservation import local_conservation
+from ...metrics.power_grid.verify_voltage_equality import verify_voltage_at_bus
 from ...logger import CustomLogger
 
 def verify_current_pos(predictions: dict,
                        log_path: Union[str, None]=None,
+                       result_level: int=0,
                        **kwargs):
     """current positivity check
 
@@ -53,7 +58,8 @@ def verify_current_pos(predictions: dict,
             a_or_violation_proportion = (1.0 * len(a_or_errors)) / a_arr.size
             error_a_or = -np.sum(np.minimum(a_arr.flatten(), 0.))
             logger.info("the sum of negative current values (A) for %s: %.3f", key_, error_a_or)
-            verifications[key_]["indices"] = [(int(el[0]), int(el[1])) for el in a_or_errors]
+            if result_level > 0:
+                verifications[key_]["indices"] = [(int(el[0]), int(el[1])) for el in a_or_errors]
             verifications[key_]["Error"] = float(error_a_or)
             verifications[key_]["Violation_proportion"] = float(a_or_violation_proportion)
         else:
@@ -62,6 +68,7 @@ def verify_current_pos(predictions: dict,
 
 def verify_voltage_pos(predictions:dict,
                        log_path: Union[str, None]=None,
+                       result_level: int=0,
                        **kwargs):
     """Voltage positivity check
 
@@ -97,7 +104,8 @@ def verify_voltage_pos(predictions:dict,
             v_or_violation_proportion = len(v_or_errors) / v_arr.size
             error_v_or = -np.sum(np.minimum(v_arr.flatten(), 0.))
             logger.info("the sum of negative voltage values (kV) for %s: %.3f", key_, error_v_or)
-            verifications[key_]["indices"] = [(int(el[0]), int(el[1])) for el in v_or_errors]
+            if result_level > 0:
+                verifications[key_]["indices"] = [(int(el[0]), int(el[1])) for el in v_or_errors]
             verifications[key_]["Error"] = float(error_v_or)
             verifications[key_]["Violation_proportion"] = float(v_or_violation_proportion)
         else:
@@ -106,6 +114,7 @@ def verify_voltage_pos(predictions:dict,
 
 def verify_loss_pos(predictions: dict,
                     log_path: Union[str, None]=None,
+                    result_level: int=0,
                     **kwargs):
     """loss positivity check
 
@@ -142,7 +151,8 @@ def verify_loss_pos(predictions: dict,
         loss_violation_proportion = len(loss_errors) / p_or.size
         logger.info("the sum of negative losses : %.3f", loss_error)
         verifications["loss_criterion"] = loss_error#[(int(el[0]), int(el[1])) for el in loss_error]
-        verifications["loss_errors"] = [(int(el[0]), int(el[1])) for el in loss_errors]#float(loss_errors)
+        if result_level > 0:
+            verifications["loss_errors"] = [(int(el[0]), int(el[1])) for el in loss_errors]#float(loss_errors)
         verifications["violation_proportion"] = float(loss_violation_proportion)
     else:
         logger.info("Loss positivity check passed")
@@ -150,6 +160,7 @@ def verify_loss_pos(predictions: dict,
 
 def verify_disc_lines(predictions: dict,
                       log_path: Union[str, None]=None,
+                      result_level: int=0,
                       **kwargs):
     """Verifies if the predictions are null for disconnected lines
 
@@ -206,6 +217,7 @@ def verify_disc_lines(predictions: dict,
 
 def verify_current_eq(predictions: dict,
                       log_path: Union[str, None]=None,
+                      result_level: int=0,
                       **kwargs):
     """
     verify the following relation between p, q and v :
@@ -254,6 +266,7 @@ def verify_current_eq(predictions: dict,
 
 def verify_loss(predictions,
                 log_path: Union[str, None]=None,
+                result_level: int=0,
                 **kwargs):
     """Verify the energy loss
 
@@ -331,12 +344,17 @@ def verify_loss(predictions,
         logger.info("Verification is done without any violation")
         violation_percentage = 0.
 
-    verifications["Law_values"] = el_
+
     verifications["violation_percentage"] = violation_percentage
-    verifications["failed_indices"] = failed_indices
+    if result_level > 0:
+        verifications["Law_values"] = el_
+        verifications["failed_indices"] = failed_indices
     return verifications
 
-def verify_kcl(env, ref_obs: dict, predictions: dict, tol=1e-3) -> tuple:
+def verify_kcl(env,
+               ref_obs: dict,
+               predictions: dict,
+               tol=1e-3) -> tuple:
     """
     This function used the check_solution function offered by lightsim2grid package, to
     verify the Kirchhoff's current law
@@ -469,3 +487,12 @@ def verify_kcl(env, ref_obs: dict, predictions: dict, tol=1e-3) -> tuple:
     violation_prop_node_level = sum(nodes_violation_count) / (n_obs*n_sub)
 
     return violation_prop_obs_level, violation_prop_node_level
+
+metric_factory.register_metric("CURRENT_POS", verify_current_pos)
+metric_factory.register_metric("VOLTAGE_POS", verify_voltage_pos)
+metric_factory.register_metric("LOSS_POS", verify_loss_pos)
+metric_factory.register_metric("DISC_LINES", verify_disc_lines)
+metric_factory.register_metric("CHECK_LOSS", verify_loss)
+metric_factory.register_metric("CHECK_GC", global_conservation)
+metric_factory.register_metric("CHECK_LC", local_conservation)
+metric_factory.register_metric("CHECK_VOLTAGE_EQ", verify_voltage_at_bus)
