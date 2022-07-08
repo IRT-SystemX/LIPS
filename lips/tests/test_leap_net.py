@@ -1,45 +1,24 @@
-import os
-import sys
-sys.path.insert(0, "../")
 
-import tensorflow as tf
-os.environ["CUDA_VISIBLE_DEVICES"] = "0"
+# Copyright (c) 2021, IRT SystemX and RTE (https://www.irt-systemx.fr/en/)
+# See AUTHORS.txt
+# This Source Code Form is subject to the terms of the Mozilla Public License, version 2.0.
+# If a copy of the Mozilla Public License, version 2.0 was not distributed with this file,
+# you can obtain one at http://mozilla.org/MPL/2.0/.
+# SPDX-License-Identifier: MPL-2.0
+# This file is part of LIPS, LIPS is a python platform for power networks benchmarking
 
-gpus = tf.config.experimental.list_physical_devices('GPU')
-if gpus:
-  try:
-    tf.config.experimental.set_virtual_device_configuration(
-        gpus[0],[tf.config.experimental.VirtualDeviceConfiguration(memory_limit=5120)])
-  except RuntimeError as e:
-    print(e)
-
-from IPython.display import display
-import pandas as pd
-import warnings
-
-import numpy as np
-import grid2op
 import copy
-
-warnings.simplefilter(action='ignore', category=pd.errors.PerformanceWarning)
-pd.set_option('display.max_columns', None)
 import pathlib
-from lips.augmented_simulators.tensorflow_models import TfFullyConnected#, TfFullyConnectedTopoEncoding
-from lips.dataset.scaler import StandardScaler
+import time
+import numpy as np
+import tensorflow as tf
 
-from pprint import pprint
-from matplotlib import pyplot as plt
 from lips.benchmark.powergridBenchmark import PowerGridBenchmark
-from lips.utils import get_path
 from lips.augmented_simulators.tensorflow_models import LeapNet
-from lips.dataset.scaler import PowerGridScaler, StandardScaler
-from sklearn.preprocessing import MinMaxScaler
-
+from lips.dataset.scaler.powergrid_scaler import PowerGridScaler
 from lips.config import ConfigManager
 
-#from execution_jobs.utils import init_df_bench1, append_metrics_to_df_bench1, init_df_bench2, append_metrics_to_df_bench2, init_df_bench3, append_metrics_to_df_bench3, filter_bench1, filter_bench2_3
 
-# indicate required paths
 # indicate required paths
 LIPS_PATH = pathlib.Path(__file__).parent.parent.parent.absolute()
 DATA_PATH = LIPS_PATH / "lips" / "tests" / "data" / "powergrid" / "l2rpn_case14_sandbox"
@@ -57,12 +36,10 @@ benchmark1 = PowerGridBenchmark(benchmark_name="Benchmark1",
                                 config_path=BENCH_CONFIG_PATH
                                )
 
-from lips.augmented_simulators.tensorflow_models import LeapNet
-
-from lips.augmented_simulators.tensorflow_models import LeapNet
-
 def test_fast_transform_tau():
-
+    """
+    Test the fast transform of tau vector
+    """
     bench_config = ConfigManager(section_name="Benchmark1", path=BENCH_CONFIG_PATH)
     topo_actions = bench_config.get_option("dataset_create_params")["reference_args"]["topo_actions"]
 
@@ -123,7 +100,6 @@ def test_fast_transform_tau():
     #####
     #Launch two different mathods for transformation and check that they match
     tau = copy.deepcopy(extract_tau)
-    import time
     start = time.time()
     extract_tau_1 = leap_net1._transform_tau(dataset, extract_tau)
     end = time.time()
