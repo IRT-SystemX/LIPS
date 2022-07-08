@@ -10,10 +10,11 @@
 from collections.abc import Iterable
 from typing import Union
 
-from .utils import Mapper
+#from .utils import Mapper
 from ..logger import CustomLogger
 from ..config import ConfigManager
 from ..dataset import DataSet
+from ..evaluation.utils import metric_factory
 #from ..benchmark import Benchmark
 
 class Evaluation(object):
@@ -57,7 +58,7 @@ class Evaluation(object):
         # logger
         self.log_path = log_path
         self.logger = CustomLogger(__class__.__name__, self.log_path).logger
-        self.mapper = Mapper()
+        #self.mapper = Mapper()
         self.metrics = {}
 
     @classmethod
@@ -125,35 +126,9 @@ class Evaluation(object):
         """
         self.observations = observations #dataset.data
         self.predictions = predictions
-        #self.logger.info("General metrics")
-        generic_functions = self.mapper.map_generic_criteria()
         # create metrics dictionary
         self.metrics.update(self.__init_metric_dict())
-        metric_dict = self.metrics[self.MACHINE_LEARNING]
-
-        for metric_name, metric_fun in generic_functions.items():
-            metric_dict[metric_name] = {}
-            for nm_, pred_ in self.predictions.items():
-                if nm_ == "__prod_p_dc":
-                    # fix for the DC approximation
-                    continue
-                true_ = self.observations[nm_]
-                try:
-                    tmp = metric_fun(true_, pred_)
-                except ValueError:
-                    #Sklearn fails for 4D tensors, skip generic metric if error raised
-                    continue
-                if isinstance(tmp, Iterable):
-                    metric_dict[metric_name][nm_] = [float(el) for el in tmp]
-                    # self.logger.info("%s for %s: %s", metric_name, nm_, tmp)
-                else:
-                    metric_dict[metric_name][nm_] = float(tmp)
-                    # self.logger.info("%s for %s: %.2f", metric_name, nm_, tmp)
-
-        # TODO : don't forget to save the results
-        if save_path:
-            pass
-
+        
     def evaluate_ml(self):
         """
         It evaluates machine learning specific criteria
@@ -186,3 +161,7 @@ class Evaluation(object):
         and finally it reports the results side by side
         """
         pass
+
+    @staticmethod
+    def _get_factory():
+        return metric_factory
