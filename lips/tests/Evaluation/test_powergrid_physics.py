@@ -142,12 +142,12 @@ def test_verify_voltage_equality():
     LIPS_PATH = pathlib.Path(__file__).parent.parent.parent.parent.absolute()
     CONFIG_PATH = LIPS_PATH / "configurations" / "powergrid" / "benchmarks" / "l2rpn_case14_sandbox.ini"
     config = ConfigManager(section_name="Benchmark3", path=CONFIG_PATH)
-    voltages, thetas = verify_voltage_at_bus(predictions=observations,
-                                             observations=observations,
-                                             config=config)
+    verifications = verify_voltage_at_bus(predictions=observations,
+                                          observations=observations,
+                                          config=config)
     # Assert that violation of voltage equality at bus is zero on simulation data
-    assert voltages[-1] == 0
-    assert thetas[-1] == 0
+    assert verifications["prop_voltages_violation"] == 0
+    assert verifications["prop_theta_violation"] == 0
 
 '''
 if __name__ == "__main__":

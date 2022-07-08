@@ -12,12 +12,11 @@ Licence:
 from __future__ import absolute_import
 
 from lips.evaluation.evaluation import Evaluation
-from lips.evaluation.utils import Mapper
-#from lips.evaluation.powergrid_evaluation import PowerGridEvaluation
+# from lips.evaluation.utils import Mapper
+# from lips.evaluation.powergrid_evaluation import PowerGridEvaluation
 
 
 __all__ = [
     "Evaluation",
     # "PowerGridEvaluation",
-    "Mapper"
 ]

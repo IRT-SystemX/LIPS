@@ -13,6 +13,7 @@ from ...logger import CustomLogger
 
 def global_conservation(predictions: dict,
                         log_path: Union[str, None]=None,
+                        result_level: int=0,
                         **kwargs
                         ):
     """This function verifies the law of conservation of energy (LCE)
@@ -91,7 +92,8 @@ def global_conservation(predictions: dict,
     logger.info("MAE for global conservation: %.3f", mae)
     logger.info("WMAPE for global conservation: %.3f", mae)
 
-    verifications["gc_values"] = gce_
+    if result_level > 0:
+        verifications["gc_values"] = gce_
     verifications["violation_percentage"] = violation_percentage
     verifications["mae"] = mae
     verifications["wmape"] = wmape
