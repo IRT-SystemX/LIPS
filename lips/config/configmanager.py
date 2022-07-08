@@ -37,8 +37,12 @@ class ConfigManager(object):
         self.section_name = section_name
         self.config = ConfigParser()
         # if a config file exists already try to load it
+
         if os.path.exists(self.path_config):
             self.config = self._read_config(self.path_config)
+        else:
+            print("Warning: path_config ("+str(self.path_config)+") file not found")
+            #Should we raise an exception there?
 
     def create_config(self,
                       scenario_name: Union[str, None] = None,

@@ -15,13 +15,15 @@ from scipy.spatial import cKDTree
 from scipy.spatial.distance import cdist
 
 import getfem as gf
-gf.util('trace level', 1)
+gf.util_trace_level(1)
 from lips.physical_simulator.GetfemSimulator.Utilitaries import BasicDofNodesCoordinates,WriteDataInCsv
 import lips.physical_simulator.GetfemSimulator.PhysicalFieldNames as PFN
 
+
 modelVarByPhyField={
     PFN.displacement:"u",
-    PFN.contactMultiplier:"lambda"
+    PFN.contactMultiplier:"lambda",
+    PFN.contactUnilateralMultiplier:"lambda"
 }
 
 def Generate2DBeamMesh(meshSize,RefNumByRegion):
@@ -180,8 +182,20 @@ def AddWheelBoundaryConditionsRolling(mesh,wheelDimensions,RefNumByRegion):
     return mesh
 
 
+def TagWheelMesh(mesh,wheelDimensions,center,refNumByRegion):
+    epsilon = 0.1
+    origin_x,origin_y=center
+    r_inner,r_ext=wheelDimensions
+    all_faces = mesh.outer_faces_in_box([-origin_x - r_ext - epsilon, -origin_y - r_ext -epsilon], [origin_x + r_ext + epsilon, origin_y + r_ext +epsilon])
+    rim_faces = mesh.outer_faces_in_ball([origin_x,origin_y], r_inner + epsilon)
+
+    mesh.set_region(refNumByRegion["HOLE_BOUND"], rim_faces)
+    mesh.set_region(refNumByRegion["CONTACT_BOUND"], all_faces)
+    mesh.region_subtract(refNumByRegion["CONTACT_BOUND"], refNumByRegion["HOLE_BOUND"])
+    return mesh
+
 def ImportGMSHWheel(meshFile,wheelDimensions,RefNumByRegion):
-    mesh=gf.Mesh('import', 'gmsh', meshFile)
+    mesh=ImportGmshMesh(meshFile)
     return AddWheelBoundaryConditions(mesh, wheelDimensions, RefNumByRegion)
 
 def ImportGmshMesh(meshFile):
@@ -193,6 +207,15 @@ def DefineFESpaces(mesh, elements_degree, dof):
     mf.set_classical_fem(elements_degree)
     return mf
 
+def DefineDiscontinuousFESpace(mesh, elements_degree, dof):
+    mfvm=gf.MeshFem(mesh,dof)
+    mfvm.set_fem(gf.Fem('FEM_PK_DISCONTINUOUS(2,%d)' % (elements_degree,)))
+    return mfvm
+
+def DefineClassicalDiscontinuousFESpace(mesh,elements_degree,dof):
+    mfp = gf.MeshFem(mesh,dof)
+    mfp.set_classical_discontinuous_fem(elements_degree)
+    return mfp
 
 #Integration Methods
 def DefineIntegrationMethodsByOrder(mesh, order):
@@ -206,6 +229,13 @@ def DefineCompositeIntegrationMethodsByName(mesh,name):
 def DefineModel():
     model=gf.Model('real')
     return model
+
+def AddFiniteStrainMacroToModel(model):
+    model.add_macro("F", "Grad_u+Id(2)")
+    model.add_macro("J", "Det(F)")
+    model.add_macro("epsilon", "(Grad_u+(Grad_u)')/2")
+    model.add_macro("Green_Lagrange_E", "epsilon+ (Grad_u)'*Grad_u/2")
+
 
 def AddVariable(model,var,mfvar,boundary=None):
     if boundary is None:
@@ -236,7 +266,7 @@ def AddVariableSourceTerm(model,mim,params):
 def ComputeMassMatrix(phyproblem):
     modelDummy=DefineModel()
     modelDummy.add_fem_variable("u", phyproblem.feSpaces["disp"])
-    mim=phyproblem.IntegrMethod["standard"]
+    mim=phyproblem.integrMethods["standard"]
     modelDummy.add_linear_generic_assembly_brick(mim, 'u.Test_u')
     AssembleProblem(modelDummy)
     smatMass=ExportTangentMatrix(modelDummy)
@@ -245,7 +275,7 @@ def ComputeMassMatrix(phyproblem):
 def ComputeMassMatrixOnBound(phyproblem,boundTag):
     mfu=phyproblem.feSpaces[PFN.displacement]
     indm = mfu.basic_dof_on_region(boundTag)
-    mim=phyproblem.IntegrMethod["standard"]
+    mim=phyproblem.integrMethods["standard"]
     expr = 'M(#1,#2)+=comp(vBase(#1).vBase(#2))(:,i,:,i)'
     M = gf.asm_boundary(boundTag, expr, mim, mfu, mfu)
     M = gf.Spmat('copy', M, indm, list(range(M.size()[1])))
@@ -256,36 +286,102 @@ def ComputeMultiplierMassMatrixOnBound(phyproblem,boundTag):
     mflambda=phyproblem.feSpaces[PFN.contactUnilateralMultiplier]
     modelDummy=DefineModel()
     modelDummy.add_filtered_fem_variable("lambda", mflambda,boundRegion)
-    mim_c=phyproblem.IntegrMethod["composite"]
+    mim_c=phyproblem.integrMethods["composite"]
     modelDummy.add_linear_generic_assembly_brick(mim_c, 'lambda*Test_lambda', boundRegion)
     AssembleProblem(modelDummy)
     matContact=ExportTangentMatrix(modelDummy)
     return sparse.csc_matrix(matContact)
 
 #Behaviour laws
+def GetStrainEnergyExpression(lawname,modelParams,modelVar):
+    if lawname=="Linear Elasticity":
+        strainEnergy="Trace(("+modelParams["clambda"]+"*Trace(epsilon)*Id(2) + 2*"+modelParams["cmu"]+"*epsilon)'*epsilon)/2"
+    elif lawname=="SaintVenant Kirchhoff":
+        strainEnergy="Plane_Strain_Saint_Venant_Kirchhoff_potential(Grad_"+modelVar+", ["+modelParams["clambda"]+"; "+modelParams["cmu"]+"])"
+    elif lawname=="Incompressible Mooney Rivlin":
+        strainEnergy="Plane_Strain_Incompressible_Mooney_Rivlin_potential(Grad_"+modelVar+", ["+modelParams["c1"]+";"+modelParams["c2"]+"])"
+    elif lawname=="Compressible NeoHookean":
+        strainEnergy="("+modelParams["cmu"]+"/2)* ( Trace(Right_Cauchy_Green(F)) - 2 - 2*log(J) )+ ("+modelParams["clambda"]+"/2)* pow(2*log(J),2) "
+    return strainEnergy
+
+def ComputeVonMises(model,material,mesh,mim):
+    _,materialBlock=material
+    mfvm=DefineDiscontinuousFESpace(mesh=mesh,elements_degree=1,dof=1)
+    if materialBlock["law"]=="LinearElasticity":
+        vonMises=model.local_projection(mim,"sqrt(1.5)*Norm(Deviator(cmu*(Grad_u+Grad_u')))",mfvm)
+        #vonMises=model.compute_isotropic_linearized_Von_Mises_or_Tresca("u", "clambda","cmu", mfvm)
+    elif materialBlock["law"]=="SaintVenantKirchhoff":
+        vonMises=model.local_projection(mim,"sqrt(1.5)*Norm(Deviator(Cauchy_stress_from_PK2(Plane_Strain_Saint_Venant_Kirchhoff_PK2(Grad_u, [clambda; cmu]),Grad_u)))",mfvm)
+    elif materialBlock["law"]=="IncompressibleMooneyRivlin":
+        vonMises=model.local_projection(mim,"sqrt(1.5)*Norm(Deviator(Cauchy_stress_from_PK2(Plane_Strain_Incompressible_Mooney_Rivlin_PK2(Grad_u, [paramsIMR(1);paramsIMR(2)]),Grad_u)))",mfvm)
+    return vonMises
+
+def ComputeEquilibriumResidual(model,material,mesh,mim):
+    _,materialBlock=material
+    mfvm=DefineDiscontinuousFESpace(mesh=mesh,elements_degree=1,dof=1)
+    if materialBlock["law"]=="LinearElasticity":
+        #model.add_fem_variable("Toto", mfvm)
+        #divSigma=model.local_projection(mim," Norm((Grad_toto))",mfvm)
+        #divSigma=model.local_projection(mim," Norm(Div(clambda*Trace(Green_Lagrange_E)*Id(2)+2*cmu*Green_Lagrange_E))",mfvm)
+        #value=ComputeIntegralOverBoundary(model,"Norm(Div(clambda*Trace(Green_Lagrange_E)*Id(2)+2*cmu*Green_Lagrange_E))",mim)
+        value=gf.asm_generic(mim=mim, order=0, expression="Norm_sqr(Div(u))", model=model,region=-1)
+        #value=gf.asm_generic(mim=mim, order=0, expression="Norm_sqr(Div(clambda*Trace(Green_Lagrange_E)*Id(2)+2*cmu*Green_Lagrange_E))", model=model,region=-1)
+    return 1
+
+def ComputeTotalElasticEnergy(model,behaviour_law,mim,region=-1):
+    if behaviour_law=="LinearElasticity":
+        expression=GetStrainEnergyExpression(lawname="Linear Elasticity",modelParams={"clambda":"clambda","cmu":"cmu"},modelVar="u")
+    elif behaviour_law=="SaintVenantKirchhoff":
+        expression=GetStrainEnergyExpression(lawname="SaintVenant Kirchhoff",modelParams={"clambda":"clambda","cmu":"cmu"},modelVar="u")
+    elif behaviour_law=="IncompressibleMooneyRivlin":
+        expression=GetStrainEnergyExpression(lawname="Incompressible Mooney Rivlin",modelParams={"c1":"paramsIMR(1)","c2":"paramsIMR(2)"},modelVar="u")
+    elif behaviour_law=="CompressibleNeoHookean":
+        expression=GetStrainEnergyExpression(lawname="Compressible NeoHookean",modelParams={"clambda":"clambda","cmu":"cmu"},modelVar="u")
+    return ComputeIntegralOverBoundary(model=model,expression=expression,mim=mim,region=region)
+
 def AddLinearElasticity(model,mim,params):
-    E,nu=params["young"],params["poisson"]
-    clambda = E*nu/((1+nu)*(1-2*nu)) 
-    cmu = E/(2*(1+nu))               
-    clambdastar = 2*clambda*cmu/(clambda+2*cmu)
+    clambda,cmu = ComputeLameCoeff(young=params["young"],poisson=params["poisson"],planeStress=True)
     model.add_initialized_data('cmu', [cmu])
-    model.add_initialized_data('clambdastar', [clambdastar])
-    idBrick=model.add_linear_generic_assembly_brick(mim, "clambdastar*(Div_u*Div_Test_u)+cmu*((Grad_u+(Grad_u)'):Grad_Test_u)")
+    model.add_initialized_data('clambda', [clambda])
+    idBrick=model.add_linear_generic_assembly_brick(mim, "clambda*(Div_u*Div_Test_u)+cmu*((Grad_u+(Grad_u)'):Grad_Test_u)")
     return idBrick
 
 def AddIncompMooneyRivlin(model,mim,params):
-    lawname = 'Incompressible Mooney Rivlin'
-    c1,c2=params["MooneyRivlinC1"],params["MooneyRivlinC2"]
-    model.add_initialized_data('paramsIMR', [c1,c2])
-    idBrick=model.add_finite_strain_elasticity_brick(mim, lawname, 'u', 'paramsIMR')
+    model.add_initialized_data('paramsIMR', [params["MooneyRivlinC1"],params["MooneyRivlinC2"]])
+    expression=GetStrainEnergyExpression(lawname="Incompressible Mooney Rivlin",modelParams={"c1":"paramsIMR(1)","c2":"paramsIMR(2)"},modelVar="u")
+    idBrick=model.add_nonlinear_generic_assembly_brick(mim,expression)
+    return idBrick
+
+def AddIncompressibilityBrick(model,mim):
+    idBrick=model.add_finite_strain_incompressibility_brick(mim, 'u', 'p')
+    return idBrick
+
+def AddCompressibleNeoHookean(model,mim,params):
+    clambda,cmu = ComputeLameCoeff(young=params["young"],poisson=params["poisson"],planeStress=False)
+    model.add_initialized_data('cmu', [cmu])
+    model.add_initialized_data('clambda', [clambda])
+    expression=GetStrainEnergyExpression(lawname="Compressible NeoHookean",modelParams={"clambda":"clambda","cmu":"cmu"},modelVar="u")
+    idBrick=model.add_nonlinear_generic_assembly_brick(mim,expression)
     return idBrick
 
 def AddSaintVenantKirchhoff(model,mim,params):
-    lawname = 'SaintVenant Kirchhoff'
-    clambda,cmu = params["clambda"],params["cmu"]
-    model.add_initialized_data('paramsSVK', [clambda, cmu]);
-    idBrick=model.add_finite_strain_elasticity_brick(mim, lawname, 'u', 'paramsSVK')
+    clambda,cmu = ComputeLameCoeff(young=params["young"],poisson=params["poisson"],planeStress=False)
+    model.add_initialized_data('cmu', [cmu])
+    model.add_initialized_data('clambda', [clambda])
+    expression=GetStrainEnergyExpression(lawname="SaintVenant Kirchhoff",modelParams={"clambda":"clambda","cmu":"cmu"},modelVar="u")
+    idBrick=model.add_nonlinear_generic_assembly_brick(mim,expression)
     return idBrick
+
+def ComputeLameCoeff(young,poisson,planeStress=False):
+    clambda = young*poisson/((1+poisson)*(1-2*poisson)) 
+    cmu = young/(2*(1+poisson)) 
+    if planeStress:
+        clambda,cmu = ApplyPlaneStressTransformation(clambda,cmu)              
+    return clambda,cmu
+
+def ApplyPlaneStressTransformation(clambda,cmu):
+    return 2*clambda*cmu/(clambda+2*cmu),cmu
+
 
 #Contact Conditions
 def AddUnilatContactWithFric(contactZone,model,mim,params):
@@ -333,8 +429,12 @@ def AddPenalizedUnilatContactWithFric(contactZone,model,mfObstacle,mim,params):
 
 #EssentialBoundary
 def AddDirichletCondition(dirichZone,dirichId,model,mim,params):
-    amplitudeDisp,angleDisp=params["Disp_Amplitude"],params["Disp_Angle"]
-    enforcedDisp=[amplitudeDisp*math.cos(angleDisp),amplitudeDisp*math.sin(angleDisp)]
+    if "Disp_Amplitude" in params.keys() and "Disp_Angle" in params.keys(): 
+        amplitudeDisp,angleDisp=params["Disp_Amplitude"],params["Disp_Angle"]
+        enforcedDisp=[amplitudeDisp*math.cos(angleDisp),amplitudeDisp*math.sin(angleDisp)]
+    elif "Disp_X" in params.keys() and "Disp_Y" in params.keys(): 
+        dispDx,dispDy=params["Disp_X"],params["Disp_Y"]
+        enforcedDisp=[dispDx,dispDy]
     dirichVariable='DirichletData'+str(dirichId)
     model.add_initialized_data(dirichVariable, enforcedDisp)
     idBrick = model.add_Dirichlet_condition_with_multipliers(mim, 'u', 1, dirichZone, dirichVariable)
@@ -394,7 +494,8 @@ def PrintBricks(model):
     model.brick_list()
 
 def AddRimRigidityNeumannCondition(neumannZone,neumannId,model,mfl,mim,params):
-    pressure=[params["Force"]/(8*2*np.pi)]
+    area=gf.asm_generic(mim, 0, "1", neumannZone)
+    pressure=[params["Force"]/area]
     model.add_filtered_fem_variable('lambda_D',mfl, neumannZone)
     neumannVariable='F'+str(neumannId)
     model.add_initialized_data(neumannVariable, pressure)
@@ -536,7 +637,7 @@ def AssembleProblem(model):
     model.assembly()
 
 def Solve(model,max_iter,max_residual,noisiness=True):
-    solveArgs=['max_res', max_residual, 'max_iter', max_iter]
+    solveArgs=['max_res', max_residual, 'max_iter', max_iter]#,'lsearch', 'simplest', 'alpha max ratio', 1.5, 'alpha min', 0.2, 'alpha mult', 0.6]
     if noisiness:
         solveArgs+=['noisy']
     solverIt=model.solve(*tuple(solveArgs))
@@ -678,6 +779,10 @@ def ProjectSolOnMesh(coarseSol,solDegree,coarseMesh,refMesh):
     mfuRef.set_fem(gf.Fem('FEM_PK(2,%d)' % (solDegree,)));
     newSol= gf.compute_interpolate_on(mfuCoarse, coarseSol, mfuRef)
     return newSol
+
+#Post assembly
+def ComputeIntegralOverBoundary(model,expression,mim,region=-1):
+    return gf.asm_generic(mim, 0, expression, region, model)
 
 #Post processing
 def ExportFieldInGmsh(filename,mfu,U,mfField,field,fieldName):

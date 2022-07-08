@@ -12,6 +12,7 @@ from copy import copy,deepcopy
 import lips.physical_simulator.GetfemSimulator.GetfemHSA as PhySolver
 from lips.physical_simulator.GetfemSimulator.GetfemProblemBase import GetfemProblemBase
 import lips.physical_simulator.GetfemSimulator.PhysicalFieldNames as PFN
+import lips.physical_simulator.GetfemSimulator.PhysicalModelBricks as PMB
 from lips.physical_simulator.GetfemSimulator.Utilitaries import ComputeNorm2
 
 class ParamNotFound(Exception):
@@ -45,6 +46,7 @@ class GetfemMecaProblem(GetfemProblemBase):
             self._sources = [] #[["ALL",{"type" : "Uniform","val":(0.0,0.0)}] ]
             self.problemCharacsByType = dict()
             self.nodalForces= []
+            self.incompressibility = False
         else:
             self._materials = deepcopy(other._materials)
             self._dirichlet = deepcopy(other._dirichlet)
@@ -53,6 +55,7 @@ class GetfemMecaProblem(GetfemProblemBase):
             self._sources = deepcopy(other._sources)
             self.problemCharacsByType = deepcopy(other.problemCharacsByType)
             self.nodalForces= deepcopy(other.nodalForces)
+            self.incompressibility = other.incompressibility
 
     def GetFieldFromName(self,fieldName):
         if fieldName==PFN.equivDirichletNodalForces:
@@ -66,7 +69,7 @@ class GetfemMecaProblem(GetfemProblemBase):
             raise Exception("Field "+fieldName+" is not available")
 
     def ComputeDirichletNodalForces(self,dirichBoundary):
-        mim = self.IntegrMethod["standard"]
+        mim = self.integrMethods["standard"]
         mesh=self.mesh
         mfu=self.feSpaces[PFN.displacement]
         nodalForces=PhySolver.EquivalentDirichletNodalForces(model=self.model,mesh=mesh,mim=mim,mfDisp=mfu,dirichBoundary=dirichBoundary)
@@ -170,12 +173,26 @@ class GetfemMecaProblem(GetfemProblemBase):
             else:
                 multVariable=("lambda",PFN.contactMultiplier,"CONTACT_BOUND") 
             self.spacesVariables.append(multVariable) 
-            self.feDef[PFN.contactMultiplier]={"degree": 1, "dof": self.dim}
+
+            if multVariable[1]==PFN.contactMultiplier:
+                dof=2
+            elif multVariable[1]==PFN.contactUnilateralMultiplier:
+                dof=1
+            else:
+                raise Exception("Case not covered")
+            self.feDef[multVariable[1]]={"degree": 1, "dof":dof}
 
         if variables is not None:
             for varName,val in variables.items():
                 self.feDef[varName]=val
 
+    def DefineModel(self):
+        model=super(GetfemMecaProblem,self).DefineModel()
+        self.AddFiniteStrainMacroToModel(model)
+        return model
+
+    def AddFiniteStrainMacroToModel(self,model):
+        PhySolver.AddFiniteStrainMacroToModel(model)
 
     def BuildModel(self):
         """
@@ -191,6 +208,8 @@ class GetfemMecaProblem(GetfemProblemBase):
         self.contactBrick=self.BuildContactBC()
         if self.nodalForces:
             self.nodalForcesBrick=self.BuildNodalForces()
+        if self.incompressibility:
+            self.incompressibilityBrick=self.AddIncompressibilityCondition()
 
     def DeleteModelBrick(self,brickType):
         """
@@ -213,18 +232,14 @@ class GetfemMecaProblem(GetfemProblemBase):
         """
         self.problemCharacsByType["Material"]=self.materials
 
-        behaviourLawByName={"LinearElasticity":PhySolver.AddLinearElasticity,
-                            "IncompressibleMooneyRivlin":PhySolver.AddIncompMooneyRivlin,
-                            "SaintVenantKirchhoff":PhySolver.AddSaintVenantKirchhoff
-                            }
         materialsbricks=[]
         for tagname,material in self.materials:
             materialLaw=material["law"]
             materialParams={k: material[k] for k in set(list(material.keys())) - set(["law"])}
             if tagname=="ALL":
-                materialbrick=behaviourLawByName[materialLaw](self.model,self.IntegrMethod["standard"],materialParams)
+                materialbrick=PMB.behaviourLawByName[materialLaw](self.model,self.integrMethods["standard"],materialParams)
             else:
-                materialbrick=behaviourLawByName[materialLaw](self.model,self.IntegrMethod["standard"],materialParams,tagname)
+                materialbrick=PMB.behaviourLawByName[materialLaw](self.model,self.integrMethods["standard"],materialParams,tagname)
             materialsbricks.append(materialbrick)
         return materialsbricks
 
@@ -237,15 +252,14 @@ class GetfemMecaProblem(GetfemProblemBase):
         """
         self.problemCharacsByType["Sources"]=self.sources
 
-        sourceTypeByName={"Uniform":PhySolver.AddUniformSourceTerm,"Variable":PhySolver.AddVariableSourceTerm}
         bodyForcesBricks=[]
         for tagname,source in self.sources:
             sourceType=source["type"]
             sourceParams={k: source[k] for k in set(list(source.keys())) - set(["type"])}
             if tagname=="ALL":
-                bodyForcesBrick=sourceTypeByName[sourceType](self.model,self.IntegrMethod["standard"],sourceParams)
+                bodyForcesBrick=PMB.sourceTypeByName[sourceType](self.model,self.integrMethods["standard"],sourceParams)
             else:
-                bodyForcesBrick=sourceTypeByName[sourceType](self.model,self.IntegrMethod["standard"],sourceParams,tagname)
+                bodyForcesBrick=PMB.sourceTypeByName[sourceType](self.model,self.integrMethods["standard"],sourceParams,tagname)
             bodyForcesBricks.append(bodyForcesBrick)
         return bodyForcesBricks
 
@@ -256,22 +270,16 @@ class GetfemMecaProblem(GetfemProblemBase):
         Build dirichlet bricks
         """
         self.problemCharacsByType["Dirichlet"]=self.dirichlet
-        dirichletByName={"scalar": PhySolver.AddDirichletCondition,
-                         "vector": PhySolver.AddDirichletConditionVector,
-                         "GlobalVector": PhySolver.AddDirichletConditionWithSimplification,
-                         "rhs": PhySolver.AddDirichletConditionRHS,
-                         "AnglePiloted": PhySolver.AddRollingCondition
-                }
 
         dirichletBricks=[]
         for dirichId,(tagname,dirich) in enumerate(self.dirichlet):
             dirichType=dirich["type"]
             dirichParams={k: dirich[k] for k in set(list(dirich.keys())) - set(["type"])}
             if dirichType == 'AnglePiloted':
-                dirichletBrick=dirichletByName[dirichType](self.refNumByRegion[tagname],dirichId, self.model, self.feSpaces[PFN.displacement],
-                                                      self.IntegrMethod["standard"], dirichParams)
+                dirichletBrick=PMB.dirichletByName[dirichType](self.refNumByRegion[tagname],dirichId, self.model, self.feSpaces[PFN.displacement],
+                                                      self.integrMethods["standard"], dirichParams)
             else:
-                dirichletBrick=dirichletByName[dirichType](self.refNumByRegion[tagname],dirichId, self.model,self.IntegrMethod["standard"],dirichParams)
+                dirichletBrick=PMB.dirichletByName[dirichType](self.refNumByRegion[tagname],dirichId, self.model,self.integrMethods["standard"],dirichParams)
             dirichletBricks.append(dirichletBrick)
         return dirichletBricks
 
@@ -282,14 +290,12 @@ class GetfemMecaProblem(GetfemProblemBase):
         Build neumann bricks
         """
         self.problemCharacsByType["Neumann"]=self.neumann
-        neumannByName={"RimRigidityNeumann":PhySolver.AddRimRigidityNeumannCondition,
-                       "StandardNeumann":PhySolver.AddNeumannCondition}
 
         neumannBricks=[]
         for neumannId,(tagname,neum) in enumerate(self.neumann):
             neumType=neum["type"]
             neumParams={k: neum[k] for k in set(list(neum.keys())) - set(["type"])}
-            neumannBrick=neumannByName[neumType](self.refNumByRegion[tagname],neumannId,self.model,self.GetFeSpace("rim"),self.IntegrMethod["standard"],neumParams)
+            neumannBrick=PMB.neumannByName[neumType](self.refNumByRegion[tagname],neumannId,self.model,self.GetFeSpace("rim"),self.integrMethods["standard"],neumParams)
             neumannBricks.append(neumannBrick)
         return neumannBricks
 
@@ -312,18 +318,12 @@ class GetfemMecaProblem(GetfemProblemBase):
         Build contact bricks
         """
         self.problemCharacsByType["Contact"]=self.contact
-        contactTypeByName={
-               "NoFriction":PhySolver.AddUnilatContact,
-               "Inclined":PhySolver.AddInclinedUnilatContactWithFric,
-               "Plane":PhySolver.AddUnilatContactWithFric,
-               "PlanePenalized":PhySolver.AddPenalizedUnilatContactWithFric
-               }
 
         contactTypeArgByName={
-               "NoFriction":(self.model,self.IntegrMethod["composite"]),
-               "Inclined":(self.model,self.IntegrMethod["composite"]),
-               "Plane":(self.model,self.IntegrMethod["composite"]),
-               "PlanePenalized":(self.model,self.GetFeSpace("obstacle"),self.IntegrMethod["composite"])
+               "NoFriction":(self.model,self.integrMethods["composite"]),
+               "Inclined":(self.model,self.integrMethods["composite"]),
+               "Plane":(self.model,self.integrMethods["composite"]),
+               "PlanePenalized":(self.model,self.GetFeSpace("obstacle"),self.integrMethods["composite"])
                }
 
         contactBricks=[]
@@ -331,9 +331,17 @@ class GetfemMecaProblem(GetfemProblemBase):
             contType=cont["type"]
             contParams={k: cont[k] for k in set(list(cont.keys())) - set(["type"])}
             contactTypeArgs=(self.refNumByRegion[tagname],)+contactTypeArgByName[contType]+(contParams,)
-            contactBrick=contactTypeByName[contType](*contactTypeArgs)
+            contactBrick=PMB.contactTypeByName[contType](*contactTypeArgs)
             contactBricks.append(contactBrick)
         return contactBricks
+
+    def AddIncompressibilityCondition(self):
+        self.problemCharacsByType["Incompressibility"]=[["ALL",{"finite strain incompressibility":True}]]
+
+        mfp=PhySolver.DefineClassicalDiscontinuousFESpace(mesh=self.mesh,elements_degree=1,dof=1)
+        PhySolver.AddVariable(model=self.model,var="p",mfvar=mfp)
+        incompressibilityBrick=PhySolver.AddIncompressibilityBrick(model=self.model,mim=self.integrMethods["standard"])
+        return incompressibilityBrick
 
     def GetAllPhyComponents(self):
         """
@@ -470,14 +478,10 @@ class GetfemRollingWheelProblem(GetfemMecaProblem):
         """
         self.problemCharacsByType["Rolling"]=[self.rolling]
 
-        rollingTypeByName = {"AnglePiloted": PhySolver.AddRollingCondition,
-                             "DIS_Rolling": PhySolver.AddDisplacementImposedRollingCondition,
-                             "FORC_Rolling": PhySolver.AddForceImposedRollingCondition }
-
         tagname,roll=self.rolling
         rollingType=roll["type"]
         rollingParams={k: roll[k] for k in set(list(roll.keys())) - set(["type"])}
-        rollingBrick=rollingTypeByName[rollingType](self.refNumByRegion[tagname],self.model,self.GetFeSpace(PFN.displacement),self.IntegrMethod["standard"],rollingParams)
+        rollingBrick=PMB.rollingTypeByName[rollingType](self.refNumByRegion[tagname],self.model,self.GetFeSpace(PFN.displacement),self.integrMethods["standard"],rollingParams)
 
         return rollingBrick
 
