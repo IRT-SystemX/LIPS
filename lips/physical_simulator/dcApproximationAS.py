@@ -47,7 +47,7 @@ class DCApproximationAS(PhysicsSolver):
                  simulator: Union[Grid2opSimulator, None] = None,
                  ):
         PhysicsSolver.__init__(self, name=name)
-        self.config_manager = ConfigManager(benchmark_name, config_path)
+        self.config_manager = ConfigManager(path=config_path, section_name=benchmark_name)
         # input that will be given to the augmented simulator
         self._attr_x = ("prod_p", "prod_v", "load_p", "load_q", "topo_vect")
         # output that we want the proxy to predict

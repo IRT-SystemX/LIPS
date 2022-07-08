@@ -14,6 +14,7 @@ from ...logger import CustomLogger
 
 def local_conservation(predictions,
                        log_path: Union[str, None]=None,
+                       result_level: int=0,
                        **kwargs):
     """compute the conservation law for all the observations at each station
 
@@ -90,7 +91,8 @@ def local_conservation(predictions,
     logger.info("MAE for local conservation: %.3f", mae)
     logger.info("WMAPE for local conservation: %.3f", wmape)
 
-    verifications["lc_values"] = lc_array
+    if result_level > 0:
+        verifications["lc_values"] = lc_array
     verifications["violation_percentage"] = violation_percentage
     verifications["mae"] = mae
     verifications["mape"] = wmape
