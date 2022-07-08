@@ -7,6 +7,7 @@ from copy import copy,deepcopy
 import lips.physical_simulator.GetfemSimulator.PhysicalFieldNames as PFN
 import lips.physical_simulator.GetfemSimulator.GetfemHSA as PhySolver
 
+
 class FieldNotFound(Exception):
     pass
 
@@ -24,7 +25,7 @@ class GetfemProblemBase:
         Constructor of the class GetfemProblemBase
         :ivar int dim: dimension of the problem (2 or 3)       
         :ivar Model model: store the constitutive bricks of the problem  in Getfem       
-        :ivar MeshIm by name IntegrMethod: Integration methods interfaced with Getfem
+        :ivar MeshIm by name integrMethods: Integration methods interfaced with Getfem
         :ivar MeshFem by variable feSpaces: Finite element description with respect to each variable
         :ivar list variables: name, finite element space, spatial support tag in mesh
         :ivar dict feDef: finite element description with respect to unknown
@@ -35,7 +36,7 @@ class GetfemProblemBase:
             self.model = None
             self.mesh = None
             self.refNumByRegion=dict()
-            self.IntegrMethod = dict()
+            self.integrMethods = dict()
             self.feSpaces = dict()
             self.variables = []
             self.feDef = dict()
@@ -51,7 +52,7 @@ class GetfemProblemBase:
             self.model = other.model
             self.mesh = other.mesh
             self.refNumByRegion=other.refNumByRegion
-            self.IntegrMethod = other.IntegrMethod
+            self.integrMethods = other.integrMethods
             self.feSpaces = other.feSpaces
             self.variables = other.variables
             self.feDef = other.feDef
@@ -94,7 +95,7 @@ class GetfemProblemBase:
 
         Define integration methods
         """
-        self.IntegrMethod={
+        self.integrMethods={
                 "standard":PhySolver.DefineIntegrationMethodsByOrder(mesh=self.mesh,order=4),
                 "composite":PhySolver.DefineCompositeIntegrationMethodsByName(mesh=self.mesh, name='IM_STRUCTURED_COMPOSITE(IM_TRIANGLE(4),2)')
                            }
@@ -105,7 +106,7 @@ class GetfemProblemBase:
 
         Init Getfem model, create variables related to unknown in model
         """
-        self.model=PhySolver.DefineModel()
+        self.model=self.DefineModel()
         for var,space,bound in self.spacesVariables:
             if bound is not None:
                 boundRef=self.refNumByRegion[bound]
@@ -113,6 +114,9 @@ class GetfemProblemBase:
                 boundRef=bound
             PhySolver.AddVariable(self.model,var,self.feSpaces[space],boundRef)
             self.variables.append((var,self.feSpaces[space],boundRef))
+
+    def DefineModel(self):
+        return PhySolver.DefineModel()
 
     def InitVariable(self,fieldType,fieldValue):
         """
@@ -211,7 +215,7 @@ class GetfemProblemBase:
         try:
             solution=self.solutions[fieldType]
         except KeyError:
-            availFields=', '.join("{}".format(k) for k in solutions.keys())
+            availFields=', '.join("{}".format(k) for k in self.solutions.keys())
             raise FieldNotFound("Solution for field "+fieldType+" not available. Available fields:\n"+availFields)
 
         return solution
@@ -226,7 +230,7 @@ class GetfemProblemBase:
             auxiliaryField=self.auxiliaryField[fieldName]
         except KeyError:
             availFields=', '.join("{}".format(k) for k in auxiliaryField.keys())
-            raise FieldNotFound("auxiliary field for "+fieldType+" not available. Available auxiliary fields:\n"+availFields)
+            raise FieldNotFound("auxiliary field for "+fieldName+" not available. Available auxiliary fields:\n"+availFields)
         return auxiliaryField
 
     def SaveAuxiliaryFields(self):
@@ -351,6 +355,9 @@ class GetfemProblemBase:
         feSpace,solutions=self.feSpaces[fieldType],self.GetSolution(fieldType)
         return PhySolver.GetSolutionAsField(feSpace,solutions)
 
+    def GetSolverOrderPosition(self):
+        return PhySolver.GetUniqueBasicCoordinates(self.feSpaces[PFN.displacement]).transpose()
+
     def GetBasicCoordinates(self,fieldType=PFN.displacement):
         """
         .. py:method:: GetBasicCoordinates(fieldType)
@@ -363,9 +370,9 @@ class GetfemProblemBase:
 
     def ComputeSpatialErrorIndicator(self,field,errorType):
         if errorType=="L2":
-            return PhySolver.ComputeL2Norm(self.feSpaces[PFN.displacement],field,self.IntegrMethod["standard"])
+            return PhySolver.ComputeL2Norm(self.feSpaces[PFN.displacement],field,self.integrMethods["standard"])
         elif errorType=="H1":
-            return PhySolver.ComputeH1Norm(self.feSpaces[PFN.displacement],field,self.IntegrMethod["standard"])
+            return PhySolver.ComputeH1Norm(self.feSpaces[PFN.displacement],field,self.integrMethods["standard"])
         elif errorType=="L_inf":
             return np.max(field)
         else:
@@ -385,3 +392,10 @@ class GetfemProblemBase:
             s+="\t Element degree: "+str(self.feDef[space]["degree"])
             s+="\t Dof per node: "+str(self.feDef[space]["dof"])+"\n"
         return s
+
+
+def CheckIntegrity():
+    return "OK"
+
+if __name__ =="__main__":
+    CheckIntegrity()

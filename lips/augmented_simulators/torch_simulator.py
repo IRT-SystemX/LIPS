@@ -1,5 +1,5 @@
 """
-Tensorflow based augmented simulators
+Pytorch based augmented simulators
 """
 import os
 import pathlib
@@ -65,7 +65,10 @@ class TorchSimulator(AugmentedSimulator):
         # logger
         self.logger = CustomLogger(__class__.__name__, self.log_path).logger
         # scaler
-        self.scaler = scaler() if scaler else None
+        if "scalerParams" not in kwargs.keys():
+            self.scaler = scaler() if scaler else None
+        else:
+            self.scaler = scaler(**kwargs["scalerParams"])
         self._model = self.model(name=name, sim_config_path=sim_config_path, scaler=self.scaler, **kwargs)
         sim_config_name = self._model.sim_config.section_name
         self.name = self.name + '_' + sim_config_name
@@ -166,16 +169,15 @@ class TorchSimulator(AugmentedSimulator):
             metric_dict[metric] = 0
 
         for _, batch_ in enumerate(train_loader):
-            data, target = batch_
-            loss_func = self._get_loss_func()
-            # if len(batch_) == 2:
-            #     data, target = batch_
-            #     loss_func = self._get_loss_func()
-            # elif len(batch_) == 3:
-            #     data, target, seq_len = batch_
-            #     loss_func = self._get_loss_func(seq_len)
-            # else:
-            #     raise NotImplementedError("each batch should contain at most 3 tensors")
+            architecture_type=self.params["architecture_type"]
+            if architecture_type == "Classical":
+                data, target = batch_
+                loss_func = self._get_loss_func()
+            elif architecture_type == "RNN":
+                data, target, seq_len = batch_
+                loss_func = self._get_loss_func(seq_len)
+            else:
+                raise Exception("Don't know how to train using architecture type %s" % architecture_type )
             data, target = data.to(self.params["device"]), target.to(self.params["device"])
             optimizer.zero_grad()
             # h_0 = self.model.init_hidden(data.size(0))
@@ -186,20 +188,16 @@ class TorchSimulator(AugmentedSimulator):
             optimizer.step()
             total_loss += loss.item()*len(data)
             for metric in self.params["metrics"]:
-                metric_func = LOSSES[metric](reduction="mean")
-                metric_value = metric_func(prediction, target)
-                metric_value = metric_value.item()*len(data)
-                metric_dict[metric] += metric_value
-                # if len(batch_) == 2:
-                #     metric_func = LOSSES[metric](reduction="mean")
-                #     metric_value = metric_func(prediction, target)
-                #     metric_value = metric_value.item()*len(data)
-                #     metric_dict[metric] += metric_value
-                # elif len(batch_) == 3:
-                #     metric_func = LOSSES[metric](seq_len, self.params["device"], reduction="mean")
-                #     metric_value = metric_func(prediction, target)
-                #     metric_value = metric_value.item()*len(data)
-                #     metric_dict[metric] += metric_value
+                if architecture_type == "Classical":
+                    metric_func = LOSSES[metric](reduction="mean")
+                    metric_value = metric_func(prediction, target)
+                    metric_value = metric_value.item()*len(data)
+                    metric_dict[metric] += metric_value
+                elif architecture_type == "RNN":
+                    metric_func = LOSSES[metric](seq_len, self.params["device"], reduction="mean")
+                    metric_value = metric_func(prediction, target)
+                    metric_value = metric_value.item()*len(data)
+                    metric_dict[metric] += metric_value
 
         mean_loss = total_loss/len(train_loader.dataset)
         for metric in self.params["metrics"]:
@@ -237,16 +235,15 @@ class TorchSimulator(AugmentedSimulator):
 
         with torch.no_grad():
             for _, batch_ in enumerate(val_loader):
-                data, target = batch_
-                loss_func = self._get_loss_func()
-                # if len(batch_) == 2:
-                #     data, target = batch_
-                #     loss_func = self._get_loss_func()
-                # elif len(batch_) == 3:
-                #     data, target, seq_len = batch_
-                #     loss_func = self._get_loss_func(seq_len)
-                # else:
-                #     raise NotImplementedError("each batch should contain at most 3 tensors")
+                architecture_type=self.params["architecture_type"]
+                if architecture_type == "Classical":
+                    data, target = batch_
+                    loss_func = self._get_loss_func()
+                elif architecture_type == "RNN":
+                    data, target, seq_len = batch_
+                    loss_func = self._get_loss_func(seq_len)
+                else:
+                    raise Exception("Don't know how to validate using architecture type %s" % architecture_type )
                 data, target = data.to(self.params["device"]), target.to(self.params["device"])
                 #h_0 = self.model.init_hidden(data.size(0))
                 #prediction, _ = self.model(data, h_0)
@@ -255,20 +252,16 @@ class TorchSimulator(AugmentedSimulator):
                 total_loss += loss.item()*len(data)
 
                 for metric in self.params["metrics"]:
-                    metric_func = LOSSES[metric](reduction="mean")
-                    metric_value = metric_func(prediction, target)
-                    metric_value = metric_value.item()*len(data)
-                    metric_dict[metric] += metric_value
-                    # if len(batch_) == 2:
-                    #     metric_func = LOSSES[metric](reduction="mean")
-                    #     metric_value = metric_func(prediction, target)
-                    #     metric_value = metric_value.item()*len(data)
-                    #     metric_dict[metric] += metric_value
-                    # elif len(batch_) == 3:
-                    #     metric_func = LOSSES[metric](seq_len, self.params["device"], reduction="mean")
-                    #     metric_value = metric_func(prediction, target)
-                    #     metric_value = metric_value.item()*len(data)
-                    #     metric_dict[metric] += metric_value
+                    if architecture_type == "Classical":
+                        metric_func = LOSSES[metric](reduction="mean")
+                        metric_value = metric_func(prediction, target)
+                        metric_value = metric_value.item()*len(data)
+                        metric_dict[metric] += metric_value
+                    elif architecture_type == "RNN":
+                        metric_func = LOSSES[metric](seq_len, self.params["device"], reduction="mean")
+                        metric_value = metric_func(prediction, target)
+                        metric_value = metric_value.item()*len(data)
+                        metric_dict[metric] += metric_value
 
         mean_loss = total_loss/len(val_loader.dataset)
         for metric in self.params["metrics"]:
@@ -304,23 +297,29 @@ class TorchSimulator(AugmentedSimulator):
         total_time = 0
         with torch.no_grad():
             for _, batch_ in enumerate(test_loader):
-                data, target = batch_
-                loss_func = self._get_loss_func()
-                # if len(batch_) == 2:
-                #     data, target = batch_
-                #     loss_func = self._get_loss_func()
-                # elif len(batch_) == 3:
-                #     data, target, seq_len = batch_
-                #     loss_func = self._get_loss_func(seq_len)
-                # else:
-                #     raise NotImplementedError("each batch should contain at most 3 tensors")
+                architecture_type=self.params["architecture_type"]
+                if architecture_type == "Classical":
+                    data, target = batch_
+                    loss_func = self._get_loss_func()
+                elif architecture_type == "RNN":
+                    data, target, seq_len = batch_
+                    loss_func = self._get_loss_func(seq_len)
+                else:
+                    raise Exception("Don't know how to evaluate using architecture type %s" % architecture_type )
                 data, target = data.to(self.params["device"]), target.to(self.params["device"])
                 #TODO : for RNN, we need to initialize hidden state, but it should be done inside the model
                 #h_0 = self.model.init_hidden(data.size(0))
                 #prediction, _ = self.model(data, h_0)
                 prediction = self._model(data)
-                prediction = self._model._post_process(prediction.cpu())
-                target = self._model._post_process(target.cpu())
+
+                if "input_required_for_post_process" in kwargs and kwargs["input_required_for_post_process"]:
+                    input_model=data
+                    prediction = self._model._post_process_with_input(input_model,prediction)
+                    target = self._model._post_process_with_input(input_model,target)
+                else:
+                    prediction = self._model._post_process(prediction)
+                    target = self._model._post_process(target)
+                
                 predictions.append(prediction.numpy())
                 observations.append(target.numpy())
 
@@ -328,20 +327,16 @@ class TorchSimulator(AugmentedSimulator):
                 total_loss += loss.item()*len(data)
 
                 for metric in self.params["metrics"]:
-                    metric_func = LOSSES[metric](reduction="mean")
-                    metric_value = metric_func(prediction, target)
-                    metric_value = metric_value.item()*len(data)
-                    metric_dict[metric] += metric_value
-                    # if len(batch_) == 2:
-                    #     metric_func = LOSSES[metric](reduction="mean")
-                    #     metric_value = metric_func(prediction, target)
-                    #     metric_value = metric_value.item()*len(data)
-                    #     metric_dict[metric] += metric_value
-                    # elif len(batch_) == 3:
-                    #     metric_func = LOSSES[metric](seq_len, self.params["device"], reduction="mean")
-                    #     metric_value = metric_func(prediction, target)
-                    #     metric_value = metric_value.item()*len(data)
-                    #     metric_dict[metric] += metric_value
+                    if architecture_type == "Classical":
+                        metric_func = LOSSES[metric](reduction="mean")
+                        metric_value = metric_func(prediction, target)
+                        metric_value = metric_value.item()*len(data)
+                        metric_dict[metric] += metric_value
+                    elif architecture_type == "RNN":
+                        metric_func = LOSSES[metric](seq_len, self.params["device"], reduction="mean")
+                        metric_value = metric_func(prediction, target)
+                        metric_value = metric_value.item()*len(data)
+                        metric_dict[metric] += metric_value
 
         mean_loss = total_loss/len(test_loader.dataset)
         for metric in self.params["metrics"]:
@@ -460,7 +455,6 @@ class TorchSimulator(AugmentedSimulator):
         path_weights = path / nm_file
         if not path_weights.exists():
             raise FileNotFoundError(f"Weights file {path_weights} not found")
-        #self.build_model(**self.params)
         self._model._load_metadata(path)
         self.build_model()
         self._model.to(self.params["device"])
