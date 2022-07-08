@@ -23,12 +23,12 @@ class ConfigManager(object):
     This class ease the use of config parser for the framework
     """
     def __init__(self,
-                 path: str,
+                 path: Union[str, pathlib.Path],
                  section_name: str="DEFAULT",
                 ):
         if path is None:
             raise RuntimeError("A path should be indicated!")
-        elif not(path.exists()):
+        elif not os.path.exists(path):
             raise RuntimeError("A path to a configuration file should be indicated!")
         elif not str(path).endswith(".ini"):
             raise RuntimeError("The configuration file should have `.ini` extension!")

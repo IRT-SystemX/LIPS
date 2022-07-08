@@ -7,8 +7,9 @@ import numpy as np
 
 import grid2op
 from grid2op import Observation
-from ...logger import CustomLogger
 from ...dataset.utils.powergrid_utils import get_kwargs_simulator_scenario
+from ...logger import CustomLogger
+
 
 # helper functions
 def _get_fake_obs(config) -> Observation:
@@ -163,6 +164,7 @@ def _aux_update_observation(obs, real_data, predictions, idx):
 #def verify_voltage_at_bus(obs, real_data, predictions, tol=1e-4, verify_theta=True):
 def verify_voltage_at_bus(predictions: dict,
                           log_path: Union[str, None]=None,
+                          result_level: int=0,
                           **kwargs):
     """
     This functions checks if the elements connected to a same substations present the same voltages and angles
@@ -195,6 +197,7 @@ def verify_voltage_at_bus(predictions: dict,
         tol = float(config.get_option("eval_params")["VOLTAGE_EQ"]["tolerance"])
         verify_theta = bool(config.get_option("eval_params")["VOLTAGE_EQ"]["verify_theta"])
 
+    verifications = dict()
     n_obs = len(observations["a_or"])
     obs = _get_fake_obs(config)
     n_buses = 2 * obs.n_sub
@@ -238,4 +241,17 @@ def verify_voltage_at_bus(predictions: dict,
     else:
         prop_theta_violation = None
 
-    return (mean_matrix_voltage, std_matrix_voltage, prop_voltages_violation), (mean_matrix_theta, std_matrix_theta, prop_theta_violation)
+    verifications["prop_voltages_violation"] = prop_voltages_violation
+    if prop_theta_violation is not None:
+        verifications["prop_theta_violation"] = prop_theta_violation
+
+    if result_level > 0:
+        verifications["mean_matrix_voltage"] = mean_matrix_voltage
+        verifications["std_matrix_voltage"] = std_matrix_voltage
+        if prop_theta_violation is not None:
+            verifications["mean_matrix_theta"] = mean_matrix_theta
+            verifications["std_matrix_theta"] = std_matrix_theta
+
+
+    return verifications
+    #return (mean_matrix_voltage, std_matrix_voltage, prop_voltages_violation), (mean_matrix_theta, std_matrix_theta, prop_theta_violation)
