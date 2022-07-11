@@ -22,9 +22,9 @@ pkgs = {
     ],
     "extras": {
         "recommended": [
-            "grid2op>=1.6.2",
+            "grid2op>=1.7.2",
             "pybind11==2.8.1",
-            "lightsim2grid>=0.5.3",
+            "lightsim2grid>=0.7.0.post1",            
             "leap_net @ https://github.com/BDonnot/leap_net/tarball/master#egg=leap_net",
             "protobuf==3.20.1",
             "pandapower==2.7.0",

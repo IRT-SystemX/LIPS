@@ -1,6 +1,6 @@
-Grid2Op==1.7.1
+Grid2Op==1.7.2
 leap-net @ https://github.com/BDonnot/leap_net/tarball/master#egg=leap_net
-lightsim2grid==0.7.0
+lightsim2grid==0.7.0.post1
 numpy==1.21.5
 numba==0.55.1
 pandapower==2.7.0
