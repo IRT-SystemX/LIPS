@@ -27,6 +27,8 @@ from sklearn.metrics import mean_absolute_error
 
 from lips.config import ConfigManager
 from lips.benchmark.powergridBenchmark import PowerGridBenchmark
+from cmath import exp
+from math import pi
 
 LIPS_PATH = pathlib.Path(__file__).parent.parent.parent.absolute()
 CONFIG_PATH = LIPS_PATH / "lips" / "tests" / "configs" / "powergrid" / "benchmarks" / "l2rpn_case14_sandbox.ini"
@@ -177,6 +179,89 @@ def test_bench1_data_reproducibility():
             error = mean_absolute_error(data_ex1.get(key_)[:data_size, :], data_ex2.get(key_))
             errors.append(error)
         assert(np.sum(errors) < 1e-3)
+
+def test_power_grid_physics_informed_data():
+    """This test aims at verifying that the generated data structure representing the physics (admittance matrix YBus, SBus vector)
+    are consistent with the physical variables obtained
+    """
+    benchmark3= PowerGridBenchmark(benchmark_path=None,
+                                        benchmark_name="Benchmark3",
+                                        load_data_set=False,
+                                        config_path=CONFIG_PATH,
+                                        log_path=None)
+
+    data_size = int(10)
+    benchmark3.generate(nb_sample_train=data_size,
+                            nb_sample_val=1,
+                            nb_sample_test=1,
+                            nb_sample_test_ood_topo=1,
+                            do_store_physics=True
+                           )
+    data = benchmark3.train_dataset.data
+
+    #############"
+    # we are going to check that V.(Ybus.V)* = Sbus_after_pf
+    YBuses=data["YBus"]
+    SBuses = data["SBus"]
+    #pv_nodes = data["PV_nodes"]
+    theta_ors=data["theta_or"]
+    theta_exs = data["theta_ex"]
+    v_ors=data["v_or"]
+    v_exs = data["v_ex"]
+    prod_qs=data["prod_q"]
+
+    for ix in range(data_size):
+        print(ix)
+        obs = benchmark3.training_simulator._simulator.reset()
+        obs.topo_vect = data["topo_vect"][ix]
+
+        Ybus=YBuses[ix]
+        SBus_init=SBuses[ix]
+        theta_or=theta_ors[ix]
+        theta_ex=theta_exs[ix]
+
+        lines_or_pu_to_kv=benchmark3.training_simulator._simulator.backend.lines_or_pu_to_kv
+        lines_ex_pu_to_kv=benchmark3.training_simulator._simulator.backend.lines_ex_pu_to_kv
+        v_or=v_ors[ix]/lines_or_pu_to_kv
+        v_ex=v_exs[ix]/lines_ex_pu_to_kv
+
+        #get SBus after powerflow: reactive power of generators have been computed and should be added
+        SBus_after_pf=SBus_init
+        prod_bus, prod_conn = obs._get_bus_id(obs.gen_pos_topo_vect, obs.gen_to_subid)
+        prod_q=prod_qs[ix]
+        for i in range(len(prod_bus)):
+            SBus_after_pf[prod_bus[i]] += 1j * prod_q[i] / obs._obs_env.backend._grid.get_sn_mva()
+
+        ##############
+        #we want to get V in complex form per bus_bar
+        bus_theta = np.zeros(Ybus.shape[0])
+        bus_v=np.zeros(Ybus.shape[0])
+
+        lor_bus, lor_conn = obs._get_bus_id(
+            obs.line_or_pos_topo_vect, obs.line_or_to_subid
+        )
+        lex_bus, lex_conn = obs._get_bus_id(
+            obs.line_ex_pos_topo_vect, obs.line_ex_to_subid
+        )
+
+        bus_theta[lor_bus] = theta_or
+        bus_theta[lex_bus] = theta_ex
+
+        bus_v[lor_bus]=v_or
+        bus_v[lex_bus]=v_ex
+        bus_v_complex=np.array([bus_v[k]*exp(1j*(bus_theta[k]*2*pi)/360) for k in range(len(bus_v))])
+
+        ####
+        #we now compute V.(Ybus.V)*
+        SBus_computed = np.conj(np.matmul(Ybus, bus_v_complex))*bus_v_complex
+        #we check for all nodes execpt for the slack. For the slack, the active power has been adjusted to compensate for the losses, hence we should have adjusted for it in SBus_after_pf.
+        #but we cannot recover the adjustment from the data we saved, so we ignore that index
+        slack_id=prod_bus[-1]
+        index_to_keep=np.ones(len(SBus_after_pf),dtype=bool)
+        index_to_keep[slack_id]=False
+        assert np.all(np.abs(np.round(SBus_after_pf - SBus_computed,2))[index_to_keep]<=0.01) #[pv_nodes]
+
+
 
 def test_bench2_data_reproducibility():
     """This test aims at verifying if the same exact data could be reproduced after each FrameWork update

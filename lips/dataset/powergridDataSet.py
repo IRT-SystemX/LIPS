@@ -103,6 +103,7 @@ class PowerGridDataSet(DataSet):
         self._attr_y = self.config.get_option("attr_y")
 
         self.env_data = dict()
+        self._slack_id = None
 
         #TODO add a seed for reproducible experiment !
 
@@ -113,7 +114,8 @@ class PowerGridDataSet(DataSet):
                  nb_samples: int,
                  nb_samples_per_chronic: int = 288, # 1 day
                  simulator_seed: Union[None, int] = None,
-                 actor_seed: Union[None, int] = None):
+                 actor_seed: Union[None, int] = None,
+                 do_store_physics=False):
         """Generate a powergrid dataset
 
         For this dataset, we use a Grid2opSimulator and a  grid2op Agent to generate data from a powergrid.
@@ -159,22 +161,37 @@ class PowerGridDataSet(DataSet):
             actor = DoNothingAgent(simulator._simulator.action_space)
 
         init_state, init_info = simulator.get_state()
+
+        prod_bus, prod_conn = init_state._get_bus_id(init_state.gen_pos_topo_vect, init_state.gen_to_subid)
+        self._slack_id = prod_bus[-1] #in the hypothesis that there is only one slack and that it does not change accross observations
+
         self.data = {}
         for attr_nm in self._attr_names:
             # this part is only temporary, until a viable way to store the complete resulting state is found
             array_ = getattr(init_state, attr_nm)
             self.data[attr_nm] = np.zeros((nb_samples, array_.shape[0]), dtype=array_.dtype)
+        
+        #to save physical variables if desired
+        if (do_store_physics):
+            n_bus_bars = simulator._simulator.n_sub * 2
+            self.data["YBus"] = np.zeros((nb_samples, n_bus_bars,n_bus_bars), dtype=np.complex128) #for admittance matrix
+            self.data["SBus"] = np.zeros((nb_samples, n_bus_bars), dtype=np.complex128) #for vector of nodal injections
+            self.data["PV_nodes"] = np.zeros((nb_samples, n_bus_bars), dtype=bool) #for indices of P-V nodes
+            self.data["slack"] = np.zeros((nb_samples, 2), dtype=np.float16) #for indice of slack and active power adjusment from chronic
 
         #for ds_size in tqdm(range(nb_samples), desc=self.name):
         ds_size = 0
         pbar = tqdm(total = nb_samples)
+        is_LightSimBackend = ("lightsim2grid" in str(simulator._simulator.backend.__class__))
         while ds_size < nb_samples:
             simulator.sample_chronics()
             nb_steps = 0
             while (nb_steps < nb_samples_per_chronic):
                 simulator.modify_state(actor)
                 current_state, extra_info = simulator.get_state()
-                self._store_obs(ds_size, current_state)
+                grid=simulator._simulator.backend._grid
+
+                self._store_obs(ds_size, current_state,grid,do_store_physics,is_LightSimBackend)
                 nb_steps += 1
                 ds_size += 1
                 pbar.update(1)
@@ -191,11 +208,53 @@ class PowerGridDataSet(DataSet):
             # I should save the data
             self._save_internal_data(path_out)
 
-    def _store_obs(self, current_size, obs):
+    def _store_obs(self, current_size, obs, grid, do_store_physics=True, is_lightSimBackend=True):
         """store an observation in self.data"""
         for attr_nm in self._attr_names:
             array_ = getattr(obs, attr_nm)
             self.data[attr_nm][current_size, :] = array_
+
+        #Also Store Admittance Matrix YBus and Injection Vector SBus (if backend is LightSim2Grid
+        if(do_store_physics):
+            self._store_physics(current_size, obs, grid,is_lightSimBackend)
+
+
+    def _store_physics(self, current_size, obs, grid,is_lightSimBackend):
+        if is_lightSimBackend:
+            # net = obs._obs_env.backend._grid #be careful, the YBus and Sbus are not well updated in _obs_env. Better to use the true env backend
+            nb_bus, unique_bus, bus_or, bus_ex = obs._aux_fun_get_bus()
+
+            # Careful, in computing the number of bus_bars, it could change in grid2op
+            n_bus_bars = obs._obs_env.n_sub * 2
+
+            #Init data structures with proper dimensions and types
+            admittance_matrix = np.zeros(
+                shape=(n_bus_bars, n_bus_bars), dtype=np.complex128
+            )
+            Injection_vect = np.zeros(shape=(n_bus_bars), dtype=np.complex128)
+            pv_nodes = np.zeros(shape=(n_bus_bars), dtype=bool)
+
+            #get admittance matrix and injection vector values from LightSim2Grid
+            Sbus = grid.get_Sbus()
+            YBus = grid.get_Ybus()
+
+            #fill data structures with expected dimensions
+            admittance_matrix[np.ix_(unique_bus, unique_bus)] = YBus.todense()
+            Injection_vect[unique_bus] = Sbus
+            pv_nodes[unique_bus[grid.get_pv()]] = True
+
+            #get info on slack
+            prod_bus, prod_conn = obs._get_bus_id(obs.gen_pos_topo_vect, obs.gen_to_subid)
+            node_slack_id=prod_bus[-1]
+            index_gens_slack = (prod_bus==node_slack_id)
+            adjusted_prod_slack=obs.gen_p[index_gens_slack].sum() - Sbus[node_slack_id].real #after_powerflow - in_chronics
+
+            self.data["YBus"][current_size, :] = admittance_matrix
+            self.data["SBus"][current_size, :] = Injection_vect
+            self.data["PV_nodes"][current_size, :] = pv_nodes
+            self.data["slack"][current_size, :]=np.array([node_slack_id,adjusted_prod_slack],dtype=np.float16)
+        else:
+            self.logger.warning(f"Cannot store physics data if not using LightSim2Grid backend")
 
     def _store_chronics_info(self, simulator):
         """store the chronics info"""
@@ -231,7 +290,7 @@ class PowerGridDataSet(DataSet):
                 array_ = np.asanyarray(array_, dtype=object)
             np.savez_compressed(f"{os.path.join(chronics_path, attr_nm)}.npz", data=array_)
 
-    def _save_internal_data(self, path_out:str):
+    def _save_internal_data(self, path_out:str,do_save_physics=True):
         """save the self.data in a proper format
 
         Parameters
@@ -263,7 +322,17 @@ class PowerGridDataSet(DataSet):
         #for attr_nm in (*self._attr_names, *self._theta_attr_names):
         for attr_nm in self._attr_names:
             np.savez_compressed(f"{os.path.join(full_path_out, attr_nm)}.npz", data=self.data[attr_nm])
-
+        if(do_save_physics):
+            if("YBus" in self.data.keys()):
+                np.savez_compressed(os.path.join(full_path_out, "YBus")+".npz", data=self.data["YBus"])
+            if("SBus" in self.data.keys()):
+                np.savez_compressed(os.path.join(full_path_out, "SBus") + ".npz", data=self.data["SBus"])
+            if("PV_nodes" in self.data.keys()):
+                np.savez_compressed(os.path.join(full_path_out, "PV_nodes") + ".npz", data=self.data["PV_nodes"])
+            if("slack" in self.data.keys()):
+                np.savez_compressed(os.path.join(full_path_out, "slack") + ".npz", data=self.data["slack"])
+                
+        
         self._save_chronics_info(full_path_out)
         # save static_data
         with open(os.path.join(full_path_out ,"metadata.json"), "w", encoding="utf-8") as f:
