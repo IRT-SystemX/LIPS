@@ -3,7 +3,7 @@
     "ckpt_freq": 50,
     "dropout": 0.0,
     "epochs": 200,
-    "eval_batch_size": 128,
+    "eval_batch_size": 300,
     "input_dropout": 0.0,
     "kwargs_tau": null,
     "layer": "linear",
@@ -30,7 +30,7 @@
     "scale_input_dec_layer": null,
     "scale_input_enc_layer": null,
     "scale_main_layer": null,
-    "shuffle": true,
+    "shuffle": false,
     "sizes_enc": [
         20,
         20,
@@ -44,6 +44,6 @@
         100,
         40
     ],
-    "topo_vect_to_tau": "all",
+    "topo_vect_to_tau": "raw",
     "train_batch_size": 128
 }
