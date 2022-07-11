@@ -13,13 +13,13 @@ import pathlib
 from typing import Union
 import json
 import warnings
-import copy
 
 import numpy as np
 
 with warnings.catch_warnings():
     warnings.filterwarnings("ignore", category=FutureWarning)
     from tensorflow import keras
+    import tensorflow as tf
 
 try:
     from leap_net.proxy import ProxyLeapNet
@@ -31,8 +31,6 @@ from ...logger import CustomLogger
 from ...config import ConfigManager
 from ...dataset import DataSet
 from ...dataset.scaler import Scaler
-import tensorflow as tf
-
 
 class LeapNet(TensorflowSimulator):
     """LeapNet architecture
@@ -95,10 +93,11 @@ class LeapNet(TensorflowSimulator):
         # Define layer to be used for the model
         self.layers = {"linear": keras.layers.Dense}
         self.layer = self.layers[self.sim_config.get_option("layer")]
+        # get tau attributes
+        self.attr_tau = kwargs['attr_tau'] if "attr_tau" in kwargs else self.bench_config.get_option("attr_tau")
         # model parameters
         self.params = self.sim_config.get_options_dict()
         self.params.update(kwargs)
-        self.attr_tau=kwargs['attr_tau']
 
         # optimizer
         # optimizer
@@ -181,12 +180,12 @@ class LeapNet(TensorflowSimulator):
                 (extract_x, extract_tau), extract_y = dataset.extract_data(concat=False)
 
 
-
-        is_given_topo_list = (len(self._leap_net_model.kwargs_tau) >= 1)
-        if (is_given_topo_list):
-            extract_tau = self._transform_tau_given_list(extract_tau)
-        else:
-            extract_tau = self._transform_tau(dataset, extract_tau)
+        if self._leap_net_model.kwargs_tau is not None:
+            is_given_topo_list = (len(self._leap_net_model.kwargs_tau) >= 1)
+            if (is_given_topo_list):
+                extract_tau = self._transform_tau_given_list(extract_tau)
+            else:
+                extract_tau = self._transform_tau(dataset, extract_tau)
 
         #if len(self._leap_net_model.attr_tau) > 1 :
         #   extract_tau = np.concatenate((extract_tau[0], extract_tau[1]), axis=1)
@@ -259,6 +258,9 @@ class LeapNet(TensorflowSimulator):
         #we are here looking for the number of matches for every element of a substation topology in the predefined list for a new topo_vect observation
         #if the count is equal to the number of element, then the predefined topology is present in topo_vect observation
         #in that case, the binary encoding of that predefined topology is equal to 1, otherwise 0
+
+        import time
+        start = time.time()
         if with_tf:
             #count the number of disconnected lines for each substation of topologies in the prefdefined list.
             #These lines could have been connected to either bus_bar1 or bus_bar2, we consider it as a match for that element
@@ -287,8 +289,42 @@ class LeapNet(TensorflowSimulator):
 
         boolean_match_tensor = np.array(normalised_tensor == 1.0).astype(np.int8)
 
-        tau[1]=np.transpose(boolean_match_tensor)
+        duration_matches = time.time() -start
+
+        #############"
+        ## do correction if multiple topologies of a same substation have a match on a given state
+        # as it does not make sense to combine topologies at a same substation
+        start = time.time()
+        boolean_match_tensor=self._unicity_tensor_encoding(boolean_match_tensor)
+
+        duration_correction = time.time() - start
+        if(duration_correction>duration_matches):
+            print("warning, correction time if longer that matches time: maybe something to better optimize there")
+        tau[1] = np.transpose(boolean_match_tensor)
+
         return tau
+
+    def _unicity_tensor_encoding(self, tensor):
+        """
+        do correction if multiple topologies of a same substation have a match on a given state
+        as it does not make sense to combine topologies at a same substation
+        """
+        sub_encoding_pos = np.array([topo_action[0] for topo_action in self._leap_net_model.kwargs_tau])
+
+        # in case of multiple matches of topology for a given substation, encode only one of those topologies as an active bit, not several
+        def per_col(a):  # to only have one zero per row
+            idx = a.argmax(0)
+            out = np.zeros_like(a)
+            r = np.arange(a.shape[1])
+            out[idx, r] = a[idx, r]
+            return out
+
+        for sub in set(sub_encoding_pos):
+            indices = np.where(sub_encoding_pos == sub)[0]
+            if (len(indices) >= 2):
+                tensor[indices,:]=per_col(tensor[indices,:])
+
+        return tensor
 
 
     def _make_fake_obs(self, dataset: DataSet):
@@ -374,5 +410,3 @@ class LeapNet(TensorflowSimulator):
 
         if self.scaler is not None:
             self.scaler.load(path)
-
-
