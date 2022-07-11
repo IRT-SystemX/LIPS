@@ -314,6 +314,8 @@ class PowerGridBenchmark(Benchmark):
         if isinstance(self.augmented_simulator, DCApproximationAS):
             predictions = self.augmented_simulator.compute(dataset)
         else:
+            sim_kwargs = copy.deepcopy(kwargs)
+            sim_kwargs.pop("env")
             predictions = self.augmented_simulator.predict(dataset, **kwargs)
 
         self.predictions[dataset.name] = predictions
