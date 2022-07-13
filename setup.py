@@ -9,6 +9,9 @@
 import setuptools
 from setuptools import setup
 
+
+__version__ = '0.1.0'
+
 pkgs = {
     "required": [
         "numpy==1.21.5",
@@ -24,7 +27,7 @@ pkgs = {
         "recommended": [
             "grid2op>=1.7.2",
             "pybind11==2.8.1",
-            "lightsim2grid>=0.7.0.post1",            
+            "lightsim2grid>=0.7.0.post1",
             "leap_net @ https://github.com/BDonnot/leap_net/tarball/master#egg=leap_net",
             "protobuf==3.20.1",
             "pandapower==2.7.0",
@@ -61,7 +64,7 @@ with open("README.md", "r", encoding="utf-8") as fh:
     long_description = fh.read()
 
 setup(name='lips',
-      version='0.0.1',
+      version=__version__,
       description='LIPS : Learning Industrial Physical Simulation benchmark suite',
       long_description=long_description,
       long_description_content_type="text/markdown",
