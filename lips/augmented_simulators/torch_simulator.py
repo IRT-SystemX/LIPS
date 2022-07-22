@@ -282,7 +282,7 @@ class TorchSimulator(AugmentedSimulator):
         super().predict(dataset)
         if "eval_batch_size" in kwargs:
             self.params["eval_batch_size"] = kwargs["eval_batch_size"]
-        self.params.update(kwargs)
+        #self.params.update(kwargs)
 
         test_loader = self._model.process_dataset(dataset, training=False)
         # activate the evaluation mode
@@ -319,7 +319,7 @@ class TorchSimulator(AugmentedSimulator):
                 else:
                     prediction = self._model._post_process(prediction)
                     target = self._model._post_process(target)
-                
+
                 predictions.append(prediction.numpy())
                 observations.append(target.numpy())
 
