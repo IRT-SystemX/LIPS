@@ -125,7 +125,7 @@ class TensorflowSimulator(AugmentedSimulator):
 
         if "eval_batch_size" in kwargs:
             self.params["eval_batch_size"] = kwargs["eval_batch_size"]
-        self.params.update(kwargs)
+        # self.params.update(kwargs)
 
         #processed_x, processed_y = self._process_all_dataset(dataset, training=False)
         processed_x, _ = self.process_dataset(dataset, training=False)

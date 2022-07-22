@@ -15,6 +15,7 @@ import shutil
 import warnings
 import copy
 import json
+import time
 from typing import Union
 import pathlib
 
@@ -316,7 +317,10 @@ class PowerGridBenchmark(Benchmark):
         else:
             sim_kwargs = copy.deepcopy(kwargs)
             sim_kwargs.pop("env")
+            begin_ = time.perf_counter()
             predictions = self.augmented_simulator.predict(dataset, **kwargs)
+            end_ = time.perf_counter()
+            self.augmented_simulator.predict_time = end_ - begin_
 
         self.predictions[dataset.name] = predictions
         self.observations[dataset.name] = dataset.data
