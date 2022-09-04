@@ -18,6 +18,7 @@ from ...evaluation.utils import metric_factory
 from ...metrics.power_grid.global_conservation import global_conservation
 from ...metrics.power_grid.local_conservation import local_conservation
 from ...metrics.power_grid.verify_voltage_equality import verify_voltage_at_bus
+from ...metrics.power_grid.joule_law import verify_joule_law
 from ...logger import CustomLogger
 
 def verify_current_pos(predictions: dict,
@@ -496,3 +497,4 @@ metric_factory.register_metric("CHECK_LOSS", verify_loss)
 metric_factory.register_metric("CHECK_GC", global_conservation)
 metric_factory.register_metric("CHECK_LC", local_conservation)
 metric_factory.register_metric("CHECK_VOLTAGE_EQ", verify_voltage_at_bus)
+metric_factory.register_metric("CHECK_JOULE_LAW", verify_joule_law)
