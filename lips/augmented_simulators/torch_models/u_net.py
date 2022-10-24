@@ -189,12 +189,12 @@ class TorchUnet(nn.Module):
         log path
     """
     def __init__(self,
+                 sim_config_path: str,
+                 bench_config_path: Union[str, pathlib.Path],
+                 sim_config_name: Union[str, None]=None,
+                 bench_config_name: Union[str, None]=None,
                  name: Union[str, None]=None,
                  scaler: Union[Scaler, None]=None,
-                 bench_config_path: Union[str, pathlib.Path, None]=None,
-                 bench_config_name: Union[str, None]=None,
-                 sim_config_path: Union[str, None]=None,
-                 sim_config_name: Union[str, None]=None,
                  log_path: Union[None, str]=None,
                  **kwargs):
         super().__init__()#name=name, log_path=log_path, **kwargs)
@@ -203,8 +203,8 @@ class TorchUnet(nn.Module):
         self.bench_config = ConfigManager(section_name=bench_config_name, path=bench_config_path)
         # The config file associoated to this model
         sim_config_name = sim_config_name if sim_config_name is not None else "DEFAULT"
-        sim_config_path_default = pathlib.Path(__file__).parent.parent / "configurations" / "torch_unet.ini"
-        sim_config_path = sim_config_path if sim_config_path is not None else sim_config_path_default
+        # sim_config_path_default = pathlib.Path(__file__).parent.parent / "configurations" / "torch_unet.ini"
+        # sim_config_path = sim_config_path if sim_config_path is not None else sim_config_path_default
         self.sim_config = ConfigManager(section_name=sim_config_name, path=sim_config_path)
         self.name = name if name is not None else self.sim_config.get_option("name")
         # scaler

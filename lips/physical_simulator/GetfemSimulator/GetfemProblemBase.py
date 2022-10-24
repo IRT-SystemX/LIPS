@@ -2,11 +2,14 @@
 # -*- coding: utf-8 -*-
 
 import numpy as np
-from copy import copy,deepcopy
+from copy import deepcopy
 
 import lips.physical_simulator.GetfemSimulator.PhysicalFieldNames as PFN
-import lips.physical_simulator.GetfemSimulator.GetfemHSA as PhySolver
-
+import lips.physical_simulator.GetfemSimulator.GetfemBricks.FeSpaces as gfFespace
+from lips.physical_simulator.GetfemSimulator.GetfemBricks.Integrations import DefineIntegrationMethodsByOrder,DefineCompositeIntegrationMethodsByName
+import lips.physical_simulator.GetfemSimulator.GetfemBricks.ModelTools as gfModel
+from lips.physical_simulator.GetfemSimulator.GetfemBricks.Utilities import ComputeL2Norm,ComputeH1Norm
+import lips.physical_simulator.GetfemSimulator.GetfemBricks.ExportTools as gfExport
 
 class FieldNotFound(Exception):
     pass
@@ -17,7 +20,7 @@ class GetfemProblemBase:
 
     Base class for Getfem Problems
     """
-    def __init__(self,other=None):
+    def __init__(self,name=None,auxiliaryOutputs=None,other=None):
         """
         .. py:method:: __init__(other)
         :param GetfemProblemBase other: instance of this very class        
@@ -32,6 +35,8 @@ class GetfemProblemBase:
         :ivar list spacesVariables: variable name,unknown, spatial support tagname
         """
         if other is None:
+            self.name=name
+            self.auxiliaryOutputs=auxiliaryOutputs
             self.dim = None
             self.model = None
             self.mesh = None
@@ -41,13 +46,16 @@ class GetfemProblemBase:
             self.variables = []
             self.feDef = dict()
             self.spacesVariables = []
+            self.multiplierVariable=None
             self.solutions=dict()
             self.auxiliaryFieldGeneration=dict()
             self.auxiliaryField=dict()
             self.auxiliaryParams=dict()
             self.max_residual=1e-6
             self.max_iter=100
+            self.supportParallelRun=False
         else:
+            self.name=other.name
             self.dim = other.dim
             self.model = other.model
             self.mesh = other.mesh
@@ -57,13 +65,27 @@ class GetfemProblemBase:
             self.variables = other.variables
             self.feDef = other.feDef
             self.spacesVariables = other.spacesVariables
+            self.multiplierVariable = other.multiplierVariable
             self.solutions=deepcopy(other.solutions)
             self.auxiliaryFieldGeneration=deepcopy(other.auxiliaryFieldGeneration)
             self.auxiliaryField=deepcopy(other.auxiliaryField)
             self.auxiliaryParams=deepcopy(other.auxiliaryParams)
             self.max_residual=other.max_residual
             self.max_iter=other.max_iter
+            self.supportParallelRun=other.supportParallelRun
 
+    def IsSolverUsable(self)->bool:
+        """
+        .. py:method:: IsSolverUsable()
+
+        Check physical solver can be used
+        """
+        try:
+            import getfem
+        except:
+            print("Something went wrong when checking solver usability")
+            return False
+        return True
 
     def SetFeSpaces(self):
         """
@@ -72,7 +94,7 @@ class GetfemProblemBase:
         Define finite element spaces
         """
         for variable,space in self.feDef.items():
-            self.feSpaces[variable]=PhySolver.DefineFESpaces(mesh=self.mesh,elements_degree=space["degree"],dof=space["dof"])
+            self.feSpaces[variable]=gfFespace.DefineFESpaces(mesh=self.mesh,elements_degree=space["degree"],dof=space["dof"])
 
     def GetFeSpace(self,fieldType):
         """
@@ -95,10 +117,19 @@ class GetfemProblemBase:
 
         Define integration methods
         """
-        self.integrMethods={
-                "standard":PhySolver.DefineIntegrationMethodsByOrder(mesh=self.mesh,order=4),
-                "composite":PhySolver.DefineCompositeIntegrationMethodsByName(mesh=self.mesh, name='IM_STRUCTURED_COMPOSITE(IM_TRIANGLE(4),2)')
-                           }
+
+        if self.dim==2:
+            self.integrMethods={
+                    "standard":DefineIntegrationMethodsByOrder(mesh=self.mesh,order=4),
+                    "composite":DefineCompositeIntegrationMethodsByName(mesh=self.mesh, name='IM_STRUCTURED_COMPOSITE(IM_TRIANGLE(4),2)')
+                            }
+        elif self.dim==3:
+            self.integrMethods={
+                    "standard":DefineIntegrationMethodsByOrder(mesh=self.mesh,order=4),
+                    "composite":DefineCompositeIntegrationMethodsByName(mesh=self.mesh, name='IM_STRUCTURED_COMPOSITE(IM_TETRAHEDRON(3),2)')
+                            }
+        else:
+            raise Exception("Wrong dimension!")
 
     def InitModel(self):
         """
@@ -107,16 +138,16 @@ class GetfemProblemBase:
         Init Getfem model, create variables related to unknown in model
         """
         self.model=self.DefineModel()
-        for var,space,bound in self.spacesVariables:
-            if bound is not None:
-                boundRef=self.refNumByRegion[bound]
-            else:
-                boundRef=bound
-            PhySolver.AddVariable(self.model,var,self.feSpaces[space],boundRef)
-            self.variables.append((var,self.feSpaces[space],boundRef))
+        for spaceVariable in self.spacesVariables:
+            self.AddVariable(variable=spaceVariable)
+
+    def AddVariable(self,variable):
+        varName,spaceName,boundary=variable
+        gfModel.AddVariable(model=self.model,var=varName,mfvar=self.feSpaces[spaceName],boundary=boundary)
+        self.variables.append((varName,self.feSpaces[spaceName],boundary))
 
     def DefineModel(self):
-        return PhySolver.DefineModel()
+        return gfModel.DefineModel()
 
     def InitVariable(self,fieldType,fieldValue):
         """
@@ -126,7 +157,7 @@ class GetfemProblemBase:
         """
         varNameByvarType={PFN.displacement:"u",PFN.contactMultiplier:"lambda"}
         modelVariableName=varNameByvarType[fieldType]
-        PhySolver.SetModelVariableValue(self.model,modelVariableName,fieldValue)
+        gfModel.SetModelVariableValue(self.model,modelVariableName,fieldValue)
 
     def Preprocessing(self,variables=None,multiplierVariable=None):
         """
@@ -134,22 +165,39 @@ class GetfemProblemBase:
 
         Must be done once before building problem, define variables, finite element spaces, integrations methods and model
         """
+        self.ComputeDimension()
         self.SetVariables(variables=variables,multiplierVariable=multiplierVariable)
         self.SetFeSpaces()
         self.SetIntegrationMethods()        
         self.InitModel()
 
-    def RunProblem(self,noisySolve=True):
+    def ComputeDimension(self):
+        self.dim=self.mesh.dim()
+
+    def RunProblem(self,options=None):
         """
         .. py:method:: RunProblem()
 
         Solve physical problem
         """
-        print('Solve problem with ', PhySolver.GetNbDof(self.model), ' dofs')
-        solverState=PhySolver.Solve(model=self.model,max_iter=self.max_iter,max_residual=self.max_residual,noisiness=noisySolve)        
+        solverState=self.StandardSolve(options=options)
         self.SaveSolutions()
         self.SaveAuxiliaryFields()
         return solverState
+
+    def StandardSolve(self,options):
+        print('Solve problem with ', gfModel.GetNbDof(self.model), ' dofs')
+        default_options={"max_iter":self.max_iter,
+            "max_res":self.max_residual,
+            "noisiness":True
+            }
+
+        customOptions=default_options
+        if options is not None:
+            customOptions.update(options)
+        solverState=gfModel.Solve(model=self.model,options=customOptions)
+        return solverState    
+
 
     def SaveSolutions(self):
         """
@@ -158,7 +206,7 @@ class GetfemProblemBase:
         Retrieve solutions from solved problem
         """
         for variable,fieldType,_ in self.spacesVariables:
-            self.solutions[fieldType]=PhySolver.GetModelVariableValue(self.model,variable)
+            self.solutions[fieldType]=gfModel.GetModelVariableValue(self.model,variable)
 
     def AssembleProblem(self):
         """
@@ -166,7 +214,7 @@ class GetfemProblemBase:
 
         Assemble physical problem
         """
-        PhySolver.AssembleProblem(self.model)
+        gfModel.AssembleProblem(self.model)
 
     def ExtractFullAssembledSystem(self):
         """
@@ -174,37 +222,37 @@ class GetfemProblemBase:
 
         Assemble physical problem
         """
-        return PhySolver.ExtractFullAssembledSystem(self.model)
+        return gfModel.ExtractFullAssembledSystem(self.model)
 
     def ExtractRHS(self):
-        return PhySolver.ExtractRHS(self.model)
+        return gfModel.ExtractRHS(self.model)
 
     def AddExplicitRHSForField(self,fieldName,explicitRHS):
         variableModelName = self.GetModelVariableName(fieldName)
-        PhySolver.AddExplicitRHS(self.model,variableModelName,explicitRHS)
+        gfModel.AddExplicitRHS(self.model,variableModelName,explicitRHS)
 
     def AddExplicitConstraintForFieldWithMult(self,fieldName,multVariableName,matConstraint,rhsConstraint):
         variableModelName = self.GetModelVariableName(fieldName)
-        PhySolver.AddConstraintWithMultipliers(self.model,variableModelName,multVariableName,matConstraint,rhsConstraint)
+        gfModel.AddConstraintWithMultipliers(self.model,variableModelName,multVariableName,matConstraint,rhsConstraint)
 
     def GetVariableValue(self,fieldName):
         variableModelName = self.GetModelVariableName(fieldName)
-        return PhySolver.GetModelVariableValue(self.model,variableModelName)
+        return gfModel.GetModelVariableValue(self.model,variableModelName)
 
     def GetVariableDofInterval(self,fieldName):
         variableModelName=self.GetModelVariableName(fieldName)
-        varStart,varEnd = PhySolver.GetVariableDofInterval(self.model,variableModelName)
+        varStart,varEnd = gfModel.GetVariableDofInterval(self.model,variableModelName)
         return varStart,varEnd
 
     def GetModelVariableName(self,fieldName):
         try:
-            variableModelName=PhySolver.modelVarByPhyField[fieldName]
+            variableModelName=gfModel.modelVarByPhyField[fieldName]
         except KeyError:
             raise Exception("The field "+fieldName+" was not found within the model.")
         return variableModelName
 
     def AddFixedSizeVariable(self,variableName,variableSize):
-        PhySolver.AddFixedSizeVariable(self.model,variableName,variableSize)
+        gfModel.AddFixedSizeVariable(self.model,variableName,variableSize)
 
     def GetSolution(self,fieldType):
         """
@@ -250,7 +298,7 @@ class GetfemProblemBase:
         Recreate original variables in model (to use if they were deleted)
         """
         for var,mfvar,bound in self.variables:
-            PhySolver.AddVariable(self.model,var,mfvar,bound)
+            gfModel.AddVariable(self.model,var,mfvar,bound)
 
     def CleanProblemModel(self):
         """
@@ -258,14 +306,14 @@ class GetfemProblemBase:
 
         Delete every bricks and variables in the model
         """
-        PhySolver.CleanModel(self.model)
+        gfModel.CleanModel(self.model)
         self.RestoreVariables()
 
     def DeleteModelBrickFromId(self,brickId):
-        PhySolver.DeleteBoundaryCondition(self.model,brickId)
+        gfModel.DeleteBoundaryCondition(self.model,brickId)
 
     def DeleteModelVariable(self,variableName):
-        PhySolver.DeleteVariable(self.model,variableName)
+        gfModel.DeleteVariable(self.model,variableName)
 
     def ExportFieldFromFileInGmsh(self,fileName,outputformat,solutionName):
         if outputformat == 'VectorSolution':
@@ -291,8 +339,8 @@ class GetfemProblemBase:
         :param string fieldType: Getfem unknown related to field     
         """
         feSpace,solutions=self.feSpaces[fieldType],self.GetSolution(fieldType)
-        dummyMffield=PhySolver.DefineFESpaces(mesh=self.mesh,elements_degree=2,dof=1)
-        PhySolver.ExportFieldInGmsh(filename,feSpace,solutions,dummyMffield,field,fieldName)
+        dummyMffield=gfFespace.DefineFESpaces(mesh=self.mesh,elements_degree=2,dof=1)
+        gfExport.ExportFieldInGmsh(filename,feSpace,solutions,dummyMffield,field,fieldName)
 
     def ExportFieldInGmshWithFormat(self,filename,field,dofpernodes,fieldName,elements_degree=2):
         """
@@ -303,8 +351,8 @@ class GetfemProblemBase:
         :param array field: to be exported field value
         :param string fieldName: to be exported field name
         """
-        dummyfeSpace=PhySolver.DefineFESpaces(mesh=self.mesh,elements_degree=elements_degree,dof=dofpernodes)
-        PhySolver.ExportSingleFieldInGmsh(filename,dummyfeSpace,field,fieldName)
+        dummyfeSpace=gfFespace.DefineFESpaces(mesh=self.mesh,elements_degree=elements_degree,dof=dofpernodes)
+        gfExport.ExportSingleFieldInGmsh(filename,dummyfeSpace,field,fieldName)
 
     def ExportSolution(self,filename,extension,fieldType=PFN.displacement):
         feSpace,solutions=self.GetFeSpace(fieldType),self.GetSolution(fieldType)
@@ -324,7 +372,7 @@ class GetfemProblemBase:
         :param string fieldType: Getfem unknown related to field     
         """
         feSpace,solutions=self.feSpaces[fieldType],self.GetSolution(fieldType)
-        PhySolver.ExportPrimalSolutionInGmsh(filename,feSpace,solutions)
+        gfExport.ExportPrimalSolutionInGmsh(filename,feSpace,solutions)
 
     def ExportSolutionInVTK(self,filename,fieldType=PFN.displacement):
         """
@@ -335,7 +383,7 @@ class GetfemProblemBase:
         :param string fieldType: Getfem unknown related to field     
         """
         feSpace,solutions=self.GetFeSpace(fieldType),self.GetSolution(fieldType)
-        PhySolver.ExportPrimalSolutionInVTK(filename,feSpace,solutions)
+        gfExport.ExportPrimalSolutionInVTK(filename,feSpace,solutions)
   
 
     def GetBasicDof(self,fieldType=PFN.displacement,regionTag=None,dofIds=None):
@@ -343,7 +391,7 @@ class GetfemProblemBase:
         .. py:method:: GetBasicDof(fieldType)  
         """
         feSpace=self.feSpaces[fieldType]
-        return PhySolver.GetBasicDof(mfu=feSpace,regionTag=regionTag,dofIds=dofIds)
+        return gfFespace.GetBasicDof(mfu=feSpace,regionTag=regionTag,dofIds=dofIds)
 
     def GetSolutionAsField(self,fieldType=PFN.displacement):
         """
@@ -353,10 +401,11 @@ class GetfemProblemBase:
         :param string fieldType: Getfem unknown related to field     
         """
         feSpace,solutions=self.feSpaces[fieldType],self.GetSolution(fieldType)
-        return PhySolver.GetSolutionAsField(feSpace,solutions)
+        return gfFespace.GetSolutionAsField(feSpace,solutions)
 
-    def GetSolverOrderPosition(self):
-        return PhySolver.GetUniqueBasicCoordinates(self.feSpaces[PFN.displacement]).transpose()
+    def GetSolverOrderPosition(self,fieldType=PFN.displacement):
+        feSpace=self.GetFeSpace(fieldType)
+        return gfFespace.GetUniqueBasicCoordinates(feSpace).transpose()
 
     def GetBasicCoordinates(self,fieldType=PFN.displacement):
         """
@@ -366,13 +415,13 @@ class GetfemProblemBase:
         :param string fieldType: Getfem unknown related to field     
         """
         feSpace=self.feSpaces[fieldType]
-        return PhySolver.GetBasicCoordinates(feSpace)
+        return gfFespace.GetBasicCoordinates(feSpace)
 
     def ComputeSpatialErrorIndicator(self,field,errorType):
         if errorType=="L2":
-            return PhySolver.ComputeL2Norm(self.feSpaces[PFN.displacement],field,self.integrMethods["standard"])
+            return ComputeL2Norm(self.feSpaces[PFN.displacement],field,self.integrMethods["standard"])
         elif errorType=="H1":
-            return PhySolver.ComputeH1Norm(self.feSpaces[PFN.displacement],field,self.integrMethods["standard"])
+            return ComputeH1Norm(self.feSpaces[PFN.displacement],field,self.integrMethods["standard"])
         elif errorType=="L_inf":
             return np.max(field)
         else:
@@ -380,7 +429,7 @@ class GetfemProblemBase:
 
     def __str__(self):
         print("Model description")
-        PhySolver.PrintModel(self.model)
+        gfModel.PrintModel(self.model)
 
         s="Dimension: "+str(self.dim)+"\n"
         s+="Variables: \n"
