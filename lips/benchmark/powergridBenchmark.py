@@ -117,25 +117,25 @@ class PowerGridBenchmark(Benchmark):
                      self.config.get_option("attr_y")
 
 
-        self.train_dataset = PowerGridDataSet("train",
+        self.train_dataset = PowerGridDataSet(name="train",
                                               attr_names=attr_names,
                                               config=self.config,
                                               log_path=log_path
                                               )
 
-        self.val_dataset = PowerGridDataSet("val",
+        self.val_dataset = PowerGridDataSet(name="val",
                                             attr_names=attr_names,
                                             config=self.config,
                                             log_path=log_path
                                             )
 
-        self._test_dataset = PowerGridDataSet("test",
+        self._test_dataset = PowerGridDataSet(name="test",
                                               attr_names=attr_names,
                                               config=self.config,
                                               log_path=log_path
                                               )
 
-        self._test_ood_topo_dataset = PowerGridDataSet("test_ood_topo",
+        self._test_ood_topo_dataset = PowerGridDataSet(name="test_ood_topo",
                                                        attr_names=attr_names,
                                                        config=self.config,
                                                        log_path=log_path
