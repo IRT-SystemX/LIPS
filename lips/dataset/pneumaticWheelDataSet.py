@@ -409,9 +409,9 @@ class WheelDataSet(DataSet):
         path to write the log file
     """
     def __init__(self,
+                 config: ConfigManager,
                  name="train",
                  attr_names=("disp",),
-                 config: Union[ConfigManager, None]=None,
                  log_path: Union[str, None]=None,
                  **kwargs):
         super(WheelDataSet,self).__init__(name=name)
@@ -421,11 +421,7 @@ class WheelDataSet(DataSet):
 
         # logger
         self.logger = CustomLogger(__class__.__name__, log_path).logger
-
-        if config is not None:
-            self.config = config
-        else:
-            self.config = ConfigManager()
+        self.config = config
 
         # number of dimension of x and y (number of columns)
         self._size_x = None
@@ -447,6 +443,7 @@ class WheelDataSet(DataSet):
 
     def _init_store_data(self, simulator:GetfemSimulator, nb_samples:int):
         """Initialize the data (to be stored) sizes"""
+        simulator.build_model()
         self.data=dict()
         for attr_nm in self._attr_names:
             array_ = simulator.get_variable_value(field_name=attr_nm)
@@ -628,10 +625,16 @@ class WheelDataSet(DataSet):
         extract_y = [data[el].astype(np.float32) for el in self._attr_y]
 
         if concat:
-            extract_x = [single_x.reshape((single_x.shape[0],1)) for single_x in extract_x]
+            if len(extract_x[0].shape)==1:
+                extract_x = [single_x.reshape((single_x.shape[0],1)) for single_x in extract_x]
             extract_x = np.concatenate(extract_x, axis=1)
             extract_y = np.concatenate(extract_y, axis=1)
         return extract_x, extract_y
+
+    def __getitem__(self, item:int)->tuple:
+        currentInput = {inputName:self.data[inputName][item] for inputName in self._attr_x}
+        currentOutput = {outputName:self.data[outputName][item] for outputName in self._attr_y}
+        return currentInput,currentOutput
 
 class QuasiStaticWheelDataSet(WheelDataSet):
     """
@@ -688,7 +691,6 @@ class QuasiStaticWheelDataSet(WheelDataSet):
         transientParams=getattr(simulator._simulator,"transientParams")
         nb_samples=int(transientParams["time"]//transientParams["timeStep"]) + 1
         self._init_store_data(simulator=simulator,nb_samples=nb_samples)
-        simulator.build_model()
         solverState=simulator.run_problem()
             
         self._store_obs(obs=simulator)
@@ -714,7 +716,7 @@ class QuasiStaticWheelDataSet(WheelDataSet):
         """
         for attr_nm in self._attr_names:
             array_ = obs.get_solution(field_name=attr_nm)
-            self.data[attr_nm] = array_
+            self.data[attr_nm] = np.array(array_)
 
 class SamplerStaticWheelDataSet(WheelDataSet):
     """
@@ -822,8 +824,9 @@ class SamplerStaticWheelDataSet(WheelDataSet):
 
 import math
 import lips.physical_simulator.GetfemSimulator.PhysicalFieldNames as PFN
+from lips.config import ConfigManager
 
-def check_static_samples_generation():
+def check_static_samples_generation(configFilePath):
     physical_domain={
         "Mesher":"Getfem",
         "refNumByRegion":{"HOLE_BOUND": 1,"CONTACT_BOUND": 2, "EXTERIOR_BOUND": 3},
@@ -869,7 +872,7 @@ def check_static_samples_generation():
     dofnum_by_field={PFN.displacement:2}
     myTransformer.generate(dofnum_by_field=dofnum_by_field,path_out="wheel_interpolated")
 
-def check_quasi_static_generation():
+def check_quasi_static_generation(configFilePath):
     physical_domain={
         "Mesher":"Getfem",
         "refNumByRegion":{"HOLE_BOUND": 1,"CONTACT_BOUND": 2, "EXTERIOR_BOUND": 3},
@@ -895,7 +898,7 @@ def check_quasi_static_generation():
                                     path_out="WheelRolDir",
                                     )
 
-def check_interpolation_back_and_forth():
+def check_interpolation_back_and_forth(configFilePath):
     physical_domain={
         "Mesher":"Getfem",
         "refNumByRegion":{"HOLE_BOUND": 1,"CONTACT_BOUND": 2, "EXTERIOR_BOUND": 3},
@@ -969,8 +972,10 @@ def check_interpolation_back_and_forth():
     print(abs_error)
     np.testing.assert_equal(abs_error[::-1],np.sort(abs_error))
 
+from lips import GetRootPath
 
 if __name__ == '__main__':
-    check_interpolation_back_and_forth()
-    check_static_samples_generation()
-    check_quasi_static_generation()
+    configFilePath=GetRootPath()+os.path.join("..","configurations","pneumatic","benchmarks","confWheel.ini")
+    check_interpolation_back_and_forth(configFilePath=configFilePath)
+    check_static_samples_generation(configFilePath=configFilePath)
+    check_quasi_static_generation(configFilePath=configFilePath)

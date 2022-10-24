@@ -132,3 +132,21 @@ class DataSet(object):
             raise RuntimeError("Impossible to get_data from a non initialized dataset. "
                                "Have you called `dataset.load(...)` "
                                "or `dataset.generate(...)` ?")
+
+    def __len__(self)->int:
+        data=self.GetData()
+        return data[list(data.keys())[0]].shape[0]
+
+    def __iter__(self):
+        self.current_index = 0
+        return self
+
+    def __next__(self):
+        if self.current_index < len(self):
+            currentData=self.__getitem__(self.current_index)
+            self.current_index += 1
+            return currentData
+        raise StopIteration
+
+    def __getitem__(self, item:int):
+        return self.get_data(index)
