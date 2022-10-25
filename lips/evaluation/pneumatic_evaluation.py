@@ -19,6 +19,7 @@ from lips.physical_simulator.GetfemSimulator.GetfemSimulatorBridge import Physic
 from lips.physical_simulator.getfemSimulator import GetfemSimulator
 from lips.evaluation import Evaluation
 from lips.logger import CustomLogger
+from lips.evaluation.utils import metric_factory
 
 class PneumaticEvaluation(Evaluation):
     """Evaluation of the pneumatic specific metrics
@@ -53,7 +54,6 @@ class PneumaticEvaluation(Evaluation):
         self.eval_crit_args = self.config.get_option("eval_crit_args")
 
         self.logger = CustomLogger(__class__.__name__, self.log_path).logger
-        self.criteria = self.mapper.map_generic_criteria()
 
         scenario_params=self.config.get_option("env_params")
         self.simulator = GetfemSimulator(**scenario_params)
@@ -130,7 +130,7 @@ class PneumaticEvaluation(Evaluation):
         """
         metric_val_by_name = self.metrics[self.MACHINE_LEARNING]
         for metric_name in self.eval_dict[self.MACHINE_LEARNING]:
-            metric_fun = self.criteria.get(metric_name)
+            metric_fun = metric_factory.get_metric(metric_name)
             metric_val_by_name[metric_name] = {}
             for nm_, pred_ in self.predictions.items():
                 true_ = self.observations[nm_]
