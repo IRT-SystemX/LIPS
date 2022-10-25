@@ -55,6 +55,8 @@ commands:
       - store_artifacts:
           path: test-results
           destination: tr1
+      - store_artifacts:
+          path: cov_html
 
   change_owner:
     description: "change owner before saving cache"
@@ -77,7 +79,7 @@ jobs:
           name: "run pytest"
           command: |
             . venv/bin/activate
-            python -m pytest ./lips --html=test-results/pytest_report.html --self-contained-html
+            python -m pytest --html=test-results/pytest_report.html --self-contained-html --cov-report html:cov_html --cov=lips ./lips/test/
       - store_artifacts_test_results
 
   run_notebook_test:
