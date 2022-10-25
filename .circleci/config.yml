@@ -79,7 +79,7 @@ jobs:
           name: "run pytest"
           command: |
             . venv/bin/activate
-            python -m pytest --html=test-results/pytest_report.html --self-contained-html --cov-report html:cov_html --cov=lips ./lips/test/
+            python -m pytest --html=test-results/pytest_report.html --self-contained-html --cov-report html:cov_html --cov=lips ./lips/tests/
       - store_artifacts_test_results
 
   run_notebook_test:

@@ -18,7 +18,7 @@ pkgs = {
         "scikit_learn",
         "tqdm",
         "matplotlib",
-        "scipy",
+        "scipy<=1.6.0",
         "six",
         "pathlib",
         "numba",

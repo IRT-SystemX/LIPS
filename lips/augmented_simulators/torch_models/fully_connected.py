@@ -47,11 +47,11 @@ class TorchFullyConnected(nn.Module):
     """
     def __init__(self,
                  sim_config_path: Union[pathlib.Path, str],
+                 bench_config_path: Union[str, pathlib.Path],
                  sim_config_name: Union[str, None]=None,
+                 bench_config_name: Union[str, None]=None,
                  name: Union[str, None]=None,
                  scaler: Union[Scaler, None]=None,
-                 bench_config_path: Union[str, pathlib.Path, None]=None,
-                 bench_config_name: Union[str, None]=None,
                  log_path: Union[None, pathlib.Path, str]=None,
                  **kwargs):
         super().__init__()

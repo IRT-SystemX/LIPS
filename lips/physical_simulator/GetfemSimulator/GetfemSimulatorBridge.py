@@ -1,12 +1,12 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
-import lips.physical_simulator.GetfemSimulator.GetfemHSA as PhySolver
 import lips.physical_simulator.GetfemSimulator.MeshGenerationTools as ExternalMesher
 from lips.physical_simulator.GetfemSimulator.GetfemWheelProblem import GetfemMecaProblem,GetfemRollingWheelProblem
 from lips.physical_simulator.GetfemSimulator.GetfemWheelProblemQuasiStatic import QuasiStaticRollingProblem,QuasiStaticMecanicalProblem
 from lips.physical_simulator.GetfemSimulator.GetfemInterpolationTools import FEMInterpolationOnSupport,InterpolateSolOnNodes
-from lips.physical_simulator.GetfemSimulator.PhysicalCriteria import DeformedVolume,UnilateralContactPressure,FrictionalContactPressure,TotalElasticEnergy,MaxVonMises,MaxDisp
+from lips.physical_simulator.GetfemSimulator.PhysicalCriteria import CreatePhysicalCriteria
+import lips.physical_simulator.GetfemSimulator.GetfemBricks.MeshTools as gfMesh
 
 def GetfemInterpolationOnSupport(simulator,field,gridSupport):
     physical_problem=simulator._simulator
@@ -18,7 +18,7 @@ def InterpolationOnCloudPoints(field_support,fieldValue,phyProblem):
 
 def MeshGeneration(physical_domain):
     if physical_domain["Mesher"]=="Getfem":
-        return PhySolver.GenerateWheelMesh(wheelDimensions=physical_domain["wheelDimensions"],\
+        return gfMesh.GenerateWheelMesh(wheelDimensions=physical_domain["wheelDimensions"],\
                                     meshSize=physical_domain["meshSize"],\
                                     RefNumByRegion=physical_domain["refNumByRegion"])
     elif physical_domain["Mesher"]=="Gmsh":
@@ -36,8 +36,8 @@ def MeshGeneration(physical_domain):
                                                mesh_size=physical_domain["mesh_size"]
                                                )
             myDentedWheel.GenerateMesh(outputFile=physical_domain["meshFilename"])
-            mesh=PhySolver.ImportGmshMesh(physical_domain["meshFilename"]+".msh")
-            taggedMesh=PhySolver.TagWheelMesh(mesh=mesh,
+            mesh=gfMesh.ImportGmshMesh(physical_domain["meshFilename"]+".msh")
+            taggedMesh=gfMesh.TagWheelMesh(mesh=mesh,
                                               wheelDimensions=(min(physical_domain["wheel_Dimensions"]),max(physical_domain["wheel_Dimensions"])),
                                               center=(0.0,max(physical_domain["wheel_Dimensions"])),
                                               refNumByRegion=physical_domain["refNumByRegion"])
@@ -71,22 +71,8 @@ def SimulatorGeneration(physical_domain,physical_properties):
     return simulator
 
 def PhysicalCriteriaComputation(criteria_type,simulator,field,criteria_params=None):
-
-    classNameByCriteriaType = {
-                               "deformed_volume":"DeformedVolume",
-                               "normal_contact_forces":"UnilateralContactPressure",
-                               "friction_contact_forces":"FrictionalContactPressure",
-                               "strain_energy":"TotalElasticEnergy",
-                               "max_stress":"MaxVonMises",
-                               "max_deflection":"MaxDisp",
-                               }
-
-    physical_problem=simulator._simulator
-    try:
-        criteria = globals()[classNameByCriteriaType[criteria_type]](problem=physical_problem)
-    except KeyError:
-        raise(Exception("Unable to treat this kind of problem !"))
-
+    criteria=CreatePhysicalCriteria(criteria_type,physical_problem)
+    
     criteria.SetExternalSolutions(field)
     if criteria_params is not None:
         return criteria.ComputeValue(**criteria_params)
