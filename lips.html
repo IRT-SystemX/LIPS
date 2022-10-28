@@ -4,7 +4,7 @@
   <meta charset="utf-8" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>lips package &mdash; LIPS 0.1 documentation</title>
+  <title>lips package &mdash; LIPS 0.1.0 documentation</title>
       <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
       <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
   <!--[if lt IE 9]>
@@ -14,7 +14,9 @@
         <script data-url_root="./" id="documentation_options" src="_static/documentation_options.js"></script>
         <script src="_static/jquery.js"></script>
         <script src="_static/underscore.js"></script>
+        <script src="_static/_sphinx_javascript_frameworks_compat.js"></script>
         <script src="_static/doctools.js"></script>
+        <script src="_static/sphinx_highlight.js"></script>
     <script src="_static/js/theme.js"></script>
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" /> 
@@ -27,6 +29,9 @@
         <div class="wy-side-nav-search" >
             <a href="index.html" class="icon icon-home"> LIPS
           </a>
+              <div class="version">
+                0.1
+              </div>
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
     <input type="text" name="q" placeholder="Search docs" />
@@ -82,50 +87,243 @@
            <div itemprop="articleBody">
              
   <section id="module-lips">
-<span id="lips-package"></span><h1>lips package<a class="headerlink" href="#module-lips" title="Permalink to this headline"></a></h1>
+<span id="lips-package"></span><h1>lips package<a class="headerlink" href="#module-lips" title="Permalink to this heading"></a></h1>
 <section id="subpackages">
-<h2>Subpackages<a class="headerlink" href="#subpackages" title="Permalink to this headline"></a></h2>
+<h2>Subpackages<a class="headerlink" href="#subpackages" title="Permalink to this heading"></a></h2>
 <div class="toctree-wrapper compound">
 <ul>
 <li class="toctree-l1"><a class="reference internal" href="lips.augmented_simulators.html">lips.augmented_simulators package</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="lips.augmented_simulators.html#lips.augmented_simulators.AugmentedSimulator"><code class="docutils literal notranslate"><span class="pre">AugmentedSimulator</span></code></a><ul>
+<li class="toctree-l3"><a class="reference internal" href="lips.augmented_simulators.html#lips.augmented_simulators.AugmentedSimulator.train"><code class="docutils literal notranslate"><span class="pre">AugmentedSimulator.train()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="lips.augmented_simulators.html#lips.augmented_simulators.AugmentedSimulator.predict"><code class="docutils literal notranslate"><span class="pre">AugmentedSimulator.predict()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="lips.augmented_simulators.html#lips.augmented_simulators.AugmentedSimulator.build_model"><code class="docutils literal notranslate"><span class="pre">AugmentedSimulator.build_model()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="lips.augmented_simulators.html#lips.augmented_simulators.AugmentedSimulator.process_dataset"><code class="docutils literal notranslate"><span class="pre">AugmentedSimulator.process_dataset()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="lips.augmented_simulators.html#lips.augmented_simulators.AugmentedSimulator.save"><code class="docutils literal notranslate"><span class="pre">AugmentedSimulator.save()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="lips.augmented_simulators.html#lips.augmented_simulators.AugmentedSimulator.restore"><code class="docutils literal notranslate"><span class="pre">AugmentedSimulator.restore()</span></code></a></li>
+</ul>
+</li>
 <li class="toctree-l2"><a class="reference internal" href="lips.augmented_simulators.html#submodules">Submodules</a></li>
 <li class="toctree-l2"><a class="reference internal" href="lips.augmented_simulators.html#lips-augmented-simulators-augmentedsimulator-module">lips.augmented_simulators.augmentedSimulator module</a></li>
 <li class="toctree-l2"><a class="reference internal" href="lips.augmented_simulators.html#lips-augmented-simulators-fullyconnectedas-module">lips.augmented_simulators.fullyConnectedAS module</a></li>
-<li class="toctree-l2"><a class="reference internal" href="lips.augmented_simulators.html#module-lips.augmented_simulators.hyperParameterTuner">lips.augmented_simulators.hyperParameterTuner module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="lips.augmented_simulators.html#module-lips.augmented_simulators.hyperParameterTuner">lips.augmented_simulators.hyperParameterTuner module</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="lips.augmented_simulators.html#lips.augmented_simulators.hyperParameterTuner.HyperParameterTuner"><code class="docutils literal notranslate"><span class="pre">HyperParameterTuner</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="lips.augmented_simulators.html#lips.augmented_simulators.hyperParameterTuner.HyperParameterTuner.augmented_simulator"><code class="docutils literal notranslate"><span class="pre">HyperParameterTuner.augmented_simulator</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="lips.augmented_simulators.html#lips.augmented_simulators.hyperParameterTuner.HyperParameterTuner.tune"><code class="docutils literal notranslate"><span class="pre">HyperParameterTuner.tune()</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
 <li class="toctree-l2"><a class="reference internal" href="lips.augmented_simulators.html#lips-augmented-simulators-leapnetas-module">lips.augmented_simulators.leapNetAS module</a></li>
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="lips.benchmark.html">lips.benchmark package</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="lips.benchmark.html#lips.benchmark.Benchmark"><code class="docutils literal notranslate"><span class="pre">Benchmark</span></code></a><ul>
+<li class="toctree-l3"><a class="reference internal" href="lips.benchmark.html#lips.benchmark.Benchmark.benchmark_name"><code class="docutils literal notranslate"><span class="pre">Benchmark.benchmark_name</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="lips.benchmark.html#lips.benchmark.Benchmark.benchmark_path"><code class="docutils literal notranslate"><span class="pre">Benchmark.benchmark_path</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="lips.benchmark.html#lips.benchmark.Benchmark.config_path"><code class="docutils literal notranslate"><span class="pre">Benchmark.config_path</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="lips.benchmark.html#lips.benchmark.Benchmark.dataset"><code class="docutils literal notranslate"><span class="pre">Benchmark.dataset</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="lips.benchmark.html#lips.benchmark.Benchmark.augmented_simulator"><code class="docutils literal notranslate"><span class="pre">Benchmark.augmented_simulator</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="lips.benchmark.html#lips.benchmark.Benchmark.evaluation"><code class="docutils literal notranslate"><span class="pre">Benchmark.evaluation</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="lips.benchmark.html#lips.benchmark.Benchmark.log_path"><code class="docutils literal notranslate"><span class="pre">Benchmark.log_path</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="lips.benchmark.html#lips.benchmark.Benchmark.evaluate_simulator"><code class="docutils literal notranslate"><span class="pre">Benchmark.evaluate_simulator()</span></code></a></li>
+</ul>
+</li>
 <li class="toctree-l2"><a class="reference internal" href="lips.benchmark.html#submodules">Submodules</a></li>
-<li class="toctree-l2"><a class="reference internal" href="lips.benchmark.html#lips-benchmark-benchmark-module">lips.benchmark.Benchmark module</a></li>
-<li class="toctree-l2"><a class="reference internal" href="lips.benchmark.html#lips-benchmark-powergridbenchmark-module">lips.benchmark.powergridBenchmark module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="lips.benchmark.html#module-lips.benchmark.Benchmark">lips.benchmark.Benchmark module</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="lips.benchmark.html#id0"><code class="docutils literal notranslate"><span class="pre">benchmark_name</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="lips.benchmark.html#id1"><code class="docutils literal notranslate"><span class="pre">benchmark_path</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="lips.benchmark.html#id2"><code class="docutils literal notranslate"><span class="pre">config_path</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="lips.benchmark.html#id3"><code class="docutils literal notranslate"><span class="pre">dataset</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="lips.benchmark.html#id4"><code class="docutils literal notranslate"><span class="pre">augmented_simulator</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="lips.benchmark.html#id5"><code class="docutils literal notranslate"><span class="pre">evaluation</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="lips.benchmark.html#id6"><code class="docutils literal notranslate"><span class="pre">log_path</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="lips.benchmark.html#lips.benchmark.Benchmark.__delattr__"><code class="docutils literal notranslate"><span class="pre">__delattr__()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="lips.benchmark.html#lips.benchmark.Benchmark.__dir__"><code class="docutils literal notranslate"><span class="pre">__dir__()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="lips.benchmark.html#lips.benchmark.Benchmark.__eq__"><code class="docutils literal notranslate"><span class="pre">__eq__()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="lips.benchmark.html#lips.benchmark.Benchmark.__format__"><code class="docutils literal notranslate"><span class="pre">__format__()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="lips.benchmark.html#lips.benchmark.Benchmark.__ge__"><code class="docutils literal notranslate"><span class="pre">__ge__()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="lips.benchmark.html#lips.benchmark.Benchmark.__getattribute__"><code class="docutils literal notranslate"><span class="pre">__getattribute__()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="lips.benchmark.html#lips.benchmark.Benchmark.__gt__"><code class="docutils literal notranslate"><span class="pre">__gt__()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="lips.benchmark.html#lips.benchmark.Benchmark.__hash__"><code class="docutils literal notranslate"><span class="pre">__hash__()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="lips.benchmark.html#lips.benchmark.Benchmark.__init_subclass__"><code class="docutils literal notranslate"><span class="pre">__init_subclass__()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="lips.benchmark.html#lips.benchmark.Benchmark.__le__"><code class="docutils literal notranslate"><span class="pre">__le__()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="lips.benchmark.html#lips.benchmark.Benchmark.__lt__"><code class="docutils literal notranslate"><span class="pre">__lt__()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="lips.benchmark.html#lips.benchmark.Benchmark.__ne__"><code class="docutils literal notranslate"><span class="pre">__ne__()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="lips.benchmark.html#lips.benchmark.Benchmark.__new__"><code class="docutils literal notranslate"><span class="pre">__new__()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="lips.benchmark.html#lips.benchmark.Benchmark.__reduce__"><code class="docutils literal notranslate"><span class="pre">__reduce__()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="lips.benchmark.html#lips.benchmark.Benchmark.__reduce_ex__"><code class="docutils literal notranslate"><span class="pre">__reduce_ex__()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="lips.benchmark.html#lips.benchmark.Benchmark.__repr__"><code class="docutils literal notranslate"><span class="pre">__repr__()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="lips.benchmark.html#lips.benchmark.Benchmark.__setattr__"><code class="docutils literal notranslate"><span class="pre">__setattr__()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="lips.benchmark.html#lips.benchmark.Benchmark.__sizeof__"><code class="docutils literal notranslate"><span class="pre">__sizeof__()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="lips.benchmark.html#lips.benchmark.Benchmark.__str__"><code class="docutils literal notranslate"><span class="pre">__str__()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="lips.benchmark.html#lips.benchmark.Benchmark.__subclasshook__"><code class="docutils literal notranslate"><span class="pre">__subclasshook__()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="lips.benchmark.html#module-lips.benchmark.powergridBenchmark">lips.benchmark.powergridBenchmark module</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="lips.benchmark.html#lips.benchmark.powergridBenchmark.PowerGridBenchmark"><code class="docutils literal notranslate"><span class="pre">PowerGridBenchmark</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="lips.benchmark.html#lips.benchmark.powergridBenchmark.PowerGridBenchmark.load"><code class="docutils literal notranslate"><span class="pre">PowerGridBenchmark.load()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="lips.benchmark.html#lips.benchmark.powergridBenchmark.PowerGridBenchmark.generate"><code class="docutils literal notranslate"><span class="pre">PowerGridBenchmark.generate()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="lips.benchmark.html#lips.benchmark.powergridBenchmark.PowerGridBenchmark.evaluate_simulator"><code class="docutils literal notranslate"><span class="pre">PowerGridBenchmark.evaluate_simulator()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="lips.benchmark.html#lips.benchmark.powergridBenchmark.get_env"><code class="docutils literal notranslate"><span class="pre">get_env()</span></code></a></li>
+</ul>
+</li>
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="lips.config.html">lips.config package</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="lips.config.html#lips.config.ConfigManager"><code class="docutils literal notranslate"><span class="pre">ConfigManager</span></code></a><ul>
+<li class="toctree-l3"><a class="reference internal" href="lips.config.html#lips.config.ConfigManager.create_config"><code class="docutils literal notranslate"><span class="pre">ConfigManager.create_config()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="lips.config.html#lips.config.ConfigManager.get_option"><code class="docutils literal notranslate"><span class="pre">ConfigManager.get_option()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="lips.config.html#lips.config.ConfigManager.get_options_dict"><code class="docutils literal notranslate"><span class="pre">ConfigManager.get_options_dict()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="lips.config.html#lips.config.ConfigManager.edit_config_option"><code class="docutils literal notranslate"><span class="pre">ConfigManager.edit_config_option()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="lips.config.html#lips.config.ConfigManager.remove_section"><code class="docutils literal notranslate"><span class="pre">ConfigManager.remove_section()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="lips.config.html#lips.config.ConfigManager.remove_config_option"><code class="docutils literal notranslate"><span class="pre">ConfigManager.remove_config_option()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="lips.config.html#lips.config.ConfigManager.__str__"><code class="docutils literal notranslate"><span class="pre">ConfigManager.__str__()</span></code></a></li>
+</ul>
+</li>
 <li class="toctree-l2"><a class="reference internal" href="lips.config.html#submodules">Submodules</a></li>
-<li class="toctree-l2"><a class="reference internal" href="lips.config.html#module-lips.config.configmanager">lips.config.configmanager module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="lips.config.html#module-lips.config.configmanager">lips.config.configmanager module</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="lips.config.html#lips.config.configmanager.ConfigManager"><code class="docutils literal notranslate"><span class="pre">ConfigManager</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="lips.config.html#lips.config.configmanager.ConfigManager.create_config"><code class="docutils literal notranslate"><span class="pre">ConfigManager.create_config()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="lips.config.html#lips.config.configmanager.ConfigManager.get_option"><code class="docutils literal notranslate"><span class="pre">ConfigManager.get_option()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="lips.config.html#lips.config.configmanager.ConfigManager.get_options_dict"><code class="docutils literal notranslate"><span class="pre">ConfigManager.get_options_dict()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="lips.config.html#lips.config.configmanager.ConfigManager.edit_config_option"><code class="docutils literal notranslate"><span class="pre">ConfigManager.edit_config_option()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="lips.config.html#lips.config.configmanager.ConfigManager.remove_section"><code class="docutils literal notranslate"><span class="pre">ConfigManager.remove_section()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="lips.config.html#lips.config.configmanager.ConfigManager.remove_config_option"><code class="docutils literal notranslate"><span class="pre">ConfigManager.remove_config_option()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="lips.config.html#lips.config.configmanager.ConfigManager.__str__"><code class="docutils literal notranslate"><span class="pre">ConfigManager.__str__()</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="lips.dataset.html">lips.dataset package</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="lips.dataset.html#lips.dataset.DataSet"><code class="docutils literal notranslate"><span class="pre">DataSet</span></code></a><ul>
+<li class="toctree-l3"><a class="reference internal" href="lips.dataset.html#lips.dataset.DataSet.generate"><code class="docutils literal notranslate"><span class="pre">DataSet.generate()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="lips.dataset.html#lips.dataset.DataSet.load"><code class="docutils literal notranslate"><span class="pre">DataSet.load()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="lips.dataset.html#lips.dataset.DataSet.sample"><code class="docutils literal notranslate"><span class="pre">DataSet.sample()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="lips.dataset.html#lips.dataset.DataSet.get_data"><code class="docutils literal notranslate"><span class="pre">DataSet.get_data()</span></code></a></li>
+</ul>
+</li>
 <li class="toctree-l2"><a class="reference internal" href="lips.dataset.html#submodules">Submodules</a></li>
-<li class="toctree-l2"><a class="reference internal" href="lips.dataset.html#module-lips.dataset.dataSet">lips.dataset.dataSet module</a></li>
-<li class="toctree-l2"><a class="reference internal" href="lips.dataset.html#module-lips.dataset.powergridDataSet">lips.dataset.powergridDataSet module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="lips.dataset.html#module-lips.dataset.dataSet">lips.dataset.dataSet module</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="lips.dataset.html#lips.dataset.dataSet.DataSet"><code class="docutils literal notranslate"><span class="pre">DataSet</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="lips.dataset.html#lips.dataset.dataSet.DataSet.generate"><code class="docutils literal notranslate"><span class="pre">DataSet.generate()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="lips.dataset.html#lips.dataset.dataSet.DataSet.load"><code class="docutils literal notranslate"><span class="pre">DataSet.load()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="lips.dataset.html#lips.dataset.dataSet.DataSet.sample"><code class="docutils literal notranslate"><span class="pre">DataSet.sample()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="lips.dataset.html#lips.dataset.dataSet.DataSet.get_data"><code class="docutils literal notranslate"><span class="pre">DataSet.get_data()</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="lips.dataset.html#module-lips.dataset.powergridDataSet">lips.dataset.powergridDataSet module</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="lips.dataset.html#lips.dataset.powergridDataSet.PowerGridDataSet"><code class="docutils literal notranslate"><span class="pre">PowerGridDataSet</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="lips.dataset.html#lips.dataset.powergridDataSet.PowerGridDataSet.name"><code class="docutils literal notranslate"><span class="pre">PowerGridDataSet.name</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="lips.dataset.html#lips.dataset.powergridDataSet.PowerGridDataSet.attr_names"><code class="docutils literal notranslate"><span class="pre">PowerGridDataSet.attr_names</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="lips.dataset.html#lips.dataset.powergridDataSet.PowerGridDataSet.log_path"><code class="docutils literal notranslate"><span class="pre">PowerGridDataSet.log_path</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="lips.dataset.html#lips.dataset.powergridDataSet.PowerGridDataSet.ALL_VARIABLES"><code class="docutils literal notranslate"><span class="pre">PowerGridDataSet.ALL_VARIABLES</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="lips.dataset.html#lips.dataset.powergridDataSet.PowerGridDataSet.generate"><code class="docutils literal notranslate"><span class="pre">PowerGridDataSet.generate()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="lips.dataset.html#lips.dataset.powergridDataSet.PowerGridDataSet.load"><code class="docutils literal notranslate"><span class="pre">PowerGridDataSet.load()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="lips.dataset.html#lips.dataset.powergridDataSet.PowerGridDataSet.sample"><code class="docutils literal notranslate"><span class="pre">PowerGridDataSet.sample()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="lips.dataset.html#lips.dataset.powergridDataSet.PowerGridDataSet.get_data"><code class="docutils literal notranslate"><span class="pre">PowerGridDataSet.get_data()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="lips.dataset.html#lips.dataset.powergridDataSet.PowerGridDataSet.get_sizes"><code class="docutils literal notranslate"><span class="pre">PowerGridDataSet.get_sizes()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="lips.dataset.html#lips.dataset.powergridDataSet.PowerGridDataSet.extract_data"><code class="docutils literal notranslate"><span class="pre">PowerGridDataSet.extract_data()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="lips.dataset.html#lips.dataset.powergridDataSet.PowerGridDataSet.reconstruct_output"><code class="docutils literal notranslate"><span class="pre">PowerGridDataSet.reconstruct_output()</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="lips.evaluation.html">lips.evaluation package</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="lips.evaluation.html#lips.evaluation.Evaluation"><code class="docutils literal notranslate"><span class="pre">Evaluation</span></code></a><ul>
+<li class="toctree-l3"><a class="reference internal" href="lips.evaluation.html#lips.evaluation.Evaluation.config"><code class="docutils literal notranslate"><span class="pre">Evaluation.config</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="lips.evaluation.html#lips.evaluation.Evaluation.config_path"><code class="docutils literal notranslate"><span class="pre">Evaluation.config_path</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="lips.evaluation.html#lips.evaluation.Evaluation.config_section"><code class="docutils literal notranslate"><span class="pre">Evaluation.config_section</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="lips.evaluation.html#lips.evaluation.Evaluation.log_path"><code class="docutils literal notranslate"><span class="pre">Evaluation.log_path</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="lips.evaluation.html#lips.evaluation.Evaluation.MACHINE_LEARNING"><code class="docutils literal notranslate"><span class="pre">Evaluation.MACHINE_LEARNING</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="lips.evaluation.html#lips.evaluation.Evaluation.PHYSICS_COMPLIANCES"><code class="docutils literal notranslate"><span class="pre">Evaluation.PHYSICS_COMPLIANCES</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="lips.evaluation.html#lips.evaluation.Evaluation.INDUSTRIAL_READINESS"><code class="docutils literal notranslate"><span class="pre">Evaluation.INDUSTRIAL_READINESS</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="lips.evaluation.html#lips.evaluation.Evaluation.from_benchmark"><code class="docutils literal notranslate"><span class="pre">Evaluation.from_benchmark()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="lips.evaluation.html#lips.evaluation.Evaluation.from_dataset"><code class="docutils literal notranslate"><span class="pre">Evaluation.from_dataset()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="lips.evaluation.html#lips.evaluation.Evaluation.evaluate"><code class="docutils literal notranslate"><span class="pre">Evaluation.evaluate()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="lips.evaluation.html#lips.evaluation.Evaluation.evaluate_ml"><code class="docutils literal notranslate"><span class="pre">Evaluation.evaluate_ml()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="lips.evaluation.html#lips.evaluation.Evaluation.evaluate_physics"><code class="docutils literal notranslate"><span class="pre">Evaluation.evaluate_physics()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="lips.evaluation.html#lips.evaluation.Evaluation.evaluate_industrial_readiness"><code class="docutils literal notranslate"><span class="pre">Evaluation.evaluate_industrial_readiness()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="lips.evaluation.html#lips.evaluation.Evaluation.evaluate_ood"><code class="docutils literal notranslate"><span class="pre">Evaluation.evaluate_ood()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="lips.evaluation.html#lips.evaluation.Evaluation.compare_simulators"><code class="docutils literal notranslate"><span class="pre">Evaluation.compare_simulators()</span></code></a></li>
+</ul>
+</li>
 <li class="toctree-l2"><a class="reference internal" href="lips.evaluation.html#submodules">Submodules</a></li>
-<li class="toctree-l2"><a class="reference internal" href="lips.evaluation.html#module-lips.evaluation.evaluation">lips.evaluation.evaluation module</a></li>
-<li class="toctree-l2"><a class="reference internal" href="lips.evaluation.html#module-lips.evaluation.powergrid_evaluation">lips.evaluation.powergrid_evaluation module</a></li>
-<li class="toctree-l2"><a class="reference internal" href="lips.evaluation.html#module-lips.evaluation.transport_evaluation">lips.evaluation.transport_evaluation module</a></li>
-<li class="toctree-l2"><a class="reference internal" href="lips.evaluation.html#module-lips.evaluation.utils">lips.evaluation.utils module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="lips.evaluation.html#module-lips.evaluation.evaluation">lips.evaluation.evaluation module</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="lips.evaluation.html#lips.evaluation.evaluation.Evaluation"><code class="docutils literal notranslate"><span class="pre">Evaluation</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="lips.evaluation.html#lips.evaluation.evaluation.Evaluation.config"><code class="docutils literal notranslate"><span class="pre">Evaluation.config</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="lips.evaluation.html#lips.evaluation.evaluation.Evaluation.config_path"><code class="docutils literal notranslate"><span class="pre">Evaluation.config_path</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="lips.evaluation.html#lips.evaluation.evaluation.Evaluation.config_section"><code class="docutils literal notranslate"><span class="pre">Evaluation.config_section</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="lips.evaluation.html#lips.evaluation.evaluation.Evaluation.log_path"><code class="docutils literal notranslate"><span class="pre">Evaluation.log_path</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="lips.evaluation.html#lips.evaluation.evaluation.Evaluation.MACHINE_LEARNING"><code class="docutils literal notranslate"><span class="pre">Evaluation.MACHINE_LEARNING</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="lips.evaluation.html#lips.evaluation.evaluation.Evaluation.PHYSICS_COMPLIANCES"><code class="docutils literal notranslate"><span class="pre">Evaluation.PHYSICS_COMPLIANCES</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="lips.evaluation.html#lips.evaluation.evaluation.Evaluation.INDUSTRIAL_READINESS"><code class="docutils literal notranslate"><span class="pre">Evaluation.INDUSTRIAL_READINESS</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="lips.evaluation.html#lips.evaluation.evaluation.Evaluation.from_benchmark"><code class="docutils literal notranslate"><span class="pre">Evaluation.from_benchmark()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="lips.evaluation.html#lips.evaluation.evaluation.Evaluation.from_dataset"><code class="docutils literal notranslate"><span class="pre">Evaluation.from_dataset()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="lips.evaluation.html#lips.evaluation.evaluation.Evaluation.evaluate"><code class="docutils literal notranslate"><span class="pre">Evaluation.evaluate()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="lips.evaluation.html#lips.evaluation.evaluation.Evaluation.evaluate_ml"><code class="docutils literal notranslate"><span class="pre">Evaluation.evaluate_ml()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="lips.evaluation.html#lips.evaluation.evaluation.Evaluation.evaluate_physics"><code class="docutils literal notranslate"><span class="pre">Evaluation.evaluate_physics()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="lips.evaluation.html#lips.evaluation.evaluation.Evaluation.evaluate_industrial_readiness"><code class="docutils literal notranslate"><span class="pre">Evaluation.evaluate_industrial_readiness()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="lips.evaluation.html#lips.evaluation.evaluation.Evaluation.evaluate_ood"><code class="docutils literal notranslate"><span class="pre">Evaluation.evaluate_ood()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="lips.evaluation.html#lips.evaluation.evaluation.Evaluation.compare_simulators"><code class="docutils literal notranslate"><span class="pre">Evaluation.compare_simulators()</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="lips.evaluation.html#module-lips.evaluation.powergrid_evaluation">lips.evaluation.powergrid_evaluation module</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="lips.evaluation.html#lips.evaluation.powergrid_evaluation.PowerGridEvaluation"><code class="docutils literal notranslate"><span class="pre">PowerGridEvaluation</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="lips.evaluation.html#lips.evaluation.powergrid_evaluation.PowerGridEvaluation.from_benchmark"><code class="docutils literal notranslate"><span class="pre">PowerGridEvaluation.from_benchmark()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="lips.evaluation.html#lips.evaluation.powergrid_evaluation.PowerGridEvaluation.evaluate"><code class="docutils literal notranslate"><span class="pre">PowerGridEvaluation.evaluate()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="lips.evaluation.html#lips.evaluation.powergrid_evaluation.PowerGridEvaluation.evaluate_ml"><code class="docutils literal notranslate"><span class="pre">PowerGridEvaluation.evaluate_ml()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="lips.evaluation.html#lips.evaluation.powergrid_evaluation.PowerGridEvaluation.evaluate_physics"><code class="docutils literal notranslate"><span class="pre">PowerGridEvaluation.evaluate_physics()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="lips.evaluation.html#lips.evaluation.powergrid_evaluation.PowerGridEvaluation.evaluate_industrial_readiness"><code class="docutils literal notranslate"><span class="pre">PowerGridEvaluation.evaluate_industrial_readiness()</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="lips.evaluation.html#lips-evaluation-transport-evaluation-module">lips.evaluation.transport_evaluation module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="lips.evaluation.html#module-lips.evaluation.utils">lips.evaluation.utils module</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="lips.evaluation.html#lips.evaluation.utils.MetricFactory"><code class="docutils literal notranslate"><span class="pre">MetricFactory</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="lips.evaluation.html#lips.evaluation.utils.MetricFactory.register_metric"><code class="docutils literal notranslate"><span class="pre">MetricFactory.register_metric()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="lips.evaluation.html#lips.evaluation.utils.MetricFactory.register_metric_dict"><code class="docutils literal notranslate"><span class="pre">MetricFactory.register_metric_dict()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="lips.evaluation.html#lips.evaluation.utils.MetricFactory.get_metric"><code class="docutils literal notranslate"><span class="pre">MetricFactory.get_metric()</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="lips.logger.html">lips.logger package</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="lips.logger.html#lips.logger.CustomLogger"><code class="docutils literal notranslate"><span class="pre">CustomLogger</span></code></a><ul>
+<li class="toctree-l3"><a class="reference internal" href="lips.logger.html#lips.logger.CustomLogger.info"><code class="docutils literal notranslate"><span class="pre">CustomLogger.info()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="lips.logger.html#lips.logger.CustomLogger.warning"><code class="docutils literal notranslate"><span class="pre">CustomLogger.warning()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="lips.logger.html#lips.logger.CustomLogger.error"><code class="docutils literal notranslate"><span class="pre">CustomLogger.error()</span></code></a></li>
+</ul>
+</li>
 <li class="toctree-l2"><a class="reference internal" href="lips.logger.html#submodules">Submodules</a></li>
-<li class="toctree-l2"><a class="reference internal" href="lips.logger.html#module-lips.logger.customLogger">lips.logger.customLogger module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="lips.logger.html#module-lips.logger.customLogger">lips.logger.customLogger module</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="lips.logger.html#lips.logger.customLogger.CustomLogger"><code class="docutils literal notranslate"><span class="pre">CustomLogger</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="lips.logger.html#lips.logger.customLogger.CustomLogger.info"><code class="docutils literal notranslate"><span class="pre">CustomLogger.info()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="lips.logger.html#lips.logger.customLogger.CustomLogger.warning"><code class="docutils literal notranslate"><span class="pre">CustomLogger.warning()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="lips.logger.html#lips.logger.customLogger.CustomLogger.error"><code class="docutils literal notranslate"><span class="pre">CustomLogger.error()</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="lips.metrics.html">lips.metrics package</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="lips.metrics.html#lips.metrics.nrmse"><code class="docutils literal notranslate"><span class="pre">nrmse()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="lips.metrics.html#lips.metrics.mape"><code class="docutils literal notranslate"><span class="pre">mape()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="lips.metrics.html#lips.metrics.mape_quantile"><code class="docutils literal notranslate"><span class="pre">mape_quantile()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="lips.metrics.html#lips.metrics.pearson_r"><code class="docutils literal notranslate"><span class="pre">pearson_r()</span></code></a></li>
 <li class="toctree-l2"><a class="reference internal" href="lips.metrics.html#subpackages">Subpackages</a><ul>
 <li class="toctree-l3"><a class="reference internal" href="lips.metrics.power_grid.html">lips.metrics.power_grid package</a><ul>
 <li class="toctree-l4"><a class="reference internal" href="lips.metrics.power_grid.html#submodules">Submodules</a></li>
@@ -135,7 +333,7 @@
 </ul>
 </li>
 <li class="toctree-l2"><a class="reference internal" href="lips.metrics.html#submodules">Submodules</a></li>
-<li class="toctree-l2"><a class="reference internal" href="lips.metrics.html#module-lips.metrics.ml_metrics">lips.metrics.ml_metrics module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="lips.metrics.html#lips-metrics-ml-metrics-module">lips.metrics.ml_metrics module</a></li>
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="lips.neurips_benchmark.html">lips.neurips_benchmark package</a><ul>
@@ -146,11 +344,74 @@
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="lips.physical_simulator.html">lips.physical_simulator package</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="lips.physical_simulator.html#lips.physical_simulator.PhysicalSimulator"><code class="docutils literal notranslate"><span class="pre">PhysicalSimulator</span></code></a><ul>
+<li class="toctree-l3"><a class="reference internal" href="lips.physical_simulator.html#lips.physical_simulator.PhysicalSimulator.get_state"><code class="docutils literal notranslate"><span class="pre">PhysicalSimulator.get_state()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="lips.physical_simulator.html#lips.physical_simulator.PhysicalSimulator.modify_state"><code class="docutils literal notranslate"><span class="pre">PhysicalSimulator.modify_state()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="lips.physical_simulator.html#lips.physical_simulator.PhysicsSolver"><code class="docutils literal notranslate"><span class="pre">PhysicsSolver</span></code></a><ul>
+<li class="toctree-l3"><a class="reference internal" href="lips.physical_simulator.html#lips.physical_simulator.PhysicsSolver.compute"><code class="docutils literal notranslate"><span class="pre">PhysicsSolver.compute()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="lips.physical_simulator.html#lips.physical_simulator.PhysicsSolver.init"><code class="docutils literal notranslate"><span class="pre">PhysicsSolver.init()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="lips.physical_simulator.html#lips.physical_simulator.PhysicsSolver.process_dataset"><code class="docutils literal notranslate"><span class="pre">PhysicsSolver.process_dataset()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="lips.physical_simulator.html#lips.physical_simulator.PhysicsSolver.data_to_dict"><code class="docutils literal notranslate"><span class="pre">PhysicsSolver.data_to_dict()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="lips.physical_simulator.html#lips.physical_simulator.PhysicsSolver.save"><code class="docutils literal notranslate"><span class="pre">PhysicsSolver.save()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="lips.physical_simulator.html#lips.physical_simulator.PhysicsSolver.restore"><code class="docutils literal notranslate"><span class="pre">PhysicsSolver.restore()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="lips.physical_simulator.html#lips.physical_simulator.Grid2opSimulator"><code class="docutils literal notranslate"><span class="pre">Grid2opSimulator</span></code></a><ul>
+<li class="toctree-l3"><a class="reference internal" href="lips.physical_simulator.html#lips.physical_simulator.Grid2opSimulator.seed"><code class="docutils literal notranslate"><span class="pre">Grid2opSimulator.seed()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="lips.physical_simulator.html#lips.physical_simulator.Grid2opSimulator.sample_chronics"><code class="docutils literal notranslate"><span class="pre">Grid2opSimulator.sample_chronics()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="lips.physical_simulator.html#lips.physical_simulator.Grid2opSimulator.get_state"><code class="docutils literal notranslate"><span class="pre">Grid2opSimulator.get_state()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="lips.physical_simulator.html#lips.physical_simulator.Grid2opSimulator.modify_state"><code class="docutils literal notranslate"><span class="pre">Grid2opSimulator.modify_state()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="lips.physical_simulator.html#lips.physical_simulator.Grid2opSimulator.visualize_network"><code class="docutils literal notranslate"><span class="pre">Grid2opSimulator.visualize_network()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="lips.physical_simulator.html#lips.physical_simulator.Grid2opSimulator.visualize_network_reference_topology"><code class="docutils literal notranslate"><span class="pre">Grid2opSimulator.visualize_network_reference_topology()</span></code></a></li>
+</ul>
+</li>
 <li class="toctree-l2"><a class="reference internal" href="lips.physical_simulator.html#submodules">Submodules</a></li>
-<li class="toctree-l2"><a class="reference internal" href="lips.physical_simulator.html#module-lips.physical_simulator.dcApproximationAS">lips.physical_simulator.dcApproximationAS module</a></li>
-<li class="toctree-l2"><a class="reference internal" href="lips.physical_simulator.html#module-lips.physical_simulator.grid2opSimulator">lips.physical_simulator.grid2opSimulator module</a></li>
-<li class="toctree-l2"><a class="reference internal" href="lips.physical_simulator.html#module-lips.physical_simulator.physicalSimulator">lips.physical_simulator.physicalSimulator module</a></li>
-<li class="toctree-l2"><a class="reference internal" href="lips.physical_simulator.html#module-lips.physical_simulator.physicsSolver">lips.physical_simulator.physicsSolver module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="lips.physical_simulator.html#module-lips.physical_simulator.dcApproximationAS">lips.physical_simulator.dcApproximationAS module</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="lips.physical_simulator.html#lips.physical_simulator.dcApproximationAS.DCApproximationAS"><code class="docutils literal notranslate"><span class="pre">DCApproximationAS</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="lips.physical_simulator.html#lips.physical_simulator.dcApproximationAS.DCApproximationAS.compute"><code class="docutils literal notranslate"><span class="pre">DCApproximationAS.compute()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="lips.physical_simulator.html#lips.physical_simulator.dcApproximationAS.DCApproximationAS.init"><code class="docutils literal notranslate"><span class="pre">DCApproximationAS.init()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="lips.physical_simulator.html#lips.physical_simulator.dcApproximationAS.DCApproximationAS.process_dataset"><code class="docutils literal notranslate"><span class="pre">DCApproximationAS.process_dataset()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="lips.physical_simulator.html#lips.physical_simulator.dcApproximationAS.DCApproximationAS.save"><code class="docutils literal notranslate"><span class="pre">DCApproximationAS.save()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="lips.physical_simulator.html#lips.physical_simulator.dcApproximationAS.DCApproximationAS.restore"><code class="docutils literal notranslate"><span class="pre">DCApproximationAS.restore()</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="lips.physical_simulator.html#module-lips.physical_simulator.grid2opSimulator">lips.physical_simulator.grid2opSimulator module</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="lips.physical_simulator.html#lips.physical_simulator.grid2opSimulator.Grid2opSimulator"><code class="docutils literal notranslate"><span class="pre">Grid2opSimulator</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="lips.physical_simulator.html#lips.physical_simulator.grid2opSimulator.Grid2opSimulator.seed"><code class="docutils literal notranslate"><span class="pre">Grid2opSimulator.seed()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="lips.physical_simulator.html#lips.physical_simulator.grid2opSimulator.Grid2opSimulator.sample_chronics"><code class="docutils literal notranslate"><span class="pre">Grid2opSimulator.sample_chronics()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="lips.physical_simulator.html#lips.physical_simulator.grid2opSimulator.Grid2opSimulator.get_state"><code class="docutils literal notranslate"><span class="pre">Grid2opSimulator.get_state()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="lips.physical_simulator.html#lips.physical_simulator.grid2opSimulator.Grid2opSimulator.modify_state"><code class="docutils literal notranslate"><span class="pre">Grid2opSimulator.modify_state()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="lips.physical_simulator.html#lips.physical_simulator.grid2opSimulator.Grid2opSimulator.visualize_network"><code class="docutils literal notranslate"><span class="pre">Grid2opSimulator.visualize_network()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="lips.physical_simulator.html#lips.physical_simulator.grid2opSimulator.Grid2opSimulator.visualize_network_reference_topology"><code class="docutils literal notranslate"><span class="pre">Grid2opSimulator.visualize_network_reference_topology()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="lips.physical_simulator.html#lips.physical_simulator.grid2opSimulator.get_env"><code class="docutils literal notranslate"><span class="pre">get_env()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="lips.physical_simulator.html#module-lips.physical_simulator.physicalSimulator">lips.physical_simulator.physicalSimulator module</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="lips.physical_simulator.html#lips.physical_simulator.physicalSimulator.PhysicalSimulator"><code class="docutils literal notranslate"><span class="pre">PhysicalSimulator</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="lips.physical_simulator.html#lips.physical_simulator.physicalSimulator.PhysicalSimulator.get_state"><code class="docutils literal notranslate"><span class="pre">PhysicalSimulator.get_state()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="lips.physical_simulator.html#lips.physical_simulator.physicalSimulator.PhysicalSimulator.modify_state"><code class="docutils literal notranslate"><span class="pre">PhysicalSimulator.modify_state()</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="lips.physical_simulator.html#module-lips.physical_simulator.physicsSolver">lips.physical_simulator.physicsSolver module</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="lips.physical_simulator.html#lips.physical_simulator.physicsSolver.PhysicsSolver"><code class="docutils literal notranslate"><span class="pre">PhysicsSolver</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="lips.physical_simulator.html#lips.physical_simulator.physicsSolver.PhysicsSolver.compute"><code class="docutils literal notranslate"><span class="pre">PhysicsSolver.compute()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="lips.physical_simulator.html#lips.physical_simulator.physicsSolver.PhysicsSolver.init"><code class="docutils literal notranslate"><span class="pre">PhysicsSolver.init()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="lips.physical_simulator.html#lips.physical_simulator.physicsSolver.PhysicsSolver.process_dataset"><code class="docutils literal notranslate"><span class="pre">PhysicsSolver.process_dataset()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="lips.physical_simulator.html#lips.physical_simulator.physicsSolver.PhysicsSolver.data_to_dict"><code class="docutils literal notranslate"><span class="pre">PhysicsSolver.data_to_dict()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="lips.physical_simulator.html#lips.physical_simulator.physicsSolver.PhysicsSolver.save"><code class="docutils literal notranslate"><span class="pre">PhysicsSolver.save()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="lips.physical_simulator.html#lips.physical_simulator.physicsSolver.PhysicsSolver.restore"><code class="docutils literal notranslate"><span class="pre">PhysicsSolver.restore()</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
 </ul>
 </li>
 </ul>

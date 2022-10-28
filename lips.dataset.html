@@ -4,7 +4,7 @@
   <meta charset="utf-8" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>lips.dataset package &mdash; LIPS 0.1 documentation</title>
+  <title>lips.dataset package &mdash; LIPS 0.1.0 documentation</title>
       <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
       <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
   <!--[if lt IE 9]>
@@ -14,7 +14,9 @@
         <script data-url_root="./" id="documentation_options" src="_static/documentation_options.js"></script>
         <script src="_static/jquery.js"></script>
         <script src="_static/underscore.js"></script>
+        <script src="_static/_sphinx_javascript_frameworks_compat.js"></script>
         <script src="_static/doctools.js"></script>
+        <script src="_static/sphinx_highlight.js"></script>
     <script src="_static/js/theme.js"></script>
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" />
@@ -29,6 +31,9 @@
         <div class="wy-side-nav-search" >
             <a href="index.html" class="icon icon-home"> LIPS
           </a>
+              <div class="version">
+                0.1
+              </div>
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
     <input type="text" name="q" placeholder="Search docs" />
@@ -47,9 +52,41 @@
 <li class="toctree-l1"><a class="reference internal" href="lips.benchmark.html">lips.benchmark package</a></li>
 <li class="toctree-l1"><a class="reference internal" href="lips.config.html">lips.config package</a></li>
 <li class="toctree-l1 current"><a class="current reference internal" href="#">lips.dataset package</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#lips.dataset.DataSet"><code class="docutils literal notranslate"><span class="pre">DataSet</span></code></a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#lips.dataset.DataSet.generate"><code class="docutils literal notranslate"><span class="pre">DataSet.generate()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#lips.dataset.DataSet.load"><code class="docutils literal notranslate"><span class="pre">DataSet.load()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#lips.dataset.DataSet.sample"><code class="docutils literal notranslate"><span class="pre">DataSet.sample()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#lips.dataset.DataSet.get_data"><code class="docutils literal notranslate"><span class="pre">DataSet.get_data()</span></code></a></li>
+</ul>
+</li>
 <li class="toctree-l2"><a class="reference internal" href="#submodules">Submodules</a></li>
-<li class="toctree-l2"><a class="reference internal" href="#module-lips.dataset.dataSet">lips.dataset.dataSet module</a></li>
-<li class="toctree-l2"><a class="reference internal" href="#module-lips.dataset.powergridDataSet">lips.dataset.powergridDataSet module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#module-lips.dataset.dataSet">lips.dataset.dataSet module</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#lips.dataset.dataSet.DataSet"><code class="docutils literal notranslate"><span class="pre">DataSet</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#lips.dataset.dataSet.DataSet.generate"><code class="docutils literal notranslate"><span class="pre">DataSet.generate()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#lips.dataset.dataSet.DataSet.load"><code class="docutils literal notranslate"><span class="pre">DataSet.load()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#lips.dataset.dataSet.DataSet.sample"><code class="docutils literal notranslate"><span class="pre">DataSet.sample()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#lips.dataset.dataSet.DataSet.get_data"><code class="docutils literal notranslate"><span class="pre">DataSet.get_data()</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#module-lips.dataset.powergridDataSet">lips.dataset.powergridDataSet module</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#lips.dataset.powergridDataSet.PowerGridDataSet"><code class="docutils literal notranslate"><span class="pre">PowerGridDataSet</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#lips.dataset.powergridDataSet.PowerGridDataSet.name"><code class="docutils literal notranslate"><span class="pre">PowerGridDataSet.name</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#lips.dataset.powergridDataSet.PowerGridDataSet.attr_names"><code class="docutils literal notranslate"><span class="pre">PowerGridDataSet.attr_names</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#lips.dataset.powergridDataSet.PowerGridDataSet.log_path"><code class="docutils literal notranslate"><span class="pre">PowerGridDataSet.log_path</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#lips.dataset.powergridDataSet.PowerGridDataSet.ALL_VARIABLES"><code class="docutils literal notranslate"><span class="pre">PowerGridDataSet.ALL_VARIABLES</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#lips.dataset.powergridDataSet.PowerGridDataSet.generate"><code class="docutils literal notranslate"><span class="pre">PowerGridDataSet.generate()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#lips.dataset.powergridDataSet.PowerGridDataSet.load"><code class="docutils literal notranslate"><span class="pre">PowerGridDataSet.load()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#lips.dataset.powergridDataSet.PowerGridDataSet.sample"><code class="docutils literal notranslate"><span class="pre">PowerGridDataSet.sample()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#lips.dataset.powergridDataSet.PowerGridDataSet.get_data"><code class="docutils literal notranslate"><span class="pre">PowerGridDataSet.get_data()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#lips.dataset.powergridDataSet.PowerGridDataSet.get_sizes"><code class="docutils literal notranslate"><span class="pre">PowerGridDataSet.get_sizes()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#lips.dataset.powergridDataSet.PowerGridDataSet.extract_data"><code class="docutils literal notranslate"><span class="pre">PowerGridDataSet.extract_data()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#lips.dataset.powergridDataSet.PowerGridDataSet.reconstruct_output"><code class="docutils literal notranslate"><span class="pre">PowerGridDataSet.reconstruct_output()</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="lips.evaluation.html">lips.evaluation package</a></li>
@@ -89,7 +126,7 @@
            <div itemprop="articleBody">
              
   <section id="module-lips.dataset">
-<span id="lips-dataset-package"></span><h1>lips.dataset package<a class="headerlink" href="#module-lips.dataset" title="Permalink to this headline"></a></h1>
+<span id="lips-dataset-package"></span><h1>lips.dataset package<a class="headerlink" href="#module-lips.dataset" title="Permalink to this heading"></a></h1>
 <p><strong>Classes:</strong></p>
 <table class="autosummary longtable docutils align-default">
 <colgroup>
@@ -99,9 +136,6 @@
 <tbody>
 <tr class="row-odd"><td><p><a class="reference internal" href="#lips.dataset.DataSet" title="lips.dataset.DataSet"><code class="xref py py-obj docutils literal notranslate"><span class="pre">DataSet</span></code></a>(name)</p></td>
 <td><p>Base class for data management This class represent a single dataset, that comes from a database (coming either from real world application or from generated data)</p></td>
-</tr>
-<tr class="row-even"><td><p><a class="reference internal" href="#lips.dataset.PowerGridDataSet" title="lips.dataset.PowerGridDataSet"><code class="xref py py-obj docutils literal notranslate"><span class="pre">PowerGridDataSet</span></code></a>([name, attr_names, config, ...])</p></td>
-<td><p>Class to manage powergrid data</p></td>
 </tr>
 </tbody>
 </table>
@@ -143,7 +177,7 @@ that will be called when generating the dataset.</p>
 </table>
 <dl class="py method">
 <dt class="sig sig-object py" id="lips.dataset.DataSet.generate">
-<span class="sig-name descname"><span class="pre">generate</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">simulator</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="lips.physical_simulator.html#lips.physical_simulator.physicalSimulator.PhysicalSimulator" title="lips.physical_simulator.physicalSimulator.PhysicalSimulator"><span class="pre">lips.physical_simulator.physicalSimulator.PhysicalSimulator</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">actor</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Union</span><span class="p"><span class="pre">[</span></span><span class="pre">None</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">object</span><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">path_out</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">nb_samples</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">simulator_seed</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Union</span><span class="p"><span class="pre">[</span></span><span class="pre">None</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">int</span><span class="p"><span class="pre">]</span></span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">actor_seed</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Union</span><span class="p"><span class="pre">[</span></span><span class="pre">None</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">int</span><span class="p"><span class="pre">]</span></span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/lips/dataset/dataSet.html#DataSet.generate"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#lips.dataset.DataSet.generate" title="Permalink to this definition"></a></dt>
+<span class="sig-name descname"><span class="pre">generate</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">simulator</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="lips.physical_simulator.html#lips.physical_simulator.physicalSimulator.PhysicalSimulator" title="lips.physical_simulator.physicalSimulator.PhysicalSimulator"><span class="pre">PhysicalSimulator</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">actor</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Union</span><span class="p"><span class="pre">[</span></span><span class="pre">None</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">object</span><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">path_out</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">nb_samples</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">simulator_seed</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Union</span><span class="p"><span class="pre">[</span></span><span class="pre">None</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">int</span><span class="p"><span class="pre">]</span></span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">actor_seed</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Union</span><span class="p"><span class="pre">[</span></span><span class="pre">None</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">int</span><span class="p"><span class="pre">]</span></span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/lips/dataset/dataSet.html#DataSet.generate"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#lips.dataset.DataSet.generate" title="Permalink to this definition"></a></dt>
 <dd><p>Generate a dataset from a simulator
 function to generate some data. It takes a “simulator” as input and will save the results into path_out.</p>
 <p>We expect that the results are saved in <cite>path_out/simulation_name</cite> if they are stored
@@ -217,253 +251,11 @@ If <cite>nb_sample</cite> is higher than the number of data in self.data then it
 
 </dd></dl>
 
-<dl class="py class">
-<dt class="sig sig-object py" id="lips.dataset.PowerGridDataSet">
-<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">lips.dataset.</span></span><span class="sig-name descname"><span class="pre">PowerGridDataSet</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">name</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'train'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">attr_names</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><span class="pre">tuple</span><span class="p"><span class="pre">]</span></span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">config</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><a class="reference internal" href="lips.config.html#lips.config.configmanager.ConfigManager" title="lips.config.configmanager.ConfigManager"><span class="pre">lips.config.configmanager.ConfigManager</span></a><span class="p"><span class="pre">]</span></span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">log_path</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/lips/dataset/powergridDataSet.html#PowerGridDataSet"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#lips.dataset.PowerGridDataSet" title="Permalink to this definition"></a></dt>
-<dd><p>Bases: <a class="reference internal" href="#lips.dataset.dataSet.DataSet" title="lips.dataset.dataSet.DataSet"><code class="xref py py-class docutils literal notranslate"><span class="pre">lips.dataset.dataSet.DataSet</span></code></a></p>
-<p>Class to manage powergrid data</p>
-<p>This specific DataSet uses grid2op framework to simulate data coming from a powergrid.</p>
-<dl class="py attribute">
-<dt class="sig sig-object py" id="lips.dataset.PowerGridDataSet.name">
-<span class="sig-name descname"><span class="pre">name</span></span><a class="headerlink" href="#lips.dataset.PowerGridDataSet.name" title="Permalink to this definition"></a></dt>
-<dd><p>the dataset name, by default “train”</p>
-<dl class="field-list simple">
-<dt class="field-odd">Type</dt>
-<dd class="field-odd"><p><code class="docutils literal notranslate"><span class="pre">str</span></code>, optional</p>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="py attribute">
-<dt class="sig sig-object py" id="lips.dataset.PowerGridDataSet.attr_names">
-<span class="sig-name descname"><span class="pre">attr_names</span></span><a class="headerlink" href="#lips.dataset.PowerGridDataSet.attr_names" title="Permalink to this definition"></a></dt>
-<dd><p>the attributes list for which data should be generated, by default None</p>
-<dl class="field-list simple">
-<dt class="field-odd">Type</dt>
-<dd class="field-odd"><p>Union[<code class="docutils literal notranslate"><span class="pre">tuple</span></code>, <code class="docutils literal notranslate"><span class="pre">None</span></code>], optional</p>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="py attribute">
-<dt class="sig sig-object py" id="lips.dataset.PowerGridDataSet.log_path">
-<span class="sig-name descname"><span class="pre">log_path</span></span><a class="headerlink" href="#lips.dataset.PowerGridDataSet.log_path" title="Permalink to this definition"></a></dt>
-<dd><p>the path where the logs should be stored, by default None</p>
-<dl class="field-list simple">
-<dt class="field-odd">Type</dt>
-<dd class="field-odd"><p>Union[<code class="docutils literal notranslate"><span class="pre">str</span></code>, <code class="docutils literal notranslate"><span class="pre">None</span></code>], optional</p>
-</dd>
-</dl>
-</dd></dl>
-
-<div class="admonition-todo admonition" id="id1">
-<p class="admonition-title">Todo</p>
-<p>TODO: to remove all the comments lines corresponding to theta attributes</p>
-</div>
-<p class="rubric">Examples</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">lips.dataset</span> <span class="kn">import</span> <span class="n">PowerGridDataSet</span>
-
-<span class="c1"># create a dataset</span>
-<span class="n">dataset</span> <span class="o">=</span> <span class="n">PowerGridDataSet</span><span class="p">()</span>
-<span class="n">dataset</span><span class="o">.</span><span class="n">generate_data</span><span class="p">()</span>
-</pre></div>
-</div>
-<p><strong>Attributes:</strong></p>
-<table class="autosummary longtable docutils align-default">
-<colgroup>
-<col style="width: 10%" />
-<col style="width: 90%" />
-</colgroup>
-<tbody>
-<tr class="row-odd"><td><p><a class="reference internal" href="#lips.dataset.PowerGridDataSet.ALL_VARIABLES" title="lips.dataset.PowerGridDataSet.ALL_VARIABLES"><code class="xref py py-obj docutils literal notranslate"><span class="pre">ALL_VARIABLES</span></code></a></p></td>
-<td><p></p></td>
-</tr>
-</tbody>
-</table>
-<p><strong>Methods:</strong></p>
-<table class="autosummary longtable docutils align-default">
-<colgroup>
-<col style="width: 10%" />
-<col style="width: 90%" />
-</colgroup>
-<tbody>
-<tr class="row-odd"><td><p><a class="reference internal" href="#lips.dataset.PowerGridDataSet.generate" title="lips.dataset.PowerGridDataSet.generate"><code class="xref py py-obj docutils literal notranslate"><span class="pre">generate</span></code></a>(simulator, actor, path_out, nb_samples)</p></td>
-<td><p>Generate a powergrid dataset</p></td>
-</tr>
-<tr class="row-even"><td><p><a class="reference internal" href="#lips.dataset.PowerGridDataSet.load" title="lips.dataset.PowerGridDataSet.load"><code class="xref py py-obj docutils literal notranslate"><span class="pre">load</span></code></a>(path)</p></td>
-<td><p>load the dataset from a path</p></td>
-</tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="#lips.dataset.PowerGridDataSet.sample" title="lips.dataset.PowerGridDataSet.sample"><code class="xref py py-obj docutils literal notranslate"><span class="pre">sample</span></code></a>(nb_sample[, sampler])</p></td>
-<td><p>Sampling from the dataset</p></td>
-</tr>
-<tr class="row-even"><td><p><a class="reference internal" href="#lips.dataset.PowerGridDataSet.get_data" title="lips.dataset.PowerGridDataSet.get_data"><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_data</span></code></a>(index)</p></td>
-<td><p>This function returns the data in the data that match the index <cite>index</cite></p></td>
-</tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="#lips.dataset.PowerGridDataSet.get_sizes" title="lips.dataset.PowerGridDataSet.get_sizes"><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_sizes</span></code></a>()</p></td>
-<td><p>Get the sizes of the dataset</p></td>
-</tr>
-<tr class="row-even"><td><p><a class="reference internal" href="#lips.dataset.PowerGridDataSet.extract_data" title="lips.dataset.PowerGridDataSet.extract_data"><code class="xref py py-obj docutils literal notranslate"><span class="pre">extract_data</span></code></a>([concat])</p></td>
-<td><p>extract the x and y data from the dataset</p></td>
-</tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="#lips.dataset.PowerGridDataSet.reconstruct_output" title="lips.dataset.PowerGridDataSet.reconstruct_output"><code class="xref py py-obj docutils literal notranslate"><span class="pre">reconstruct_output</span></code></a>(data)</p></td>
-<td><p>It reconstruct the data from the extracted data</p></td>
-</tr>
-</tbody>
-</table>
-<dl class="py attribute">
-<dt class="sig sig-object py" id="lips.dataset.PowerGridDataSet.ALL_VARIABLES">
-<span class="sig-name descname"><span class="pre">ALL_VARIABLES</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">('prod_p',</span> <span class="pre">'prod_v',</span> <span class="pre">'load_p',</span> <span class="pre">'load_q',</span> <span class="pre">'line_status',</span> <span class="pre">'topo_vect',</span> <span class="pre">'a_or',</span> <span class="pre">'a_ex',</span> <span class="pre">'p_or',</span> <span class="pre">'p_ex',</span> <span class="pre">'q_or',</span> <span class="pre">'q_ex',</span> <span class="pre">'prod_q',</span> <span class="pre">'load_v',</span> <span class="pre">'v_or',</span> <span class="pre">'v_ex',</span> <span class="pre">'theta_or',</span> <span class="pre">'theta_ex')</span></em><a class="headerlink" href="#lips.dataset.PowerGridDataSet.ALL_VARIABLES" title="Permalink to this definition"></a></dt>
-<dd></dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="lips.dataset.PowerGridDataSet.generate">
-<span class="sig-name descname"><span class="pre">generate</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">simulator</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="lips.physical_simulator.html#lips.physical_simulator.grid2opSimulator.Grid2opSimulator" title="lips.physical_simulator.grid2opSimulator.Grid2opSimulator"><span class="pre">lips.physical_simulator.grid2opSimulator.Grid2opSimulator</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">actor</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><span class="pre">grid2op.Agent.baseAgent.BaseAgent</span><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">path_out</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">nb_samples</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">simulator_seed</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Union</span><span class="p"><span class="pre">[</span></span><span class="pre">None</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">int</span><span class="p"><span class="pre">]</span></span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">actor_seed</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Union</span><span class="p"><span class="pre">[</span></span><span class="pre">None</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">int</span><span class="p"><span class="pre">]</span></span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/lips/dataset/powergridDataSet.html#PowerGridDataSet.generate"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#lips.dataset.PowerGridDataSet.generate" title="Permalink to this definition"></a></dt>
-<dd><p>Generate a powergrid dataset</p>
-<p>For this dataset, we use a Grid2opSimulator and a  grid2op Agent to generate data from a powergrid.
-This implementation can also serve as a reference for other implementation of the <cite>generate</cite> function.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><ul class="simple">
-<li><p><strong>simulator</strong> (<a class="reference internal" href="lips.physical_simulator.html#lips.physical_simulator.Grid2opSimulator" title="lips.physical_simulator.Grid2opSimulator"><em>Grid2opSimulator</em></a>) – In this case, this should be a grid2op environment</p></li>
-<li><p><strong>actor</strong> (Union[<code class="docutils literal notranslate"><span class="pre">BaseAgent</span></code>, <code class="docutils literal notranslate"><span class="pre">None</span></code>]) – the actor used to generate the data</p></li>
-<li><p><strong>path_out</strong> (Union[<code class="docutils literal notranslate"><span class="pre">str</span></code>, <code class="docutils literal notranslate"><span class="pre">None</span></code>]) – The path where the data will be saved</p></li>
-<li><p><strong>nb_samples</strong> (<code class="docutils literal notranslate"><span class="pre">int</span></code>) – Number of rows (examples) in the final dataset</p></li>
-<li><p><strong>simulator_seed</strong> (Union[<code class="docutils literal notranslate"><span class="pre">None</span></code>, <code class="docutils literal notranslate"><span class="pre">int</span></code>], optional) – Seed used to set the simulator for reproducible experiments, by default None</p></li>
-<li><p><strong>actor_seed</strong> (Union[<code class="docutils literal notranslate"><span class="pre">None</span></code>, <code class="docutils literal notranslate"><span class="pre">int</span></code>], optional) – Seed used to set the actor for reproducible experiments, by default None</p></li>
-</ul>
-</dd>
-<dt class="field-even">Raises</dt>
-<dd class="field-even"><ul class="simple">
-<li><p><strong>RuntimeError</strong> – Impossible to generate powergird data, Grid2Op is not installed</p></li>
-<li><p><strong>RuntimeError</strong> – Impossible to generate negative number of data</p></li>
-</ul>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="lips.dataset.PowerGridDataSet.load">
-<span class="sig-name descname"><span class="pre">load</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">path</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/lips/dataset/powergridDataSet.html#PowerGridDataSet.load"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#lips.dataset.PowerGridDataSet.load" title="Permalink to this definition"></a></dt>
-<dd><p>load the dataset from a path</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><p><strong>path</strong> (<code class="docutils literal notranslate"><span class="pre">str</span></code>) – path from which the data should be loaded</p>
-</dd>
-<dt class="field-even">Raises</dt>
-<dd class="field-even"><ul class="simple">
-<li><p><strong>RuntimeError</strong> – Path cannot be found</p></li>
-<li><p><strong>RuntimeError</strong> – Not a valid directory</p></li>
-<li><p><strong>RuntimeError</strong> – There is no data to load</p></li>
-<li><p><strong>RuntimeError</strong> – Impossible to load the data</p></li>
-</ul>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="lips.dataset.PowerGridDataSet.sample">
-<span class="sig-name descname"><span class="pre">sample</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">nb_sample</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">sampler</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><span class="pre">Callable</span><span class="p"><span class="pre">]</span></span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/lips/dataset/powergridDataSet.html#PowerGridDataSet.sample"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#lips.dataset.PowerGridDataSet.sample" title="Permalink to this definition"></a></dt>
-<dd><p>Sampling from the dataset</p>
-<p>For now, this sampling method will sample uniformly at random from the dataset.</p>
-<p>There is a guarantee: if you generate <cite>sef.size</cite> consecutive data with this method
-for example <cite>batch1 = dataset.sample(data.size / 2)</cite> then <cite>batch2 = dataset.sample(data.size / 2)</cite>
-in this case batch1 and batch2 will count different example of the dataset and the union batch1 and batch2
-will make the entire dataset [NB the above is true if the dataset has just been created, or if batch1
-comes from the first batch issued from this dataset.]</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><ul class="simple">
-<li><p><strong>nb_sample</strong> (<code class="docutils literal notranslate"><span class="pre">int</span></code>) – Number of sample to retrieve from the dataset.</p></li>
-<li><p><strong>sampler</strong> (<em>Callable</em>) – currently unused</p></li>
-</ul>
-</dd>
-<dt class="field-even">Returns</dt>
-<dd class="field-even"><p>A batch of data, either for training or for testing.</p>
-</dd>
-<dt class="field-odd">Return type</dt>
-<dd class="field-odd"><p>dict</p>
-</dd>
-<dt class="field-even">Raises</dt>
-<dd class="field-even"><ul class="simple">
-<li><p><strong>RuntimeError</strong> – Impossible to require a negative number of data</p></li>
-<li><p><strong>RuntimeError</strong> – Impossible to require more than the size of the dataset</p></li>
-</ul>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="lips.dataset.PowerGridDataSet.get_data">
-<span class="sig-name descname"><span class="pre">get_data</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">index</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">tuple</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">dict</span></span></span><a class="reference internal" href="_modules/lips/dataset/powergridDataSet.html#PowerGridDataSet.get_data"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#lips.dataset.PowerGridDataSet.get_data" title="Permalink to this definition"></a></dt>
-<dd><p>This function returns the data in the data that match the index <cite>index</cite></p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><p><strong>index</strong> (<code class="docutils literal notranslate"><span class="pre">tuple</span></code>) – A list of integer</p>
-</dd>
-<dt class="field-even">Returns</dt>
-<dd class="field-even"><p>a dictionary of key (variable name) value (variable value)</p>
-</dd>
-<dt class="field-odd">Return type</dt>
-<dd class="field-odd"><p>dict</p>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="lips.dataset.PowerGridDataSet.get_sizes">
-<span class="sig-name descname"><span class="pre">get_sizes</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/lips/dataset/powergridDataSet.html#PowerGridDataSet.get_sizes"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#lips.dataset.PowerGridDataSet.get_sizes" title="Permalink to this definition"></a></dt>
-<dd><p>Get the sizes of the dataset</p>
-<dl class="field-list simple">
-<dt class="field-odd">Returns</dt>
-<dd class="field-odd"><p>A tuple of size (nb_sample, size_x, size_tau, size_y)</p>
-</dd>
-<dt class="field-even">Return type</dt>
-<dd class="field-even"><p>tuple</p>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="lips.dataset.PowerGridDataSet.extract_data">
-<span class="sig-name descname"><span class="pre">extract_data</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">concat</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">tuple</span></span></span><a class="reference internal" href="_modules/lips/dataset/powergridDataSet.html#PowerGridDataSet.extract_data"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#lips.dataset.PowerGridDataSet.extract_data" title="Permalink to this definition"></a></dt>
-<dd><p>extract the x and y data from the dataset</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><p><strong>concat</strong> (<code class="docutils literal notranslate"><span class="pre">bool</span></code>) – If True, the data will be concatenated in a single array.</p>
-</dd>
-<dt class="field-even">Returns</dt>
-<dd class="field-even"><p>extracted inputs and outputs</p>
-</dd>
-<dt class="field-odd">Return type</dt>
-<dd class="field-odd"><p>tuple</p>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="lips.dataset.PowerGridDataSet.reconstruct_output">
-<span class="sig-name descname"><span class="pre">reconstruct_output</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">data</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">numpy.ndarray</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">dict</span></span></span><a class="reference internal" href="_modules/lips/dataset/powergridDataSet.html#PowerGridDataSet.reconstruct_output"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#lips.dataset.PowerGridDataSet.reconstruct_output" title="Permalink to this definition"></a></dt>
-<dd><p>It reconstruct the data from the extracted data</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><p><strong>data</strong> (<code class="docutils literal notranslate"><span class="pre">np.ndarray</span></code>) – the array that should be reconstruted</p>
-</dd>
-<dt class="field-even">Returns</dt>
-<dd class="field-even"><p>the reconstructed data with variable names in a dictionary</p>
-</dd>
-<dt class="field-odd">Return type</dt>
-<dd class="field-odd"><p>dict</p>
-</dd>
-</dl>
-</dd></dl>
-
-</dd></dl>
-
 <section id="submodules">
-<h2>Submodules<a class="headerlink" href="#submodules" title="Permalink to this headline"></a></h2>
+<h2>Submodules<a class="headerlink" href="#submodules" title="Permalink to this heading"></a></h2>
 </section>
 <section id="module-lips.dataset.dataSet">
-<span id="lips-dataset-dataset-module"></span><h2>lips.dataset.dataSet module<a class="headerlink" href="#module-lips.dataset.dataSet" title="Permalink to this headline"></a></h2>
+<span id="lips-dataset-dataset-module"></span><h2>lips.dataset.dataSet module<a class="headerlink" href="#module-lips.dataset.dataSet" title="Permalink to this heading"></a></h2>
 <dl class="simple">
 <dt>Usage:</dt><dd><p>DataSet is a base class for creating datasets</p>
 </dd>
@@ -526,7 +318,7 @@ that will be called when generating the dataset.</p>
 </table>
 <dl class="py method">
 <dt class="sig sig-object py" id="lips.dataset.dataSet.DataSet.generate">
-<span class="sig-name descname"><span class="pre">generate</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">simulator</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="lips.physical_simulator.html#lips.physical_simulator.physicalSimulator.PhysicalSimulator" title="lips.physical_simulator.physicalSimulator.PhysicalSimulator"><span class="pre">lips.physical_simulator.physicalSimulator.PhysicalSimulator</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">actor</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Union</span><span class="p"><span class="pre">[</span></span><span class="pre">None</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">object</span><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">path_out</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">nb_samples</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">simulator_seed</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Union</span><span class="p"><span class="pre">[</span></span><span class="pre">None</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">int</span><span class="p"><span class="pre">]</span></span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">actor_seed</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Union</span><span class="p"><span class="pre">[</span></span><span class="pre">None</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">int</span><span class="p"><span class="pre">]</span></span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/lips/dataset/dataSet.html#DataSet.generate"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#lips.dataset.dataSet.DataSet.generate" title="Permalink to this definition"></a></dt>
+<span class="sig-name descname"><span class="pre">generate</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">simulator</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="lips.physical_simulator.html#lips.physical_simulator.physicalSimulator.PhysicalSimulator" title="lips.physical_simulator.physicalSimulator.PhysicalSimulator"><span class="pre">PhysicalSimulator</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">actor</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Union</span><span class="p"><span class="pre">[</span></span><span class="pre">None</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">object</span><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">path_out</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">nb_samples</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">simulator_seed</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Union</span><span class="p"><span class="pre">[</span></span><span class="pre">None</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">int</span><span class="p"><span class="pre">]</span></span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">actor_seed</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Union</span><span class="p"><span class="pre">[</span></span><span class="pre">None</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">int</span><span class="p"><span class="pre">]</span></span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/lips/dataset/dataSet.html#DataSet.generate"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#lips.dataset.dataSet.DataSet.generate" title="Permalink to this definition"></a></dt>
 <dd><p>Generate a dataset from a simulator
 function to generate some data. It takes a “simulator” as input and will save the results into path_out.</p>
 <p>We expect that the results are saved in <cite>path_out/simulation_name</cite> if they are stored
@@ -602,7 +394,7 @@ If <cite>nb_sample</cite> is higher than the number of data in self.data then it
 
 </section>
 <section id="module-lips.dataset.powergridDataSet">
-<span id="lips-dataset-powergriddataset-module"></span><h2>lips.dataset.powergridDataSet module<a class="headerlink" href="#module-lips.dataset.powergridDataSet" title="Permalink to this headline"></a></h2>
+<span id="lips-dataset-powergriddataset-module"></span><h2>lips.dataset.powergridDataSet module<a class="headerlink" href="#module-lips.dataset.powergridDataSet" title="Permalink to this heading"></a></h2>
 <p>This module is used to generate powergrid datasets</p>
 <dl class="simple">
 <dt>Licence:</dt><dd><p>copyright (c) 2021-2022, IRT SystemX and RTE (<a class="reference external" href="https://www.irt-systemx.fr/">https://www.irt-systemx.fr/</a>)
@@ -628,8 +420,8 @@ This file is part of LIPS, LIPS is a python platform for power networks benchmar
 </table>
 <dl class="py class">
 <dt class="sig sig-object py" id="lips.dataset.powergridDataSet.PowerGridDataSet">
-<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">lips.dataset.powergridDataSet.</span></span><span class="sig-name descname"><span class="pre">PowerGridDataSet</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">name</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'train'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">attr_names</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><span class="pre">tuple</span><span class="p"><span class="pre">]</span></span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">config</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><a class="reference internal" href="lips.config.html#lips.config.configmanager.ConfigManager" title="lips.config.configmanager.ConfigManager"><span class="pre">lips.config.configmanager.ConfigManager</span></a><span class="p"><span class="pre">]</span></span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">log_path</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/lips/dataset/powergridDataSet.html#PowerGridDataSet"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#lips.dataset.powergridDataSet.PowerGridDataSet" title="Permalink to this definition"></a></dt>
-<dd><p>Bases: <a class="reference internal" href="#lips.dataset.dataSet.DataSet" title="lips.dataset.dataSet.DataSet"><code class="xref py py-class docutils literal notranslate"><span class="pre">lips.dataset.dataSet.DataSet</span></code></a></p>
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">lips.dataset.powergridDataSet.</span></span><span class="sig-name descname"><span class="pre">PowerGridDataSet</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">name</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'train'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">attr_names</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><span class="pre">tuple</span><span class="p"><span class="pre">]</span></span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">config</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><a class="reference internal" href="lips.config.html#lips.config.configmanager.ConfigManager" title="lips.config.configmanager.ConfigManager"><span class="pre">ConfigManager</span></a><span class="p"><span class="pre">]</span></span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">log_path</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/lips/dataset/powergridDataSet.html#PowerGridDataSet"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#lips.dataset.powergridDataSet.PowerGridDataSet" title="Permalink to this definition"></a></dt>
+<dd><p>Bases: <a class="reference internal" href="#lips.dataset.dataSet.DataSet" title="lips.dataset.dataSet.DataSet"><code class="xref py py-class docutils literal notranslate"><span class="pre">DataSet</span></code></a></p>
 <p>Class to manage powergrid data</p>
 <p>This specific DataSet uses grid2op framework to simulate data coming from a powergrid.</p>
 <dl class="py attribute">
@@ -665,7 +457,7 @@ This file is part of LIPS, LIPS is a python platform for power networks benchmar
 </dl>
 </dd></dl>
 
-<div class="admonition-todo admonition" id="id2">
+<div class="admonition-todo admonition" id="id1">
 <p class="admonition-title">Todo</p>
 <p>TODO: to remove all the comments lines corresponding to theta attributes</p>
 </div>
@@ -726,7 +518,7 @@ This file is part of LIPS, LIPS is a python platform for power networks benchmar
 
 <dl class="py method">
 <dt class="sig sig-object py" id="lips.dataset.powergridDataSet.PowerGridDataSet.generate">
-<span class="sig-name descname"><span class="pre">generate</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">simulator</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="lips.physical_simulator.html#lips.physical_simulator.grid2opSimulator.Grid2opSimulator" title="lips.physical_simulator.grid2opSimulator.Grid2opSimulator"><span class="pre">lips.physical_simulator.grid2opSimulator.Grid2opSimulator</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">actor</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><span class="pre">grid2op.Agent.baseAgent.BaseAgent</span><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">path_out</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">nb_samples</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">simulator_seed</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Union</span><span class="p"><span class="pre">[</span></span><span class="pre">None</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">int</span><span class="p"><span class="pre">]</span></span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">actor_seed</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Union</span><span class="p"><span class="pre">[</span></span><span class="pre">None</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">int</span><span class="p"><span class="pre">]</span></span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/lips/dataset/powergridDataSet.html#PowerGridDataSet.generate"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#lips.dataset.powergridDataSet.PowerGridDataSet.generate" title="Permalink to this definition"></a></dt>
+<span class="sig-name descname"><span class="pre">generate</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">simulator</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="lips.physical_simulator.html#lips.physical_simulator.grid2opSimulator.Grid2opSimulator" title="lips.physical_simulator.grid2opSimulator.Grid2opSimulator"><span class="pre">Grid2opSimulator</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">actor</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><span class="pre">BaseAgent</span><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">path_out</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">nb_samples</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">nb_samples_per_chronic</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">288</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">simulator_seed</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Union</span><span class="p"><span class="pre">[</span></span><span class="pre">None</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">int</span><span class="p"><span class="pre">]</span></span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">actor_seed</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Union</span><span class="p"><span class="pre">[</span></span><span class="pre">None</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">int</span><span class="p"><span class="pre">]</span></span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">do_store_physics</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/lips/dataset/powergridDataSet.html#PowerGridDataSet.generate"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#lips.dataset.powergridDataSet.PowerGridDataSet.generate" title="Permalink to this definition"></a></dt>
 <dd><p>Generate a powergrid dataset</p>
 <p>For this dataset, we use a Grid2opSimulator and a  grid2op Agent to generate data from a powergrid.
 This implementation can also serve as a reference for other implementation of the <cite>generate</cite> function.</p>
@@ -851,7 +643,7 @@ comes from the first batch issued from this dataset.]</p>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="lips.dataset.powergridDataSet.PowerGridDataSet.reconstruct_output">
-<span class="sig-name descname"><span class="pre">reconstruct_output</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">data</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">numpy.ndarray</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">dict</span></span></span><a class="reference internal" href="_modules/lips/dataset/powergridDataSet.html#PowerGridDataSet.reconstruct_output"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#lips.dataset.powergridDataSet.PowerGridDataSet.reconstruct_output" title="Permalink to this definition"></a></dt>
+<span class="sig-name descname"><span class="pre">reconstruct_output</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">data</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">ndarray</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">dict</span></span></span><a class="reference internal" href="_modules/lips/dataset/powergridDataSet.html#PowerGridDataSet.reconstruct_output"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#lips.dataset.powergridDataSet.PowerGridDataSet.reconstruct_output" title="Permalink to this definition"></a></dt>
 <dd><p>It reconstruct the data from the extracted data</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>

@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>lips.evaluation.powergrid_evaluation &mdash; LIPS 0.1 documentation</title>
+  <title>lips.evaluation.powergrid_evaluation &mdash; LIPS 0.1.0 documentation</title>
       <link rel="stylesheet" href="../../../_static/pygments.css" type="text/css" />
       <link rel="stylesheet" href="../../../_static/css/theme.css" type="text/css" />
   <!--[if lt IE 9]>
@@ -13,7 +13,9 @@
         <script data-url_root="../../../" id="documentation_options" src="../../../_static/documentation_options.js"></script>
         <script src="../../../_static/jquery.js"></script>
         <script src="../../../_static/underscore.js"></script>
+        <script src="../../../_static/_sphinx_javascript_frameworks_compat.js"></script>
         <script src="../../../_static/doctools.js"></script>
+        <script src="../../../_static/sphinx_highlight.js"></script>
     <script src="../../../_static/js/theme.js"></script>
     <link rel="index" title="Index" href="../../../genindex.html" />
     <link rel="search" title="Search" href="../../../search.html" /> 
@@ -26,6 +28,9 @@
         <div class="wy-side-nav-search" >
             <a href="../../../index.html" class="icon icon-home"> LIPS
           </a>
+              <div class="version">
+                0.1
+              </div>
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="../../../search.html" method="get">
     <input type="text" name="q" placeholder="Search docs" />
@@ -81,28 +86,27 @@
            <div itemprop="articleBody">
              
   <h1>Source code for lips.evaluation.powergrid_evaluation</h1><div class="highlight"><pre>
-<span></span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">Usage:</span>
-<span class="sd">    PowerGridEvaluation allows to evaluate the augmented simulators from power grid context</span>
-<span class="sd">Licence:</span>
-<span class="sd">    Copyright (c) 2021, IRT SystemX (https://www.irt-systemx.fr/en/)</span>
-<span class="sd">    See AUTHORS.txt</span>
-<span class="sd">    This Source Code Form is subject to the terms of the Mozilla Public License, version 2.0.</span>
-<span class="sd">    If a copy of the Mozilla Public License, version 2.0 was not distributed with this file,</span>
-<span class="sd">    you can obtain one at http://mozilla.org/MPL/2.0/.</span>
-<span class="sd">    SPDX-License-Identifier: MPL-2.0</span>
-<span class="sd">    This file is part of LIPS, LIPS is a python platform for power networks benchmarking</span>
-<span class="sd">&quot;&quot;&quot;</span>
+<span></span><span class="c1"># Copyright (c) 2021, IRT SystemX (https://www.irt-systemx.fr/en/)</span>
+<span class="c1"># See AUTHORS.txt</span>
+<span class="c1"># This Source Code Form is subject to the terms of the Mozilla Public License, version 2.0.</span>
+<span class="c1"># If a copy of the Mozilla Public License, version 2.0 was not distributed with this file,</span>
+<span class="c1"># you can obtain one at http://mozilla.org/MPL/2.0/.</span>
+<span class="c1"># SPDX-License-Identifier: MPL-2.0</span>
+<span class="c1"># This file is part of LIPS, LIPS is a python platform for power networks benchmarking</span>
 
 <span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Union</span>
 <span class="kn">from</span> <span class="nn">collections.abc</span> <span class="kn">import</span> <span class="n">Iterable</span>
+<span class="kn">import</span> <span class="nn">time</span>
 
 <span class="kn">from</span> <span class="nn">.evaluation</span> <span class="kn">import</span> <span class="n">Evaluation</span>
-<span class="c1">#from ..benchmark import PowerGridBenchmark</span>
+<span class="kn">from</span> <span class="nn">.utils</span> <span class="kn">import</span> <span class="n">metric_factory</span>
 <span class="kn">from</span> <span class="nn">..logger</span> <span class="kn">import</span> <span class="n">CustomLogger</span>
 <span class="kn">from</span> <span class="nn">..config</span> <span class="kn">import</span> <span class="n">ConfigManager</span>
+<span class="kn">from</span> <span class="nn">..physical_simulator.dcApproximationAS</span> <span class="kn">import</span> <span class="n">DCApproximationAS</span>
+<span class="kn">from</span> <span class="nn">..metrics.power_grid</span> <span class="kn">import</span> <span class="n">physics_compliances</span>
 
-<div class="viewcode-block" id="PowerGridEvaluation"><a class="viewcode-back" href="../../../lips.evaluation.html#lips.evaluation.PowerGridEvaluation">[docs]</a><span class="k">class</span> <span class="nc">PowerGridEvaluation</span><span class="p">(</span><span class="n">Evaluation</span><span class="p">):</span>
+
+<div class="viewcode-block" id="PowerGridEvaluation"><a class="viewcode-back" href="../../../lips.evaluation.html#lips.evaluation.powergrid_evaluation.PowerGridEvaluation">[docs]</a><span class="k">class</span> <span class="nc">PowerGridEvaluation</span><span class="p">(</span><span class="n">Evaluation</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;Evaluation of the power grid specific metrics</span>
 
 <span class="sd">    It is a subclass of the Evaluation class</span>
@@ -134,9 +138,9 @@
 
         <span class="bp">self</span><span class="o">.</span><span class="n">logger</span> <span class="o">=</span> <span class="n">CustomLogger</span><span class="p">(</span><span class="vm">__class__</span><span class="o">.</span><span class="vm">__name__</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">log_path</span><span class="p">)</span><span class="o">.</span><span class="n">logger</span>
         <span class="c1"># read the criteria and their mapped functions for power grid</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">criteria</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">mapper</span><span class="o">.</span><span class="n">map_powergrid_criteria</span><span class="p">()</span>
+        <span class="c1"># self.criteria = self.mapper.map_powergrid_criteria()</span>
 
-<div class="viewcode-block" id="PowerGridEvaluation.from_benchmark"><a class="viewcode-back" href="../../../lips.evaluation.html#lips.evaluation.PowerGridEvaluation.from_benchmark">[docs]</a>    <span class="nd">@classmethod</span>
+<div class="viewcode-block" id="PowerGridEvaluation.from_benchmark"><a class="viewcode-back" href="../../../lips.evaluation.html#lips.evaluation.powergrid_evaluation.PowerGridEvaluation.from_benchmark">[docs]</a>    <span class="nd">@classmethod</span>
     <span class="k">def</span> <span class="nf">from_benchmark</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span>
                        <span class="n">benchmark</span><span class="p">:</span> <span class="s2">&quot;PowerGridBenchmark&quot;</span><span class="p">,</span>
                       <span class="p">):</span>
@@ -153,10 +157,11 @@
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="bp">cls</span><span class="p">(</span><span class="n">config</span><span class="o">=</span><span class="n">benchmark</span><span class="o">.</span><span class="n">config</span><span class="p">,</span> <span class="n">log_path</span><span class="o">=</span><span class="n">benchmark</span><span class="o">.</span><span class="n">log_path</span><span class="p">)</span></div>
 
-<div class="viewcode-block" id="PowerGridEvaluation.evaluate"><a class="viewcode-back" href="../../../lips.evaluation.html#lips.evaluation.PowerGridEvaluation.evaluate">[docs]</a>    <span class="k">def</span> <span class="nf">evaluate</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span>
+<div class="viewcode-block" id="PowerGridEvaluation.evaluate"><a class="viewcode-back" href="../../../lips.evaluation.html#lips.evaluation.powergrid_evaluation.PowerGridEvaluation.evaluate">[docs]</a>    <span class="k">def</span> <span class="nf">evaluate</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span>
                  <span class="n">observations</span><span class="p">:</span> <span class="nb">dict</span><span class="p">,</span>
                  <span class="n">predictions</span><span class="p">:</span> <span class="nb">dict</span><span class="p">,</span>
-                 <span class="n">save_path</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="kc">None</span><span class="p">]</span><span class="o">=</span><span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">:</span>
+                 <span class="n">save_path</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="kc">None</span><span class="p">]</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+                 <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">:</span>
         <span class="sd">&quot;&quot;&quot;The main function which evaluates all the required criteria noted in config file</span>
 
 <span class="sd">        Parameters</span>
@@ -173,7 +178,7 @@
 
         <span class="c1"># evaluate powergrid specific evaluations based on config</span>
         <span class="k">for</span> <span class="n">cat</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">eval_dict</span><span class="o">.</span><span class="n">keys</span><span class="p">():</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">_dispatch_evaluation</span><span class="p">(</span><span class="n">cat</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_dispatch_evaluation</span><span class="p">(</span><span class="n">cat</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
 
         <span class="c1"># TODO: save the self.metrics variable</span>
         <span class="k">if</span> <span class="n">save_path</span><span class="p">:</span>
@@ -181,7 +186,7 @@
 
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">metrics</span></div>
 
-    <span class="k">def</span> <span class="nf">_dispatch_evaluation</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">category</span><span class="p">:</span> <span class="nb">str</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">_dispatch_evaluation</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">category</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        This helper function select the evaluation function with respect to the category</span>
 
@@ -195,36 +200,56 @@
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">if</span> <span class="n">category</span> <span class="o">==</span> <span class="bp">self</span><span class="o">.</span><span class="n">MACHINE_LEARNING</span><span class="p">:</span>
             <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">eval_dict</span><span class="p">[</span><span class="n">category</span><span class="p">]:</span>
-                <span class="bp">self</span><span class="o">.</span><span class="n">evaluate_ml</span><span class="p">()</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">evaluate_ml</span><span class="p">(</span><span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
         <span class="k">if</span> <span class="n">category</span> <span class="o">==</span> <span class="bp">self</span><span class="o">.</span><span class="n">PHYSICS_COMPLIANCES</span><span class="p">:</span>
             <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">eval_dict</span><span class="p">[</span><span class="n">category</span><span class="p">]:</span>
-                <span class="bp">self</span><span class="o">.</span><span class="n">evaluate_physics</span><span class="p">()</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">evaluate_physics</span><span class="p">(</span><span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
         <span class="k">if</span> <span class="n">category</span> <span class="o">==</span> <span class="bp">self</span><span class="o">.</span><span class="n">INDUSTRIAL_READINESS</span><span class="p">:</span>
             <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">eval_dict</span><span class="p">[</span><span class="n">category</span><span class="p">]:</span>
-                <span class="bp">self</span><span class="o">.</span><span class="n">evaluate_industrial_readiness</span><span class="p">()</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">evaluate_industrial_readiness</span><span class="p">(</span><span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
 
-<div class="viewcode-block" id="PowerGridEvaluation.evaluate_ml"><a class="viewcode-back" href="../../../lips.evaluation.html#lips.evaluation.PowerGridEvaluation.evaluate_ml">[docs]</a>    <span class="k">def</span> <span class="nf">evaluate_ml</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<div class="viewcode-block" id="PowerGridEvaluation.evaluate_ml"><a class="viewcode-back" href="../../../lips.evaluation.html#lips.evaluation.powergrid_evaluation.PowerGridEvaluation.evaluate_ml">[docs]</a>    <span class="k">def</span> <span class="nf">evaluate_ml</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Verify PowerGrid Specific Machine Learning metrics such as MAPE90</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="n">metric_dict</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">metrics</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">MACHINE_LEARNING</span><span class="p">]</span>
         <span class="k">for</span> <span class="n">metric_name</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">eval_dict</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">MACHINE_LEARNING</span><span class="p">]:</span>
-            <span class="n">metric_fun</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">criteria</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">metric_name</span><span class="p">)</span>
-            <span class="n">metric_dict</span><span class="p">[</span><span class="n">metric_name</span><span class="p">]</span> <span class="o">=</span> <span class="p">{}</span>
-            <span class="k">for</span> <span class="n">nm_</span><span class="p">,</span> <span class="n">pred_</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">predictions</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
-                <span class="k">if</span> <span class="n">nm_</span> <span class="o">==</span> <span class="s2">&quot;__prod_p_dc&quot;</span><span class="p">:</span>
-                    <span class="c1"># fix for the DC approximation</span>
-                    <span class="k">continue</span>
-                <span class="n">true_</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">observations</span><span class="p">[</span><span class="n">nm_</span><span class="p">]</span>
-                <span class="n">tmp</span> <span class="o">=</span> <span class="n">metric_fun</span><span class="p">(</span><span class="n">true_</span><span class="p">,</span> <span class="n">pred_</span><span class="p">)</span>
-                <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">tmp</span><span class="p">,</span> <span class="n">Iterable</span><span class="p">):</span>
-                    <span class="n">metric_dict</span><span class="p">[</span><span class="n">metric_name</span><span class="p">][</span><span class="n">nm_</span><span class="p">]</span> <span class="o">=</span> <span class="p">[</span><span class="nb">float</span><span class="p">(</span><span class="n">el</span><span class="p">)</span> <span class="k">for</span> <span class="n">el</span> <span class="ow">in</span> <span class="n">tmp</span><span class="p">]</span>
-                    <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;</span><span class="si">%s</span><span class="s2"> for </span><span class="si">%s</span><span class="s2">: </span><span class="si">%s</span><span class="s2">&quot;</span><span class="p">,</span> <span class="n">metric_name</span><span class="p">,</span> <span class="n">nm_</span><span class="p">,</span> <span class="n">tmp</span><span class="p">)</span>
-                <span class="k">else</span><span class="p">:</span>
-                    <span class="n">metric_dict</span><span class="p">[</span><span class="n">metric_name</span><span class="p">][</span><span class="n">nm_</span><span class="p">]</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><span class="n">tmp</span><span class="p">)</span>
-                    <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;</span><span class="si">%s</span><span class="s2"> for </span><span class="si">%s</span><span class="s2">: </span><span class="si">%.2f</span><span class="s2">&quot;</span><span class="p">,</span> <span class="n">metric_name</span><span class="p">,</span> <span class="n">nm_</span><span class="p">,</span> <span class="n">tmp</span><span class="p">)</span></div>
+            <span class="k">if</span> <span class="n">metric_name</span> <span class="o">==</span> <span class="s2">&quot;TIME_INF&quot;</span><span class="p">:</span>
+                <span class="k">try</span><span class="p">:</span>
+                    <span class="n">augmented_simulator</span> <span class="o">=</span> <span class="n">kwargs</span><span class="p">[</span><span class="s2">&quot;augmented_simulator&quot;</span><span class="p">]</span>
+                    <span class="n">dataset</span> <span class="o">=</span> <span class="n">kwargs</span><span class="p">[</span><span class="s2">&quot;dataset&quot;</span><span class="p">]</span>
+                    <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">augmented_simulator</span><span class="p">,</span> <span class="n">DCApproximationAS</span><span class="p">):</span>
+                        <span class="c1"># using the machine learning point of view (max possible batch_size)</span>
+                        <span class="n">beg_</span> <span class="o">=</span> <span class="n">time</span><span class="o">.</span><span class="n">perf_counter</span><span class="p">()</span>
+                        <span class="n">_</span> <span class="o">=</span> <span class="n">augmented_simulator</span><span class="o">.</span><span class="n">predict</span><span class="p">(</span><span class="n">dataset</span><span class="p">,</span> <span class="n">eval_batch_size</span><span class="o">=</span><span class="n">dataset</span><span class="o">.</span><span class="n">size</span><span class="p">)</span>
+                        <span class="n">end_</span> <span class="o">=</span> <span class="n">time</span><span class="o">.</span><span class="n">perf_counter</span><span class="p">()</span>
+                        <span class="n">total_time</span> <span class="o">=</span> <span class="n">end_</span> <span class="o">-</span> <span class="n">beg_</span>
+                        <span class="n">metric_dict</span><span class="p">[</span><span class="n">metric_name</span><span class="p">]</span> <span class="o">=</span> <span class="n">total_time</span>
+                        <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;</span><span class="si">%s</span><span class="s2"> for </span><span class="si">%s</span><span class="s2">: </span><span class="si">%s</span><span class="s2">&quot;</span><span class="p">,</span> <span class="n">metric_name</span><span class="p">,</span> <span class="n">augmented_simulator</span><span class="o">.</span><span class="n">name</span><span class="p">,</span> <span class="n">total_time</span><span class="p">)</span>
+                    <span class="k">else</span><span class="p">:</span>
+                        <span class="n">dc_comp_time</span> <span class="o">=</span> <span class="n">augmented_simulator</span><span class="o">.</span><span class="n">comp_time</span>
+                        <span class="n">metric_dict</span><span class="p">[</span><span class="n">metric_name</span><span class="p">]</span> <span class="o">=</span> <span class="n">dc_comp_time</span>
+                        <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;</span><span class="si">%s</span><span class="s2"> for </span><span class="si">%s</span><span class="s2">: </span><span class="si">%s</span><span class="s2">&quot;</span><span class="p">,</span> <span class="n">metric_name</span><span class="p">,</span> <span class="n">augmented_simulator</span><span class="o">.</span><span class="n">name</span><span class="p">,</span> <span class="n">dc_comp_time</span><span class="p">)</span>
+                <span class="k">except</span> <span class="ne">KeyError</span><span class="p">:</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="s2">&quot;The augmented simulator or dataset are not provided to estimate the inference time.&quot;</span><span class="p">)</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">metric_fun</span> <span class="o">=</span> <span class="n">metric_factory</span><span class="o">.</span><span class="n">get_metric</span><span class="p">(</span><span class="n">metric_name</span><span class="p">)</span>
+                <span class="c1"># metric_fun = self.criteria.get(metric_name)</span>
+                <span class="n">metric_dict</span><span class="p">[</span><span class="n">metric_name</span><span class="p">]</span> <span class="o">=</span> <span class="p">{}</span>
+                <span class="k">for</span> <span class="n">nm_</span><span class="p">,</span> <span class="n">pred_</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">predictions</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+                    <span class="k">if</span> <span class="n">nm_</span> <span class="o">==</span> <span class="s2">&quot;__prod_p_dc&quot;</span><span class="p">:</span>
+                        <span class="c1"># fix for the DC approximation</span>
+                        <span class="k">continue</span>
+                    <span class="n">true_</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">observations</span><span class="p">[</span><span class="n">nm_</span><span class="p">]</span>
+                    <span class="n">tmp</span> <span class="o">=</span> <span class="n">metric_fun</span><span class="p">(</span><span class="n">true_</span><span class="p">,</span> <span class="n">pred_</span><span class="p">)</span>
+                    <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">tmp</span><span class="p">,</span> <span class="n">Iterable</span><span class="p">):</span>
+                        <span class="n">metric_dict</span><span class="p">[</span><span class="n">metric_name</span><span class="p">][</span><span class="n">nm_</span><span class="p">]</span> <span class="o">=</span> <span class="p">[</span><span class="nb">float</span><span class="p">(</span><span class="n">el</span><span class="p">)</span> <span class="k">for</span> <span class="n">el</span> <span class="ow">in</span> <span class="n">tmp</span><span class="p">]</span>
+                        <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;</span><span class="si">%s</span><span class="s2"> for </span><span class="si">%s</span><span class="s2">: </span><span class="si">%s</span><span class="s2">&quot;</span><span class="p">,</span> <span class="n">metric_name</span><span class="p">,</span> <span class="n">nm_</span><span class="p">,</span> <span class="n">tmp</span><span class="p">)</span>
+                    <span class="k">else</span><span class="p">:</span>
+                        <span class="n">metric_dict</span><span class="p">[</span><span class="n">metric_name</span><span class="p">][</span><span class="n">nm_</span><span class="p">]</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><span class="n">tmp</span><span class="p">)</span>
+                        <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;</span><span class="si">%s</span><span class="s2"> for </span><span class="si">%s</span><span class="s2">: </span><span class="si">%.2f</span><span class="s2">&quot;</span><span class="p">,</span> <span class="n">metric_name</span><span class="p">,</span> <span class="n">nm_</span><span class="p">,</span> <span class="n">tmp</span><span class="p">)</span></div>
 
-<div class="viewcode-block" id="PowerGridEvaluation.evaluate_physics"><a class="viewcode-back" href="../../../lips.evaluation.html#lips.evaluation.PowerGridEvaluation.evaluate_physics">[docs]</a>    <span class="k">def</span> <span class="nf">evaluate_physics</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<div class="viewcode-block" id="PowerGridEvaluation.evaluate_physics"><a class="viewcode-back" href="../../../lips.evaluation.html#lips.evaluation.powergrid_evaluation.PowerGridEvaluation.evaluate_physics">[docs]</a>    <span class="k">def</span> <span class="nf">evaluate_physics</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        function that evaluates the physics compliances on given observations</span>
 <span class="sd">        It comprises various verifications which are:</span>
@@ -235,17 +260,24 @@
 <span class="sd">        - Verification of Kirchhoff&#39;s current law</span>
 <span class="sd">        - Verification of Joule&#39;s law</span>
 <span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="n">env</span> <span class="o">=</span> <span class="n">kwargs</span><span class="p">[</span><span class="s2">&quot;env&quot;</span><span class="p">]</span>
+        <span class="k">except</span> <span class="ne">KeyError</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="s2">&quot;The environment (physical solver) is required for some physics critiera and should be provided&quot;</span><span class="p">)</span>
         <span class="n">metric_dict</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">metrics</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">PHYSICS_COMPLIANCES</span><span class="p">]</span>
         <span class="k">for</span> <span class="n">metric_name</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">eval_dict</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">PHYSICS_COMPLIANCES</span><span class="p">]:</span>
-            <span class="n">metric_fun</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">criteria</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">metric_name</span><span class="p">)</span>
+            <span class="n">metric_fun</span> <span class="o">=</span> <span class="n">metric_factory</span><span class="o">.</span><span class="n">get_metric</span><span class="p">(</span><span class="n">metric_name</span><span class="p">)</span>
+            <span class="c1">#metric_fun = self.criteria.get(metric_name)</span>
             <span class="n">metric_dict</span><span class="p">[</span><span class="n">metric_name</span><span class="p">]</span> <span class="o">=</span> <span class="p">{}</span>
             <span class="n">tmp</span> <span class="o">=</span> <span class="n">metric_fun</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">predictions</span><span class="p">,</span>
                              <span class="n">log_path</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">log_path</span><span class="p">,</span>
                              <span class="n">observations</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">observations</span><span class="p">,</span>
-                             <span class="n">config</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">config</span><span class="p">)</span>
+                             <span class="n">config</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">config</span><span class="p">,</span>
+                             <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+                             <span class="c1">#env=env)</span>
             <span class="n">metric_dict</span><span class="p">[</span><span class="n">metric_name</span><span class="p">]</span> <span class="o">=</span> <span class="n">tmp</span></div>
 
-<div class="viewcode-block" id="PowerGridEvaluation.evaluate_industrial_readiness"><a class="viewcode-back" href="../../../lips.evaluation.html#lips.evaluation.PowerGridEvaluation.evaluate_industrial_readiness">[docs]</a>    <span class="k">def</span> <span class="nf">evaluate_industrial_readiness</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<div class="viewcode-block" id="PowerGridEvaluation.evaluate_industrial_readiness"><a class="viewcode-back" href="../../../lips.evaluation.html#lips.evaluation.powergrid_evaluation.PowerGridEvaluation.evaluate_industrial_readiness">[docs]</a>    <span class="k">def</span> <span class="nf">evaluate_industrial_readiness</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Evaluate the augmented simulators from Industrial Readiness point of view</span>
 
@@ -253,7 +285,33 @@
 <span class="sd">        - Scalability</span>
 
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="n">metric_dict</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">metrics</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">INDUSTRIAL_READINESS</span><span class="p">]</span></div></div>
+        <span class="n">metric_dict</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">metrics</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">INDUSTRIAL_READINESS</span><span class="p">]</span>
+        <span class="k">for</span> <span class="n">metric_name</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">eval_dict</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">INDUSTRIAL_READINESS</span><span class="p">]:</span>
+            <span class="k">if</span> <span class="n">metric_name</span> <span class="o">==</span> <span class="s2">&quot;TIME_INF&quot;</span><span class="p">:</span>
+                <span class="k">try</span><span class="p">:</span>
+                    <span class="n">augmented_simulator</span> <span class="o">=</span> <span class="n">kwargs</span><span class="p">[</span><span class="s2">&quot;augmented_simulator&quot;</span><span class="p">]</span>
+                    <span class="n">dataset</span> <span class="o">=</span> <span class="n">kwargs</span><span class="p">[</span><span class="s2">&quot;dataset&quot;</span><span class="p">]</span>
+
+                    <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">augmented_simulator</span><span class="p">,</span> <span class="n">DCApproximationAS</span><span class="p">):</span>
+                        <span class="k">try</span><span class="p">:</span>
+                            <span class="n">eval_batch_size</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">eval_params</span><span class="p">[</span><span class="s2">&quot;inf_batch_size&quot;</span><span class="p">]</span>
+                        <span class="k">except</span> <span class="ne">KeyError</span><span class="p">:</span>
+                            <span class="n">eval_batch_size</span> <span class="o">=</span> <span class="n">kwargs</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;eval_batch_size&quot;</span><span class="p">,</span> <span class="n">augmented_simulator</span><span class="o">.</span><span class="n">params</span><span class="p">[</span><span class="s2">&quot;eval_batch_size&quot;</span><span class="p">])</span>
+
+                        <span class="c1"># using the industrial readiness point of view (max possible batch_size)</span>
+                        <span class="n">beg_</span> <span class="o">=</span> <span class="n">time</span><span class="o">.</span><span class="n">perf_counter</span><span class="p">()</span>
+                        <span class="n">_</span> <span class="o">=</span> <span class="n">augmented_simulator</span><span class="o">.</span><span class="n">predict</span><span class="p">(</span><span class="n">dataset</span><span class="p">,</span> <span class="n">eval_batch_size</span><span class="o">=</span><span class="n">eval_batch_size</span><span class="p">)</span>
+                        <span class="n">end_</span> <span class="o">=</span> <span class="n">time</span><span class="o">.</span><span class="n">perf_counter</span><span class="p">()</span>
+                        <span class="n">total_time</span> <span class="o">=</span> <span class="n">end_</span> <span class="o">-</span> <span class="n">beg_</span>
+                        <span class="n">metric_dict</span><span class="p">[</span><span class="n">metric_name</span><span class="p">]</span> <span class="o">=</span> <span class="n">total_time</span>
+                        <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;</span><span class="si">%s</span><span class="s2"> for </span><span class="si">%s</span><span class="s2">: </span><span class="si">%s</span><span class="s2">&quot;</span><span class="p">,</span> <span class="n">metric_name</span><span class="p">,</span> <span class="n">augmented_simulator</span><span class="o">.</span><span class="n">name</span><span class="p">,</span> <span class="n">total_time</span><span class="p">)</span>
+
+                    <span class="k">else</span><span class="p">:</span>
+                        <span class="n">dc_comp_time</span> <span class="o">=</span> <span class="n">augmented_simulator</span><span class="o">.</span><span class="n">comp_time</span>
+                        <span class="n">metric_dict</span><span class="p">[</span><span class="n">metric_name</span><span class="p">]</span> <span class="o">=</span> <span class="n">dc_comp_time</span>
+                        <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;</span><span class="si">%s</span><span class="s2"> for </span><span class="si">%s</span><span class="s2">: </span><span class="si">%s</span><span class="s2">&quot;</span><span class="p">,</span> <span class="n">metric_name</span><span class="p">,</span> <span class="n">augmented_simulator</span><span class="o">.</span><span class="n">name</span><span class="p">,</span> <span class="n">dc_comp_time</span><span class="p">)</span>
+                <span class="k">except</span> <span class="ne">KeyError</span><span class="p">:</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="s2">&quot;The augmented simulator or dataset are not provided to estimate the inference time.&quot;</span><span class="p">)</span></div></div>
 </pre></div>
 
            </div>

@@ -4,7 +4,7 @@
   <meta charset="utf-8" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>lips.evaluation package &mdash; LIPS 0.1 documentation</title>
+  <title>lips.evaluation package &mdash; LIPS 0.1.0 documentation</title>
       <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
       <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
   <!--[if lt IE 9]>
@@ -14,7 +14,9 @@
         <script data-url_root="./" id="documentation_options" src="_static/documentation_options.js"></script>
         <script src="_static/jquery.js"></script>
         <script src="_static/underscore.js"></script>
+        <script src="_static/_sphinx_javascript_frameworks_compat.js"></script>
         <script src="_static/doctools.js"></script>
+        <script src="_static/sphinx_highlight.js"></script>
     <script src="_static/js/theme.js"></script>
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" />
@@ -29,6 +31,9 @@
         <div class="wy-side-nav-search" >
             <a href="index.html" class="icon icon-home"> LIPS
           </a>
+              <div class="version">
+                0.1
+              </div>
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
     <input type="text" name="q" placeholder="Search docs" />
@@ -48,11 +53,67 @@
 <li class="toctree-l1"><a class="reference internal" href="lips.config.html">lips.config package</a></li>
 <li class="toctree-l1"><a class="reference internal" href="lips.dataset.html">lips.dataset package</a></li>
 <li class="toctree-l1 current"><a class="current reference internal" href="#">lips.evaluation package</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#lips.evaluation.Evaluation"><code class="docutils literal notranslate"><span class="pre">Evaluation</span></code></a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#lips.evaluation.Evaluation.config"><code class="docutils literal notranslate"><span class="pre">Evaluation.config</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#lips.evaluation.Evaluation.config_path"><code class="docutils literal notranslate"><span class="pre">Evaluation.config_path</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#lips.evaluation.Evaluation.config_section"><code class="docutils literal notranslate"><span class="pre">Evaluation.config_section</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#lips.evaluation.Evaluation.log_path"><code class="docutils literal notranslate"><span class="pre">Evaluation.log_path</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#lips.evaluation.Evaluation.MACHINE_LEARNING"><code class="docutils literal notranslate"><span class="pre">Evaluation.MACHINE_LEARNING</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#lips.evaluation.Evaluation.PHYSICS_COMPLIANCES"><code class="docutils literal notranslate"><span class="pre">Evaluation.PHYSICS_COMPLIANCES</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#lips.evaluation.Evaluation.INDUSTRIAL_READINESS"><code class="docutils literal notranslate"><span class="pre">Evaluation.INDUSTRIAL_READINESS</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#lips.evaluation.Evaluation.from_benchmark"><code class="docutils literal notranslate"><span class="pre">Evaluation.from_benchmark()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#lips.evaluation.Evaluation.from_dataset"><code class="docutils literal notranslate"><span class="pre">Evaluation.from_dataset()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#lips.evaluation.Evaluation.evaluate"><code class="docutils literal notranslate"><span class="pre">Evaluation.evaluate()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#lips.evaluation.Evaluation.evaluate_ml"><code class="docutils literal notranslate"><span class="pre">Evaluation.evaluate_ml()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#lips.evaluation.Evaluation.evaluate_physics"><code class="docutils literal notranslate"><span class="pre">Evaluation.evaluate_physics()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#lips.evaluation.Evaluation.evaluate_industrial_readiness"><code class="docutils literal notranslate"><span class="pre">Evaluation.evaluate_industrial_readiness()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#lips.evaluation.Evaluation.evaluate_ood"><code class="docutils literal notranslate"><span class="pre">Evaluation.evaluate_ood()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#lips.evaluation.Evaluation.compare_simulators"><code class="docutils literal notranslate"><span class="pre">Evaluation.compare_simulators()</span></code></a></li>
+</ul>
+</li>
 <li class="toctree-l2"><a class="reference internal" href="#submodules">Submodules</a></li>
-<li class="toctree-l2"><a class="reference internal" href="#module-lips.evaluation.evaluation">lips.evaluation.evaluation module</a></li>
-<li class="toctree-l2"><a class="reference internal" href="#module-lips.evaluation.powergrid_evaluation">lips.evaluation.powergrid_evaluation module</a></li>
-<li class="toctree-l2"><a class="reference internal" href="#module-lips.evaluation.transport_evaluation">lips.evaluation.transport_evaluation module</a></li>
-<li class="toctree-l2"><a class="reference internal" href="#module-lips.evaluation.utils">lips.evaluation.utils module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#module-lips.evaluation.evaluation">lips.evaluation.evaluation module</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#lips.evaluation.evaluation.Evaluation"><code class="docutils literal notranslate"><span class="pre">Evaluation</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#lips.evaluation.evaluation.Evaluation.config"><code class="docutils literal notranslate"><span class="pre">Evaluation.config</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#lips.evaluation.evaluation.Evaluation.config_path"><code class="docutils literal notranslate"><span class="pre">Evaluation.config_path</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#lips.evaluation.evaluation.Evaluation.config_section"><code class="docutils literal notranslate"><span class="pre">Evaluation.config_section</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#lips.evaluation.evaluation.Evaluation.log_path"><code class="docutils literal notranslate"><span class="pre">Evaluation.log_path</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#lips.evaluation.evaluation.Evaluation.MACHINE_LEARNING"><code class="docutils literal notranslate"><span class="pre">Evaluation.MACHINE_LEARNING</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#lips.evaluation.evaluation.Evaluation.PHYSICS_COMPLIANCES"><code class="docutils literal notranslate"><span class="pre">Evaluation.PHYSICS_COMPLIANCES</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#lips.evaluation.evaluation.Evaluation.INDUSTRIAL_READINESS"><code class="docutils literal notranslate"><span class="pre">Evaluation.INDUSTRIAL_READINESS</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#lips.evaluation.evaluation.Evaluation.from_benchmark"><code class="docutils literal notranslate"><span class="pre">Evaluation.from_benchmark()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#lips.evaluation.evaluation.Evaluation.from_dataset"><code class="docutils literal notranslate"><span class="pre">Evaluation.from_dataset()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#lips.evaluation.evaluation.Evaluation.evaluate"><code class="docutils literal notranslate"><span class="pre">Evaluation.evaluate()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#lips.evaluation.evaluation.Evaluation.evaluate_ml"><code class="docutils literal notranslate"><span class="pre">Evaluation.evaluate_ml()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#lips.evaluation.evaluation.Evaluation.evaluate_physics"><code class="docutils literal notranslate"><span class="pre">Evaluation.evaluate_physics()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#lips.evaluation.evaluation.Evaluation.evaluate_industrial_readiness"><code class="docutils literal notranslate"><span class="pre">Evaluation.evaluate_industrial_readiness()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#lips.evaluation.evaluation.Evaluation.evaluate_ood"><code class="docutils literal notranslate"><span class="pre">Evaluation.evaluate_ood()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#lips.evaluation.evaluation.Evaluation.compare_simulators"><code class="docutils literal notranslate"><span class="pre">Evaluation.compare_simulators()</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#module-lips.evaluation.powergrid_evaluation">lips.evaluation.powergrid_evaluation module</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#lips.evaluation.powergrid_evaluation.PowerGridEvaluation"><code class="docutils literal notranslate"><span class="pre">PowerGridEvaluation</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#lips.evaluation.powergrid_evaluation.PowerGridEvaluation.from_benchmark"><code class="docutils literal notranslate"><span class="pre">PowerGridEvaluation.from_benchmark()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#lips.evaluation.powergrid_evaluation.PowerGridEvaluation.evaluate"><code class="docutils literal notranslate"><span class="pre">PowerGridEvaluation.evaluate()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#lips.evaluation.powergrid_evaluation.PowerGridEvaluation.evaluate_ml"><code class="docutils literal notranslate"><span class="pre">PowerGridEvaluation.evaluate_ml()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#lips.evaluation.powergrid_evaluation.PowerGridEvaluation.evaluate_physics"><code class="docutils literal notranslate"><span class="pre">PowerGridEvaluation.evaluate_physics()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#lips.evaluation.powergrid_evaluation.PowerGridEvaluation.evaluate_industrial_readiness"><code class="docutils literal notranslate"><span class="pre">PowerGridEvaluation.evaluate_industrial_readiness()</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#lips-evaluation-transport-evaluation-module">lips.evaluation.transport_evaluation module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#module-lips.evaluation.utils">lips.evaluation.utils module</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#lips.evaluation.utils.MetricFactory"><code class="docutils literal notranslate"><span class="pre">MetricFactory</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#lips.evaluation.utils.MetricFactory.register_metric"><code class="docutils literal notranslate"><span class="pre">MetricFactory.register_metric()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#lips.evaluation.utils.MetricFactory.register_metric_dict"><code class="docutils literal notranslate"><span class="pre">MetricFactory.register_metric_dict()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#lips.evaluation.utils.MetricFactory.get_metric"><code class="docutils literal notranslate"><span class="pre">MetricFactory.get_metric()</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="lips.logger.html">lips.logger package</a></li>
@@ -91,7 +152,7 @@
            <div itemprop="articleBody">
              
   <section id="module-lips.evaluation">
-<span id="lips-evaluation-package"></span><h1>lips.evaluation package<a class="headerlink" href="#module-lips.evaluation" title="Permalink to this headline"></a></h1>
+<span id="lips-evaluation-package"></span><h1>lips.evaluation package<a class="headerlink" href="#module-lips.evaluation" title="Permalink to this heading"></a></h1>
 <dl class="simple">
 <dt>Licence:</dt><dd><p>Copyright (c) 2021, IRT SystemX (<a class="reference external" href="https://www.irt-systemx.fr/en/">https://www.irt-systemx.fr/en/</a>)
 See AUTHORS.txt
@@ -112,17 +173,11 @@ This file is part of LIPS, LIPS is a python platform for power networks benchmar
 <tr class="row-odd"><td><p><a class="reference internal" href="#lips.evaluation.Evaluation" title="lips.evaluation.Evaluation"><code class="xref py py-obj docutils literal notranslate"><span class="pre">Evaluation</span></code></a>([config, config_path, ...])</p></td>
 <td><p>Evaluation base class</p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="#lips.evaluation.PowerGridEvaluation" title="lips.evaluation.PowerGridEvaluation"><code class="xref py py-obj docutils literal notranslate"><span class="pre">PowerGridEvaluation</span></code></a>([config, config_path, ...])</p></td>
-<td><p>Evaluation of the power grid specific metrics</p></td>
-</tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="#lips.evaluation.Mapper" title="lips.evaluation.Mapper"><code class="xref py py-obj docutils literal notranslate"><span class="pre">Mapper</span></code></a>()</p></td>
-<td><p>Mapper class This class create a mapping dict between evaluation criteria and their respective functions available in metrics module</p></td>
-</tr>
 </tbody>
 </table>
 <dl class="py class">
 <dt class="sig sig-object py" id="lips.evaluation.Evaluation">
-<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">lips.evaluation.</span></span><span class="sig-name descname"><span class="pre">Evaluation</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">config</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><a class="reference internal" href="lips.config.html#lips.config.configmanager.ConfigManager" title="lips.config.configmanager.ConfigManager"><span class="pre">lips.config.configmanager.ConfigManager</span></a><span class="p"><span class="pre">]</span></span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">config_path</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">config_section</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">log_path</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/lips/evaluation/evaluation.html#Evaluation"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#lips.evaluation.Evaluation" title="Permalink to this definition"></a></dt>
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">lips.evaluation.</span></span><span class="sig-name descname"><span class="pre">Evaluation</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">config</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><a class="reference internal" href="lips.config.html#lips.config.configmanager.ConfigManager" title="lips.config.configmanager.ConfigManager"><span class="pre">ConfigManager</span></a><span class="p"><span class="pre">]</span></span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">config_path</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">config_section</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">log_path</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/lips/evaluation/evaluation.html#Evaluation"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#lips.evaluation.Evaluation" title="Permalink to this definition"></a></dt>
 <dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
 <p>Evaluation base class</p>
 <p>Evaluation class to be implemented for evaluation of an augmented simulator</p>
@@ -242,14 +297,14 @@ This file is part of LIPS, LIPS is a python platform for power networks benchmar
 
 <dl class="py method">
 <dt class="sig sig-object py" id="lips.evaluation.Evaluation.from_benchmark">
-<em class="property"><span class="pre">classmethod</span> </em><span class="sig-name descname"><span class="pre">from_benchmark</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">benchmark</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Benchmark</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/lips/evaluation/evaluation.html#Evaluation.from_benchmark"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#lips.evaluation.Evaluation.from_benchmark" title="Permalink to this definition"></a></dt>
+<em class="property"><span class="pre">classmethod</span> </em><span class="sig-name descname"><span class="pre">from_benchmark</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">benchmark</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="lips.benchmark.html#lips.benchmark.Benchmark" title="lips.benchmark.benchmark.Benchmark"><span class="pre">Benchmark</span></a></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/lips/evaluation/evaluation.html#Evaluation.from_benchmark"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#lips.evaluation.Evaluation.from_benchmark" title="Permalink to this definition"></a></dt>
 <dd><p>Class method to intialize the evaluation from Benchmark instance</p>
 <p>Benchmark instance should include at least both <cite>observations</cite> and <cite>predictions</cite> variables</p>
 </dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="lips.evaluation.Evaluation.from_dataset">
-<em class="property"><span class="pre">classmethod</span> </em><span class="sig-name descname"><span class="pre">from_dataset</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">dataset</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="lips.dataset.html#lips.dataset.dataSet.DataSet" title="lips.dataset.dataSet.DataSet"><span class="pre">lips.dataset.dataSet.DataSet</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">config_path</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">config_section</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">log_path</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/lips/evaluation/evaluation.html#Evaluation.from_dataset"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#lips.evaluation.Evaluation.from_dataset" title="Permalink to this definition"></a></dt>
+<em class="property"><span class="pre">classmethod</span> </em><span class="sig-name descname"><span class="pre">from_dataset</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">dataset</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="lips.dataset.html#lips.dataset.dataSet.DataSet" title="lips.dataset.dataSet.DataSet"><span class="pre">DataSet</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">config_path</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">config_section</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">log_path</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/lips/evaluation/evaluation.html#Evaluation.from_dataset"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#lips.evaluation.Evaluation.from_dataset" title="Permalink to this definition"></a></dt>
 <dd><p>Class method to initialize the evaluation from DataSet instance</p>
 </dd></dl>
 
@@ -311,210 +366,11 @@ and finally it reports the results side by side</p>
 
 </dd></dl>
 
-<dl class="py class">
-<dt class="sig sig-object py" id="lips.evaluation.PowerGridEvaluation">
-<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">lips.evaluation.</span></span><span class="sig-name descname"><span class="pre">PowerGridEvaluation</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">config</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><a class="reference internal" href="lips.config.html#lips.config.configmanager.ConfigManager" title="lips.config.configmanager.ConfigManager"><span class="pre">lips.config.configmanager.ConfigManager</span></a><span class="p"><span class="pre">]</span></span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">config_path</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">scenario</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">log_path</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/lips/evaluation/powergrid_evaluation.html#PowerGridEvaluation"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#lips.evaluation.PowerGridEvaluation" title="Permalink to this definition"></a></dt>
-<dd><p>Bases: <a class="reference internal" href="#lips.evaluation.evaluation.Evaluation" title="lips.evaluation.evaluation.Evaluation"><code class="xref py py-class docutils literal notranslate"><span class="pre">lips.evaluation.evaluation.Evaluation</span></code></a></p>
-<p>Evaluation of the power grid specific metrics</p>
-<p>It is a subclass of the Evaluation class</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><ul class="simple">
-<li><p><strong>config</strong> – an object of <cite>ConfigManager</cite> class</p></li>
-<li><p><strong>optional</strong> – an object of <cite>ConfigManager</cite> class</p></li>
-<li><p><strong>config_path</strong> – _description_, by default None</p></li>
-<li><p><strong>optional</strong> – _description_, by default None</p></li>
-<li><p><strong>scenario</strong> – one of the Power Grid Scenario names, by default None</p></li>
-<li><p><strong>optional</strong> – one of the Power Grid Scenario names, by default None</p></li>
-<li><p><strong>log_path</strong> – path where the log should be maintained, by default None</p></li>
-<li><p><strong>optional</strong> – path where the log should be maintained, by default None</p></li>
-</ul>
-</dd>
-</dl>
-<p><strong>Methods:</strong></p>
-<table class="autosummary longtable docutils align-default">
-<colgroup>
-<col style="width: 10%" />
-<col style="width: 90%" />
-</colgroup>
-<tbody>
-<tr class="row-odd"><td><p><a class="reference internal" href="#lips.evaluation.PowerGridEvaluation.from_benchmark" title="lips.evaluation.PowerGridEvaluation.from_benchmark"><code class="xref py py-obj docutils literal notranslate"><span class="pre">from_benchmark</span></code></a>(benchmark)</p></td>
-<td><p>Intialize the evaluation class from a benchmark object</p></td>
-</tr>
-<tr class="row-even"><td><p><a class="reference internal" href="#lips.evaluation.PowerGridEvaluation.evaluate" title="lips.evaluation.PowerGridEvaluation.evaluate"><code class="xref py py-obj docutils literal notranslate"><span class="pre">evaluate</span></code></a>(observations, predictions[, save_path])</p></td>
-<td><p>The main function which evaluates all the required criteria noted in config file</p></td>
-</tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="#lips.evaluation.PowerGridEvaluation.evaluate_ml" title="lips.evaluation.PowerGridEvaluation.evaluate_ml"><code class="xref py py-obj docutils literal notranslate"><span class="pre">evaluate_ml</span></code></a>()</p></td>
-<td><p>Verify PowerGrid Specific Machine Learning metrics such as MAPE90</p></td>
-</tr>
-<tr class="row-even"><td><p><a class="reference internal" href="#lips.evaluation.PowerGridEvaluation.evaluate_physics" title="lips.evaluation.PowerGridEvaluation.evaluate_physics"><code class="xref py py-obj docutils literal notranslate"><span class="pre">evaluate_physics</span></code></a>()</p></td>
-<td><p>function that evaluates the physics compliances on given observations It comprises various verifications which are:</p></td>
-</tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="#lips.evaluation.PowerGridEvaluation.evaluate_industrial_readiness" title="lips.evaluation.PowerGridEvaluation.evaluate_industrial_readiness"><code class="xref py py-obj docutils literal notranslate"><span class="pre">evaluate_industrial_readiness</span></code></a>()</p></td>
-<td><p>Evaluate the augmented simulators from Industrial Readiness point of view</p></td>
-</tr>
-</tbody>
-</table>
-<dl class="py method">
-<dt class="sig sig-object py" id="lips.evaluation.PowerGridEvaluation.from_benchmark">
-<em class="property"><span class="pre">classmethod</span> </em><span class="sig-name descname"><span class="pre">from_benchmark</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">benchmark</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">PowerGridBenchmark</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/lips/evaluation/powergrid_evaluation.html#PowerGridEvaluation.from_benchmark"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#lips.evaluation.PowerGridEvaluation.from_benchmark" title="Permalink to this definition"></a></dt>
-<dd><p>Intialize the evaluation class from a benchmark object</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><p><strong>benchmark</strong> – a benchmark object</p>
-</dd>
-<dt class="field-even">Return type</dt>
-<dd class="field-even"><p><a class="reference internal" href="#lips.evaluation.PowerGridEvaluation" title="lips.evaluation.PowerGridEvaluation">PowerGridEvaluation</a></p>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="lips.evaluation.PowerGridEvaluation.evaluate">
-<span class="sig-name descname"><span class="pre">evaluate</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">observations</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">dict</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">predictions</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">dict</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">save_path</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">dict</span></span></span><a class="reference internal" href="_modules/lips/evaluation/powergrid_evaluation.html#PowerGridEvaluation.evaluate"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#lips.evaluation.PowerGridEvaluation.evaluate" title="Permalink to this definition"></a></dt>
-<dd><p>The main function which evaluates all the required criteria noted in config file</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><ul class="simple">
-<li><p><strong>dataset</strong> – DataSet object including true observations used to evaluate the predictions</p></li>
-<li><p><strong>predictions</strong> – predictions obtained from augmented simulators</p></li>
-<li><p><strong>save_path</strong> – path where the results should be saved, by default None</p></li>
-<li><p><strong>optional</strong> – path where the results should be saved, by default None</p></li>
-</ul>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="lips.evaluation.PowerGridEvaluation.evaluate_ml">
-<span class="sig-name descname"><span class="pre">evaluate_ml</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/lips/evaluation/powergrid_evaluation.html#PowerGridEvaluation.evaluate_ml"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#lips.evaluation.PowerGridEvaluation.evaluate_ml" title="Permalink to this definition"></a></dt>
-<dd><p>Verify PowerGrid Specific Machine Learning metrics such as MAPE90</p>
-</dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="lips.evaluation.PowerGridEvaluation.evaluate_physics">
-<span class="sig-name descname"><span class="pre">evaluate_physics</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/lips/evaluation/powergrid_evaluation.html#PowerGridEvaluation.evaluate_physics"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#lips.evaluation.PowerGridEvaluation.evaluate_physics" title="Permalink to this definition"></a></dt>
-<dd><p>function that evaluates the physics compliances on given observations
-It comprises various verifications which are:</p>
-<ul class="simple">
-<li><p>Basic verifications (current/voltage/loss positivity, current eq, disc_lines)</p></li>
-<li><p>Verification of law of conservation of energy</p></li>
-<li><p>Verification of electrical loss</p></li>
-<li><p>Verification of Kirchhoff’s current law</p></li>
-<li><p>Verification of Joule’s law</p></li>
-</ul>
-</dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="lips.evaluation.PowerGridEvaluation.evaluate_industrial_readiness">
-<span class="sig-name descname"><span class="pre">evaluate_industrial_readiness</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/lips/evaluation/powergrid_evaluation.html#PowerGridEvaluation.evaluate_industrial_readiness"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#lips.evaluation.PowerGridEvaluation.evaluate_industrial_readiness" title="Permalink to this definition"></a></dt>
-<dd><p>Evaluate the augmented simulators from Industrial Readiness point of view</p>
-<ul class="simple">
-<li><p>Inference time</p></li>
-<li><p>Scalability</p></li>
-</ul>
-</dd></dl>
-
-</dd></dl>
-
-<dl class="py class">
-<dt class="sig sig-object py" id="lips.evaluation.Mapper">
-<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">lips.evaluation.</span></span><span class="sig-name descname"><span class="pre">Mapper</span></span><a class="reference internal" href="_modules/lips/evaluation/utils.html#Mapper"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#lips.evaluation.Mapper" title="Permalink to this definition"></a></dt>
-<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
-<p>Mapper class
-This class create a mapping dict between evaluation criteria and their respective functions available in metrics module</p>
-<p>TODO:
-- it should register the mapping meta data to a file
-- to be able reload it from file
-- to be able to update it (modify current and add new mappings)</p>
-<p><strong>Methods:</strong></p>
-<table class="autosummary longtable docutils align-default">
-<colgroup>
-<col style="width: 10%" />
-<col style="width: 90%" />
-</colgroup>
-<tbody>
-<tr class="row-odd"><td><p><a class="reference internal" href="#lips.evaluation.Mapper.map_generic_criteria" title="lips.evaluation.Mapper.map_generic_criteria"><code class="xref py py-obj docutils literal notranslate"><span class="pre">map_generic_criteria</span></code></a>()</p></td>
-<td><p>Get a list of generic evaluation functions</p></td>
-</tr>
-<tr class="row-even"><td><p><a class="reference internal" href="#lips.evaluation.Mapper.map_powergrid_criteria" title="lips.evaluation.Mapper.map_powergrid_criteria"><code class="xref py py-obj docutils literal notranslate"><span class="pre">map_powergrid_criteria</span></code></a>()</p></td>
-<td><p>It populates the dictionary with available powergrids critiera</p></td>
-</tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="#lips.evaluation.Mapper.map_label_to_func" title="lips.evaluation.Mapper.map_label_to_func"><code class="xref py py-obj docutils literal notranslate"><span class="pre">map_label_to_func</span></code></a>(label, func)</p></td>
-<td><p>create new mappings</p></td>
-</tr>
-<tr class="row-even"><td><p><a class="reference internal" href="#lips.evaluation.Mapper.get_func" title="lips.evaluation.Mapper.get_func"><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_func</span></code></a>(label)</p></td>
-<td><p>get the function for a metric</p></td>
-</tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="#lips.evaluation.Mapper.rename_key" title="lips.evaluation.Mapper.rename_key"><code class="xref py py-obj docutils literal notranslate"><span class="pre">rename_key</span></code></a>(k_old, k_new)</p></td>
-<td><p>rename the a dictionary key</p></td>
-</tr>
-</tbody>
-</table>
-<dl class="py method">
-<dt class="sig sig-object py" id="lips.evaluation.Mapper.map_generic_criteria">
-<span class="sig-name descname"><span class="pre">map_generic_criteria</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/lips/evaluation/utils.html#Mapper.map_generic_criteria"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#lips.evaluation.Mapper.map_generic_criteria" title="Permalink to this definition"></a></dt>
-<dd><p>Get a list of generic evaluation functions</p>
-</dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="lips.evaluation.Mapper.map_powergrid_criteria">
-<span class="sig-name descname"><span class="pre">map_powergrid_criteria</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/lips/evaluation/utils.html#Mapper.map_powergrid_criteria"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#lips.evaluation.Mapper.map_powergrid_criteria" title="Permalink to this definition"></a></dt>
-<dd><p>It populates the dictionary with available powergrids critiera</p>
-</dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="lips.evaluation.Mapper.map_label_to_func">
-<span class="sig-name descname"><span class="pre">map_label_to_func</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">label</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">func</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Callable</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/lips/evaluation/utils.html#Mapper.map_label_to_func"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#lips.evaluation.Mapper.map_label_to_func" title="Permalink to this definition"></a></dt>
-<dd><p>create new mappings</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><ul class="simple">
-<li><p><strong>label</strong> (<em>str</em>) – a new label</p></li>
-<li><p><strong>func</strong> (<em>Callable</em>) – a metric function</p></li>
-</ul>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="lips.evaluation.Mapper.get_func">
-<span class="sig-name descname"><span class="pre">get_func</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">label</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">Callable</span></span></span><a class="reference internal" href="_modules/lips/evaluation/utils.html#Mapper.get_func"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#lips.evaluation.Mapper.get_func" title="Permalink to this definition"></a></dt>
-<dd><p>get the function for a metric</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><p><strong>label</strong> (<em>str</em>) – the label of the metric</p>
-</dd>
-<dt class="field-even">Returns</dt>
-<dd class="field-even"><p>the corresponding function</p>
-</dd>
-<dt class="field-odd">Return type</dt>
-<dd class="field-odd"><p>Callable</p>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="lips.evaluation.Mapper.rename_key">
-<span class="sig-name descname"><span class="pre">rename_key</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">k_old</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">k_new</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/lips/evaluation/utils.html#Mapper.rename_key"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#lips.evaluation.Mapper.rename_key" title="Permalink to this definition"></a></dt>
-<dd><p>rename the a dictionary key</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><ul class="simple">
-<li><p><strong>k_old</strong> (<em>str</em>) – old key</p></li>
-<li><p><strong>k_new</strong> (<em>str</em>) – new key</p></li>
-</ul>
-</dd>
-</dl>
-</dd></dl>
-
-</dd></dl>
-
 <section id="submodules">
-<h2>Submodules<a class="headerlink" href="#submodules" title="Permalink to this headline"></a></h2>
+<h2>Submodules<a class="headerlink" href="#submodules" title="Permalink to this heading"></a></h2>
 </section>
 <section id="module-lips.evaluation.evaluation">
-<span id="lips-evaluation-evaluation-module"></span><h2>lips.evaluation.evaluation module<a class="headerlink" href="#module-lips.evaluation.evaluation" title="Permalink to this headline"></a></h2>
+<span id="lips-evaluation-evaluation-module"></span><h2>lips.evaluation.evaluation module<a class="headerlink" href="#module-lips.evaluation.evaluation" title="Permalink to this heading"></a></h2>
 <p><strong>Classes:</strong></p>
 <table class="autosummary longtable docutils align-default">
 <colgroup>
@@ -529,7 +385,7 @@ This class create a mapping dict between evaluation criteria and their respectiv
 </table>
 <dl class="py class">
 <dt class="sig sig-object py" id="lips.evaluation.evaluation.Evaluation">
-<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">lips.evaluation.evaluation.</span></span><span class="sig-name descname"><span class="pre">Evaluation</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">config</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><a class="reference internal" href="lips.config.html#lips.config.configmanager.ConfigManager" title="lips.config.configmanager.ConfigManager"><span class="pre">lips.config.configmanager.ConfigManager</span></a><span class="p"><span class="pre">]</span></span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">config_path</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">config_section</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">log_path</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/lips/evaluation/evaluation.html#Evaluation"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#lips.evaluation.evaluation.Evaluation" title="Permalink to this definition"></a></dt>
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">lips.evaluation.evaluation.</span></span><span class="sig-name descname"><span class="pre">Evaluation</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">config</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><a class="reference internal" href="lips.config.html#lips.config.configmanager.ConfigManager" title="lips.config.configmanager.ConfigManager"><span class="pre">ConfigManager</span></a><span class="p"><span class="pre">]</span></span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">config_path</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">config_section</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">log_path</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/lips/evaluation/evaluation.html#Evaluation"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#lips.evaluation.evaluation.Evaluation" title="Permalink to this definition"></a></dt>
 <dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
 <p>Evaluation base class</p>
 <p>Evaluation class to be implemented for evaluation of an augmented simulator</p>
@@ -649,14 +505,14 @@ This class create a mapping dict between evaluation criteria and their respectiv
 
 <dl class="py method">
 <dt class="sig sig-object py" id="lips.evaluation.evaluation.Evaluation.from_benchmark">
-<em class="property"><span class="pre">classmethod</span> </em><span class="sig-name descname"><span class="pre">from_benchmark</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">benchmark</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Benchmark</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/lips/evaluation/evaluation.html#Evaluation.from_benchmark"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#lips.evaluation.evaluation.Evaluation.from_benchmark" title="Permalink to this definition"></a></dt>
+<em class="property"><span class="pre">classmethod</span> </em><span class="sig-name descname"><span class="pre">from_benchmark</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">benchmark</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="lips.benchmark.html#lips.benchmark.Benchmark" title="lips.benchmark.benchmark.Benchmark"><span class="pre">Benchmark</span></a></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/lips/evaluation/evaluation.html#Evaluation.from_benchmark"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#lips.evaluation.evaluation.Evaluation.from_benchmark" title="Permalink to this definition"></a></dt>
 <dd><p>Class method to intialize the evaluation from Benchmark instance</p>
 <p>Benchmark instance should include at least both <cite>observations</cite> and <cite>predictions</cite> variables</p>
 </dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="lips.evaluation.evaluation.Evaluation.from_dataset">
-<em class="property"><span class="pre">classmethod</span> </em><span class="sig-name descname"><span class="pre">from_dataset</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">dataset</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="lips.dataset.html#lips.dataset.dataSet.DataSet" title="lips.dataset.dataSet.DataSet"><span class="pre">lips.dataset.dataSet.DataSet</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">config_path</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">config_section</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">log_path</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/lips/evaluation/evaluation.html#Evaluation.from_dataset"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#lips.evaluation.evaluation.Evaluation.from_dataset" title="Permalink to this definition"></a></dt>
+<em class="property"><span class="pre">classmethod</span> </em><span class="sig-name descname"><span class="pre">from_dataset</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">dataset</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="lips.dataset.html#lips.dataset.dataSet.DataSet" title="lips.dataset.dataSet.DataSet"><span class="pre">DataSet</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">config_path</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">config_section</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">log_path</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/lips/evaluation/evaluation.html#Evaluation.from_dataset"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#lips.evaluation.evaluation.Evaluation.from_dataset" title="Permalink to this definition"></a></dt>
 <dd><p>Class method to initialize the evaluation from DataSet instance</p>
 </dd></dl>
 
@@ -720,19 +576,7 @@ and finally it reports the results side by side</p>
 
 </section>
 <section id="module-lips.evaluation.powergrid_evaluation">
-<span id="lips-evaluation-powergrid-evaluation-module"></span><h2>lips.evaluation.powergrid_evaluation module<a class="headerlink" href="#module-lips.evaluation.powergrid_evaluation" title="Permalink to this headline"></a></h2>
-<dl class="simple">
-<dt>Usage:</dt><dd><p>PowerGridEvaluation allows to evaluate the augmented simulators from power grid context</p>
-</dd>
-<dt>Licence:</dt><dd><p>Copyright (c) 2021, IRT SystemX (<a class="reference external" href="https://www.irt-systemx.fr/en/">https://www.irt-systemx.fr/en/</a>)
-See AUTHORS.txt
-This Source Code Form is subject to the terms of the Mozilla Public License, version 2.0.
-If a copy of the Mozilla Public License, version 2.0 was not distributed with this file,
-you can obtain one at <a class="reference external" href="http://mozilla.org/MPL/2.0/">http://mozilla.org/MPL/2.0/</a>.
-SPDX-License-Identifier: MPL-2.0
-This file is part of LIPS, LIPS is a python platform for power networks benchmarking</p>
-</dd>
-</dl>
+<span id="lips-evaluation-powergrid-evaluation-module"></span><h2>lips.evaluation.powergrid_evaluation module<a class="headerlink" href="#module-lips.evaluation.powergrid_evaluation" title="Permalink to this heading"></a></h2>
 <p><strong>Classes:</strong></p>
 <table class="autosummary longtable docutils align-default">
 <colgroup>
@@ -747,8 +591,8 @@ This file is part of LIPS, LIPS is a python platform for power networks benchmar
 </table>
 <dl class="py class">
 <dt class="sig sig-object py" id="lips.evaluation.powergrid_evaluation.PowerGridEvaluation">
-<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">lips.evaluation.powergrid_evaluation.</span></span><span class="sig-name descname"><span class="pre">PowerGridEvaluation</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">config</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><a class="reference internal" href="lips.config.html#lips.config.configmanager.ConfigManager" title="lips.config.configmanager.ConfigManager"><span class="pre">lips.config.configmanager.ConfigManager</span></a><span class="p"><span class="pre">]</span></span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">config_path</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">scenario</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">log_path</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/lips/evaluation/powergrid_evaluation.html#PowerGridEvaluation"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#lips.evaluation.powergrid_evaluation.PowerGridEvaluation" title="Permalink to this definition"></a></dt>
-<dd><p>Bases: <a class="reference internal" href="#lips.evaluation.evaluation.Evaluation" title="lips.evaluation.evaluation.Evaluation"><code class="xref py py-class docutils literal notranslate"><span class="pre">lips.evaluation.evaluation.Evaluation</span></code></a></p>
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">lips.evaluation.powergrid_evaluation.</span></span><span class="sig-name descname"><span class="pre">PowerGridEvaluation</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">config</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><a class="reference internal" href="lips.config.html#lips.config.configmanager.ConfigManager" title="lips.config.configmanager.ConfigManager"><span class="pre">ConfigManager</span></a><span class="p"><span class="pre">]</span></span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">config_path</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">scenario</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">log_path</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/lips/evaluation/powergrid_evaluation.html#PowerGridEvaluation"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#lips.evaluation.powergrid_evaluation.PowerGridEvaluation" title="Permalink to this definition"></a></dt>
+<dd><p>Bases: <a class="reference internal" href="#lips.evaluation.evaluation.Evaluation" title="lips.evaluation.evaluation.Evaluation"><code class="xref py py-class docutils literal notranslate"><span class="pre">Evaluation</span></code></a></p>
 <p>Evaluation of the power grid specific metrics</p>
 <p>It is a subclass of the Evaluation class</p>
 <dl class="field-list simple">
@@ -778,20 +622,20 @@ This file is part of LIPS, LIPS is a python platform for power networks benchmar
 <tr class="row-even"><td><p><a class="reference internal" href="#lips.evaluation.powergrid_evaluation.PowerGridEvaluation.evaluate" title="lips.evaluation.powergrid_evaluation.PowerGridEvaluation.evaluate"><code class="xref py py-obj docutils literal notranslate"><span class="pre">evaluate</span></code></a>(observations, predictions[, save_path])</p></td>
 <td><p>The main function which evaluates all the required criteria noted in config file</p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="#lips.evaluation.powergrid_evaluation.PowerGridEvaluation.evaluate_ml" title="lips.evaluation.powergrid_evaluation.PowerGridEvaluation.evaluate_ml"><code class="xref py py-obj docutils literal notranslate"><span class="pre">evaluate_ml</span></code></a>()</p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="#lips.evaluation.powergrid_evaluation.PowerGridEvaluation.evaluate_ml" title="lips.evaluation.powergrid_evaluation.PowerGridEvaluation.evaluate_ml"><code class="xref py py-obj docutils literal notranslate"><span class="pre">evaluate_ml</span></code></a>(**kwargs)</p></td>
 <td><p>Verify PowerGrid Specific Machine Learning metrics such as MAPE90</p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="#lips.evaluation.powergrid_evaluation.PowerGridEvaluation.evaluate_physics" title="lips.evaluation.powergrid_evaluation.PowerGridEvaluation.evaluate_physics"><code class="xref py py-obj docutils literal notranslate"><span class="pre">evaluate_physics</span></code></a>()</p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="#lips.evaluation.powergrid_evaluation.PowerGridEvaluation.evaluate_physics" title="lips.evaluation.powergrid_evaluation.PowerGridEvaluation.evaluate_physics"><code class="xref py py-obj docutils literal notranslate"><span class="pre">evaluate_physics</span></code></a>(**kwargs)</p></td>
 <td><p>function that evaluates the physics compliances on given observations It comprises various verifications which are:</p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="#lips.evaluation.powergrid_evaluation.PowerGridEvaluation.evaluate_industrial_readiness" title="lips.evaluation.powergrid_evaluation.PowerGridEvaluation.evaluate_industrial_readiness"><code class="xref py py-obj docutils literal notranslate"><span class="pre">evaluate_industrial_readiness</span></code></a>()</p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="#lips.evaluation.powergrid_evaluation.PowerGridEvaluation.evaluate_industrial_readiness" title="lips.evaluation.powergrid_evaluation.PowerGridEvaluation.evaluate_industrial_readiness"><code class="xref py py-obj docutils literal notranslate"><span class="pre">evaluate_industrial_readiness</span></code></a>(**kwargs)</p></td>
 <td><p>Evaluate the augmented simulators from Industrial Readiness point of view</p></td>
 </tr>
 </tbody>
 </table>
 <dl class="py method">
 <dt class="sig sig-object py" id="lips.evaluation.powergrid_evaluation.PowerGridEvaluation.from_benchmark">
-<em class="property"><span class="pre">classmethod</span> </em><span class="sig-name descname"><span class="pre">from_benchmark</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">benchmark</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">PowerGridBenchmark</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/lips/evaluation/powergrid_evaluation.html#PowerGridEvaluation.from_benchmark"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#lips.evaluation.powergrid_evaluation.PowerGridEvaluation.from_benchmark" title="Permalink to this definition"></a></dt>
+<em class="property"><span class="pre">classmethod</span> </em><span class="sig-name descname"><span class="pre">from_benchmark</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">benchmark</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="lips.benchmark.html#lips.benchmark.powergridBenchmark.PowerGridBenchmark" title="lips.benchmark.powergridBenchmark.PowerGridBenchmark"><span class="pre">PowerGridBenchmark</span></a></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/lips/evaluation/powergrid_evaluation.html#PowerGridEvaluation.from_benchmark"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#lips.evaluation.powergrid_evaluation.PowerGridEvaluation.from_benchmark" title="Permalink to this definition"></a></dt>
 <dd><p>Intialize the evaluation class from a benchmark object</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
@@ -805,7 +649,7 @@ This file is part of LIPS, LIPS is a python platform for power networks benchmar
 
 <dl class="py method">
 <dt class="sig sig-object py" id="lips.evaluation.powergrid_evaluation.PowerGridEvaluation.evaluate">
-<span class="sig-name descname"><span class="pre">evaluate</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">observations</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">dict</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">predictions</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">dict</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">save_path</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">dict</span></span></span><a class="reference internal" href="_modules/lips/evaluation/powergrid_evaluation.html#PowerGridEvaluation.evaluate"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#lips.evaluation.powergrid_evaluation.PowerGridEvaluation.evaluate" title="Permalink to this definition"></a></dt>
+<span class="sig-name descname"><span class="pre">evaluate</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">observations</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">dict</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">predictions</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">dict</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">save_path</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">dict</span></span></span><a class="reference internal" href="_modules/lips/evaluation/powergrid_evaluation.html#PowerGridEvaluation.evaluate"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#lips.evaluation.powergrid_evaluation.PowerGridEvaluation.evaluate" title="Permalink to this definition"></a></dt>
 <dd><p>The main function which evaluates all the required criteria noted in config file</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
@@ -821,13 +665,13 @@ This file is part of LIPS, LIPS is a python platform for power networks benchmar
 
 <dl class="py method">
 <dt class="sig sig-object py" id="lips.evaluation.powergrid_evaluation.PowerGridEvaluation.evaluate_ml">
-<span class="sig-name descname"><span class="pre">evaluate_ml</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/lips/evaluation/powergrid_evaluation.html#PowerGridEvaluation.evaluate_ml"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#lips.evaluation.powergrid_evaluation.PowerGridEvaluation.evaluate_ml" title="Permalink to this definition"></a></dt>
+<span class="sig-name descname"><span class="pre">evaluate_ml</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/lips/evaluation/powergrid_evaluation.html#PowerGridEvaluation.evaluate_ml"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#lips.evaluation.powergrid_evaluation.PowerGridEvaluation.evaluate_ml" title="Permalink to this definition"></a></dt>
 <dd><p>Verify PowerGrid Specific Machine Learning metrics such as MAPE90</p>
 </dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="lips.evaluation.powergrid_evaluation.PowerGridEvaluation.evaluate_physics">
-<span class="sig-name descname"><span class="pre">evaluate_physics</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/lips/evaluation/powergrid_evaluation.html#PowerGridEvaluation.evaluate_physics"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#lips.evaluation.powergrid_evaluation.PowerGridEvaluation.evaluate_physics" title="Permalink to this definition"></a></dt>
+<span class="sig-name descname"><span class="pre">evaluate_physics</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/lips/evaluation/powergrid_evaluation.html#PowerGridEvaluation.evaluate_physics"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#lips.evaluation.powergrid_evaluation.PowerGridEvaluation.evaluate_physics" title="Permalink to this definition"></a></dt>
 <dd><p>function that evaluates the physics compliances on given observations
 It comprises various verifications which are:</p>
 <ul class="simple">
@@ -841,7 +685,7 @@ It comprises various verifications which are:</p>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="lips.evaluation.powergrid_evaluation.PowerGridEvaluation.evaluate_industrial_readiness">
-<span class="sig-name descname"><span class="pre">evaluate_industrial_readiness</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/lips/evaluation/powergrid_evaluation.html#PowerGridEvaluation.evaluate_industrial_readiness"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#lips.evaluation.powergrid_evaluation.PowerGridEvaluation.evaluate_industrial_readiness" title="Permalink to this definition"></a></dt>
+<span class="sig-name descname"><span class="pre">evaluate_industrial_readiness</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/lips/evaluation/powergrid_evaluation.html#PowerGridEvaluation.evaluate_industrial_readiness"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#lips.evaluation.powergrid_evaluation.PowerGridEvaluation.evaluate_industrial_readiness" title="Permalink to this definition"></a></dt>
 <dd><p>Evaluate the augmented simulators from Industrial Readiness point of view</p>
 <ul class="simple">
 <li><p>Inference time</p></li>
@@ -852,24 +696,11 @@ It comprises various verifications which are:</p>
 </dd></dl>
 
 </section>
-<section id="module-lips.evaluation.transport_evaluation">
-<span id="lips-evaluation-transport-evaluation-module"></span><h2>lips.evaluation.transport_evaluation module<a class="headerlink" href="#module-lips.evaluation.transport_evaluation" title="Permalink to this headline"></a></h2>
+<section id="lips-evaluation-transport-evaluation-module">
+<h2>lips.evaluation.transport_evaluation module<a class="headerlink" href="#lips-evaluation-transport-evaluation-module" title="Permalink to this heading"></a></h2>
 </section>
 <section id="module-lips.evaluation.utils">
-<span id="lips-evaluation-utils-module"></span><h2>lips.evaluation.utils module<a class="headerlink" href="#module-lips.evaluation.utils" title="Permalink to this headline"></a></h2>
-<dl class="simple">
-<dt>Usage:</dt><dd><p>Helper classes and functions for evaluation</p>
-</dd>
-<dt>License:</dt><dd><p>Copyright (c) 2021, IRT SystemX (<a class="reference external" href="https://www.irt-systemx.fr/en/">https://www.irt-systemx.fr/en/</a>)
-See AUTHORS.txt
-This Source Code Form is subject to the terms of the Mozilla Public License, version 2.0.
-If a copy of the Mozilla Public License, version 2.0 was not distributed with this file,
-you can obtain one at <a class="reference external" href="http://mozilla.org/MPL/2.0/">http://mozilla.org/MPL/2.0/</a>.
-SPDX-License-Identifier: MPL-2.0</p>
-</dd>
-<dt>Description:</dt><dd><p>This file is part of LIPS, LIPS is a python platform for power networks benchmarking</p>
-</dd>
-</dl>
+<span id="lips-evaluation-utils-module"></span><h2>lips.evaluation.utils module<a class="headerlink" href="#module-lips.evaluation.utils" title="Permalink to this heading"></a></h2>
 <p><strong>Classes:</strong></p>
 <table class="autosummary longtable docutils align-default">
 <colgroup>
@@ -877,21 +708,16 @@ SPDX-License-Identifier: MPL-2.0</p>
 <col style="width: 90%" />
 </colgroup>
 <tbody>
-<tr class="row-odd"><td><p><a class="reference internal" href="#lips.evaluation.utils.Mapper" title="lips.evaluation.utils.Mapper"><code class="xref py py-obj docutils literal notranslate"><span class="pre">Mapper</span></code></a>()</p></td>
-<td><p>Mapper class This class create a mapping dict between evaluation criteria and their respective functions available in metrics module</p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="#lips.evaluation.utils.MetricFactory" title="lips.evaluation.utils.MetricFactory"><code class="xref py py-obj docutils literal notranslate"><span class="pre">MetricFactory</span></code></a>()</p></td>
+<td><p>Factory method to register the metrics</p></td>
 </tr>
 </tbody>
 </table>
 <dl class="py class">
-<dt class="sig sig-object py" id="lips.evaluation.utils.Mapper">
-<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">lips.evaluation.utils.</span></span><span class="sig-name descname"><span class="pre">Mapper</span></span><a class="reference internal" href="_modules/lips/evaluation/utils.html#Mapper"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#lips.evaluation.utils.Mapper" title="Permalink to this definition"></a></dt>
+<dt class="sig sig-object py" id="lips.evaluation.utils.MetricFactory">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">lips.evaluation.utils.</span></span><span class="sig-name descname"><span class="pre">MetricFactory</span></span><a class="reference internal" href="_modules/lips/evaluation/utils.html#MetricFactory"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#lips.evaluation.utils.MetricFactory" title="Permalink to this definition"></a></dt>
 <dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
-<p>Mapper class
-This class create a mapping dict between evaluation criteria and their respective functions available in metrics module</p>
-<p>TODO:
-- it should register the mapping meta data to a file
-- to be able reload it from file
-- to be able to update it (modify current and add new mappings)</p>
+<p>Factory method to register the metrics</p>
 <p><strong>Methods:</strong></p>
 <table class="autosummary longtable docutils align-default">
 <colgroup>
@@ -899,76 +725,58 @@ This class create a mapping dict between evaluation criteria and their respectiv
 <col style="width: 90%" />
 </colgroup>
 <tbody>
-<tr class="row-odd"><td><p><a class="reference internal" href="#lips.evaluation.utils.Mapper.map_generic_criteria" title="lips.evaluation.utils.Mapper.map_generic_criteria"><code class="xref py py-obj docutils literal notranslate"><span class="pre">map_generic_criteria</span></code></a>()</p></td>
-<td><p>Get a list of generic evaluation functions</p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="#lips.evaluation.utils.MetricFactory.register_metric" title="lips.evaluation.utils.MetricFactory.register_metric"><code class="xref py py-obj docutils literal notranslate"><span class="pre">register_metric</span></code></a>(metric_name, creator)</p></td>
+<td><p>Register new metrics</p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="#lips.evaluation.utils.Mapper.map_powergrid_criteria" title="lips.evaluation.utils.Mapper.map_powergrid_criteria"><code class="xref py py-obj docutils literal notranslate"><span class="pre">map_powergrid_criteria</span></code></a>()</p></td>
-<td><p>It populates the dictionary with available powergrids critiera</p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="#lips.evaluation.utils.MetricFactory.register_metric_dict" title="lips.evaluation.utils.MetricFactory.register_metric_dict"><code class="xref py py-obj docutils literal notranslate"><span class="pre">register_metric_dict</span></code></a>(metric_dict)</p></td>
+<td><p>register a dictionary including metrics</p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="#lips.evaluation.utils.Mapper.map_label_to_func" title="lips.evaluation.utils.Mapper.map_label_to_func"><code class="xref py py-obj docutils literal notranslate"><span class="pre">map_label_to_func</span></code></a>(label, func)</p></td>
-<td><p>create new mappings</p></td>
-</tr>
-<tr class="row-even"><td><p><a class="reference internal" href="#lips.evaluation.utils.Mapper.get_func" title="lips.evaluation.utils.Mapper.get_func"><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_func</span></code></a>(label)</p></td>
-<td><p>get the function for a metric</p></td>
-</tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="#lips.evaluation.utils.Mapper.rename_key" title="lips.evaluation.utils.Mapper.rename_key"><code class="xref py py-obj docutils literal notranslate"><span class="pre">rename_key</span></code></a>(k_old, k_new)</p></td>
-<td><p>rename the a dictionary key</p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="#lips.evaluation.utils.MetricFactory.get_metric" title="lips.evaluation.utils.MetricFactory.get_metric"><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_metric</span></code></a>(metric_name)</p></td>
+<td><p>Get the required metric</p></td>
 </tr>
 </tbody>
 </table>
 <dl class="py method">
-<dt class="sig sig-object py" id="lips.evaluation.utils.Mapper.map_generic_criteria">
-<span class="sig-name descname"><span class="pre">map_generic_criteria</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/lips/evaluation/utils.html#Mapper.map_generic_criteria"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#lips.evaluation.utils.Mapper.map_generic_criteria" title="Permalink to this definition"></a></dt>
-<dd><p>Get a list of generic evaluation functions</p>
-</dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="lips.evaluation.utils.Mapper.map_powergrid_criteria">
-<span class="sig-name descname"><span class="pre">map_powergrid_criteria</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/lips/evaluation/utils.html#Mapper.map_powergrid_criteria"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#lips.evaluation.utils.Mapper.map_powergrid_criteria" title="Permalink to this definition"></a></dt>
-<dd><p>It populates the dictionary with available powergrids critiera</p>
-</dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="lips.evaluation.utils.Mapper.map_label_to_func">
-<span class="sig-name descname"><span class="pre">map_label_to_func</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">label</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">func</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Callable</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/lips/evaluation/utils.html#Mapper.map_label_to_func"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#lips.evaluation.utils.Mapper.map_label_to_func" title="Permalink to this definition"></a></dt>
-<dd><p>create new mappings</p>
+<dt class="sig sig-object py" id="lips.evaluation.utils.MetricFactory.register_metric">
+<span class="sig-name descname"><span class="pre">register_metric</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">metric_name</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">creator</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Callable</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/lips/evaluation/utils.html#MetricFactory.register_metric"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#lips.evaluation.utils.MetricFactory.register_metric" title="Permalink to this definition"></a></dt>
+<dd><p>Register new metrics</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>label</strong> (<em>str</em>) – a new label</p></li>
-<li><p><strong>func</strong> (<em>Callable</em>) – a metric function</p></li>
+<li><p><strong>metric_name</strong> (<em>str</em>) – _description_</p></li>
+<li><p><strong>creator</strong> (<em>Callable</em>) – _description_</p></li>
 </ul>
 </dd>
 </dl>
 </dd></dl>
 
 <dl class="py method">
-<dt class="sig sig-object py" id="lips.evaluation.utils.Mapper.get_func">
-<span class="sig-name descname"><span class="pre">get_func</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">label</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">Callable</span></span></span><a class="reference internal" href="_modules/lips/evaluation/utils.html#Mapper.get_func"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#lips.evaluation.utils.Mapper.get_func" title="Permalink to this definition"></a></dt>
-<dd><p>get the function for a metric</p>
+<dt class="sig sig-object py" id="lips.evaluation.utils.MetricFactory.register_metric_dict">
+<span class="sig-name descname"><span class="pre">register_metric_dict</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">metric_dict</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">dict</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/lips/evaluation/utils.html#MetricFactory.register_metric_dict"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#lips.evaluation.utils.MetricFactory.register_metric_dict" title="Permalink to this definition"></a></dt>
+<dd><p>register a dictionary including metrics</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><p><strong>label</strong> (<em>str</em>) – the label of the metric</p>
+<dd class="field-odd"><p><strong>metric_dict</strong> (<em>dict</em>) – _description_</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="lips.evaluation.utils.MetricFactory.get_metric">
+<span class="sig-name descname"><span class="pre">get_metric</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">metric_name</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/lips/evaluation/utils.html#MetricFactory.get_metric"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#lips.evaluation.utils.MetricFactory.get_metric" title="Permalink to this definition"></a></dt>
+<dd><p>Get the required metric</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>metric_name</strong> (<em>str</em>) – _description_</p>
 </dd>
 <dt class="field-even">Returns</dt>
-<dd class="field-even"><p>the corresponding function</p>
+<dd class="field-even"><p>_description_</p>
 </dd>
 <dt class="field-odd">Return type</dt>
 <dd class="field-odd"><p>Callable</p>
 </dd>
-</dl>
-</dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="lips.evaluation.utils.Mapper.rename_key">
-<span class="sig-name descname"><span class="pre">rename_key</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">k_old</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">k_new</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/lips/evaluation/utils.html#Mapper.rename_key"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#lips.evaluation.utils.Mapper.rename_key" title="Permalink to this definition"></a></dt>
-<dd><p>rename the a dictionary key</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><ul class="simple">
-<li><p><strong>k_old</strong> (<em>str</em>) – old key</p></li>
-<li><p><strong>k_new</strong> (<em>str</em>) – new key</p></li>
-</ul>
+<dt class="field-even">Raises</dt>
+<dd class="field-even"><p><strong>ValueError</strong> – _description_</p>
 </dd>
 </dl>
 </dd></dl>

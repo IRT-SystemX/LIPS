@@ -4,7 +4,7 @@
   <meta charset="utf-8" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>lips.benchmark package &mdash; LIPS 0.1 documentation</title>
+  <title>lips.benchmark package &mdash; LIPS 0.1.0 documentation</title>
       <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
       <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
   <!--[if lt IE 9]>
@@ -14,7 +14,9 @@
         <script data-url_root="./" id="documentation_options" src="_static/documentation_options.js"></script>
         <script src="_static/jquery.js"></script>
         <script src="_static/underscore.js"></script>
+        <script src="_static/_sphinx_javascript_frameworks_compat.js"></script>
         <script src="_static/doctools.js"></script>
+        <script src="_static/sphinx_highlight.js"></script>
     <script src="_static/js/theme.js"></script>
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" />
@@ -29,6 +31,9 @@
         <div class="wy-side-nav-search" >
             <a href="index.html" class="icon icon-home"> LIPS
           </a>
+              <div class="version">
+                0.1
+              </div>
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
     <input type="text" name="q" placeholder="Search docs" />
@@ -45,9 +50,58 @@
 <ul class="current">
 <li class="toctree-l1"><a class="reference internal" href="lips.augmented_simulators.html">lips.augmented_simulators package</a></li>
 <li class="toctree-l1 current"><a class="current reference internal" href="#">lips.benchmark package</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#lips.benchmark.Benchmark"><code class="docutils literal notranslate"><span class="pre">Benchmark</span></code></a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#lips.benchmark.Benchmark.benchmark_name"><code class="docutils literal notranslate"><span class="pre">Benchmark.benchmark_name</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#lips.benchmark.Benchmark.benchmark_path"><code class="docutils literal notranslate"><span class="pre">Benchmark.benchmark_path</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#lips.benchmark.Benchmark.config_path"><code class="docutils literal notranslate"><span class="pre">Benchmark.config_path</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#lips.benchmark.Benchmark.dataset"><code class="docutils literal notranslate"><span class="pre">Benchmark.dataset</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#lips.benchmark.Benchmark.augmented_simulator"><code class="docutils literal notranslate"><span class="pre">Benchmark.augmented_simulator</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#lips.benchmark.Benchmark.evaluation"><code class="docutils literal notranslate"><span class="pre">Benchmark.evaluation</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#lips.benchmark.Benchmark.log_path"><code class="docutils literal notranslate"><span class="pre">Benchmark.log_path</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#lips.benchmark.Benchmark.evaluate_simulator"><code class="docutils literal notranslate"><span class="pre">Benchmark.evaluate_simulator()</span></code></a></li>
+</ul>
+</li>
 <li class="toctree-l2"><a class="reference internal" href="#submodules">Submodules</a></li>
-<li class="toctree-l2"><a class="reference internal" href="#lips-benchmark-benchmark-module">lips.benchmark.Benchmark module</a></li>
-<li class="toctree-l2"><a class="reference internal" href="#lips-benchmark-powergridbenchmark-module">lips.benchmark.powergridBenchmark module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#module-lips.benchmark.Benchmark">lips.benchmark.Benchmark module</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#id0"><code class="docutils literal notranslate"><span class="pre">benchmark_name</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#id1"><code class="docutils literal notranslate"><span class="pre">benchmark_path</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#id2"><code class="docutils literal notranslate"><span class="pre">config_path</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#id3"><code class="docutils literal notranslate"><span class="pre">dataset</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#id4"><code class="docutils literal notranslate"><span class="pre">augmented_simulator</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#id5"><code class="docutils literal notranslate"><span class="pre">evaluation</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#id6"><code class="docutils literal notranslate"><span class="pre">log_path</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#lips.benchmark.Benchmark.__delattr__"><code class="docutils literal notranslate"><span class="pre">__delattr__()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#lips.benchmark.Benchmark.__dir__"><code class="docutils literal notranslate"><span class="pre">__dir__()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#lips.benchmark.Benchmark.__eq__"><code class="docutils literal notranslate"><span class="pre">__eq__()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#lips.benchmark.Benchmark.__format__"><code class="docutils literal notranslate"><span class="pre">__format__()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#lips.benchmark.Benchmark.__ge__"><code class="docutils literal notranslate"><span class="pre">__ge__()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#lips.benchmark.Benchmark.__getattribute__"><code class="docutils literal notranslate"><span class="pre">__getattribute__()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#lips.benchmark.Benchmark.__gt__"><code class="docutils literal notranslate"><span class="pre">__gt__()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#lips.benchmark.Benchmark.__hash__"><code class="docutils literal notranslate"><span class="pre">__hash__()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#lips.benchmark.Benchmark.__init_subclass__"><code class="docutils literal notranslate"><span class="pre">__init_subclass__()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#lips.benchmark.Benchmark.__le__"><code class="docutils literal notranslate"><span class="pre">__le__()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#lips.benchmark.Benchmark.__lt__"><code class="docutils literal notranslate"><span class="pre">__lt__()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#lips.benchmark.Benchmark.__ne__"><code class="docutils literal notranslate"><span class="pre">__ne__()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#lips.benchmark.Benchmark.__new__"><code class="docutils literal notranslate"><span class="pre">__new__()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#lips.benchmark.Benchmark.__reduce__"><code class="docutils literal notranslate"><span class="pre">__reduce__()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#lips.benchmark.Benchmark.__reduce_ex__"><code class="docutils literal notranslate"><span class="pre">__reduce_ex__()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#lips.benchmark.Benchmark.__repr__"><code class="docutils literal notranslate"><span class="pre">__repr__()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#lips.benchmark.Benchmark.__setattr__"><code class="docutils literal notranslate"><span class="pre">__setattr__()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#lips.benchmark.Benchmark.__sizeof__"><code class="docutils literal notranslate"><span class="pre">__sizeof__()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#lips.benchmark.Benchmark.__str__"><code class="docutils literal notranslate"><span class="pre">__str__()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#lips.benchmark.Benchmark.__subclasshook__"><code class="docutils literal notranslate"><span class="pre">__subclasshook__()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#module-lips.benchmark.powergridBenchmark">lips.benchmark.powergridBenchmark module</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#lips.benchmark.powergridBenchmark.PowerGridBenchmark"><code class="docutils literal notranslate"><span class="pre">PowerGridBenchmark</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#lips.benchmark.powergridBenchmark.PowerGridBenchmark.load"><code class="docutils literal notranslate"><span class="pre">PowerGridBenchmark.load()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#lips.benchmark.powergridBenchmark.PowerGridBenchmark.generate"><code class="docutils literal notranslate"><span class="pre">PowerGridBenchmark.generate()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#lips.benchmark.powergridBenchmark.PowerGridBenchmark.evaluate_simulator"><code class="docutils literal notranslate"><span class="pre">PowerGridBenchmark.evaluate_simulator()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="#lips.benchmark.powergridBenchmark.get_env"><code class="docutils literal notranslate"><span class="pre">get_env()</span></code></a></li>
+</ul>
+</li>
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="lips.config.html">lips.config package</a></li>
@@ -88,16 +142,574 @@
           <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
            <div itemprop="articleBody">
              
-  <section id="lips-benchmark-package">
-<h1>lips.benchmark package<a class="headerlink" href="#lips-benchmark-package" title="Permalink to this headline"></a></h1>
+  <section id="module-lips.benchmark">
+<span id="lips-benchmark-package"></span><h1>lips.benchmark package<a class="headerlink" href="#module-lips.benchmark" title="Permalink to this heading"></a></h1>
+<p><strong>Classes:</strong></p>
+<table class="autosummary longtable docutils align-default">
+<colgroup>
+<col style="width: 10%" />
+<col style="width: 90%" />
+</colgroup>
+<tbody>
+<tr class="row-odd"><td><p><a class="reference internal" href="#module-lips.benchmark.Benchmark" title="lips.benchmark.Benchmark"><code class="xref py py-obj docutils literal notranslate"><span class="pre">Benchmark</span></code></a>(benchmark_name, benchmark_path, ...)</p></td>
+<td><p>Benchmark Base Class</p></td>
+</tr>
+</tbody>
+</table>
+<dl class="py class">
+<dt class="sig sig-object py" id="lips.benchmark.Benchmark">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">lips.benchmark.</span></span><span class="sig-name descname"><span class="pre">Benchmark</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">benchmark_name</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">benchmark_path</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><span class="pre">Union</span><span class="p"><span class="pre">[</span></span><span class="pre">Path</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">str</span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">config_path</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Union</span><span class="p"><span class="pre">[</span></span><span class="pre">Path</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">str</span><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dataset</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Union</span><span class="p"><span class="pre">[</span></span><span class="pre">None</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference internal" href="lips.dataset.html#lips.dataset.dataSet.DataSet" title="lips.dataset.dataSet.DataSet"><span class="pre">DataSet</span></a><span class="p"><span class="pre">]</span></span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">augmented_simulator</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><span class="pre">Union</span><span class="p"><span class="pre">[</span></span><a class="reference internal" href="lips.augmented_simulators.html#lips.augmented_simulators.AugmentedSimulator" title="lips.augmented_simulators.augmented_simulator.AugmentedSimulator"><span class="pre">AugmentedSimulator</span></a><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference internal" href="lips.physical_simulator.html#lips.physical_simulator.physicsSolver.PhysicsSolver" title="lips.physical_simulator.physicsSolver.PhysicsSolver"><span class="pre">PhysicsSolver</span></a><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">evaluation</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><a class="reference internal" href="lips.evaluation.html#lips.evaluation.evaluation.Evaluation" title="lips.evaluation.evaluation.Evaluation"><span class="pre">Evaluation</span></a><span class="p"><span class="pre">]</span></span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">log_path</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><span class="pre">Union</span><span class="p"><span class="pre">[</span></span><span class="pre">Path</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">str</span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/lips/benchmark/benchmark.html#Benchmark"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#lips.benchmark.Benchmark" title="Permalink to this definition"></a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">ABC</span></code></p>
+<p>Benchmark Base Class</p>
+<p>Benchmark class that takes a test dataset, a simulator (physical or augmented) and an
+evaluator object and evaluates the simulator on test dataset with respect to required
+metrics requested by evaluator</p>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="lips.benchmark.Benchmark.benchmark_name">
+<span class="sig-name descname"><span class="pre">benchmark_name</span></span><a class="headerlink" href="#lips.benchmark.Benchmark.benchmark_name" title="Permalink to this definition"></a></dt>
+<dd><p>a name attributed to the corresponding experiment</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type</dt>
+<dd class="field-odd"><p><code class="docutils literal notranslate"><span class="pre">str</span></code></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="lips.benchmark.Benchmark.benchmark_path">
+<span class="sig-name descname"><span class="pre">benchmark_path</span></span><a class="headerlink" href="#lips.benchmark.Benchmark.benchmark_path" title="Permalink to this definition"></a></dt>
+<dd><p>the path to benchmark scenarios and related datasets</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type</dt>
+<dd class="field-odd"><p>Union[<code class="docutils literal notranslate"><span class="pre">pathlib.Path</span></code>, <code class="docutils literal notranslate"><span class="pre">str</span></code>, <code class="docutils literal notranslate"><span class="pre">None</span></code>], optional</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="lips.benchmark.Benchmark.config_path">
+<span class="sig-name descname"><span class="pre">config_path</span></span><a class="headerlink" href="#lips.benchmark.Benchmark.config_path" title="Permalink to this definition"></a></dt>
+<dd><p>the path of config file</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type</dt>
+<dd class="field-odd"><p>Union[<code class="docutils literal notranslate"><span class="pre">pathlib.Path</span></code>, <code class="docutils literal notranslate"><span class="pre">str</span></code>]</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="lips.benchmark.Benchmark.dataset">
+<span class="sig-name descname"><span class="pre">dataset</span></span><a class="headerlink" href="#lips.benchmark.Benchmark.dataset" title="Permalink to this definition"></a></dt>
+<dd><p>an object of <code class="docutils literal notranslate"><span class="pre">DataSet</span></code> class which containing the data for training, validation and testing, by default None</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type</dt>
+<dd class="field-odd"><p>Union[<code class="docutils literal notranslate"><span class="pre">DataSet</span></code>, <code class="docutils literal notranslate"><span class="pre">None</span></code>], optional</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="lips.benchmark.Benchmark.augmented_simulator">
+<span class="sig-name descname"><span class="pre">augmented_simulator</span></span><a class="headerlink" href="#lips.benchmark.Benchmark.augmented_simulator" title="Permalink to this definition"></a></dt>
+<dd><p>This is an object of Physical or Augmneted simulator including the prediction results, by default None</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type</dt>
+<dd class="field-odd"><p>Union[<code class="docutils literal notranslate"><span class="pre">AugmentedSimulator</span></code>, <code class="docutils literal notranslate"><span class="pre">PhysicsSolver</span></code>, <code class="docutils literal notranslate"><span class="pre">None</span></code>], optional</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="lips.benchmark.Benchmark.evaluation">
+<span class="sig-name descname"><span class="pre">evaluation</span></span><a class="headerlink" href="#lips.benchmark.Benchmark.evaluation" title="Permalink to this definition"></a></dt>
+<dd><p>It allows to evaluate the performance of the simulator with respect to various point of views
+It should be parameterized before passing to benchmark class to include appropriate metrics
+otherwise, it is initialized using an empty dictionary, by default None</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type</dt>
+<dd class="field-odd"><p><a class="reference internal" href="lips.evaluation.html#lips.evaluation.Evaluation" title="lips.evaluation.Evaluation">Evaluation</a>, optional</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="lips.benchmark.Benchmark.log_path">
+<span class="sig-name descname"><span class="pre">log_path</span></span><a class="headerlink" href="#lips.benchmark.Benchmark.log_path" title="Permalink to this definition"></a></dt>
+<dd><p>the path of logger, by default None</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type</dt>
+<dd class="field-odd"><p>Union[<code class="docutils literal notranslate"><span class="pre">pathlib.Path</span></code>, <code class="docutils literal notranslate"><span class="pre">str</span></code>, <code class="docutils literal notranslate"><span class="pre">None</span></code>], optional</p>
+</dd>
+</dl>
+</dd></dl>
+
+<p><strong>Methods:</strong></p>
+<table class="autosummary longtable docutils align-default">
+<colgroup>
+<col style="width: 10%" />
+<col style="width: 90%" />
+</colgroup>
+<tbody>
+<tr class="row-odd"><td><p><a class="reference internal" href="#lips.benchmark.Benchmark.evaluate_simulator" title="lips.benchmark.Benchmark.evaluate_simulator"><code class="xref py py-obj docutils literal notranslate"><span class="pre">evaluate_simulator</span></code></a>(dataset[, ...])</p></td>
+<td><p>This function will evalute a simulator (physical or augmented) using various criteria predefined in evaluator object on a <code class="docutils literal notranslate"><span class="pre">single</span> <span class="pre">test</span> <span class="pre">dataset</span></code>.</p></td>
+</tr>
+</tbody>
+</table>
+<dl class="py method">
+<dt class="sig sig-object py" id="lips.benchmark.Benchmark.evaluate_simulator">
+<em class="property"><span class="pre">abstractmethod</span> </em><span class="sig-name descname"><span class="pre">evaluate_simulator</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">dataset</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="lips.dataset.html#lips.dataset.dataSet.DataSet" title="lips.dataset.dataSet.DataSet"><span class="pre">DataSet</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">augmented_simulator</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><span class="pre">Union</span><span class="p"><span class="pre">[</span></span><a class="reference internal" href="lips.physical_simulator.html#lips.physical_simulator.physicalSimulator.PhysicalSimulator" title="lips.physical_simulator.physicalSimulator.PhysicalSimulator"><span class="pre">PhysicalSimulator</span></a><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference internal" href="lips.augmented_simulators.html#lips.augmented_simulators.AugmentedSimulator" title="lips.augmented_simulators.augmented_simulator.AugmentedSimulator"><span class="pre">AugmentedSimulator</span></a><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">save_path</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">dict</span></span></span><a class="reference internal" href="_modules/lips/benchmark/benchmark.html#Benchmark.evaluate_simulator"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#lips.benchmark.Benchmark.evaluate_simulator" title="Permalink to this definition"></a></dt>
+<dd><p>This function will evalute a simulator (physical or augmented) using various criteria predefined in evaluator object
+on a <code class="docutils literal notranslate"><span class="pre">single</span> <span class="pre">test</span> <span class="pre">dataset</span></code>. It can be overloaded or called to evaluate the performance on multiple datasets</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>dataset</strong> (<a class="reference internal" href="lips.dataset.html#lips.dataset.DataSet" title="lips.dataset.DataSet"><em>DataSet</em></a>) – a test dataset on which the augmented simulator should be performed and evaluated by</p></li>
+<li><p><strong>augmented_simulator</strong> (<a class="reference internal" href="lips.augmented_simulators.html#lips.augmented_simulators.AugmentedSimulator" title="lips.augmented_simulators.AugmentedSimulator"><em>AugmentedSimulator</em></a>) – a trained augmented simulator which should be evaluated</p></li>
+<li><p><strong>save_path</strong> (Union[<code class="docutils literal notranslate"><span class="pre">str</span></code>, <code class="docutils literal notranslate"><span class="pre">None</span></code>]) – if indicated the evaluation results will be saved to indicated path</p></li>
+<li><p><strong>**kwargs</strong> (<code class="docutils literal notranslate"><span class="pre">dict</span></code>) – additional parameters to be passed to the evaluator for augmented simulator</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>a dictionary containing the evaluation results</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p><code class="docutils literal notranslate"><span class="pre">dict</span></code></p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
 <section id="submodules">
-<h2>Submodules<a class="headerlink" href="#submodules" title="Permalink to this headline"></a></h2>
+<h2>Submodules<a class="headerlink" href="#submodules" title="Permalink to this heading"></a></h2>
 </section>
-<section id="lips-benchmark-benchmark-module">
-<h2>lips.benchmark.Benchmark module<a class="headerlink" href="#lips-benchmark-benchmark-module" title="Permalink to this headline"></a></h2>
+<section id="module-lips.benchmark.Benchmark">
+<span id="lips-benchmark-benchmark-module"></span><h2>lips.benchmark.Benchmark module<a class="headerlink" href="#module-lips.benchmark.Benchmark" title="Permalink to this heading"></a></h2>
+<p>Benchmark Base Class</p>
+<p>Benchmark class that takes a test dataset, a simulator (physical or augmented) and an
+evaluator object and evaluates the simulator on test dataset with respect to required
+metrics requested by evaluator</p>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="id0">
+<span class="sig-prename descclassname"><span class="pre">lips.benchmark.Benchmark.</span></span><span class="sig-name descname"><span class="pre">benchmark_name</span></span><a class="headerlink" href="#id0" title="Permalink to this definition"></a></dt>
+<dd><p>a name attributed to the corresponding experiment</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type</dt>
+<dd class="field-odd"><p><code class="docutils literal notranslate"><span class="pre">str</span></code></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="id1">
+<span class="sig-prename descclassname"><span class="pre">lips.benchmark.Benchmark.</span></span><span class="sig-name descname"><span class="pre">benchmark_path</span></span><a class="headerlink" href="#id1" title="Permalink to this definition"></a></dt>
+<dd><p>the path to benchmark scenarios and related datasets</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type</dt>
+<dd class="field-odd"><p>Union[<code class="docutils literal notranslate"><span class="pre">pathlib.Path</span></code>, <code class="docutils literal notranslate"><span class="pre">str</span></code>, <code class="docutils literal notranslate"><span class="pre">None</span></code>], optional</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="id2">
+<span class="sig-prename descclassname"><span class="pre">lips.benchmark.Benchmark.</span></span><span class="sig-name descname"><span class="pre">config_path</span></span><a class="headerlink" href="#id2" title="Permalink to this definition"></a></dt>
+<dd><p>the path of config file</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type</dt>
+<dd class="field-odd"><p>Union[<code class="docutils literal notranslate"><span class="pre">pathlib.Path</span></code>, <code class="docutils literal notranslate"><span class="pre">str</span></code>]</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="id3">
+<span class="sig-prename descclassname"><span class="pre">lips.benchmark.Benchmark.</span></span><span class="sig-name descname"><span class="pre">dataset</span></span><a class="headerlink" href="#id3" title="Permalink to this definition"></a></dt>
+<dd><p>an object of <code class="docutils literal notranslate"><span class="pre">DataSet</span></code> class which containing the data for training, validation and testing, by default None</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type</dt>
+<dd class="field-odd"><p>Union[<code class="docutils literal notranslate"><span class="pre">DataSet</span></code>, <code class="docutils literal notranslate"><span class="pre">None</span></code>], optional</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="id4">
+<span class="sig-prename descclassname"><span class="pre">lips.benchmark.Benchmark.</span></span><span class="sig-name descname"><span class="pre">augmented_simulator</span></span><a class="headerlink" href="#id4" title="Permalink to this definition"></a></dt>
+<dd><p>This is an object of Physical or Augmneted simulator including the prediction results, by default None</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type</dt>
+<dd class="field-odd"><p>Union[<code class="docutils literal notranslate"><span class="pre">AugmentedSimulator</span></code>, <code class="docutils literal notranslate"><span class="pre">PhysicsSolver</span></code>, <code class="docutils literal notranslate"><span class="pre">None</span></code>], optional</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="id5">
+<span class="sig-prename descclassname"><span class="pre">lips.benchmark.Benchmark.</span></span><span class="sig-name descname"><span class="pre">evaluation</span></span><a class="headerlink" href="#id5" title="Permalink to this definition"></a></dt>
+<dd><p>It allows to evaluate the performance of the simulator with respect to various point of views
+It should be parameterized before passing to benchmark class to include appropriate metrics
+otherwise, it is initialized using an empty dictionary, by default None</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type</dt>
+<dd class="field-odd"><p><a class="reference internal" href="lips.evaluation.html#lips.evaluation.Evaluation" title="lips.evaluation.Evaluation">Evaluation</a>, optional</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="id6">
+<span class="sig-prename descclassname"><span class="pre">lips.benchmark.Benchmark.</span></span><span class="sig-name descname"><span class="pre">log_path</span></span><a class="headerlink" href="#id6" title="Permalink to this definition"></a></dt>
+<dd><p>the path of logger, by default None</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type</dt>
+<dd class="field-odd"><p>Union[<code class="docutils literal notranslate"><span class="pre">pathlib.Path</span></code>, <code class="docutils literal notranslate"><span class="pre">str</span></code>, <code class="docutils literal notranslate"><span class="pre">None</span></code>], optional</p>
+</dd>
+</dl>
+</dd></dl>
+
+<p><strong>Functions:</strong></p>
+<table class="autosummary longtable docutils align-default">
+<colgroup>
+<col style="width: 10%" />
+<col style="width: 90%" />
+</colgroup>
+<tbody>
+<tr class="row-odd"><td><p><a class="reference internal" href="#lips.benchmark.Benchmark.__delattr__" title="lips.benchmark.Benchmark.__delattr__"><code class="xref py py-obj docutils literal notranslate"><span class="pre">__delattr__</span></code></a>(name, /)</p></td>
+<td><p>Implement delattr(self, name).</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#lips.benchmark.Benchmark.__dir__" title="lips.benchmark.Benchmark.__dir__"><code class="xref py py-obj docutils literal notranslate"><span class="pre">__dir__</span></code></a>()</p></td>
+<td><p>Default dir() implementation.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#lips.benchmark.Benchmark.__eq__" title="lips.benchmark.Benchmark.__eq__"><code class="xref py py-obj docutils literal notranslate"><span class="pre">__eq__</span></code></a>(value, /)</p></td>
+<td><p>Return self==value.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#lips.benchmark.Benchmark.__format__" title="lips.benchmark.Benchmark.__format__"><code class="xref py py-obj docutils literal notranslate"><span class="pre">__format__</span></code></a>(format_spec, /)</p></td>
+<td><p>Default object formatter.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#lips.benchmark.Benchmark.__ge__" title="lips.benchmark.Benchmark.__ge__"><code class="xref py py-obj docutils literal notranslate"><span class="pre">__ge__</span></code></a>(value, /)</p></td>
+<td><p>Return self&gt;=value.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#lips.benchmark.Benchmark.__getattribute__" title="lips.benchmark.Benchmark.__getattribute__"><code class="xref py py-obj docutils literal notranslate"><span class="pre">__getattribute__</span></code></a>(name, /)</p></td>
+<td><p>Return getattr(self, name).</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#lips.benchmark.Benchmark.__gt__" title="lips.benchmark.Benchmark.__gt__"><code class="xref py py-obj docutils literal notranslate"><span class="pre">__gt__</span></code></a>(value, /)</p></td>
+<td><p>Return self&gt;value.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#lips.benchmark.Benchmark.__hash__" title="lips.benchmark.Benchmark.__hash__"><code class="xref py py-obj docutils literal notranslate"><span class="pre">__hash__</span></code></a>()</p></td>
+<td><p>Return hash(self).</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#lips.benchmark.Benchmark.__init_subclass__" title="lips.benchmark.Benchmark.__init_subclass__"><code class="xref py py-obj docutils literal notranslate"><span class="pre">__init_subclass__</span></code></a></p></td>
+<td><p>This method is called when a class is subclassed.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#lips.benchmark.Benchmark.__le__" title="lips.benchmark.Benchmark.__le__"><code class="xref py py-obj docutils literal notranslate"><span class="pre">__le__</span></code></a>(value, /)</p></td>
+<td><p>Return self&lt;=value.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#lips.benchmark.Benchmark.__lt__" title="lips.benchmark.Benchmark.__lt__"><code class="xref py py-obj docutils literal notranslate"><span class="pre">__lt__</span></code></a>(value, /)</p></td>
+<td><p>Return self&lt;value.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#lips.benchmark.Benchmark.__ne__" title="lips.benchmark.Benchmark.__ne__"><code class="xref py py-obj docutils literal notranslate"><span class="pre">__ne__</span></code></a>(value, /)</p></td>
+<td><p>Return self!=value.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#lips.benchmark.Benchmark.__new__" title="lips.benchmark.Benchmark.__new__"><code class="xref py py-obj docutils literal notranslate"><span class="pre">__new__</span></code></a>(**kwargs)</p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#lips.benchmark.Benchmark.__reduce__" title="lips.benchmark.Benchmark.__reduce__"><code class="xref py py-obj docutils literal notranslate"><span class="pre">__reduce__</span></code></a>()</p></td>
+<td><p>Helper for pickle.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#lips.benchmark.Benchmark.__reduce_ex__" title="lips.benchmark.Benchmark.__reduce_ex__"><code class="xref py py-obj docutils literal notranslate"><span class="pre">__reduce_ex__</span></code></a>(protocol, /)</p></td>
+<td><p>Helper for pickle.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#lips.benchmark.Benchmark.__repr__" title="lips.benchmark.Benchmark.__repr__"><code class="xref py py-obj docutils literal notranslate"><span class="pre">__repr__</span></code></a>()</p></td>
+<td><p>Return repr(self).</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#lips.benchmark.Benchmark.__setattr__" title="lips.benchmark.Benchmark.__setattr__"><code class="xref py py-obj docutils literal notranslate"><span class="pre">__setattr__</span></code></a>(name, value, /)</p></td>
+<td><p>Implement setattr(self, name, value).</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#lips.benchmark.Benchmark.__sizeof__" title="lips.benchmark.Benchmark.__sizeof__"><code class="xref py py-obj docutils literal notranslate"><span class="pre">__sizeof__</span></code></a>()</p></td>
+<td><p>Size of object in memory, in bytes.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#lips.benchmark.Benchmark.__str__" title="lips.benchmark.Benchmark.__str__"><code class="xref py py-obj docutils literal notranslate"><span class="pre">__str__</span></code></a>()</p></td>
+<td><p>Return str(self).</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#lips.benchmark.Benchmark.__subclasshook__" title="lips.benchmark.Benchmark.__subclasshook__"><code class="xref py py-obj docutils literal notranslate"><span class="pre">__subclasshook__</span></code></a></p></td>
+<td><p>Abstract classes can override this to customize issubclass().</p></td>
+</tr>
+</tbody>
+</table>
+<dl class="py function">
+<dt class="sig sig-object py" id="lips.benchmark.Benchmark.__delattr__">
+<span class="sig-prename descclassname"><span class="pre">lips.benchmark.Benchmark.</span></span><span class="sig-name descname"><span class="pre">__delattr__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">name</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">/</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#lips.benchmark.Benchmark.__delattr__" title="Permalink to this definition"></a></dt>
+<dd><p>Implement delattr(self, name).</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="lips.benchmark.Benchmark.__dir__">
+<span class="sig-prename descclassname"><span class="pre">lips.benchmark.Benchmark.</span></span><span class="sig-name descname"><span class="pre">__dir__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">/</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#lips.benchmark.Benchmark.__dir__" title="Permalink to this definition"></a></dt>
+<dd><p>Default dir() implementation.</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="lips.benchmark.Benchmark.__eq__">
+<span class="sig-prename descclassname"><span class="pre">lips.benchmark.Benchmark.</span></span><span class="sig-name descname"><span class="pre">__eq__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">value</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">/</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#lips.benchmark.Benchmark.__eq__" title="Permalink to this definition"></a></dt>
+<dd><p>Return self==value.</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="lips.benchmark.Benchmark.__format__">
+<span class="sig-prename descclassname"><span class="pre">lips.benchmark.Benchmark.</span></span><span class="sig-name descname"><span class="pre">__format__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">format_spec</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">/</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#lips.benchmark.Benchmark.__format__" title="Permalink to this definition"></a></dt>
+<dd><p>Default object formatter.</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="lips.benchmark.Benchmark.__ge__">
+<span class="sig-prename descclassname"><span class="pre">lips.benchmark.Benchmark.</span></span><span class="sig-name descname"><span class="pre">__ge__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">value</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">/</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#lips.benchmark.Benchmark.__ge__" title="Permalink to this definition"></a></dt>
+<dd><p>Return self&gt;=value.</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="lips.benchmark.Benchmark.__getattribute__">
+<span class="sig-prename descclassname"><span class="pre">lips.benchmark.Benchmark.</span></span><span class="sig-name descname"><span class="pre">__getattribute__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">name</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">/</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#lips.benchmark.Benchmark.__getattribute__" title="Permalink to this definition"></a></dt>
+<dd><p>Return getattr(self, name).</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="lips.benchmark.Benchmark.__gt__">
+<span class="sig-prename descclassname"><span class="pre">lips.benchmark.Benchmark.</span></span><span class="sig-name descname"><span class="pre">__gt__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">value</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">/</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#lips.benchmark.Benchmark.__gt__" title="Permalink to this definition"></a></dt>
+<dd><p>Return self&gt;value.</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="lips.benchmark.Benchmark.__hash__">
+<span class="sig-prename descclassname"><span class="pre">lips.benchmark.Benchmark.</span></span><span class="sig-name descname"><span class="pre">__hash__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">/</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#lips.benchmark.Benchmark.__hash__" title="Permalink to this definition"></a></dt>
+<dd><p>Return hash(self).</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="lips.benchmark.Benchmark.__init_subclass__">
+<span class="sig-prename descclassname"><span class="pre">lips.benchmark.Benchmark.</span></span><span class="sig-name descname"><span class="pre">__init_subclass__</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#lips.benchmark.Benchmark.__init_subclass__" title="Permalink to this definition"></a></dt>
+<dd><p>This method is called when a class is subclassed.</p>
+<p>The default implementation does nothing. It may be
+overridden to extend subclasses.</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="lips.benchmark.Benchmark.__le__">
+<span class="sig-prename descclassname"><span class="pre">lips.benchmark.Benchmark.</span></span><span class="sig-name descname"><span class="pre">__le__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">value</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">/</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#lips.benchmark.Benchmark.__le__" title="Permalink to this definition"></a></dt>
+<dd><p>Return self&lt;=value.</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="lips.benchmark.Benchmark.__lt__">
+<span class="sig-prename descclassname"><span class="pre">lips.benchmark.Benchmark.</span></span><span class="sig-name descname"><span class="pre">__lt__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">value</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">/</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#lips.benchmark.Benchmark.__lt__" title="Permalink to this definition"></a></dt>
+<dd><p>Return self&lt;value.</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="lips.benchmark.Benchmark.__ne__">
+<span class="sig-prename descclassname"><span class="pre">lips.benchmark.Benchmark.</span></span><span class="sig-name descname"><span class="pre">__ne__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">value</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">/</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#lips.benchmark.Benchmark.__ne__" title="Permalink to this definition"></a></dt>
+<dd><p>Return self!=value.</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="lips.benchmark.Benchmark.__new__">
+<span class="sig-prename descclassname"><span class="pre">lips.benchmark.Benchmark.</span></span><span class="sig-name descname"><span class="pre">__new__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#lips.benchmark.Benchmark.__new__" title="Permalink to this definition"></a></dt>
+<dd><p>Create and return a new object.  See help(type) for accurate signature.</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="lips.benchmark.Benchmark.__reduce__">
+<span class="sig-prename descclassname"><span class="pre">lips.benchmark.Benchmark.</span></span><span class="sig-name descname"><span class="pre">__reduce__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">/</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#lips.benchmark.Benchmark.__reduce__" title="Permalink to this definition"></a></dt>
+<dd><p>Helper for pickle.</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="lips.benchmark.Benchmark.__reduce_ex__">
+<span class="sig-prename descclassname"><span class="pre">lips.benchmark.Benchmark.</span></span><span class="sig-name descname"><span class="pre">__reduce_ex__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">protocol</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">/</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#lips.benchmark.Benchmark.__reduce_ex__" title="Permalink to this definition"></a></dt>
+<dd><p>Helper for pickle.</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="lips.benchmark.Benchmark.__repr__">
+<span class="sig-prename descclassname"><span class="pre">lips.benchmark.Benchmark.</span></span><span class="sig-name descname"><span class="pre">__repr__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">/</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#lips.benchmark.Benchmark.__repr__" title="Permalink to this definition"></a></dt>
+<dd><p>Return repr(self).</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="lips.benchmark.Benchmark.__setattr__">
+<span class="sig-prename descclassname"><span class="pre">lips.benchmark.Benchmark.</span></span><span class="sig-name descname"><span class="pre">__setattr__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">name</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">value</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">/</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#lips.benchmark.Benchmark.__setattr__" title="Permalink to this definition"></a></dt>
+<dd><p>Implement setattr(self, name, value).</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="lips.benchmark.Benchmark.__sizeof__">
+<span class="sig-prename descclassname"><span class="pre">lips.benchmark.Benchmark.</span></span><span class="sig-name descname"><span class="pre">__sizeof__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">/</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#lips.benchmark.Benchmark.__sizeof__" title="Permalink to this definition"></a></dt>
+<dd><p>Size of object in memory, in bytes.</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="lips.benchmark.Benchmark.__str__">
+<span class="sig-prename descclassname"><span class="pre">lips.benchmark.Benchmark.</span></span><span class="sig-name descname"><span class="pre">__str__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">/</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#lips.benchmark.Benchmark.__str__" title="Permalink to this definition"></a></dt>
+<dd><p>Return str(self).</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="lips.benchmark.Benchmark.__subclasshook__">
+<span class="sig-prename descclassname"><span class="pre">lips.benchmark.Benchmark.</span></span><span class="sig-name descname"><span class="pre">__subclasshook__</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#lips.benchmark.Benchmark.__subclasshook__" title="Permalink to this definition"></a></dt>
+<dd><p>Abstract classes can override this to customize issubclass().</p>
+<p>This is invoked early on by abc.ABCMeta.__subclasscheck__().
+It should return True, False or NotImplemented.  If it returns
+NotImplemented, the normal algorithm is used.  Otherwise, it
+overrides the normal algorithm (and the outcome is cached).</p>
+</dd></dl>
+
 </section>
-<section id="lips-benchmark-powergridbenchmark-module">
-<h2>lips.benchmark.powergridBenchmark module<a class="headerlink" href="#lips-benchmark-powergridbenchmark-module" title="Permalink to this headline"></a></h2>
+<section id="module-lips.benchmark.powergridBenchmark">
+<span id="lips-benchmark-powergridbenchmark-module"></span><h2>lips.benchmark.powergridBenchmark module<a class="headerlink" href="#module-lips.benchmark.powergridBenchmark" title="Permalink to this heading"></a></h2>
+<dl class="simple">
+<dt>Licence:</dt><dd><p>Copyright (c) 2021, IRT SystemX (<a class="reference external" href="https://www.irt-systemx.fr/en/">https://www.irt-systemx.fr/en/</a>)
+See AUTHORS.txt
+This Source Code Form is subject to the terms of the Mozilla Public License, version 2.0.
+If a copy of the Mozilla Public License, version 2.0 was not distributed with this file,
+you can obtain one at <a class="reference external" href="http://mozilla.org/MPL/2.0/">http://mozilla.org/MPL/2.0/</a>.
+SPDX-License-Identifier: MPL-2.0
+This file is part of LIPS, LIPS is a python platform for power networks benchmarking</p>
+</dd>
+</dl>
+<p><strong>Classes:</strong></p>
+<table class="autosummary longtable docutils align-default">
+<colgroup>
+<col style="width: 10%" />
+<col style="width: 90%" />
+</colgroup>
+<tbody>
+<tr class="row-odd"><td><p><a class="reference internal" href="#lips.benchmark.powergridBenchmark.PowerGridBenchmark" title="lips.benchmark.powergridBenchmark.PowerGridBenchmark"><code class="xref py py-obj docutils literal notranslate"><span class="pre">PowerGridBenchmark</span></code></a>(benchmark_path, config_path)</p></td>
+<td><p>PowerGrid Benchmark class</p></td>
+</tr>
+</tbody>
+</table>
+<p><strong>Functions:</strong></p>
+<table class="autosummary longtable docutils align-default">
+<colgroup>
+<col style="width: 10%" />
+<col style="width: 90%" />
+</colgroup>
+<tbody>
+<tr class="row-odd"><td><p><a class="reference internal" href="#lips.benchmark.powergridBenchmark.get_env" title="lips.benchmark.powergridBenchmark.get_env"><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_env</span></code></a>(env_kwargs)</p></td>
+<td><p>Getter for the environment</p></td>
+</tr>
+</tbody>
+</table>
+<dl class="py class">
+<dt class="sig sig-object py" id="lips.benchmark.powergridBenchmark.PowerGridBenchmark">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">lips.benchmark.powergridBenchmark.</span></span><span class="sig-name descname"><span class="pre">PowerGridBenchmark</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">benchmark_path</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><span class="pre">Union</span><span class="p"><span class="pre">[</span></span><span class="pre">Path</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">str</span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">config_path</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Union</span><span class="p"><span class="pre">[</span></span><span class="pre">Path</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">str</span><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">benchmark_name</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'Benchmark1'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">load_data_set</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">evaluation</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><a class="reference internal" href="lips.evaluation.html#lips.evaluation.powergrid_evaluation.PowerGridEvaluation" title="lips.evaluation.powergrid_evaluation.PowerGridEvaluation"><span class="pre">PowerGridEvaluation</span></a><span class="p"><span class="pre">]</span></span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">log_path</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><span class="pre">Union</span><span class="p"><span class="pre">[</span></span><span class="pre">Path</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">str</span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/lips/benchmark/powergridBenchmark.html#PowerGridBenchmark"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#lips.benchmark.powergridBenchmark.PowerGridBenchmark" title="Permalink to this definition"></a></dt>
+<dd><p>Bases: <a class="reference internal" href="#lips.benchmark.Benchmark" title="lips.benchmark.benchmark.Benchmark"><code class="xref py py-class docutils literal notranslate"><span class="pre">Benchmark</span></code></a></p>
+<p>PowerGrid Benchmark class</p>
+<p>This class allows to benchmark a power grid scenario which are defined in a config file.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>benchmark_path</strong> (Union[<code class="docutils literal notranslate"><span class="pre">str</span></code>, <code class="docutils literal notranslate"><span class="pre">None</span></code>], optional) – path to the benchmark, it should be indicated
+if not indicated, the data remains only in the memory</p></li>
+<li><p><strong>config_path</strong> (Union[<code class="docutils literal notranslate"><span class="pre">pathlib.Path</span></code>, <code class="docutils literal notranslate"><span class="pre">str</span></code>, <code class="docutils literal notranslate"><span class="pre">None</span></code>], optional) – path to the configuration file. If config_path is <code class="docutils literal notranslate"><span class="pre">None</span></code>, the default config file
+present in config module will be used by using the benchmark_name as the section, by default None</p></li>
+<li><p><strong>benchmark_name</strong> (<code class="docutils literal notranslate"><span class="pre">str</span></code>, optional) – the benchmark name which is used in turn as the config section, by default “Benchmark1”</p></li>
+<li><p><strong>load_data_set</strong> (<code class="docutils literal notranslate"><span class="pre">bool</span></code>, optional) – whether to load the already generated datasets, by default False</p></li>
+<li><p><strong>evaluation</strong> (Union[<code class="docutils literal notranslate"><span class="pre">PowerGridEvaluation</span></code>, <code class="docutils literal notranslate"><span class="pre">None</span></code>], optional) – a <code class="docutils literal notranslate"><span class="pre">PowerGridEvaluation</span></code> instance. If not indicated, the benchmark creates its
+own evaluation instance using appropriate config, by default None</p></li>
+<li><p><strong>log_path</strong> (Union[<code class="docutils literal notranslate"><span class="pre">pathlib.Path</span></code>, <code class="docutils literal notranslate"><span class="pre">str</span></code>, <code class="docutils literal notranslate"><span class="pre">None</span></code>], optional) – path to the logs, by default None</p></li>
+</ul>
+</dd>
+</dl>
+<div class="admonition warning">
+<p class="admonition-title">Warning</p>
+<p>An independent class for each benchmark is maybe a better idea.
+This class can be served as the base class for powergrid and a specific class for each benchmark
+can extend this class.</p>
+</div>
+<p><strong>Methods:</strong></p>
+<table class="autosummary longtable docutils align-default">
+<colgroup>
+<col style="width: 10%" />
+<col style="width: 90%" />
+</colgroup>
+<tbody>
+<tr class="row-odd"><td><p><a class="reference internal" href="#lips.benchmark.powergridBenchmark.PowerGridBenchmark.load" title="lips.benchmark.powergridBenchmark.PowerGridBenchmark.load"><code class="xref py py-obj docutils literal notranslate"><span class="pre">load</span></code></a>()</p></td>
+<td><p>load the already generated datasets</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#lips.benchmark.powergridBenchmark.PowerGridBenchmark.generate" title="lips.benchmark.powergridBenchmark.PowerGridBenchmark.generate"><code class="xref py py-obj docutils literal notranslate"><span class="pre">generate</span></code></a>(nb_sample_train, nb_sample_val, ...)</p></td>
+<td><p>generate the different datasets required for the benchmark</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#lips.benchmark.powergridBenchmark.PowerGridBenchmark.evaluate_simulator" title="lips.benchmark.powergridBenchmark.PowerGridBenchmark.evaluate_simulator"><code class="xref py py-obj docutils literal notranslate"><span class="pre">evaluate_simulator</span></code></a>([dataset, ...])</p></td>
+<td><p>evaluate a trained augmented simulator on one or multiple test datasets</p></td>
+</tr>
+</tbody>
+</table>
+<dl class="py method">
+<dt class="sig sig-object py" id="lips.benchmark.powergridBenchmark.PowerGridBenchmark.load">
+<span class="sig-name descname"><span class="pre">load</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/lips/benchmark/powergridBenchmark.html#PowerGridBenchmark.load"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#lips.benchmark.powergridBenchmark.PowerGridBenchmark.load" title="Permalink to this definition"></a></dt>
+<dd><p>load the already generated datasets</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="lips.benchmark.powergridBenchmark.PowerGridBenchmark.generate">
+<span class="sig-name descname"><span class="pre">generate</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">nb_sample_train</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">nb_sample_val</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">nb_sample_test</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">nb_sample_test_ood_topo</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">do_store_physics</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/lips/benchmark/powergridBenchmark.html#PowerGridBenchmark.generate"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#lips.benchmark.powergridBenchmark.PowerGridBenchmark.generate" title="Permalink to this definition"></a></dt>
+<dd><p>generate the different datasets required for the benchmark</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="lips.benchmark.powergridBenchmark.PowerGridBenchmark.evaluate_simulator">
+<span class="sig-name descname"><span class="pre">evaluate_simulator</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">dataset</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'all'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">augmented_simulator</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><span class="pre">Union</span><span class="p"><span class="pre">[</span></span><a class="reference internal" href="lips.physical_simulator.html#lips.physical_simulator.physicalSimulator.PhysicalSimulator" title="lips.physical_simulator.physicalSimulator.PhysicalSimulator"><span class="pre">PhysicalSimulator</span></a><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference internal" href="lips.augmented_simulators.html#lips.augmented_simulators.AugmentedSimulator" title="lips.augmented_simulators.augmented_simulator.AugmentedSimulator"><span class="pre">AugmentedSimulator</span></a><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">save_path</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">save_predictions</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">dict</span></span></span><a class="reference internal" href="_modules/lips/benchmark/powergridBenchmark.html#PowerGridBenchmark.evaluate_simulator"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#lips.benchmark.powergridBenchmark.PowerGridBenchmark.evaluate_simulator" title="Permalink to this definition"></a></dt>
+<dd><p>evaluate a trained augmented simulator on one or multiple test datasets</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>dataset</strong> (<em>str</em><em>, </em><em>optional</em>) – dataset on which the evaluation should be performed, by default “all”</p></li>
+<li><p><strong>augmented_simulator</strong> (<em>Union</em><em>[</em><a class="reference internal" href="lips.physical_simulator.html#lips.physical_simulator.PhysicalSimulator" title="lips.physical_simulator.PhysicalSimulator"><em>PhysicalSimulator</em></a><em>, </em><a class="reference internal" href="lips.augmented_simulators.html#lips.augmented_simulators.AugmentedSimulator" title="lips.augmented_simulators.AugmentedSimulator"><em>AugmentedSimulator</em></a><em>, </em><em>None</em><em>]</em><em>, </em><em>optional</em>) – An instance of the class augmented simulator, by default None</p></li>
+<li><p><strong>save_path</strong> (<em>Union</em><em>[</em><em>str</em><em>, </em><em>None</em><em>]</em><em>, </em><em>optional</em>) – the path that the evaluation results should be saved, by default None</p></li>
+<li><p><strong>save_predictions</strong> (<em>bool</em>) – Whether to save the predictions made by an augmented simulator
+The predictions will be saved at the same directory of the generated data
+# TODO : to save predictions, the directory shoud look like <code class="docutils literal notranslate"><span class="pre">benchmark_nameugmented_simulator.name\</span></code></p></li>
+<li><p><strong>**kwargs</strong> (<code class="docutils literal notranslate"><span class="pre">dict</span></code>) – additional arguments that will be passed to the augmented simulator</p></li>
+</ul>
+</dd>
+</dl>
+<div class="admonition-todo admonition" id="id7">
+<p class="admonition-title">Todo</p>
+<p>TODO: add active flow in config file</p>
+</div>
+<dl class="field-list simple">
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p>the results dictionary</p>
+</dd>
+<dt class="field-even">Return type</dt>
+<dd class="field-even"><p>dict</p>
+</dd>
+<dt class="field-odd">Raises</dt>
+<dd class="field-odd"><p><strong>RuntimeError</strong> – Unknown dataset selected</p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="lips.benchmark.powergridBenchmark.get_env">
+<span class="sig-prename descclassname"><span class="pre">lips.benchmark.powergridBenchmark.</span></span><span class="sig-name descname"><span class="pre">get_env</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">env_kwargs</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">dict</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/lips/benchmark/powergridBenchmark.html#get_env"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#lips.benchmark.powergridBenchmark.get_env" title="Permalink to this definition"></a></dt>
+<dd><p>Getter for the environment</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>env_kwargs</strong> (<em>dict</em>) – environment parameters</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>A grid2op environment with the given parameters</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>grid2op.Environment</p>
+</dd>
+</dl>
+</dd></dl>
+
 </section>
 </section>
 

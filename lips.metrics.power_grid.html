@@ -4,7 +4,7 @@
   <meta charset="utf-8" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>lips.metrics.power_grid package &mdash; LIPS 0.1 documentation</title>
+  <title>lips.metrics.power_grid package &mdash; LIPS 0.1.0 documentation</title>
       <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
       <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
   <!--[if lt IE 9]>
@@ -14,7 +14,9 @@
         <script data-url_root="./" id="documentation_options" src="_static/documentation_options.js"></script>
         <script src="_static/jquery.js"></script>
         <script src="_static/underscore.js"></script>
+        <script src="_static/_sphinx_javascript_frameworks_compat.js"></script>
         <script src="_static/doctools.js"></script>
+        <script src="_static/sphinx_highlight.js"></script>
     <script src="_static/js/theme.js"></script>
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" />
@@ -29,6 +31,9 @@
         <div class="wy-side-nav-search" >
             <a href="index.html" class="icon icon-home"> LIPS
           </a>
+              <div class="version">
+                0.1
+              </div>
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
     <input type="text" name="q" placeholder="Search docs" />
@@ -50,6 +55,10 @@
 <li class="toctree-l1"><a class="reference internal" href="lips.evaluation.html">lips.evaluation package</a></li>
 <li class="toctree-l1"><a class="reference internal" href="lips.logger.html">lips.logger package</a></li>
 <li class="toctree-l1 current"><a class="reference internal" href="lips.metrics.html">lips.metrics package</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="lips.metrics.html#lips.metrics.nrmse"><code class="docutils literal notranslate"><span class="pre">nrmse()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="lips.metrics.html#lips.metrics.mape"><code class="docutils literal notranslate"><span class="pre">mape()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="lips.metrics.html#lips.metrics.mape_quantile"><code class="docutils literal notranslate"><span class="pre">mape_quantile()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="lips.metrics.html#lips.metrics.pearson_r"><code class="docutils literal notranslate"><span class="pre">pearson_r()</span></code></a></li>
 <li class="toctree-l2 current"><a class="reference internal" href="lips.metrics.html#subpackages">Subpackages</a><ul class="current">
 <li class="toctree-l3 current"><a class="current reference internal" href="#">lips.metrics.power_grid package</a><ul>
 <li class="toctree-l4"><a class="reference internal" href="#submodules">Submodules</a></li>
@@ -59,7 +68,7 @@
 </ul>
 </li>
 <li class="toctree-l2"><a class="reference internal" href="lips.metrics.html#submodules">Submodules</a></li>
-<li class="toctree-l2"><a class="reference internal" href="lips.metrics.html#module-lips.metrics.ml_metrics">lips.metrics.ml_metrics module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="lips.metrics.html#lips-metrics-ml-metrics-module">lips.metrics.ml_metrics module</a></li>
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="lips.neurips_benchmark.html">lips.neurips_benchmark package</a></li>
@@ -97,16 +106,16 @@
            <div itemprop="articleBody">
              
   <section id="module-lips.metrics.power_grid">
-<span id="lips-metrics-power-grid-package"></span><h1>lips.metrics.power_grid package<a class="headerlink" href="#module-lips.metrics.power_grid" title="Permalink to this headline"></a></h1>
+<span id="lips-metrics-power-grid-package"></span><h1>lips.metrics.power_grid package<a class="headerlink" href="#module-lips.metrics.power_grid" title="Permalink to this heading"></a></h1>
 <dl class="simple">
 <dt>Usage:</dt><dd><p>Init file for metrics module</p>
 </dd>
 </dl>
 <section id="submodules">
-<h2>Submodules<a class="headerlink" href="#submodules" title="Permalink to this headline"></a></h2>
+<h2>Submodules<a class="headerlink" href="#submodules" title="Permalink to this heading"></a></h2>
 </section>
 <section id="module-lips.metrics.power_grid.physics_compliances">
-<span id="lips-metrics-power-grid-physics-compliances-module"></span><h2>lips.metrics.power_grid.physics_compliances module<a class="headerlink" href="#module-lips.metrics.power_grid.physics_compliances" title="Permalink to this headline"></a></h2>
+<span id="lips-metrics-power-grid-physics-compliances-module"></span><h2>lips.metrics.power_grid.physics_compliances module<a class="headerlink" href="#module-lips.metrics.power_grid.physics_compliances" title="Permalink to this heading"></a></h2>
 <p><strong>Functions:</strong></p>
 <table class="autosummary longtable docutils align-default">
 <colgroup>
@@ -114,35 +123,32 @@
 <col style="width: 90%" />
 </colgroup>
 <tbody>
-<tr class="row-odd"><td><p><a class="reference internal" href="#lips.metrics.power_grid.physics_compliances.verify_current_pos" title="lips.metrics.power_grid.physics_compliances.verify_current_pos"><code class="xref py py-obj docutils literal notranslate"><span class="pre">verify_current_pos</span></code></a>(predictions[, log_path])</p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="#lips.metrics.power_grid.physics_compliances.verify_current_pos" title="lips.metrics.power_grid.physics_compliances.verify_current_pos"><code class="xref py py-obj docutils literal notranslate"><span class="pre">verify_current_pos</span></code></a>(predictions[, log_path, ...])</p></td>
 <td><p>current positivity check</p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="#lips.metrics.power_grid.physics_compliances.verify_voltage_pos" title="lips.metrics.power_grid.physics_compliances.verify_voltage_pos"><code class="xref py py-obj docutils literal notranslate"><span class="pre">verify_voltage_pos</span></code></a>(predictions[, log_path])</p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="#lips.metrics.power_grid.physics_compliances.verify_voltage_pos" title="lips.metrics.power_grid.physics_compliances.verify_voltage_pos"><code class="xref py py-obj docutils literal notranslate"><span class="pre">verify_voltage_pos</span></code></a>(predictions[, log_path, ...])</p></td>
 <td><p>Voltage positivity check</p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="#lips.metrics.power_grid.physics_compliances.verify_loss_pos" title="lips.metrics.power_grid.physics_compliances.verify_loss_pos"><code class="xref py py-obj docutils literal notranslate"><span class="pre">verify_loss_pos</span></code></a>(predictions[, log_path])</p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="#lips.metrics.power_grid.physics_compliances.verify_loss_pos" title="lips.metrics.power_grid.physics_compliances.verify_loss_pos"><code class="xref py py-obj docutils literal notranslate"><span class="pre">verify_loss_pos</span></code></a>(predictions[, log_path, ...])</p></td>
 <td><p>loss positivity check</p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="#lips.metrics.power_grid.physics_compliances.verify_disc_lines" title="lips.metrics.power_grid.physics_compliances.verify_disc_lines"><code class="xref py py-obj docutils literal notranslate"><span class="pre">verify_disc_lines</span></code></a>(predictions[, log_path])</p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="#lips.metrics.power_grid.physics_compliances.verify_disc_lines" title="lips.metrics.power_grid.physics_compliances.verify_disc_lines"><code class="xref py py-obj docutils literal notranslate"><span class="pre">verify_disc_lines</span></code></a>(predictions[, log_path, ...])</p></td>
 <td><p>Verifies if the predictions are null for disconnected lines</p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="#lips.metrics.power_grid.physics_compliances.verify_current_eq" title="lips.metrics.power_grid.physics_compliances.verify_current_eq"><code class="xref py py-obj docutils literal notranslate"><span class="pre">verify_current_eq</span></code></a>(predictions[, log_path])</p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="#lips.metrics.power_grid.physics_compliances.verify_current_eq" title="lips.metrics.power_grid.physics_compliances.verify_current_eq"><code class="xref py py-obj docutils literal notranslate"><span class="pre">verify_current_eq</span></code></a>(predictions[, log_path, ...])</p></td>
 <td><p>verify the following relation between p, q and v : * a_or = sqrt(p_or**2 + q_or**2) / (sqrt(3).v_or) * a_ex = sqrt(p_ex**2 + q_ex**2) / (sqrt(3).v_ex)</p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="#lips.metrics.power_grid.physics_compliances.verify_loss" title="lips.metrics.power_grid.physics_compliances.verify_loss"><code class="xref py py-obj docutils literal notranslate"><span class="pre">verify_loss</span></code></a>(predictions[, log_path])</p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="#lips.metrics.power_grid.physics_compliances.verify_loss" title="lips.metrics.power_grid.physics_compliances.verify_loss"><code class="xref py py-obj docutils literal notranslate"><span class="pre">verify_loss</span></code></a>(predictions[, log_path, ...])</p></td>
 <td><p>Verify the energy loss</p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="#lips.metrics.power_grid.physics_compliances.verify_energy_conservation" title="lips.metrics.power_grid.physics_compliances.verify_energy_conservation"><code class="xref py py-obj docutils literal notranslate"><span class="pre">verify_energy_conservation</span></code></a>(predictions[, ...])</p></td>
-<td><p>This function verifies the law of conservation of energy (LCE)</p></td>
-</tr>
-<tr class="row-even"><td><p><a class="reference internal" href="#lips.metrics.power_grid.physics_compliances.verify_kcl" title="lips.metrics.power_grid.physics_compliances.verify_kcl"><code class="xref py py-obj docutils literal notranslate"><span class="pre">verify_kcl</span></code></a>(env, ref_obs, predictions[, tol])</p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="#lips.metrics.power_grid.physics_compliances.verify_kcl" title="lips.metrics.power_grid.physics_compliances.verify_kcl"><code class="xref py py-obj docutils literal notranslate"><span class="pre">verify_kcl</span></code></a>(env, ref_obs, predictions[, tol])</p></td>
 <td><p>This function used the check_solution function offered by lightsim2grid package, to verify the Kirchhoff's current law</p></td>
 </tr>
 </tbody>
 </table>
 <dl class="py function">
 <dt class="sig sig-object py" id="lips.metrics.power_grid.physics_compliances.verify_current_pos">
-<span class="sig-prename descclassname"><span class="pre">lips.metrics.power_grid.physics_compliances.</span></span><span class="sig-name descname"><span class="pre">verify_current_pos</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">predictions</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">dict</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">log_path</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/lips/metrics/power_grid/physics_compliances.html#verify_current_pos"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#lips.metrics.power_grid.physics_compliances.verify_current_pos" title="Permalink to this definition"></a></dt>
+<span class="sig-prename descclassname"><span class="pre">lips.metrics.power_grid.physics_compliances.</span></span><span class="sig-name descname"><span class="pre">verify_current_pos</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">predictions</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">dict</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">log_path</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">result_level</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">0</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/lips/metrics/power_grid/physics_compliances.html#verify_current_pos"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#lips.metrics.power_grid.physics_compliances.verify_current_pos" title="Permalink to this definition"></a></dt>
 <dd><p>current positivity check</p>
 <p>Verifies the electrical current positivity at both extremity of power lines a_or &gt;= 0 , a_ex &gt;= 0</p>
 <dl class="field-list simple">
@@ -164,7 +170,7 @@
 
 <dl class="py function">
 <dt class="sig sig-object py" id="lips.metrics.power_grid.physics_compliances.verify_voltage_pos">
-<span class="sig-prename descclassname"><span class="pre">lips.metrics.power_grid.physics_compliances.</span></span><span class="sig-name descname"><span class="pre">verify_voltage_pos</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">predictions</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">dict</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">log_path</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/lips/metrics/power_grid/physics_compliances.html#verify_voltage_pos"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#lips.metrics.power_grid.physics_compliances.verify_voltage_pos" title="Permalink to this definition"></a></dt>
+<span class="sig-prename descclassname"><span class="pre">lips.metrics.power_grid.physics_compliances.</span></span><span class="sig-name descname"><span class="pre">verify_voltage_pos</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">predictions</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">dict</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">log_path</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">result_level</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">0</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/lips/metrics/power_grid/physics_compliances.html#verify_voltage_pos"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#lips.metrics.power_grid.physics_compliances.verify_voltage_pos" title="Permalink to this definition"></a></dt>
 <dd><p>Voltage positivity check</p>
 <p>Verifies the electrical voltage positivity at both extremity of power lines v_or &gt;= 0 , v_ex &gt;= 0</p>
 <dl class="field-list simple">
@@ -186,7 +192,7 @@
 
 <dl class="py function">
 <dt class="sig sig-object py" id="lips.metrics.power_grid.physics_compliances.verify_loss_pos">
-<span class="sig-prename descclassname"><span class="pre">lips.metrics.power_grid.physics_compliances.</span></span><span class="sig-name descname"><span class="pre">verify_loss_pos</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">predictions</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">dict</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">log_path</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/lips/metrics/power_grid/physics_compliances.html#verify_loss_pos"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#lips.metrics.power_grid.physics_compliances.verify_loss_pos" title="Permalink to this definition"></a></dt>
+<span class="sig-prename descclassname"><span class="pre">lips.metrics.power_grid.physics_compliances.</span></span><span class="sig-name descname"><span class="pre">verify_loss_pos</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">predictions</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">dict</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">log_path</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">result_level</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">0</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/lips/metrics/power_grid/physics_compliances.html#verify_loss_pos"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#lips.metrics.power_grid.physics_compliances.verify_loss_pos" title="Permalink to this definition"></a></dt>
 <dd><p>loss positivity check</p>
 <p>Verify that the electrical losses are greater than zero at each power line p_or + p_ex &gt;= 0</p>
 <dl class="field-list simple">
@@ -208,7 +214,7 @@
 
 <dl class="py function">
 <dt class="sig sig-object py" id="lips.metrics.power_grid.physics_compliances.verify_disc_lines">
-<span class="sig-prename descclassname"><span class="pre">lips.metrics.power_grid.physics_compliances.</span></span><span class="sig-name descname"><span class="pre">verify_disc_lines</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">predictions</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">dict</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">log_path</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/lips/metrics/power_grid/physics_compliances.html#verify_disc_lines"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#lips.metrics.power_grid.physics_compliances.verify_disc_lines" title="Permalink to this definition"></a></dt>
+<span class="sig-prename descclassname"><span class="pre">lips.metrics.power_grid.physics_compliances.</span></span><span class="sig-name descname"><span class="pre">verify_disc_lines</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">predictions</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">dict</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">log_path</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">result_level</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">0</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/lips/metrics/power_grid/physics_compliances.html#verify_disc_lines"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#lips.metrics.power_grid.physics_compliances.verify_disc_lines" title="Permalink to this definition"></a></dt>
 <dd><p>Verifies if the predictions are null for disconnected lines</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
@@ -229,7 +235,7 @@
 
 <dl class="py function">
 <dt class="sig sig-object py" id="lips.metrics.power_grid.physics_compliances.verify_current_eq">
-<span class="sig-prename descclassname"><span class="pre">lips.metrics.power_grid.physics_compliances.</span></span><span class="sig-name descname"><span class="pre">verify_current_eq</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">predictions</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">dict</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">log_path</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/lips/metrics/power_grid/physics_compliances.html#verify_current_eq"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#lips.metrics.power_grid.physics_compliances.verify_current_eq" title="Permalink to this definition"></a></dt>
+<span class="sig-prename descclassname"><span class="pre">lips.metrics.power_grid.physics_compliances.</span></span><span class="sig-name descname"><span class="pre">verify_current_eq</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">predictions</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">dict</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">log_path</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">result_level</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">0</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/lips/metrics/power_grid/physics_compliances.html#verify_current_eq"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#lips.metrics.power_grid.physics_compliances.verify_current_eq" title="Permalink to this definition"></a></dt>
 <dd><p>verify the following relation between p, q and v :
 * a_or = sqrt(p_or**2 + q_or**2) / (sqrt(3).v_or)
 * a_ex = sqrt(p_ex**2 + q_ex**2) / (sqrt(3).v_ex)</p>
@@ -256,7 +262,7 @@
 
 <dl class="py function">
 <dt class="sig sig-object py" id="lips.metrics.power_grid.physics_compliances.verify_loss">
-<span class="sig-prename descclassname"><span class="pre">lips.metrics.power_grid.physics_compliances.</span></span><span class="sig-name descname"><span class="pre">verify_loss</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">predictions</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">log_path</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/lips/metrics/power_grid/physics_compliances.html#verify_loss"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#lips.metrics.power_grid.physics_compliances.verify_loss" title="Permalink to this definition"></a></dt>
+<span class="sig-prename descclassname"><span class="pre">lips.metrics.power_grid.physics_compliances.</span></span><span class="sig-name descname"><span class="pre">verify_loss</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">predictions</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">log_path</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">result_level</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">0</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/lips/metrics/power_grid/physics_compliances.html#verify_loss"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#lips.metrics.power_grid.physics_compliances.verify_loss" title="Permalink to this definition"></a></dt>
 <dd><p>Verify the energy loss</p>
 <p>The loss should be between 1 and 4 % of production at each step.</p>
 <p>2 possible way to call the function with two set of information:
@@ -277,32 +283,6 @@
 <li><p><strong>- EL</strong> (<cite>array</cite>) – array of energy losses for each iteration</p></li>
 <li><p><strong>- violation_percentage</strong> (<cite>float</cite>) – percentage of violation of loss</p></li>
 <li><p><strong>- failed_indices</strong> (<cite>list</cite>) – The indices of failed cases</p></li>
-</ul>
-</p>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="py function">
-<dt class="sig sig-object py" id="lips.metrics.power_grid.physics_compliances.verify_energy_conservation">
-<span class="sig-prename descclassname"><span class="pre">lips.metrics.power_grid.physics_compliances.</span></span><span class="sig-name descname"><span class="pre">verify_energy_conservation</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">predictions</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">dict</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">log_path</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/lips/metrics/power_grid/physics_compliances.html#verify_energy_conservation"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#lips.metrics.power_grid.physics_compliances.verify_energy_conservation" title="Permalink to this definition"></a></dt>
-<dd><p>This function verifies the law of conservation of energy (LCE)</p>
-<p>productions = load + loss</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><ul class="simple">
-<li><p><strong>predictions</strong> (<code class="docutils literal notranslate"><span class="pre">dict</span></code>) – Predictions made by an augmented simulator</p></li>
-<li><p><strong>log_path</strong> (<code class="docutils literal notranslate"><span class="pre">str</span></code>, optional) – the path where the logs should be saved, by default None</p></li>
-<li><p><strong>**kwargs</strong> (<code class="docutils literal notranslate"><span class="pre">dict</span></code>) – It should contain <cite>observations</cite> and <cite>config</cite> to load the tolerance</p></li>
-</ul>
-</dd>
-<dt class="field-even">Returns</dt>
-<dd class="field-even"><p><ul class="simple">
-<li><p><code class="docutils literal notranslate"><span class="pre">dict</span></code> – a dictionary with useful information about the verification</p></li>
-<li><p><em>These informations are</em></p></li>
-<li><p><strong>- LCE</strong> (<cite>array</cite>) – an array including the law of conservation of energy values stored for each step (observation)</p></li>
-<li><p><strong>- violation_percentage</strong> (<cite>scalar</cite>) – a value expressed in percentage to indicate the percentage of</p></li>
-<li><p><strong>- failed_indices</strong> (<cite>array</cite>) – an array giving the indices of observations that not verify the law given the indicated tolerance</p></li>
 </ul>
 </p>
 </dd>

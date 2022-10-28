@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>lips.physical_simulator.grid2opSimulator &mdash; LIPS 0.1 documentation</title>
+  <title>lips.physical_simulator.grid2opSimulator &mdash; LIPS 0.1.0 documentation</title>
       <link rel="stylesheet" href="../../../_static/pygments.css" type="text/css" />
       <link rel="stylesheet" href="../../../_static/css/theme.css" type="text/css" />
   <!--[if lt IE 9]>
@@ -13,7 +13,9 @@
         <script data-url_root="../../../" id="documentation_options" src="../../../_static/documentation_options.js"></script>
         <script src="../../../_static/jquery.js"></script>
         <script src="../../../_static/underscore.js"></script>
+        <script src="../../../_static/_sphinx_javascript_frameworks_compat.js"></script>
         <script src="../../../_static/doctools.js"></script>
+        <script src="../../../_static/sphinx_highlight.js"></script>
     <script src="../../../_static/js/theme.js"></script>
     <link rel="index" title="Index" href="../../../genindex.html" />
     <link rel="search" title="Search" href="../../../search.html" /> 
@@ -26,6 +28,9 @@
         <div class="wy-side-nav-search" >
             <a href="../../../index.html" class="icon icon-home"> LIPS
           </a>
+              <div class="version">
+                0.1
+              </div>
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="../../../search.html" method="get">
     <input type="text" name="q" placeholder="Search docs" />
@@ -96,6 +101,7 @@
 
 <span class="kn">import</span> <span class="nn">re</span>
 <span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Union</span>
+<span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
 
 <span class="kn">import</span> <span class="nn">grid2op</span>
 <span class="kn">from</span> <span class="nn">grid2op.Action</span> <span class="kn">import</span> <span class="n">BaseAction</span>
@@ -121,7 +127,7 @@
     <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span>
                  <span class="n">env_kwargs</span><span class="p">:</span> <span class="nb">dict</span><span class="p">,</span>
                  <span class="n">initial_chronics_id</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">int</span><span class="p">,</span> <span class="kc">None</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
-                 <span class="n">chronics_selected_regex</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+                 <span class="n">chronics_selected_regex</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="kc">None</span>
                  <span class="p">):</span>
         <span class="n">PhysicalSimulator</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">actor_types</span><span class="o">=</span><span class="p">(</span><span class="n">BaseAction</span><span class="p">,</span> <span class="n">BaseAgent</span><span class="p">))</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_simulator</span> <span class="o">=</span> <span class="n">get_env</span><span class="p">(</span><span class="n">env_kwargs</span><span class="p">)</span>
@@ -136,9 +142,19 @@
         <span class="k">if</span> <span class="n">initial_chronics_id</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">_simulator</span><span class="o">.</span><span class="n">set_id</span><span class="p">(</span><span class="n">initial_chronics_id</span><span class="p">)</span>
 
+        <span class="bp">self</span><span class="o">.</span><span class="n">_chronic_id</span> <span class="o">=</span> <span class="mi">0</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">chronics_id</span> <span class="o">=</span> <span class="nb">list</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">chronics_name</span> <span class="o">=</span> <span class="nb">list</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">chronics_name_unique</span> <span class="o">=</span> <span class="nb">list</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">time_stamps</span> <span class="o">=</span> <span class="nb">list</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_chronic_counter</span> <span class="o">=</span> <span class="o">-</span><span class="mi">1</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_max_episode_duration</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_visited_ts</span> <span class="o">=</span> <span class="nb">list</span><span class="p">()</span>
+
         <span class="bp">self</span><span class="o">.</span><span class="n">_obs</span> <span class="o">=</span> <span class="kc">None</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_reward</span> <span class="o">=</span> <span class="kc">None</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_info</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_max_episode_duration</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_simulator</span><span class="o">.</span><span class="n">chronics_handler</span><span class="o">.</span><span class="n">max_episode_duration</span><span class="p">()</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_reset_simulator</span><span class="p">()</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_plot_helper</span> <span class="o">=</span> <span class="kc">None</span>
 
@@ -161,6 +177,19 @@
         <span class="n">seeds</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_simulator</span><span class="o">.</span><span class="n">seed</span><span class="p">(</span><span class="n">seed</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_reset_simulator</span><span class="p">()</span>
         <span class="k">return</span> <span class="n">seeds</span></div>
+
+<div class="viewcode-block" id="Grid2opSimulator.sample_chronics"><a class="viewcode-back" href="../../../lips.physical_simulator.html#lips.physical_simulator.Grid2opSimulator.sample_chronics">[docs]</a>    <span class="k">def</span> <span class="nf">sample_chronics</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Sample a chronic among all the chronics available</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_chronic_id</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_simulator</span><span class="o">.</span><span class="n">chronics_handler</span><span class="o">.</span><span class="n">real_data</span><span class="o">.</span><span class="n">sample_next_chronics</span><span class="p">()[</span><span class="mi">0</span><span class="p">]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_simulator</span><span class="o">.</span><span class="n">set_id</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_chronic_id</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_obs</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_simulator</span><span class="o">.</span><span class="n">reset</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">time_stamps</span><span class="o">.</span><span class="n">append</span><span class="p">([])</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">chronics_name_unique</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_simulator</span><span class="o">.</span><span class="n">chronics_handler</span><span class="o">.</span><span class="n">get_name</span><span class="p">())</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_max_episode_duration</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_simulator</span><span class="o">.</span><span class="n">chronics_handler</span><span class="o">.</span><span class="n">max_episode_duration</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_visited_ts</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_chronic_counter</span> <span class="o">+=</span> <span class="mi">1</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_reset_simulator</span><span class="p">()</span></div>
 
 <div class="viewcode-block" id="Grid2opSimulator.get_state"><a class="viewcode-back" href="../../../lips.physical_simulator.html#lips.physical_simulator.Grid2opSimulator.get_state">[docs]</a>    <span class="k">def</span> <span class="nf">get_state</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">tuple</span><span class="p">:</span>
         <span class="sd">&quot;&quot;&quot;</span>
@@ -226,7 +255,11 @@
                 <span class="bp">self</span><span class="o">.</span><span class="n">_nb_divergence</span> <span class="o">+=</span> <span class="mi">1</span>
                 <span class="bp">self</span><span class="o">.</span><span class="n">_reset_simulator</span><span class="p">()</span>
                 <span class="bp">self</span><span class="o">.</span><span class="n">_time_powerflow</span> <span class="o">-=</span> <span class="n">_diff_time_pf</span>
-                <span class="bp">self</span><span class="o">.</span><span class="n">comp_time</span> <span class="o">-=</span> <span class="n">_diff_time_cp</span></div>
+                <span class="bp">self</span><span class="o">.</span><span class="n">comp_time</span> <span class="o">-=</span> <span class="n">_diff_time_cp</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">time_stamps</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">_chronic_counter</span><span class="p">]</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_simulator</span><span class="o">.</span><span class="n">chronics_handler</span><span class="o">.</span><span class="n">real_data</span><span class="o">.</span><span class="n">data</span><span class="o">.</span><span class="n">current_datetime</span><span class="p">)</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">chronics_id</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_chronic_id</span><span class="p">)</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">chronics_name</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_simulator</span><span class="o">.</span><span class="n">chronics_handler</span><span class="o">.</span><span class="n">get_name</span><span class="p">())</span></div>
 
 <div class="viewcode-block" id="Grid2opSimulator.visualize_network"><a class="viewcode-back" href="../../../lips.physical_simulator.html#lips.physical_simulator.Grid2opSimulator.visualize_network">[docs]</a>    <span class="k">def</span> <span class="nf">visualize_network</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">PlotMatplot</span><span class="p">:</span>
         <span class="sd">&quot;&quot;&quot;</span>
@@ -253,13 +286,19 @@
         <span class="n">fig</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_plot_helper</span><span class="o">.</span><span class="n">plot_obs</span><span class="p">(</span><span class="n">obs</span><span class="p">,</span> <span class="o">**</span><span class="n">plot_kwargs</span><span class="p">)</span>
         <span class="k">return</span> <span class="n">fig</span></div>
 
-    <span class="k">def</span> <span class="nf">_reset_simulator</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">_reset_simulator</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">fast_forward</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">):</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_obs</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_simulator</span><span class="o">.</span><span class="n">reset</span><span class="p">()</span>
-        <span class="c1"># randomly skip a given number of steps in the first day (to improve the randomness)</span>
-        <span class="n">nb_ff</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_simulator</span><span class="o">.</span><span class="n">space_prng</span><span class="o">.</span><span class="n">randint</span><span class="p">(</span><span class="mi">288</span><span class="p">)</span>
-        <span class="k">if</span> <span class="n">nb_ff</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">_simulator</span><span class="o">.</span><span class="n">fast_forward_chronics</span><span class="p">(</span><span class="n">nb_ff</span><span class="p">)</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">_obs</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_simulator</span><span class="o">.</span><span class="n">get_obs</span><span class="p">()</span>
+        <span class="k">if</span> <span class="n">fast_forward</span><span class="p">:</span>
+            <span class="c1"># exclude the already selected time stamps from which the scenario should started</span>
+            <span class="n">remaining_timesteps</span> <span class="o">=</span> <span class="nb">set</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_max_episode_duration</span><span class="p">))</span> <span class="o">-</span> <span class="nb">set</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_visited_ts</span><span class="p">)</span>
+            <span class="c1"># randomly skip a given number of steps in the first day (to improve the randomness)</span>
+            <span class="n">nb_ff</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_simulator</span><span class="o">.</span><span class="n">space_prng</span><span class="o">.</span><span class="n">choice</span><span class="p">(</span><span class="nb">list</span><span class="p">(</span><span class="n">remaining_timesteps</span><span class="p">))</span>
+            <span class="k">if</span> <span class="n">nb_ff</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_simulator</span><span class="o">.</span><span class="n">fast_forward_chronics</span><span class="p">(</span><span class="n">nb_ff</span><span class="p">)</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_obs</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_simulator</span><span class="o">.</span><span class="n">get_obs</span><span class="p">()</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_visited_ts</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">nb_ff</span><span class="p">)</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_visited_ts</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_reward</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_simulator</span><span class="o">.</span><span class="n">reward_range</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_info</span> <span class="o">=</span> <span class="p">{}</span></div>
 
@@ -277,7 +316,7 @@
 <span class="sd">        A grid2op environment with the given parameters</span>
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="n">env</span> <span class="o">=</span> <span class="n">grid2op</span><span class="o">.</span><span class="n">make</span><span class="p">(</span><span class="o">**</span><span class="n">env_kwargs</span><span class="p">)</span>
-    <span class="n">env</span><span class="o">.</span><span class="n">deactivate_forecast</span><span class="p">()</span>
+    <span class="c1"># env.deactivate_forecast()</span>
     <span class="k">return</span> <span class="n">env</span></div>
 </pre></div>
 

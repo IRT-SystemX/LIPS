@@ -4,7 +4,7 @@
   <meta charset="utf-8" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>lips &mdash; LIPS 0.1 documentation</title>
+  <title>lips &mdash; LIPS 0.1.0 documentation</title>
       <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
       <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
   <!--[if lt IE 9]>
@@ -14,7 +14,9 @@
         <script data-url_root="./" id="documentation_options" src="_static/documentation_options.js"></script>
         <script src="_static/jquery.js"></script>
         <script src="_static/underscore.js"></script>
+        <script src="_static/_sphinx_javascript_frameworks_compat.js"></script>
         <script src="_static/doctools.js"></script>
+        <script src="_static/sphinx_highlight.js"></script>
     <script src="_static/js/theme.js"></script>
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" /> 
@@ -27,6 +29,9 @@
         <div class="wy-side-nav-search" >
             <a href="index.html" class="icon icon-home"> LIPS
           </a>
+              <div class="version">
+                0.1
+              </div>
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
     <input type="text" name="q" placeholder="Search docs" />
@@ -82,12 +87,13 @@
            <div itemprop="articleBody">
              
   <section id="lips">
-<h1>lips<a class="headerlink" href="#lips" title="Permalink to this headline"></a></h1>
+<h1>lips<a class="headerlink" href="#lips" title="Permalink to this heading"></a></h1>
 <div class="toctree-wrapper compound">
 <ul>
 <li class="toctree-l1"><a class="reference internal" href="lips.html">lips package</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="lips.html#subpackages">Subpackages</a><ul>
 <li class="toctree-l3"><a class="reference internal" href="lips.augmented_simulators.html">lips.augmented_simulators package</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="lips.augmented_simulators.html#lips.augmented_simulators.AugmentedSimulator"><code class="docutils literal notranslate"><span class="pre">AugmentedSimulator</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="lips.augmented_simulators.html#submodules">Submodules</a></li>
 <li class="toctree-l4"><a class="reference internal" href="lips.augmented_simulators.html#lips-augmented-simulators-augmentedsimulator-module">lips.augmented_simulators.augmentedSimulator module</a></li>
 <li class="toctree-l4"><a class="reference internal" href="lips.augmented_simulators.html#lips-augmented-simulators-fullyconnectedas-module">lips.augmented_simulators.fullyConnectedAS module</a></li>
@@ -96,39 +102,48 @@
 </ul>
 </li>
 <li class="toctree-l3"><a class="reference internal" href="lips.benchmark.html">lips.benchmark package</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="lips.benchmark.html#lips.benchmark.Benchmark"><code class="docutils literal notranslate"><span class="pre">Benchmark</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="lips.benchmark.html#submodules">Submodules</a></li>
-<li class="toctree-l4"><a class="reference internal" href="lips.benchmark.html#lips-benchmark-benchmark-module">lips.benchmark.Benchmark module</a></li>
-<li class="toctree-l4"><a class="reference internal" href="lips.benchmark.html#lips-benchmark-powergridbenchmark-module">lips.benchmark.powergridBenchmark module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="lips.benchmark.html#module-lips.benchmark.Benchmark">lips.benchmark.Benchmark module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="lips.benchmark.html#module-lips.benchmark.powergridBenchmark">lips.benchmark.powergridBenchmark module</a></li>
 </ul>
 </li>
 <li class="toctree-l3"><a class="reference internal" href="lips.config.html">lips.config package</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="lips.config.html#lips.config.ConfigManager"><code class="docutils literal notranslate"><span class="pre">ConfigManager</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="lips.config.html#submodules">Submodules</a></li>
 <li class="toctree-l4"><a class="reference internal" href="lips.config.html#module-lips.config.configmanager">lips.config.configmanager module</a></li>
 </ul>
 </li>
 <li class="toctree-l3"><a class="reference internal" href="lips.dataset.html">lips.dataset package</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="lips.dataset.html#lips.dataset.DataSet"><code class="docutils literal notranslate"><span class="pre">DataSet</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="lips.dataset.html#submodules">Submodules</a></li>
 <li class="toctree-l4"><a class="reference internal" href="lips.dataset.html#module-lips.dataset.dataSet">lips.dataset.dataSet module</a></li>
 <li class="toctree-l4"><a class="reference internal" href="lips.dataset.html#module-lips.dataset.powergridDataSet">lips.dataset.powergridDataSet module</a></li>
 </ul>
 </li>
 <li class="toctree-l3"><a class="reference internal" href="lips.evaluation.html">lips.evaluation package</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="lips.evaluation.html#lips.evaluation.Evaluation"><code class="docutils literal notranslate"><span class="pre">Evaluation</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="lips.evaluation.html#submodules">Submodules</a></li>
 <li class="toctree-l4"><a class="reference internal" href="lips.evaluation.html#module-lips.evaluation.evaluation">lips.evaluation.evaluation module</a></li>
 <li class="toctree-l4"><a class="reference internal" href="lips.evaluation.html#module-lips.evaluation.powergrid_evaluation">lips.evaluation.powergrid_evaluation module</a></li>
-<li class="toctree-l4"><a class="reference internal" href="lips.evaluation.html#module-lips.evaluation.transport_evaluation">lips.evaluation.transport_evaluation module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="lips.evaluation.html#lips-evaluation-transport-evaluation-module">lips.evaluation.transport_evaluation module</a></li>
 <li class="toctree-l4"><a class="reference internal" href="lips.evaluation.html#module-lips.evaluation.utils">lips.evaluation.utils module</a></li>
 </ul>
 </li>
 <li class="toctree-l3"><a class="reference internal" href="lips.logger.html">lips.logger package</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="lips.logger.html#lips.logger.CustomLogger"><code class="docutils literal notranslate"><span class="pre">CustomLogger</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="lips.logger.html#submodules">Submodules</a></li>
 <li class="toctree-l4"><a class="reference internal" href="lips.logger.html#module-lips.logger.customLogger">lips.logger.customLogger module</a></li>
 </ul>
 </li>
 <li class="toctree-l3"><a class="reference internal" href="lips.metrics.html">lips.metrics package</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="lips.metrics.html#lips.metrics.nrmse"><code class="docutils literal notranslate"><span class="pre">nrmse()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="lips.metrics.html#lips.metrics.mape"><code class="docutils literal notranslate"><span class="pre">mape()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="lips.metrics.html#lips.metrics.mape_quantile"><code class="docutils literal notranslate"><span class="pre">mape_quantile()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="lips.metrics.html#lips.metrics.pearson_r"><code class="docutils literal notranslate"><span class="pre">pearson_r()</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="lips.metrics.html#subpackages">Subpackages</a></li>
 <li class="toctree-l4"><a class="reference internal" href="lips.metrics.html#submodules">Submodules</a></li>
-<li class="toctree-l4"><a class="reference internal" href="lips.metrics.html#module-lips.metrics.ml_metrics">lips.metrics.ml_metrics module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="lips.metrics.html#lips-metrics-ml-metrics-module">lips.metrics.ml_metrics module</a></li>
 </ul>
 </li>
 <li class="toctree-l3"><a class="reference internal" href="lips.neurips_benchmark.html">lips.neurips_benchmark package</a><ul>
@@ -139,6 +154,9 @@
 </ul>
 </li>
 <li class="toctree-l3"><a class="reference internal" href="lips.physical_simulator.html">lips.physical_simulator package</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="lips.physical_simulator.html#lips.physical_simulator.PhysicalSimulator"><code class="docutils literal notranslate"><span class="pre">PhysicalSimulator</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="lips.physical_simulator.html#lips.physical_simulator.PhysicsSolver"><code class="docutils literal notranslate"><span class="pre">PhysicsSolver</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="lips.physical_simulator.html#lips.physical_simulator.Grid2opSimulator"><code class="docutils literal notranslate"><span class="pre">Grid2opSimulator</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="lips.physical_simulator.html#submodules">Submodules</a></li>
 <li class="toctree-l4"><a class="reference internal" href="lips.physical_simulator.html#module-lips.physical_simulator.dcApproximationAS">lips.physical_simulator.dcApproximationAS module</a></li>
 <li class="toctree-l4"><a class="reference internal" href="lips.physical_simulator.html#module-lips.physical_simulator.grid2opSimulator">lips.physical_simulator.grid2opSimulator module</a></li>

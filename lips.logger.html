@@ -4,7 +4,7 @@
   <meta charset="utf-8" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>lips.logger package &mdash; LIPS 0.1 documentation</title>
+  <title>lips.logger package &mdash; LIPS 0.1.0 documentation</title>
       <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
       <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
   <!--[if lt IE 9]>
@@ -14,7 +14,9 @@
         <script data-url_root="./" id="documentation_options" src="_static/documentation_options.js"></script>
         <script src="_static/jquery.js"></script>
         <script src="_static/underscore.js"></script>
+        <script src="_static/_sphinx_javascript_frameworks_compat.js"></script>
         <script src="_static/doctools.js"></script>
+        <script src="_static/sphinx_highlight.js"></script>
     <script src="_static/js/theme.js"></script>
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" />
@@ -29,6 +31,9 @@
         <div class="wy-side-nav-search" >
             <a href="index.html" class="icon icon-home"> LIPS
           </a>
+              <div class="version">
+                0.1
+              </div>
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
     <input type="text" name="q" placeholder="Search docs" />
@@ -49,8 +54,22 @@
 <li class="toctree-l1"><a class="reference internal" href="lips.dataset.html">lips.dataset package</a></li>
 <li class="toctree-l1"><a class="reference internal" href="lips.evaluation.html">lips.evaluation package</a></li>
 <li class="toctree-l1 current"><a class="current reference internal" href="#">lips.logger package</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#lips.logger.CustomLogger"><code class="docutils literal notranslate"><span class="pre">CustomLogger</span></code></a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#lips.logger.CustomLogger.info"><code class="docutils literal notranslate"><span class="pre">CustomLogger.info()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#lips.logger.CustomLogger.warning"><code class="docutils literal notranslate"><span class="pre">CustomLogger.warning()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#lips.logger.CustomLogger.error"><code class="docutils literal notranslate"><span class="pre">CustomLogger.error()</span></code></a></li>
+</ul>
+</li>
 <li class="toctree-l2"><a class="reference internal" href="#submodules">Submodules</a></li>
-<li class="toctree-l2"><a class="reference internal" href="#module-lips.logger.customLogger">lips.logger.customLogger module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#module-lips.logger.customLogger">lips.logger.customLogger module</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#lips.logger.customLogger.CustomLogger"><code class="docutils literal notranslate"><span class="pre">CustomLogger</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#lips.logger.customLogger.CustomLogger.info"><code class="docutils literal notranslate"><span class="pre">CustomLogger.info()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#lips.logger.customLogger.CustomLogger.warning"><code class="docutils literal notranslate"><span class="pre">CustomLogger.warning()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#lips.logger.customLogger.CustomLogger.error"><code class="docutils literal notranslate"><span class="pre">CustomLogger.error()</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="lips.metrics.html">lips.metrics package</a></li>
@@ -88,7 +107,7 @@
            <div itemprop="articleBody">
              
   <section id="module-lips.logger">
-<span id="lips-logger-package"></span><h1>lips.logger package<a class="headerlink" href="#module-lips.logger" title="Permalink to this headline"></a></h1>
+<span id="lips-logger-package"></span><h1>lips.logger package<a class="headerlink" href="#module-lips.logger" title="Permalink to this heading"></a></h1>
 <p><strong>Classes:</strong></p>
 <table class="autosummary longtable docutils align-default">
 <colgroup>
@@ -141,10 +160,10 @@
 </dd></dl>
 
 <section id="submodules">
-<h2>Submodules<a class="headerlink" href="#submodules" title="Permalink to this headline"></a></h2>
+<h2>Submodules<a class="headerlink" href="#submodules" title="Permalink to this heading"></a></h2>
 </section>
 <section id="module-lips.logger.customLogger">
-<span id="lips-logger-customlogger-module"></span><h2>lips.logger.customLogger module<a class="headerlink" href="#module-lips.logger.customLogger" title="Permalink to this headline"></a></h2>
+<span id="lips-logger-customlogger-module"></span><h2>lips.logger.customLogger module<a class="headerlink" href="#module-lips.logger.customLogger" title="Permalink to this heading"></a></h2>
 <p><strong>Classes:</strong></p>
 <table class="autosummary longtable docutils align-default">
 <colgroup>

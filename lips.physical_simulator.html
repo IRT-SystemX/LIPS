@@ -4,7 +4,7 @@
   <meta charset="utf-8" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>lips.physical_simulator package &mdash; LIPS 0.1 documentation</title>
+  <title>lips.physical_simulator package &mdash; LIPS 0.1.0 documentation</title>
       <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
       <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
   <!--[if lt IE 9]>
@@ -14,7 +14,9 @@
         <script data-url_root="./" id="documentation_options" src="_static/documentation_options.js"></script>
         <script src="_static/jquery.js"></script>
         <script src="_static/underscore.js"></script>
+        <script src="_static/_sphinx_javascript_frameworks_compat.js"></script>
         <script src="_static/doctools.js"></script>
+        <script src="_static/sphinx_highlight.js"></script>
     <script src="_static/js/theme.js"></script>
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" />
@@ -29,6 +31,9 @@
         <div class="wy-side-nav-search" >
             <a href="index.html" class="icon icon-home"> LIPS
           </a>
+              <div class="version">
+                0.1
+              </div>
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
     <input type="text" name="q" placeholder="Search docs" />
@@ -52,11 +57,74 @@
 <li class="toctree-l1"><a class="reference internal" href="lips.metrics.html">lips.metrics package</a></li>
 <li class="toctree-l1"><a class="reference internal" href="lips.neurips_benchmark.html">lips.neurips_benchmark package</a></li>
 <li class="toctree-l1 current"><a class="current reference internal" href="#">lips.physical_simulator package</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#lips.physical_simulator.PhysicalSimulator"><code class="docutils literal notranslate"><span class="pre">PhysicalSimulator</span></code></a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#lips.physical_simulator.PhysicalSimulator.get_state"><code class="docutils literal notranslate"><span class="pre">PhysicalSimulator.get_state()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#lips.physical_simulator.PhysicalSimulator.modify_state"><code class="docutils literal notranslate"><span class="pre">PhysicalSimulator.modify_state()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#lips.physical_simulator.PhysicsSolver"><code class="docutils literal notranslate"><span class="pre">PhysicsSolver</span></code></a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#lips.physical_simulator.PhysicsSolver.compute"><code class="docutils literal notranslate"><span class="pre">PhysicsSolver.compute()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#lips.physical_simulator.PhysicsSolver.init"><code class="docutils literal notranslate"><span class="pre">PhysicsSolver.init()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#lips.physical_simulator.PhysicsSolver.process_dataset"><code class="docutils literal notranslate"><span class="pre">PhysicsSolver.process_dataset()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#lips.physical_simulator.PhysicsSolver.data_to_dict"><code class="docutils literal notranslate"><span class="pre">PhysicsSolver.data_to_dict()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#lips.physical_simulator.PhysicsSolver.save"><code class="docutils literal notranslate"><span class="pre">PhysicsSolver.save()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#lips.physical_simulator.PhysicsSolver.restore"><code class="docutils literal notranslate"><span class="pre">PhysicsSolver.restore()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#lips.physical_simulator.Grid2opSimulator"><code class="docutils literal notranslate"><span class="pre">Grid2opSimulator</span></code></a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#lips.physical_simulator.Grid2opSimulator.seed"><code class="docutils literal notranslate"><span class="pre">Grid2opSimulator.seed()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#lips.physical_simulator.Grid2opSimulator.sample_chronics"><code class="docutils literal notranslate"><span class="pre">Grid2opSimulator.sample_chronics()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#lips.physical_simulator.Grid2opSimulator.get_state"><code class="docutils literal notranslate"><span class="pre">Grid2opSimulator.get_state()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#lips.physical_simulator.Grid2opSimulator.modify_state"><code class="docutils literal notranslate"><span class="pre">Grid2opSimulator.modify_state()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#lips.physical_simulator.Grid2opSimulator.visualize_network"><code class="docutils literal notranslate"><span class="pre">Grid2opSimulator.visualize_network()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#lips.physical_simulator.Grid2opSimulator.visualize_network_reference_topology"><code class="docutils literal notranslate"><span class="pre">Grid2opSimulator.visualize_network_reference_topology()</span></code></a></li>
+</ul>
+</li>
 <li class="toctree-l2"><a class="reference internal" href="#submodules">Submodules</a></li>
-<li class="toctree-l2"><a class="reference internal" href="#module-lips.physical_simulator.dcApproximationAS">lips.physical_simulator.dcApproximationAS module</a></li>
-<li class="toctree-l2"><a class="reference internal" href="#module-lips.physical_simulator.grid2opSimulator">lips.physical_simulator.grid2opSimulator module</a></li>
-<li class="toctree-l2"><a class="reference internal" href="#module-lips.physical_simulator.physicalSimulator">lips.physical_simulator.physicalSimulator module</a></li>
-<li class="toctree-l2"><a class="reference internal" href="#module-lips.physical_simulator.physicsSolver">lips.physical_simulator.physicsSolver module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#module-lips.physical_simulator.dcApproximationAS">lips.physical_simulator.dcApproximationAS module</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#lips.physical_simulator.dcApproximationAS.DCApproximationAS"><code class="docutils literal notranslate"><span class="pre">DCApproximationAS</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#lips.physical_simulator.dcApproximationAS.DCApproximationAS.compute"><code class="docutils literal notranslate"><span class="pre">DCApproximationAS.compute()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#lips.physical_simulator.dcApproximationAS.DCApproximationAS.init"><code class="docutils literal notranslate"><span class="pre">DCApproximationAS.init()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#lips.physical_simulator.dcApproximationAS.DCApproximationAS.process_dataset"><code class="docutils literal notranslate"><span class="pre">DCApproximationAS.process_dataset()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#lips.physical_simulator.dcApproximationAS.DCApproximationAS.save"><code class="docutils literal notranslate"><span class="pre">DCApproximationAS.save()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#lips.physical_simulator.dcApproximationAS.DCApproximationAS.restore"><code class="docutils literal notranslate"><span class="pre">DCApproximationAS.restore()</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#module-lips.physical_simulator.grid2opSimulator">lips.physical_simulator.grid2opSimulator module</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#lips.physical_simulator.grid2opSimulator.Grid2opSimulator"><code class="docutils literal notranslate"><span class="pre">Grid2opSimulator</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#lips.physical_simulator.grid2opSimulator.Grid2opSimulator.seed"><code class="docutils literal notranslate"><span class="pre">Grid2opSimulator.seed()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#lips.physical_simulator.grid2opSimulator.Grid2opSimulator.sample_chronics"><code class="docutils literal notranslate"><span class="pre">Grid2opSimulator.sample_chronics()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#lips.physical_simulator.grid2opSimulator.Grid2opSimulator.get_state"><code class="docutils literal notranslate"><span class="pre">Grid2opSimulator.get_state()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#lips.physical_simulator.grid2opSimulator.Grid2opSimulator.modify_state"><code class="docutils literal notranslate"><span class="pre">Grid2opSimulator.modify_state()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#lips.physical_simulator.grid2opSimulator.Grid2opSimulator.visualize_network"><code class="docutils literal notranslate"><span class="pre">Grid2opSimulator.visualize_network()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#lips.physical_simulator.grid2opSimulator.Grid2opSimulator.visualize_network_reference_topology"><code class="docutils literal notranslate"><span class="pre">Grid2opSimulator.visualize_network_reference_topology()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="#lips.physical_simulator.grid2opSimulator.get_env"><code class="docutils literal notranslate"><span class="pre">get_env()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#module-lips.physical_simulator.physicalSimulator">lips.physical_simulator.physicalSimulator module</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#lips.physical_simulator.physicalSimulator.PhysicalSimulator"><code class="docutils literal notranslate"><span class="pre">PhysicalSimulator</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#lips.physical_simulator.physicalSimulator.PhysicalSimulator.get_state"><code class="docutils literal notranslate"><span class="pre">PhysicalSimulator.get_state()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#lips.physical_simulator.physicalSimulator.PhysicalSimulator.modify_state"><code class="docutils literal notranslate"><span class="pre">PhysicalSimulator.modify_state()</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#module-lips.physical_simulator.physicsSolver">lips.physical_simulator.physicsSolver module</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#lips.physical_simulator.physicsSolver.PhysicsSolver"><code class="docutils literal notranslate"><span class="pre">PhysicsSolver</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#lips.physical_simulator.physicsSolver.PhysicsSolver.compute"><code class="docutils literal notranslate"><span class="pre">PhysicsSolver.compute()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#lips.physical_simulator.physicsSolver.PhysicsSolver.init"><code class="docutils literal notranslate"><span class="pre">PhysicsSolver.init()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#lips.physical_simulator.physicsSolver.PhysicsSolver.process_dataset"><code class="docutils literal notranslate"><span class="pre">PhysicsSolver.process_dataset()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#lips.physical_simulator.physicsSolver.PhysicsSolver.data_to_dict"><code class="docutils literal notranslate"><span class="pre">PhysicsSolver.data_to_dict()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#lips.physical_simulator.physicsSolver.PhysicsSolver.save"><code class="docutils literal notranslate"><span class="pre">PhysicsSolver.save()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#lips.physical_simulator.physicsSolver.PhysicsSolver.restore"><code class="docutils literal notranslate"><span class="pre">PhysicsSolver.restore()</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
 </ul>
 </li>
 </ul>
@@ -91,7 +159,7 @@
            <div itemprop="articleBody">
              
   <section id="module-lips.physical_simulator">
-<span id="lips-physical-simulator-package"></span><h1>lips.physical_simulator package<a class="headerlink" href="#module-lips.physical_simulator" title="Permalink to this headline"></a></h1>
+<span id="lips-physical-simulator-package"></span><h1>lips.physical_simulator package<a class="headerlink" href="#module-lips.physical_simulator" title="Permalink to this heading"></a></h1>
 <p><strong>Classes:</strong></p>
 <table class="autosummary longtable docutils align-default">
 <colgroup>
@@ -174,7 +242,7 @@ anything that emulates the behaviour of some “simulator”.</p>
 <col style="width: 90%" />
 </colgroup>
 <tbody>
-<tr class="row-odd"><td><p><a class="reference internal" href="#lips.physical_simulator.PhysicsSolver.evaluate" title="lips.physical_simulator.PhysicsSolver.evaluate"><code class="xref py py-obj docutils literal notranslate"><span class="pre">evaluate</span></code></a>(dataset)</p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="#lips.physical_simulator.PhysicsSolver.compute" title="lips.physical_simulator.PhysicsSolver.compute"><code class="xref py py-obj docutils literal notranslate"><span class="pre">compute</span></code></a>(dataset)</p></td>
 <td><p>evaluate the model on the full dataset</p></td>
 </tr>
 <tr class="row-even"><td><p><a class="reference internal" href="#lips.physical_simulator.PhysicsSolver.init" title="lips.physical_simulator.PhysicsSolver.init"><code class="xref py py-obj docutils literal notranslate"><span class="pre">init</span></code></a>(**kwargs)</p></td>
@@ -195,8 +263,8 @@ anything that emulates the behaviour of some “simulator”.</p>
 </tbody>
 </table>
 <dl class="py method">
-<dt class="sig sig-object py" id="lips.physical_simulator.PhysicsSolver.evaluate">
-<span class="sig-name descname"><span class="pre">evaluate</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">dataset</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="lips.dataset.html#lips.dataset.DataSet" title="lips.dataset.DataSet"><span class="pre">DataSet</span></a></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/lips/physical_simulator/physicsSolver.html#PhysicsSolver.evaluate"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#lips.physical_simulator.PhysicsSolver.evaluate" title="Permalink to this definition"></a></dt>
+<dt class="sig sig-object py" id="lips.physical_simulator.PhysicsSolver.compute">
+<span class="sig-name descname"><span class="pre">compute</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">dataset</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="lips.dataset.html#lips.dataset.DataSet" title="lips.dataset.DataSet"><span class="pre">DataSet</span></a></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/lips/physical_simulator/physicsSolver.html#PhysicsSolver.compute"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#lips.physical_simulator.PhysicsSolver.compute" title="Permalink to this definition"></a></dt>
 <dd><p>evaluate the model on the full dataset</p>
 </dd></dl>
 
@@ -239,7 +307,7 @@ the neural network (for example)</p>
 <dl class="py class">
 <dt class="sig sig-object py" id="lips.physical_simulator.Grid2opSimulator">
 <em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">lips.physical_simulator.</span></span><span class="sig-name descname"><span class="pre">Grid2opSimulator</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">env_kwargs</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">dict</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">initial_chronics_id</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Union</span><span class="p"><span class="pre">[</span></span><span class="pre">None</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">int</span><span class="p"><span class="pre">]</span></span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">chronics_selected_regex</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/lips/physical_simulator/grid2opSimulator.html#Grid2opSimulator"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#lips.physical_simulator.Grid2opSimulator" title="Permalink to this definition"></a></dt>
-<dd><p>Bases: <a class="reference internal" href="#lips.physical_simulator.physicalSimulator.PhysicalSimulator" title="lips.physical_simulator.physicalSimulator.PhysicalSimulator"><code class="xref py py-class docutils literal notranslate"><span class="pre">lips.physical_simulator.physicalSimulator.PhysicalSimulator</span></code></a></p>
+<dd><p>Bases: <a class="reference internal" href="#lips.physical_simulator.physicalSimulator.PhysicalSimulator" title="lips.physical_simulator.physicalSimulator.PhysicalSimulator"><code class="xref py py-class docutils literal notranslate"><span class="pre">PhysicalSimulator</span></code></a></p>
 <p>This simulator uses the <cite>grid2op</cite> package to implement a physical simulator.
 It accepts both grid2op BaseAction and grid2op BaseAgent to modify the internal state of the simulator</p>
 <dl class="field-list simple">
@@ -261,16 +329,19 @@ It accepts both grid2op BaseAction and grid2op BaseAgent to modify the internal 
 <tr class="row-odd"><td><p><a class="reference internal" href="#lips.physical_simulator.Grid2opSimulator.seed" title="lips.physical_simulator.Grid2opSimulator.seed"><code class="xref py py-obj docutils literal notranslate"><span class="pre">seed</span></code></a>(seed)</p></td>
 <td><p>It seeds the environment, for reproducible experiments.</p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="#lips.physical_simulator.Grid2opSimulator.get_state" title="lips.physical_simulator.Grid2opSimulator.get_state"><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_state</span></code></a>()</p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="#lips.physical_simulator.Grid2opSimulator.sample_chronics" title="lips.physical_simulator.Grid2opSimulator.sample_chronics"><code class="xref py py-obj docutils literal notranslate"><span class="pre">sample_chronics</span></code></a>()</p></td>
+<td><p>Sample a chronic among all the chronics available</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#lips.physical_simulator.Grid2opSimulator.get_state" title="lips.physical_simulator.Grid2opSimulator.get_state"><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_state</span></code></a>()</p></td>
 <td><p>The state of the powergrid is, for this class, represented by a tuple: - grid2op observation.</p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="#lips.physical_simulator.Grid2opSimulator.modify_state" title="lips.physical_simulator.Grid2opSimulator.modify_state"><code class="xref py py-obj docutils literal notranslate"><span class="pre">modify_state</span></code></a>(actor)</p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="#lips.physical_simulator.Grid2opSimulator.modify_state" title="lips.physical_simulator.Grid2opSimulator.modify_state"><code class="xref py py-obj docutils literal notranslate"><span class="pre">modify_state</span></code></a>(actor)</p></td>
 <td><p>It calls <cite>env.step</cite> until a convergence is obtained.</p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="#lips.physical_simulator.Grid2opSimulator.visualize_network" title="lips.physical_simulator.Grid2opSimulator.visualize_network"><code class="xref py py-obj docutils literal notranslate"><span class="pre">visualize_network</span></code></a>()</p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="#lips.physical_simulator.Grid2opSimulator.visualize_network" title="lips.physical_simulator.Grid2opSimulator.visualize_network"><code class="xref py py-obj docutils literal notranslate"><span class="pre">visualize_network</span></code></a>()</p></td>
 <td><p>This functions shows the network state evolution over time for a given dataset</p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="#lips.physical_simulator.Grid2opSimulator.visualize_network_reference_topology" title="lips.physical_simulator.Grid2opSimulator.visualize_network_reference_topology"><code class="xref py py-obj docutils literal notranslate"><span class="pre">visualize_network_reference_topology</span></code></a>([action])</p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="#lips.physical_simulator.Grid2opSimulator.visualize_network_reference_topology" title="lips.physical_simulator.Grid2opSimulator.visualize_network_reference_topology"><code class="xref py py-obj docutils literal notranslate"><span class="pre">visualize_network_reference_topology</span></code></a>([action])</p></td>
 <td><p>visualize the power network's reference topology</p></td>
 </tr>
 </tbody>
@@ -284,6 +355,12 @@ It accepts both grid2op BaseAction and grid2op BaseAgent to modify the internal 
 <dd class="field-odd"><p><strong>seed</strong> (<em>int</em>) – An integer representing the seed.</p>
 </dd>
 </dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="lips.physical_simulator.Grid2opSimulator.sample_chronics">
+<span class="sig-name descname"><span class="pre">sample_chronics</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/lips/physical_simulator/grid2opSimulator.html#Grid2opSimulator.sample_chronics"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#lips.physical_simulator.Grid2opSimulator.sample_chronics" title="Permalink to this definition"></a></dt>
+<dd><p>Sample a chronic among all the chronics available</p>
 </dd></dl>
 
 <dl class="py method">
@@ -304,7 +381,7 @@ It accepts both grid2op BaseAction and grid2op BaseAgent to modify the internal 
 
 <dl class="py method">
 <dt class="sig sig-object py" id="lips.physical_simulator.Grid2opSimulator.modify_state">
-<span class="sig-name descname"><span class="pre">modify_state</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">actor</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">grid2op.Agent.baseAgent.BaseAgent</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/lips/physical_simulator/grid2opSimulator.html#Grid2opSimulator.modify_state"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#lips.physical_simulator.Grid2opSimulator.modify_state" title="Permalink to this definition"></a></dt>
+<span class="sig-name descname"><span class="pre">modify_state</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">actor</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">BaseAgent</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/lips/physical_simulator/grid2opSimulator.html#Grid2opSimulator.modify_state"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#lips.physical_simulator.Grid2opSimulator.modify_state" title="Permalink to this definition"></a></dt>
 <dd><p>It calls <cite>env.step</cite> until a convergence is obtained.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
@@ -318,23 +395,23 @@ It accepts both grid2op BaseAction and grid2op BaseAgent to modify the internal 
 
 <dl class="py method">
 <dt class="sig sig-object py" id="lips.physical_simulator.Grid2opSimulator.visualize_network">
-<span class="sig-name descname"><span class="pre">visualize_network</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">grid2op.PlotGrid.PlotMatplot.PlotMatplot</span></span></span><a class="reference internal" href="_modules/lips/physical_simulator/grid2opSimulator.html#Grid2opSimulator.visualize_network"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#lips.physical_simulator.Grid2opSimulator.visualize_network" title="Permalink to this definition"></a></dt>
+<span class="sig-name descname"><span class="pre">visualize_network</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">PlotMatplot</span></span></span><a class="reference internal" href="_modules/lips/physical_simulator/grid2opSimulator.html#Grid2opSimulator.visualize_network"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#lips.physical_simulator.Grid2opSimulator.visualize_network" title="Permalink to this definition"></a></dt>
 <dd><p>This functions shows the network state evolution over time for a given dataset</p>
 </dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="lips.physical_simulator.Grid2opSimulator.visualize_network_reference_topology">
-<span class="sig-name descname"><span class="pre">visualize_network_reference_topology</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">action</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><span class="pre">grid2op.Action.BaseAction.BaseAction</span><span class="p"><span class="pre">]</span></span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">plot_kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/lips/physical_simulator/grid2opSimulator.html#Grid2opSimulator.visualize_network_reference_topology"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#lips.physical_simulator.Grid2opSimulator.visualize_network_reference_topology" title="Permalink to this definition"></a></dt>
+<span class="sig-name descname"><span class="pre">visualize_network_reference_topology</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">action</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><span class="pre">BaseAction</span><span class="p"><span class="pre">]</span></span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">plot_kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/lips/physical_simulator/grid2opSimulator.html#Grid2opSimulator.visualize_network_reference_topology"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#lips.physical_simulator.Grid2opSimulator.visualize_network_reference_topology" title="Permalink to this definition"></a></dt>
 <dd><p>visualize the power network’s reference topology</p>
 </dd></dl>
 
 </dd></dl>
 
 <section id="submodules">
-<h2>Submodules<a class="headerlink" href="#submodules" title="Permalink to this headline"></a></h2>
+<h2>Submodules<a class="headerlink" href="#submodules" title="Permalink to this heading"></a></h2>
 </section>
 <section id="module-lips.physical_simulator.dcApproximationAS">
-<span id="lips-physical-simulator-dcapproximationas-module"></span><h2>lips.physical_simulator.dcApproximationAS module<a class="headerlink" href="#module-lips.physical_simulator.dcApproximationAS" title="Permalink to this headline"></a></h2>
+<span id="lips-physical-simulator-dcapproximationas-module"></span><h2>lips.physical_simulator.dcApproximationAS module<a class="headerlink" href="#module-lips.physical_simulator.dcApproximationAS" title="Permalink to this heading"></a></h2>
 <p><strong>Classes:</strong></p>
 <table class="autosummary longtable docutils align-default">
 <colgroup>
@@ -349,8 +426,8 @@ It accepts both grid2op BaseAction and grid2op BaseAgent to modify the internal 
 </table>
 <dl class="py class">
 <dt class="sig sig-object py" id="lips.physical_simulator.dcApproximationAS.DCApproximationAS">
-<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">lips.physical_simulator.dcApproximationAS.</span></span><span class="sig-name descname"><span class="pre">DCApproximationAS</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">name</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'dc_approximation'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">benchmark_name</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'Benchmark1'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">config_path</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">grid_path</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">simulator</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><a class="reference internal" href="#lips.physical_simulator.grid2opSimulator.Grid2opSimulator" title="lips.physical_simulator.grid2opSimulator.Grid2opSimulator"><span class="pre">lips.physical_simulator.grid2opSimulator.Grid2opSimulator</span></a><span class="p"><span class="pre">]</span></span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/lips/physical_simulator/dcApproximationAS.html#DCApproximationAS"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#lips.physical_simulator.dcApproximationAS.DCApproximationAS" title="Permalink to this definition"></a></dt>
-<dd><p>Bases: <a class="reference internal" href="#lips.physical_simulator.physicsSolver.PhysicsSolver" title="lips.physical_simulator.physicsSolver.PhysicsSolver"><code class="xref py py-class docutils literal notranslate"><span class="pre">lips.physical_simulator.physicsSolver.PhysicsSolver</span></code></a></p>
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">lips.physical_simulator.dcApproximationAS.</span></span><span class="sig-name descname"><span class="pre">DCApproximationAS</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">name</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'dc_approximation'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">benchmark_name</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'Benchmark1'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">config_path</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">grid_path</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">simulator</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><a class="reference internal" href="#lips.physical_simulator.grid2opSimulator.Grid2opSimulator" title="lips.physical_simulator.grid2opSimulator.Grid2opSimulator"><span class="pre">Grid2opSimulator</span></a><span class="p"><span class="pre">]</span></span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/lips/physical_simulator/dcApproximationAS.html#DCApproximationAS"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#lips.physical_simulator.dcApproximationAS.DCApproximationAS" title="Permalink to this definition"></a></dt>
+<dd><p>Bases: <a class="reference internal" href="#lips.physical_simulator.physicsSolver.PhysicsSolver" title="lips.physical_simulator.physicsSolver.PhysicsSolver"><code class="xref py py-class docutils literal notranslate"><span class="pre">PhysicsSolver</span></code></a></p>
 <p>This class presents a physics solver used for power system flow computation.</p>
 <p>It is based on a physical solver that linearized the powergrid equations and solve this linearization.</p>
 <div class="admonition-todo admonition" id="id1">
@@ -368,7 +445,7 @@ as a example implementation for a specific <cite>AugmentedSimulator</cite>.</p>
 <col style="width: 90%" />
 </colgroup>
 <tbody>
-<tr class="row-odd"><td><p><a class="reference internal" href="#lips.physical_simulator.dcApproximationAS.DCApproximationAS.evaluate" title="lips.physical_simulator.dcApproximationAS.DCApproximationAS.evaluate"><code class="xref py py-obj docutils literal notranslate"><span class="pre">evaluate</span></code></a>(dataset)</p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="#lips.physical_simulator.dcApproximationAS.DCApproximationAS.compute" title="lips.physical_simulator.dcApproximationAS.DCApproximationAS.compute"><code class="xref py py-obj docutils literal notranslate"><span class="pre">compute</span></code></a>(dataset)</p></td>
 <td><p>evaluate the model on the whole dataset.</p></td>
 </tr>
 <tr class="row-even"><td><p><a class="reference internal" href="#lips.physical_simulator.dcApproximationAS.DCApproximationAS.init" title="lips.physical_simulator.dcApproximationAS.DCApproximationAS.init"><code class="xref py py-obj docutils literal notranslate"><span class="pre">init</span></code></a>(**kwargs)</p></td>
@@ -386,8 +463,8 @@ as a example implementation for a specific <cite>AugmentedSimulator</cite>.</p>
 </tbody>
 </table>
 <dl class="py method">
-<dt class="sig sig-object py" id="lips.physical_simulator.dcApproximationAS.DCApproximationAS.evaluate">
-<span class="sig-name descname"><span class="pre">evaluate</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">dataset</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="lips.dataset.html#lips.dataset.powergridDataSet.PowerGridDataSet" title="lips.dataset.powergridDataSet.PowerGridDataSet"><span class="pre">lips.dataset.powergridDataSet.PowerGridDataSet</span></a></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/lips/physical_simulator/dcApproximationAS.html#DCApproximationAS.evaluate"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#lips.physical_simulator.dcApproximationAS.DCApproximationAS.evaluate" title="Permalink to this definition"></a></dt>
+<dt class="sig sig-object py" id="lips.physical_simulator.dcApproximationAS.DCApproximationAS.compute">
+<span class="sig-name descname"><span class="pre">compute</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">dataset</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="lips.dataset.html#lips.dataset.powergridDataSet.PowerGridDataSet" title="lips.dataset.powergridDataSet.PowerGridDataSet"><span class="pre">PowerGridDataSet</span></a></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/lips/physical_simulator/dcApproximationAS.html#DCApproximationAS.compute"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#lips.physical_simulator.dcApproximationAS.DCApproximationAS.compute" title="Permalink to this definition"></a></dt>
 <dd><p>evaluate the model on the whole dataset. It returns a dictionnary with the keys in self._attr_y</p>
 </dd></dl>
 
@@ -421,7 +498,7 @@ Ideally it should save the grid</p>
 
 </section>
 <section id="module-lips.physical_simulator.grid2opSimulator">
-<span id="lips-physical-simulator-grid2opsimulator-module"></span><h2>lips.physical_simulator.grid2opSimulator module<a class="headerlink" href="#module-lips.physical_simulator.grid2opSimulator" title="Permalink to this headline"></a></h2>
+<span id="lips-physical-simulator-grid2opsimulator-module"></span><h2>lips.physical_simulator.grid2opSimulator module<a class="headerlink" href="#module-lips.physical_simulator.grid2opSimulator" title="Permalink to this heading"></a></h2>
 <dl class="simple">
 <dt>Usage:</dt><dd><p>Grid2opSimulator implementing powergrid physical simulator</p>
 </dd>
@@ -461,7 +538,7 @@ This file is part of LIPS, LIPS is a python platform for power networks benchmar
 <dl class="py class">
 <dt class="sig sig-object py" id="lips.physical_simulator.grid2opSimulator.Grid2opSimulator">
 <em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">lips.physical_simulator.grid2opSimulator.</span></span><span class="sig-name descname"><span class="pre">Grid2opSimulator</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">env_kwargs</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">dict</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">initial_chronics_id</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Union</span><span class="p"><span class="pre">[</span></span><span class="pre">None</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">int</span><span class="p"><span class="pre">]</span></span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">chronics_selected_regex</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/lips/physical_simulator/grid2opSimulator.html#Grid2opSimulator"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#lips.physical_simulator.grid2opSimulator.Grid2opSimulator" title="Permalink to this definition"></a></dt>
-<dd><p>Bases: <a class="reference internal" href="#lips.physical_simulator.physicalSimulator.PhysicalSimulator" title="lips.physical_simulator.physicalSimulator.PhysicalSimulator"><code class="xref py py-class docutils literal notranslate"><span class="pre">lips.physical_simulator.physicalSimulator.PhysicalSimulator</span></code></a></p>
+<dd><p>Bases: <a class="reference internal" href="#lips.physical_simulator.physicalSimulator.PhysicalSimulator" title="lips.physical_simulator.physicalSimulator.PhysicalSimulator"><code class="xref py py-class docutils literal notranslate"><span class="pre">PhysicalSimulator</span></code></a></p>
 <p>This simulator uses the <cite>grid2op</cite> package to implement a physical simulator.
 It accepts both grid2op BaseAction and grid2op BaseAgent to modify the internal state of the simulator</p>
 <dl class="field-list simple">
@@ -483,16 +560,19 @@ It accepts both grid2op BaseAction and grid2op BaseAgent to modify the internal 
 <tr class="row-odd"><td><p><a class="reference internal" href="#lips.physical_simulator.grid2opSimulator.Grid2opSimulator.seed" title="lips.physical_simulator.grid2opSimulator.Grid2opSimulator.seed"><code class="xref py py-obj docutils literal notranslate"><span class="pre">seed</span></code></a>(seed)</p></td>
 <td><p>It seeds the environment, for reproducible experiments.</p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="#lips.physical_simulator.grid2opSimulator.Grid2opSimulator.get_state" title="lips.physical_simulator.grid2opSimulator.Grid2opSimulator.get_state"><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_state</span></code></a>()</p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="#lips.physical_simulator.grid2opSimulator.Grid2opSimulator.sample_chronics" title="lips.physical_simulator.grid2opSimulator.Grid2opSimulator.sample_chronics"><code class="xref py py-obj docutils literal notranslate"><span class="pre">sample_chronics</span></code></a>()</p></td>
+<td><p>Sample a chronic among all the chronics available</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#lips.physical_simulator.grid2opSimulator.Grid2opSimulator.get_state" title="lips.physical_simulator.grid2opSimulator.Grid2opSimulator.get_state"><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_state</span></code></a>()</p></td>
 <td><p>The state of the powergrid is, for this class, represented by a tuple: - grid2op observation.</p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="#lips.physical_simulator.grid2opSimulator.Grid2opSimulator.modify_state" title="lips.physical_simulator.grid2opSimulator.Grid2opSimulator.modify_state"><code class="xref py py-obj docutils literal notranslate"><span class="pre">modify_state</span></code></a>(actor)</p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="#lips.physical_simulator.grid2opSimulator.Grid2opSimulator.modify_state" title="lips.physical_simulator.grid2opSimulator.Grid2opSimulator.modify_state"><code class="xref py py-obj docutils literal notranslate"><span class="pre">modify_state</span></code></a>(actor)</p></td>
 <td><p>It calls <cite>env.step</cite> until a convergence is obtained.</p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="#lips.physical_simulator.grid2opSimulator.Grid2opSimulator.visualize_network" title="lips.physical_simulator.grid2opSimulator.Grid2opSimulator.visualize_network"><code class="xref py py-obj docutils literal notranslate"><span class="pre">visualize_network</span></code></a>()</p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="#lips.physical_simulator.grid2opSimulator.Grid2opSimulator.visualize_network" title="lips.physical_simulator.grid2opSimulator.Grid2opSimulator.visualize_network"><code class="xref py py-obj docutils literal notranslate"><span class="pre">visualize_network</span></code></a>()</p></td>
 <td><p>This functions shows the network state evolution over time for a given dataset</p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="#lips.physical_simulator.grid2opSimulator.Grid2opSimulator.visualize_network_reference_topology" title="lips.physical_simulator.grid2opSimulator.Grid2opSimulator.visualize_network_reference_topology"><code class="xref py py-obj docutils literal notranslate"><span class="pre">visualize_network_reference_topology</span></code></a>([action])</p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="#lips.physical_simulator.grid2opSimulator.Grid2opSimulator.visualize_network_reference_topology" title="lips.physical_simulator.grid2opSimulator.Grid2opSimulator.visualize_network_reference_topology"><code class="xref py py-obj docutils literal notranslate"><span class="pre">visualize_network_reference_topology</span></code></a>([action])</p></td>
 <td><p>visualize the power network's reference topology</p></td>
 </tr>
 </tbody>
@@ -506,6 +586,12 @@ It accepts both grid2op BaseAction and grid2op BaseAgent to modify the internal 
 <dd class="field-odd"><p><strong>seed</strong> (<em>int</em>) – An integer representing the seed.</p>
 </dd>
 </dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="lips.physical_simulator.grid2opSimulator.Grid2opSimulator.sample_chronics">
+<span class="sig-name descname"><span class="pre">sample_chronics</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/lips/physical_simulator/grid2opSimulator.html#Grid2opSimulator.sample_chronics"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#lips.physical_simulator.grid2opSimulator.Grid2opSimulator.sample_chronics" title="Permalink to this definition"></a></dt>
+<dd><p>Sample a chronic among all the chronics available</p>
 </dd></dl>
 
 <dl class="py method">
@@ -526,7 +612,7 @@ It accepts both grid2op BaseAction and grid2op BaseAgent to modify the internal 
 
 <dl class="py method">
 <dt class="sig sig-object py" id="lips.physical_simulator.grid2opSimulator.Grid2opSimulator.modify_state">
-<span class="sig-name descname"><span class="pre">modify_state</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">actor</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">grid2op.Agent.baseAgent.BaseAgent</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/lips/physical_simulator/grid2opSimulator.html#Grid2opSimulator.modify_state"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#lips.physical_simulator.grid2opSimulator.Grid2opSimulator.modify_state" title="Permalink to this definition"></a></dt>
+<span class="sig-name descname"><span class="pre">modify_state</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">actor</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">BaseAgent</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/lips/physical_simulator/grid2opSimulator.html#Grid2opSimulator.modify_state"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#lips.physical_simulator.grid2opSimulator.Grid2opSimulator.modify_state" title="Permalink to this definition"></a></dt>
 <dd><p>It calls <cite>env.step</cite> until a convergence is obtained.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
@@ -540,13 +626,13 @@ It accepts both grid2op BaseAction and grid2op BaseAgent to modify the internal 
 
 <dl class="py method">
 <dt class="sig sig-object py" id="lips.physical_simulator.grid2opSimulator.Grid2opSimulator.visualize_network">
-<span class="sig-name descname"><span class="pre">visualize_network</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">grid2op.PlotGrid.PlotMatplot.PlotMatplot</span></span></span><a class="reference internal" href="_modules/lips/physical_simulator/grid2opSimulator.html#Grid2opSimulator.visualize_network"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#lips.physical_simulator.grid2opSimulator.Grid2opSimulator.visualize_network" title="Permalink to this definition"></a></dt>
+<span class="sig-name descname"><span class="pre">visualize_network</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">PlotMatplot</span></span></span><a class="reference internal" href="_modules/lips/physical_simulator/grid2opSimulator.html#Grid2opSimulator.visualize_network"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#lips.physical_simulator.grid2opSimulator.Grid2opSimulator.visualize_network" title="Permalink to this definition"></a></dt>
 <dd><p>This functions shows the network state evolution over time for a given dataset</p>
 </dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="lips.physical_simulator.grid2opSimulator.Grid2opSimulator.visualize_network_reference_topology">
-<span class="sig-name descname"><span class="pre">visualize_network_reference_topology</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">action</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><span class="pre">grid2op.Action.BaseAction.BaseAction</span><span class="p"><span class="pre">]</span></span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">plot_kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/lips/physical_simulator/grid2opSimulator.html#Grid2opSimulator.visualize_network_reference_topology"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#lips.physical_simulator.grid2opSimulator.Grid2opSimulator.visualize_network_reference_topology" title="Permalink to this definition"></a></dt>
+<span class="sig-name descname"><span class="pre">visualize_network_reference_topology</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">action</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><span class="pre">BaseAction</span><span class="p"><span class="pre">]</span></span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">plot_kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/lips/physical_simulator/grid2opSimulator.html#Grid2opSimulator.visualize_network_reference_topology"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#lips.physical_simulator.grid2opSimulator.Grid2opSimulator.visualize_network_reference_topology" title="Permalink to this definition"></a></dt>
 <dd><p>visualize the power network’s reference topology</p>
 </dd></dl>
 
@@ -571,7 +657,7 @@ It accepts both grid2op BaseAction and grid2op BaseAgent to modify the internal 
 
 </section>
 <section id="module-lips.physical_simulator.physicalSimulator">
-<span id="lips-physical-simulator-physicalsimulator-module"></span><h2>lips.physical_simulator.physicalSimulator module<a class="headerlink" href="#module-lips.physical_simulator.physicalSimulator" title="Permalink to this headline"></a></h2>
+<span id="lips-physical-simulator-physicalsimulator-module"></span><h2>lips.physical_simulator.physicalSimulator module<a class="headerlink" href="#module-lips.physical_simulator.physicalSimulator" title="Permalink to this heading"></a></h2>
 <p><strong>Classes:</strong></p>
 <table class="autosummary longtable docutils align-default">
 <colgroup>
@@ -636,7 +722,7 @@ call to <cite>physical_simulator.get_results()</cite> might give another results
 
 </section>
 <section id="module-lips.physical_simulator.physicsSolver">
-<span id="lips-physical-simulator-physicssolver-module"></span><h2>lips.physical_simulator.physicsSolver module<a class="headerlink" href="#module-lips.physical_simulator.physicsSolver" title="Permalink to this headline"></a></h2>
+<span id="lips-physical-simulator-physicssolver-module"></span><h2>lips.physical_simulator.physicsSolver module<a class="headerlink" href="#module-lips.physical_simulator.physicsSolver" title="Permalink to this heading"></a></h2>
 <p><strong>Classes:</strong></p>
 <table class="autosummary longtable docutils align-default">
 <colgroup>
@@ -663,7 +749,7 @@ anything that emulates the behaviour of some “simulator”.</p>
 <col style="width: 90%" />
 </colgroup>
 <tbody>
-<tr class="row-odd"><td><p><a class="reference internal" href="#lips.physical_simulator.physicsSolver.PhysicsSolver.evaluate" title="lips.physical_simulator.physicsSolver.PhysicsSolver.evaluate"><code class="xref py py-obj docutils literal notranslate"><span class="pre">evaluate</span></code></a>(dataset)</p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="#lips.physical_simulator.physicsSolver.PhysicsSolver.compute" title="lips.physical_simulator.physicsSolver.PhysicsSolver.compute"><code class="xref py py-obj docutils literal notranslate"><span class="pre">compute</span></code></a>(dataset)</p></td>
 <td><p>evaluate the model on the full dataset</p></td>
 </tr>
 <tr class="row-even"><td><p><a class="reference internal" href="#lips.physical_simulator.physicsSolver.PhysicsSolver.init" title="lips.physical_simulator.physicsSolver.PhysicsSolver.init"><code class="xref py py-obj docutils literal notranslate"><span class="pre">init</span></code></a>(**kwargs)</p></td>
@@ -684,8 +770,8 @@ anything that emulates the behaviour of some “simulator”.</p>
 </tbody>
 </table>
 <dl class="py method">
-<dt class="sig sig-object py" id="lips.physical_simulator.physicsSolver.PhysicsSolver.evaluate">
-<span class="sig-name descname"><span class="pre">evaluate</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">dataset</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="lips.dataset.html#lips.dataset.DataSet" title="lips.dataset.DataSet"><span class="pre">DataSet</span></a></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/lips/physical_simulator/physicsSolver.html#PhysicsSolver.evaluate"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#lips.physical_simulator.physicsSolver.PhysicsSolver.evaluate" title="Permalink to this definition"></a></dt>
+<dt class="sig sig-object py" id="lips.physical_simulator.physicsSolver.PhysicsSolver.compute">
+<span class="sig-name descname"><span class="pre">compute</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">dataset</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="lips.dataset.html#lips.dataset.DataSet" title="lips.dataset.DataSet"><span class="pre">DataSet</span></a></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/lips/physical_simulator/physicsSolver.html#PhysicsSolver.compute"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#lips.physical_simulator.physicsSolver.PhysicsSolver.compute" title="Permalink to this definition"></a></dt>
 <dd><p>evaluate the model on the full dataset</p>
 </dd></dl>
 

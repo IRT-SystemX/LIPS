@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>lips.dataset.powergridDataSet &mdash; LIPS 0.1 documentation</title>
+  <title>lips.dataset.powergridDataSet &mdash; LIPS 0.1.0 documentation</title>
       <link rel="stylesheet" href="../../../_static/pygments.css" type="text/css" />
       <link rel="stylesheet" href="../../../_static/css/theme.css" type="text/css" />
   <!--[if lt IE 9]>
@@ -13,7 +13,9 @@
         <script data-url_root="../../../" id="documentation_options" src="../../../_static/documentation_options.js"></script>
         <script src="../../../_static/jquery.js"></script>
         <script src="../../../_static/underscore.js"></script>
+        <script src="../../../_static/_sphinx_javascript_frameworks_compat.js"></script>
         <script src="../../../_static/doctools.js"></script>
+        <script src="../../../_static/sphinx_highlight.js"></script>
     <script src="../../../_static/js/theme.js"></script>
     <link rel="index" title="Index" href="../../../genindex.html" />
     <link rel="search" title="Search" href="../../../search.html" /> 
@@ -26,6 +28,9 @@
         <div class="wy-side-nav-search" >
             <a href="../../../index.html" class="icon icon-home"> LIPS
           </a>
+              <div class="version">
+                0.1
+              </div>
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="../../../search.html" method="get">
     <input type="text" name="q" placeholder="Search docs" />
@@ -110,7 +115,7 @@
 <span class="kn">from</span> <span class="nn">..physical_simulator</span> <span class="kn">import</span> <span class="n">Grid2opSimulator</span>
 <span class="kn">from</span> <span class="nn">..config</span> <span class="kn">import</span> <span class="n">ConfigManager</span>
 
-<div class="viewcode-block" id="PowerGridDataSet"><a class="viewcode-back" href="../../../lips.dataset.html#lips.dataset.PowerGridDataSet">[docs]</a><span class="k">class</span> <span class="nc">PowerGridDataSet</span><span class="p">(</span><span class="n">DataSet</span><span class="p">):</span>
+<div class="viewcode-block" id="PowerGridDataSet"><a class="viewcode-back" href="../../../lips.dataset.html#lips.dataset.powergridDataSet.PowerGridDataSet">[docs]</a><span class="k">class</span> <span class="nc">PowerGridDataSet</span><span class="p">(</span><span class="n">DataSet</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;Class to manage powergrid data</span>
 
 <span class="sd">    This specific DataSet uses grid2op framework to simulate data coming from a powergrid.</span>
@@ -160,6 +165,8 @@
             <span class="bp">self</span><span class="o">.</span><span class="n">_attr_names</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">ALL_VARIABLES</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">size</span> <span class="o">=</span> <span class="mi">0</span>
 
+        <span class="bp">self</span><span class="o">.</span><span class="n">chronics_info</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">()</span>
+
         <span class="c1"># logger</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">logger</span> <span class="o">=</span> <span class="n">CustomLogger</span><span class="p">(</span><span class="vm">__class__</span><span class="o">.</span><span class="vm">__name__</span><span class="p">,</span> <span class="n">log_path</span><span class="p">)</span><span class="o">.</span><span class="n">logger</span>
         <span class="c1"># config</span>
@@ -184,16 +191,19 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">_attr_y</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">config</span><span class="o">.</span><span class="n">get_option</span><span class="p">(</span><span class="s2">&quot;attr_y&quot;</span><span class="p">)</span>
 
         <span class="bp">self</span><span class="o">.</span><span class="n">env_data</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_slack_id</span> <span class="o">=</span> <span class="kc">None</span>
 
         <span class="c1">#TODO add a seed for reproducible experiment !</span>
 
-<div class="viewcode-block" id="PowerGridDataSet.generate"><a class="viewcode-back" href="../../../lips.dataset.html#lips.dataset.PowerGridDataSet.generate">[docs]</a>    <span class="k">def</span> <span class="nf">generate</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span>
+<div class="viewcode-block" id="PowerGridDataSet.generate"><a class="viewcode-back" href="../../../lips.dataset.html#lips.dataset.powergridDataSet.PowerGridDataSet.generate">[docs]</a>    <span class="k">def</span> <span class="nf">generate</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span>
                  <span class="n">simulator</span><span class="p">:</span> <span class="n">Grid2opSimulator</span><span class="p">,</span>
                  <span class="n">actor</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="n">BaseAgent</span><span class="p">,</span> <span class="kc">None</span><span class="p">],</span>
                  <span class="n">path_out</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="kc">None</span><span class="p">],</span>
                  <span class="n">nb_samples</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span>
+                 <span class="n">nb_samples_per_chronic</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">288</span><span class="p">,</span> <span class="c1"># 1 day</span>
                  <span class="n">simulator_seed</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="kc">None</span><span class="p">,</span> <span class="nb">int</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
-                 <span class="n">actor_seed</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="kc">None</span><span class="p">,</span> <span class="nb">int</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">):</span>
+                 <span class="n">actor_seed</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="kc">None</span><span class="p">,</span> <span class="nb">int</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+                 <span class="n">do_store_physics</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;Generate a powergrid dataset</span>
 
 <span class="sd">        For this dataset, we use a Grid2opSimulator and a  grid2op Agent to generate data from a powergrid.</span>
@@ -239,31 +249,108 @@
             <span class="n">actor</span> <span class="o">=</span> <span class="n">DoNothingAgent</span><span class="p">(</span><span class="n">simulator</span><span class="o">.</span><span class="n">_simulator</span><span class="o">.</span><span class="n">action_space</span><span class="p">)</span>
 
         <span class="n">init_state</span><span class="p">,</span> <span class="n">init_info</span> <span class="o">=</span> <span class="n">simulator</span><span class="o">.</span><span class="n">get_state</span><span class="p">()</span>
+
+        <span class="n">prod_bus</span><span class="p">,</span> <span class="n">prod_conn</span> <span class="o">=</span> <span class="n">init_state</span><span class="o">.</span><span class="n">_get_bus_id</span><span class="p">(</span><span class="n">init_state</span><span class="o">.</span><span class="n">gen_pos_topo_vect</span><span class="p">,</span> <span class="n">init_state</span><span class="o">.</span><span class="n">gen_to_subid</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_slack_id</span> <span class="o">=</span> <span class="n">prod_bus</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span> <span class="c1">#in the hypothesis that there is only one slack and that it does not change accross observations</span>
+
         <span class="bp">self</span><span class="o">.</span><span class="n">data</span> <span class="o">=</span> <span class="p">{}</span>
         <span class="k">for</span> <span class="n">attr_nm</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_attr_names</span><span class="p">:</span>
             <span class="c1"># this part is only temporary, until a viable way to store the complete resulting state is found</span>
             <span class="n">array_</span> <span class="o">=</span> <span class="nb">getattr</span><span class="p">(</span><span class="n">init_state</span><span class="p">,</span> <span class="n">attr_nm</span><span class="p">)</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">data</span><span class="p">[</span><span class="n">attr_nm</span><span class="p">]</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">((</span><span class="n">nb_samples</span><span class="p">,</span> <span class="n">array_</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]),</span> <span class="n">dtype</span><span class="o">=</span><span class="n">array_</span><span class="o">.</span><span class="n">dtype</span><span class="p">)</span>
+        
+        <span class="c1">#to save physical variables if desired</span>
+        <span class="k">if</span> <span class="p">(</span><span class="n">do_store_physics</span><span class="p">):</span>
+            <span class="n">n_bus_bars</span> <span class="o">=</span> <span class="n">simulator</span><span class="o">.</span><span class="n">_simulator</span><span class="o">.</span><span class="n">n_sub</span> <span class="o">*</span> <span class="mi">2</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">data</span><span class="p">[</span><span class="s2">&quot;YBus&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">((</span><span class="n">nb_samples</span><span class="p">,</span> <span class="n">n_bus_bars</span><span class="p">,</span><span class="n">n_bus_bars</span><span class="p">),</span> <span class="n">dtype</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">complex128</span><span class="p">)</span> <span class="c1">#for admittance matrix</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">data</span><span class="p">[</span><span class="s2">&quot;SBus&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">((</span><span class="n">nb_samples</span><span class="p">,</span> <span class="n">n_bus_bars</span><span class="p">),</span> <span class="n">dtype</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">complex128</span><span class="p">)</span> <span class="c1">#for vector of nodal injections</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">data</span><span class="p">[</span><span class="s2">&quot;PV_nodes&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">((</span><span class="n">nb_samples</span><span class="p">,</span> <span class="n">n_bus_bars</span><span class="p">),</span> <span class="n">dtype</span><span class="o">=</span><span class="nb">bool</span><span class="p">)</span> <span class="c1">#for indices of P-V nodes</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">data</span><span class="p">[</span><span class="s2">&quot;slack&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">((</span><span class="n">nb_samples</span><span class="p">,</span> <span class="mi">2</span><span class="p">),</span> <span class="n">dtype</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">float16</span><span class="p">)</span> <span class="c1">#for indice of slack and active power adjusment from chronic</span>
 
-        <span class="k">for</span> <span class="n">ds_size</span> <span class="ow">in</span> <span class="n">tqdm</span><span class="p">(</span><span class="nb">range</span><span class="p">(</span><span class="n">nb_samples</span><span class="p">),</span> <span class="n">desc</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">name</span><span class="p">):</span>
-            <span class="n">simulator</span><span class="o">.</span><span class="n">modify_state</span><span class="p">(</span><span class="n">actor</span><span class="p">)</span>
-            <span class="n">current_state</span><span class="p">,</span> <span class="n">extra_info</span> <span class="o">=</span> <span class="n">simulator</span><span class="o">.</span><span class="n">get_state</span><span class="p">()</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">_store_obs</span><span class="p">(</span><span class="n">ds_size</span><span class="p">,</span> <span class="n">current_state</span><span class="p">)</span>
-            <span class="c1">#self._store_theta(ds_size, current_theta)</span>
+        <span class="c1">#for ds_size in tqdm(range(nb_samples), desc=self.name):</span>
+        <span class="n">ds_size</span> <span class="o">=</span> <span class="mi">0</span>
+        <span class="n">pbar</span> <span class="o">=</span> <span class="n">tqdm</span><span class="p">(</span><span class="n">total</span> <span class="o">=</span> <span class="n">nb_samples</span><span class="p">)</span>
+        <span class="n">is_LightSimBackend</span> <span class="o">=</span> <span class="p">(</span><span class="s2">&quot;lightsim2grid&quot;</span> <span class="ow">in</span> <span class="nb">str</span><span class="p">(</span><span class="n">simulator</span><span class="o">.</span><span class="n">_simulator</span><span class="o">.</span><span class="n">backend</span><span class="o">.</span><span class="vm">__class__</span><span class="p">))</span>
+        <span class="k">while</span> <span class="n">ds_size</span> <span class="o">&lt;</span> <span class="n">nb_samples</span><span class="p">:</span>
+            <span class="n">simulator</span><span class="o">.</span><span class="n">sample_chronics</span><span class="p">()</span>
+            <span class="n">nb_steps</span> <span class="o">=</span> <span class="mi">0</span>
+            <span class="k">while</span> <span class="p">(</span><span class="n">nb_steps</span> <span class="o">&lt;</span> <span class="n">nb_samples_per_chronic</span><span class="p">):</span>
+                <span class="n">simulator</span><span class="o">.</span><span class="n">modify_state</span><span class="p">(</span><span class="n">actor</span><span class="p">)</span>
+                <span class="n">current_state</span><span class="p">,</span> <span class="n">extra_info</span> <span class="o">=</span> <span class="n">simulator</span><span class="o">.</span><span class="n">get_state</span><span class="p">()</span>
+                <span class="n">grid</span><span class="o">=</span><span class="n">simulator</span><span class="o">.</span><span class="n">_simulator</span><span class="o">.</span><span class="n">backend</span><span class="o">.</span><span class="n">_grid</span>
 
+                <span class="bp">self</span><span class="o">.</span><span class="n">_store_obs</span><span class="p">(</span><span class="n">ds_size</span><span class="p">,</span> <span class="n">current_state</span><span class="p">,</span><span class="n">grid</span><span class="p">,</span><span class="n">do_store_physics</span><span class="p">,</span><span class="n">is_LightSimBackend</span><span class="p">)</span>
+                <span class="n">nb_steps</span> <span class="o">+=</span> <span class="mi">1</span>
+                <span class="n">ds_size</span> <span class="o">+=</span> <span class="mi">1</span>
+                <span class="n">pbar</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>
+                <span class="k">if</span> <span class="n">ds_size</span> <span class="o">&gt;=</span> <span class="n">nb_samples</span><span class="p">:</span>
+                    <span class="k">break</span>
+                <span class="c1">#self._store_theta(ds_size, current_theta)</span>
+        <span class="n">pbar</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">size</span> <span class="o">=</span> <span class="n">nb_samples</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_init_sample</span><span class="p">()</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_infer_sizes</span><span class="p">()</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_store_env_data</span><span class="p">(</span><span class="n">simulator</span><span class="o">.</span><span class="n">_simulator</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_store_chronics_info</span><span class="p">(</span><span class="n">simulator</span><span class="p">)</span>
         <span class="k">if</span> <span class="n">path_out</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
             <span class="c1"># I should save the data</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">_save_internal_data</span><span class="p">(</span><span class="n">path_out</span><span class="p">)</span></div>
 
-    <span class="k">def</span> <span class="nf">_store_obs</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">current_size</span><span class="p">,</span> <span class="n">obs</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">_store_obs</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">current_size</span><span class="p">,</span> <span class="n">obs</span><span class="p">,</span> <span class="n">grid</span><span class="p">,</span> <span class="n">do_store_physics</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">is_lightSimBackend</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;store an observation in self.data&quot;&quot;&quot;</span>
         <span class="k">for</span> <span class="n">attr_nm</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_attr_names</span><span class="p">:</span>
             <span class="n">array_</span> <span class="o">=</span> <span class="nb">getattr</span><span class="p">(</span><span class="n">obs</span><span class="p">,</span> <span class="n">attr_nm</span><span class="p">)</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">data</span><span class="p">[</span><span class="n">attr_nm</span><span class="p">][</span><span class="n">current_size</span><span class="p">,</span> <span class="p">:]</span> <span class="o">=</span> <span class="n">array_</span>
+
+        <span class="c1">#Also Store Admittance Matrix YBus and Injection Vector SBus (if backend is LightSim2Grid</span>
+        <span class="k">if</span><span class="p">(</span><span class="n">do_store_physics</span><span class="p">):</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_store_physics</span><span class="p">(</span><span class="n">current_size</span><span class="p">,</span> <span class="n">obs</span><span class="p">,</span> <span class="n">grid</span><span class="p">,</span><span class="n">is_lightSimBackend</span><span class="p">)</span>
+
+
+    <span class="k">def</span> <span class="nf">_store_physics</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">current_size</span><span class="p">,</span> <span class="n">obs</span><span class="p">,</span> <span class="n">grid</span><span class="p">,</span><span class="n">is_lightSimBackend</span><span class="p">):</span>
+        <span class="k">if</span> <span class="n">is_lightSimBackend</span><span class="p">:</span>
+            <span class="c1"># net = obs._obs_env.backend._grid #be careful, the YBus and Sbus are not well updated in _obs_env. Better to use the true env backend</span>
+            <span class="n">nb_bus</span><span class="p">,</span> <span class="n">unique_bus</span><span class="p">,</span> <span class="n">bus_or</span><span class="p">,</span> <span class="n">bus_ex</span> <span class="o">=</span> <span class="n">obs</span><span class="o">.</span><span class="n">_aux_fun_get_bus</span><span class="p">()</span>
+
+            <span class="c1"># Careful, in computing the number of bus_bars, it could change in grid2op</span>
+            <span class="n">n_bus_bars</span> <span class="o">=</span> <span class="n">obs</span><span class="o">.</span><span class="n">_obs_env</span><span class="o">.</span><span class="n">n_sub</span> <span class="o">*</span> <span class="mi">2</span>
+
+            <span class="c1">#Init data structures with proper dimensions and types</span>
+            <span class="n">admittance_matrix</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span>
+                <span class="n">shape</span><span class="o">=</span><span class="p">(</span><span class="n">n_bus_bars</span><span class="p">,</span> <span class="n">n_bus_bars</span><span class="p">),</span> <span class="n">dtype</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">complex128</span>
+            <span class="p">)</span>
+            <span class="n">Injection_vect</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="n">shape</span><span class="o">=</span><span class="p">(</span><span class="n">n_bus_bars</span><span class="p">),</span> <span class="n">dtype</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">complex128</span><span class="p">)</span>
+            <span class="n">pv_nodes</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="n">shape</span><span class="o">=</span><span class="p">(</span><span class="n">n_bus_bars</span><span class="p">),</span> <span class="n">dtype</span><span class="o">=</span><span class="nb">bool</span><span class="p">)</span>
+
+            <span class="c1">#get admittance matrix and injection vector values from LightSim2Grid</span>
+            <span class="n">Sbus</span> <span class="o">=</span> <span class="n">grid</span><span class="o">.</span><span class="n">get_Sbus</span><span class="p">()</span>
+            <span class="n">YBus</span> <span class="o">=</span> <span class="n">grid</span><span class="o">.</span><span class="n">get_Ybus</span><span class="p">()</span>
+
+            <span class="c1">#fill data structures with expected dimensions</span>
+            <span class="n">admittance_matrix</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">ix_</span><span class="p">(</span><span class="n">unique_bus</span><span class="p">,</span> <span class="n">unique_bus</span><span class="p">)]</span> <span class="o">=</span> <span class="n">YBus</span><span class="o">.</span><span class="n">todense</span><span class="p">()</span>
+            <span class="n">Injection_vect</span><span class="p">[</span><span class="n">unique_bus</span><span class="p">]</span> <span class="o">=</span> <span class="n">Sbus</span>
+            <span class="n">pv_nodes</span><span class="p">[</span><span class="n">unique_bus</span><span class="p">[</span><span class="n">grid</span><span class="o">.</span><span class="n">get_pv</span><span class="p">()]]</span> <span class="o">=</span> <span class="kc">True</span>
+
+            <span class="c1">#get info on slack</span>
+            <span class="n">prod_bus</span><span class="p">,</span> <span class="n">prod_conn</span> <span class="o">=</span> <span class="n">obs</span><span class="o">.</span><span class="n">_get_bus_id</span><span class="p">(</span><span class="n">obs</span><span class="o">.</span><span class="n">gen_pos_topo_vect</span><span class="p">,</span> <span class="n">obs</span><span class="o">.</span><span class="n">gen_to_subid</span><span class="p">)</span>
+            <span class="n">node_slack_id</span><span class="o">=</span><span class="n">prod_bus</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span>
+            <span class="n">index_gens_slack</span> <span class="o">=</span> <span class="p">(</span><span class="n">prod_bus</span><span class="o">==</span><span class="n">node_slack_id</span><span class="p">)</span>
+            <span class="n">adjusted_prod_slack</span><span class="o">=</span><span class="n">obs</span><span class="o">.</span><span class="n">gen_p</span><span class="p">[</span><span class="n">index_gens_slack</span><span class="p">]</span><span class="o">.</span><span class="n">sum</span><span class="p">()</span> <span class="o">-</span> <span class="n">Sbus</span><span class="p">[</span><span class="n">node_slack_id</span><span class="p">]</span><span class="o">.</span><span class="n">real</span> <span class="c1">#after_powerflow - in_chronics</span>
+
+            <span class="bp">self</span><span class="o">.</span><span class="n">data</span><span class="p">[</span><span class="s2">&quot;YBus&quot;</span><span class="p">][</span><span class="n">current_size</span><span class="p">,</span> <span class="p">:]</span> <span class="o">=</span> <span class="n">admittance_matrix</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">data</span><span class="p">[</span><span class="s2">&quot;SBus&quot;</span><span class="p">][</span><span class="n">current_size</span><span class="p">,</span> <span class="p">:]</span> <span class="o">=</span> <span class="n">Injection_vect</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">data</span><span class="p">[</span><span class="s2">&quot;PV_nodes&quot;</span><span class="p">][</span><span class="n">current_size</span><span class="p">,</span> <span class="p">:]</span> <span class="o">=</span> <span class="n">pv_nodes</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">data</span><span class="p">[</span><span class="s2">&quot;slack&quot;</span><span class="p">][</span><span class="n">current_size</span><span class="p">,</span> <span class="p">:]</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="n">node_slack_id</span><span class="p">,</span><span class="n">adjusted_prod_slack</span><span class="p">],</span><span class="n">dtype</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">float16</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Cannot store physics data if not using LightSim2Grid backend&quot;</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">_store_chronics_info</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">simulator</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;store the chronics info&quot;&quot;&quot;</span>
+        <span class="n">chronics_features</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;chronics_id&quot;</span><span class="p">,</span> <span class="s2">&quot;chronics_name&quot;</span><span class="p">,</span> <span class="s2">&quot;chronics_name_unique&quot;</span><span class="p">,</span> <span class="s2">&quot;time_stamps&quot;</span><span class="p">]</span>
+        <span class="k">for</span> <span class="n">attr_nm</span> <span class="ow">in</span> <span class="n">chronics_features</span><span class="p">:</span>
+            <span class="n">array_</span> <span class="o">=</span> <span class="nb">getattr</span><span class="p">(</span><span class="n">simulator</span><span class="p">,</span> <span class="n">attr_nm</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">chronics_info</span><span class="p">[</span><span class="n">attr_nm</span><span class="p">]</span> <span class="o">=</span> <span class="n">array_</span>
+
 
     <span class="k">def</span> <span class="nf">_store_env_data</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">env</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;store the environment data in self.env_data&quot;&quot;&quot;</span>
@@ -282,7 +369,16 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">env_data</span><span class="p">[</span><span class="s2">&quot;_attr_tau&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_attr_tau</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">env_data</span><span class="p">[</span><span class="s2">&quot;_attr_y&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_attr_y</span>
 
-    <span class="k">def</span> <span class="nf">_save_internal_data</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">path_out</span><span class="p">:</span><span class="nb">str</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">_save_chronics_info</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">path_out</span><span class="p">:</span> <span class="nb">str</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;save chronics information as npz&quot;&quot;&quot;</span>
+        <span class="n">chronics_path</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">path_out</span><span class="p">,</span> <span class="s2">&quot;chronics&quot;</span><span class="p">)</span>
+        <span class="n">os</span><span class="o">.</span><span class="n">mkdir</span><span class="p">(</span><span class="n">chronics_path</span><span class="p">)</span>
+        <span class="k">for</span> <span class="n">attr_nm</span><span class="p">,</span> <span class="n">array_</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">chronics_info</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+            <span class="k">if</span> <span class="n">attr_nm</span> <span class="o">==</span> <span class="s2">&quot;time_stamps&quot;</span><span class="p">:</span>
+                <span class="n">array_</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">asanyarray</span><span class="p">(</span><span class="n">array_</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="nb">object</span><span class="p">)</span>
+            <span class="n">np</span><span class="o">.</span><span class="n">savez_compressed</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">chronics_path</span><span class="p">,</span> <span class="n">attr_nm</span><span class="p">)</span><span class="si">}</span><span class="s2">.npz&quot;</span><span class="p">,</span> <span class="n">data</span><span class="o">=</span><span class="n">array_</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">_save_internal_data</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">path_out</span><span class="p">:</span><span class="nb">str</span><span class="p">,</span><span class="n">do_save_physics</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;save the self.data in a proper format</span>
 
 <span class="sd">        Parameters</span>
@@ -314,12 +410,23 @@
         <span class="c1">#for attr_nm in (*self._attr_names, *self._theta_attr_names):</span>
         <span class="k">for</span> <span class="n">attr_nm</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_attr_names</span><span class="p">:</span>
             <span class="n">np</span><span class="o">.</span><span class="n">savez_compressed</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">full_path_out</span><span class="p">,</span> <span class="n">attr_nm</span><span class="p">)</span><span class="si">}</span><span class="s2">.npz&quot;</span><span class="p">,</span> <span class="n">data</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">data</span><span class="p">[</span><span class="n">attr_nm</span><span class="p">])</span>
-
+        <span class="k">if</span><span class="p">(</span><span class="n">do_save_physics</span><span class="p">):</span>
+            <span class="k">if</span><span class="p">(</span><span class="s2">&quot;YBus&quot;</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">data</span><span class="o">.</span><span class="n">keys</span><span class="p">()):</span>
+                <span class="n">np</span><span class="o">.</span><span class="n">savez_compressed</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">full_path_out</span><span class="p">,</span> <span class="s2">&quot;YBus&quot;</span><span class="p">)</span><span class="o">+</span><span class="s2">&quot;.npz&quot;</span><span class="p">,</span> <span class="n">data</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">data</span><span class="p">[</span><span class="s2">&quot;YBus&quot;</span><span class="p">])</span>
+            <span class="k">if</span><span class="p">(</span><span class="s2">&quot;SBus&quot;</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">data</span><span class="o">.</span><span class="n">keys</span><span class="p">()):</span>
+                <span class="n">np</span><span class="o">.</span><span class="n">savez_compressed</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">full_path_out</span><span class="p">,</span> <span class="s2">&quot;SBus&quot;</span><span class="p">)</span> <span class="o">+</span> <span class="s2">&quot;.npz&quot;</span><span class="p">,</span> <span class="n">data</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">data</span><span class="p">[</span><span class="s2">&quot;SBus&quot;</span><span class="p">])</span>
+            <span class="k">if</span><span class="p">(</span><span class="s2">&quot;PV_nodes&quot;</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">data</span><span class="o">.</span><span class="n">keys</span><span class="p">()):</span>
+                <span class="n">np</span><span class="o">.</span><span class="n">savez_compressed</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">full_path_out</span><span class="p">,</span> <span class="s2">&quot;PV_nodes&quot;</span><span class="p">)</span> <span class="o">+</span> <span class="s2">&quot;.npz&quot;</span><span class="p">,</span> <span class="n">data</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">data</span><span class="p">[</span><span class="s2">&quot;PV_nodes&quot;</span><span class="p">])</span>
+            <span class="k">if</span><span class="p">(</span><span class="s2">&quot;slack&quot;</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">data</span><span class="o">.</span><span class="n">keys</span><span class="p">()):</span>
+                <span class="n">np</span><span class="o">.</span><span class="n">savez_compressed</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">full_path_out</span><span class="p">,</span> <span class="s2">&quot;slack&quot;</span><span class="p">)</span> <span class="o">+</span> <span class="s2">&quot;.npz&quot;</span><span class="p">,</span> <span class="n">data</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">data</span><span class="p">[</span><span class="s2">&quot;slack&quot;</span><span class="p">])</span>
+                
+        
+        <span class="bp">self</span><span class="o">.</span><span class="n">_save_chronics_info</span><span class="p">(</span><span class="n">full_path_out</span><span class="p">)</span>
         <span class="c1"># save static_data</span>
         <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">full_path_out</span> <span class="p">,</span><span class="s2">&quot;metadata.json&quot;</span><span class="p">),</span> <span class="s2">&quot;w&quot;</span><span class="p">,</span> <span class="n">encoding</span><span class="o">=</span><span class="s2">&quot;utf-8&quot;</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
             <span class="n">json</span><span class="o">.</span><span class="n">dump</span><span class="p">(</span><span class="n">obj</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">env_data</span><span class="p">,</span> <span class="n">fp</span><span class="o">=</span><span class="n">f</span><span class="p">,</span> <span class="n">indent</span><span class="o">=</span><span class="mi">4</span><span class="p">,</span> <span class="n">sort_keys</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="bp">cls</span><span class="o">=</span><span class="n">NpEncoder</span><span class="p">)</span>
 
-<div class="viewcode-block" id="PowerGridDataSet.load"><a class="viewcode-back" href="../../../lips.dataset.html#lips.dataset.PowerGridDataSet.load">[docs]</a>    <span class="k">def</span> <span class="nf">load</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">path</span><span class="p">:</span><span class="nb">str</span><span class="p">):</span>
+<div class="viewcode-block" id="PowerGridDataSet.load"><a class="viewcode-back" href="../../../lips.dataset.html#lips.dataset.powergridDataSet.PowerGridDataSet.load">[docs]</a>    <span class="k">def</span> <span class="nf">load</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">path</span><span class="p">:</span><span class="nb">str</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;load the dataset from a path</span>
 
 <span class="sd">        Parameters</span>
@@ -366,7 +473,8 @@
 
         <span class="bp">self</span><span class="o">.</span><span class="n">_init_sample</span><span class="p">()</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_infer_sizes</span><span class="p">()</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">_load_env_data</span><span class="p">(</span><span class="n">full_path</span><span class="p">)</span></div>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_load_env_data</span><span class="p">(</span><span class="n">full_path</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_load_chronics_info</span><span class="p">(</span><span class="n">full_path</span><span class="p">)</span></div>
 
     <span class="k">def</span> <span class="nf">_load_env_data</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">path</span><span class="p">:</span><span class="nb">str</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;load the environment data from a path</span>
@@ -395,6 +503,15 @@
         <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">path</span><span class="p">,</span> <span class="s2">&quot;metadata.json&quot;</span><span class="p">),</span> <span class="s2">&quot;r&quot;</span><span class="p">,</span> <span class="n">encoding</span><span class="o">=</span><span class="s2">&quot;utf-8&quot;</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">env_data</span> <span class="o">=</span> <span class="n">json</span><span class="o">.</span><span class="n">load</span><span class="p">(</span><span class="n">fp</span><span class="o">=</span><span class="n">f</span><span class="p">)</span>
 
+    <span class="k">def</span> <span class="nf">_load_chronics_info</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">path</span><span class="p">:</span> <span class="nb">str</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;save chronics information as npz&quot;&quot;&quot;</span>
+        <span class="n">chronics_features</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;chronics_id&quot;</span><span class="p">,</span> <span class="s2">&quot;chronics_name&quot;</span><span class="p">,</span> <span class="s2">&quot;chronics_name_unique&quot;</span><span class="p">,</span> <span class="s2">&quot;time_stamps&quot;</span><span class="p">]</span>
+        <span class="n">chronics_path</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">path</span><span class="p">,</span> <span class="s2">&quot;chronics&quot;</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">exists</span><span class="p">(</span><span class="n">chronics_path</span><span class="p">):</span>
+            <span class="k">for</span> <span class="n">attr_nm</span> <span class="ow">in</span> <span class="n">chronics_features</span><span class="p">:</span>
+                <span class="n">path_this_array</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">chronics_path</span><span class="p">,</span> <span class="n">attr_nm</span><span class="p">)</span><span class="si">}</span><span class="s2">.npz&quot;</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">chronics_info</span><span class="p">[</span><span class="n">attr_nm</span><span class="p">]</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">load</span><span class="p">(</span><span class="n">path_this_array</span><span class="p">,</span> <span class="n">allow_pickle</span><span class="o">=</span><span class="kc">True</span><span class="p">)[</span><span class="s2">&quot;data&quot;</span><span class="p">]</span>
+
     <span class="k">def</span> <span class="nf">_init_sample</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;initialize the sample</span>
 
@@ -404,7 +521,7 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">_order</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">size</span><span class="p">)</span>
         <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">shuffle</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_order</span><span class="p">)</span>
 
-<div class="viewcode-block" id="PowerGridDataSet.sample"><a class="viewcode-back" href="../../../lips.dataset.html#lips.dataset.PowerGridDataSet.sample">[docs]</a>    <span class="k">def</span> <span class="nf">sample</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">nb_sample</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span> <span class="n">sampler</span><span class="p">:</span> <span class="n">Callable</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+<div class="viewcode-block" id="PowerGridDataSet.sample"><a class="viewcode-back" href="../../../lips.dataset.html#lips.dataset.powergridDataSet.PowerGridDataSet.sample">[docs]</a>    <span class="k">def</span> <span class="nf">sample</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">nb_sample</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span> <span class="n">sampler</span><span class="p">:</span> <span class="n">Callable</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;Sampling from the dataset</span>
 
 <span class="sd">        For now, this sampling method will sample uniformly at random from the dataset.</span>
@@ -468,7 +585,7 @@
                 <span class="n">res</span><span class="p">[</span><span class="n">el</span><span class="p">][</span><span class="n">this_sz</span><span class="p">:]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">data</span><span class="p">[</span><span class="n">el</span><span class="p">][</span><span class="bp">self</span><span class="o">.</span><span class="n">_order</span><span class="p">[:</span><span class="bp">self</span><span class="o">.</span><span class="n">_previous</span><span class="p">],</span> <span class="p">:]</span>
         <span class="k">return</span> <span class="n">res</span></div>
 
-<div class="viewcode-block" id="PowerGridDataSet.get_data"><a class="viewcode-back" href="../../../lips.dataset.html#lips.dataset.PowerGridDataSet.get_data">[docs]</a>    <span class="k">def</span> <span class="nf">get_data</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">index</span><span class="p">:</span> <span class="nb">tuple</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">:</span>
+<div class="viewcode-block" id="PowerGridDataSet.get_data"><a class="viewcode-back" href="../../../lips.dataset.html#lips.dataset.powergridDataSet.PowerGridDataSet.get_data">[docs]</a>    <span class="k">def</span> <span class="nf">get_data</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">index</span><span class="p">:</span> <span class="nb">tuple</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">:</span>
         <span class="sd">&quot;&quot;&quot;This function returns the data in the data that match the index `index`</span>
 
 <span class="sd">        Parameters</span>
@@ -512,7 +629,7 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">_size_tau</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_sizes_tau</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_size_y</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_sizes_y</span><span class="p">)</span>
 
-<div class="viewcode-block" id="PowerGridDataSet.get_sizes"><a class="viewcode-back" href="../../../lips.dataset.html#lips.dataset.PowerGridDataSet.get_sizes">[docs]</a>    <span class="k">def</span> <span class="nf">get_sizes</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<div class="viewcode-block" id="PowerGridDataSet.get_sizes"><a class="viewcode-back" href="../../../lips.dataset.html#lips.dataset.powergridDataSet.PowerGridDataSet.get_sizes">[docs]</a>    <span class="k">def</span> <span class="nf">get_sizes</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;Get the sizes of the dataset</span>
 
 <span class="sd">        Returns</span>
@@ -523,7 +640,7 @@
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_size_x</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_size_tau</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_size_y</span></div>
 
-<div class="viewcode-block" id="PowerGridDataSet.extract_data"><a class="viewcode-back" href="../../../lips.dataset.html#lips.dataset.PowerGridDataSet.extract_data">[docs]</a>    <span class="k">def</span> <span class="nf">extract_data</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">concat</span><span class="p">:</span> <span class="nb">bool</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">tuple</span><span class="p">:</span>
+<div class="viewcode-block" id="PowerGridDataSet.extract_data"><a class="viewcode-back" href="../../../lips.dataset.html#lips.dataset.powergridDataSet.PowerGridDataSet.extract_data">[docs]</a>    <span class="k">def</span> <span class="nf">extract_data</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">concat</span><span class="p">:</span> <span class="nb">bool</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">tuple</span><span class="p">:</span>
         <span class="sd">&quot;&quot;&quot;extract the x and y data from the dataset</span>
 
 <span class="sd">        Parameters</span>
@@ -550,7 +667,7 @@
             <span class="k">return</span> <span class="p">(</span><span class="n">extract_x</span><span class="p">,</span> <span class="n">extract_tau</span><span class="p">),</span> <span class="n">extract_y</span></div>
 
 
-<div class="viewcode-block" id="PowerGridDataSet.reconstruct_output"><a class="viewcode-back" href="../../../lips.dataset.html#lips.dataset.PowerGridDataSet.reconstruct_output">[docs]</a>    <span class="k">def</span> <span class="nf">reconstruct_output</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">data</span><span class="p">:</span> <span class="s2">&quot;np.ndarray&quot;</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">:</span>
+<div class="viewcode-block" id="PowerGridDataSet.reconstruct_output"><a class="viewcode-back" href="../../../lips.dataset.html#lips.dataset.powergridDataSet.PowerGridDataSet.reconstruct_output">[docs]</a>    <span class="k">def</span> <span class="nf">reconstruct_output</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">data</span><span class="p">:</span> <span class="s2">&quot;np.ndarray&quot;</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">:</span>
         <span class="sd">&quot;&quot;&quot;It reconstruct the data from the extracted data</span>
 
 <span class="sd">        Parameters</span>
