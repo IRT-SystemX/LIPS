@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>lips.evaluation.utils &mdash; LIPS 0.1 documentation</title>
+  <title>lips.evaluation.utils &mdash; LIPS 0.1.0 documentation</title>
       <link rel="stylesheet" href="../../../_static/pygments.css" type="text/css" />
       <link rel="stylesheet" href="../../../_static/css/theme.css" type="text/css" />
   <!--[if lt IE 9]>
@@ -28,6 +28,9 @@
         <div class="wy-side-nav-search" >
             <a href="../../../index.html" class="icon icon-home"> LIPS
           </a>
+              <div class="version">
+                0.1
+              </div>
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="../../../search.html" method="get">
     <input type="text" name="q" placeholder="Search docs" />
@@ -83,115 +86,72 @@
            <div itemprop="articleBody">
              
   <h1>Source code for lips.evaluation.utils</h1><div class="highlight"><pre>
-<span></span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">Usage:</span>
-<span class="sd">    Helper classes and functions for evaluation</span>
+<span></span><span class="c1"># Copyright (c) 2021, IRT SystemX (https://www.irt-systemx.fr/en/)</span>
+<span class="c1"># See AUTHORS.txt</span>
+<span class="c1"># This Source Code Form is subject to the terms of the Mozilla Public License, version 2.0.</span>
+<span class="c1"># If a copy of the Mozilla Public License, version 2.0 was not distributed with this file,</span>
+<span class="c1"># you can obtain one at http://mozilla.org/MPL/2.0/.</span>
+<span class="c1"># SPDX-License-Identifier: MPL-2.0</span>
+<span class="c1"># This file is part of LIPS, LIPS is a python platform for power networks benchmarking</span>
 
-<span class="sd">License:</span>
-<span class="sd">    Copyright (c) 2021, IRT SystemX (https://www.irt-systemx.fr/en/)</span>
-<span class="sd">    See AUTHORS.txt</span>
-<span class="sd">    This Source Code Form is subject to the terms of the Mozilla Public License, version 2.0.</span>
-<span class="sd">    If a copy of the Mozilla Public License, version 2.0 was not distributed with this file,</span>
-<span class="sd">    you can obtain one at http://mozilla.org/MPL/2.0/.</span>
-<span class="sd">    SPDX-License-Identifier: MPL-2.0</span>
-
-<span class="sd">Description:</span>
-<span class="sd">    This file is part of LIPS, LIPS is a python platform for power networks benchmarking</span>
-<span class="sd">&quot;&quot;&quot;</span>
 <span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Callable</span>
-<span class="kn">import</span> <span class="nn">copy</span>
-<span class="kn">from</span> <span class="nn">sklearn.metrics</span> <span class="kn">import</span> <span class="n">mean_squared_error</span>
-<span class="kn">from</span> <span class="nn">sklearn.metrics</span> <span class="kn">import</span> <span class="n">mean_absolute_error</span>
+<span class="kn">from</span> <span class="nn">lips.metrics</span> <span class="kn">import</span> <span class="n">DEFAULT_METRICS</span>
 
-<div class="viewcode-block" id="Mapper"><a class="viewcode-back" href="../../../lips.evaluation.html#lips.evaluation.Mapper">[docs]</a><span class="k">class</span> <span class="nc">Mapper</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;Mapper class</span>
-<span class="sd">    This class create a mapping dict between evaluation criteria and their respective functions available in metrics module</span>
 
-<span class="sd">    TODO:</span>
-<span class="sd">    - it should register the mapping meta data to a file</span>
-<span class="sd">    - to be able reload it from file</span>
-<span class="sd">    - to be able to update it (modify current and add new mappings)</span>
-
+<div class="viewcode-block" id="MetricFactory"><a class="viewcode-back" href="../../../lips.evaluation.html#lips.evaluation.utils.MetricFactory">[docs]</a><span class="k">class</span> <span class="nc">MetricFactory</span><span class="p">:</span>
+    <span class="sd">&quot;&quot;&quot;Factory method to register the metrics</span>
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">criteria</span> <span class="o">=</span> <span class="p">{}</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">map_generic_criteria</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_creators</span> <span class="o">=</span> <span class="p">{}</span>
 
-<div class="viewcode-block" id="Mapper.map_generic_criteria"><a class="viewcode-back" href="../../../lips.evaluation.html#lips.evaluation.Mapper.map_generic_criteria">[docs]</a>    <span class="k">def</span> <span class="nf">map_generic_criteria</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        Get a list of generic evaluation functions</span>
-
-<span class="sd">        &quot;&quot;&quot;</span>
-        <span class="n">tmp_criteria</span> <span class="o">=</span> <span class="p">{}</span>
-        <span class="n">tmp_criteria</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">MSE_avg</span><span class="o">=</span><span class="n">mean_squared_error</span><span class="p">)</span>
-        <span class="n">tmp_criteria</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">MAE_avg</span><span class="o">=</span><span class="n">mean_absolute_error</span><span class="p">)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">criteria</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">copy</span><span class="o">.</span><span class="n">deepcopy</span><span class="p">(</span><span class="n">tmp_criteria</span><span class="p">))</span>
-
-        <span class="k">return</span> <span class="n">copy</span><span class="o">.</span><span class="n">deepcopy</span><span class="p">(</span><span class="n">tmp_criteria</span><span class="p">)</span></div>
-
-<div class="viewcode-block" id="Mapper.map_powergrid_criteria"><a class="viewcode-back" href="../../../lips.evaluation.html#lips.evaluation.Mapper.map_powergrid_criteria">[docs]</a>    <span class="k">def</span> <span class="nf">map_powergrid_criteria</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        It populates the dictionary with available powergrids critiera</span>
-
-<span class="sd">        &quot;&quot;&quot;</span>
-        <span class="kn">from</span> <span class="nn">lips.metrics.power_grid</span> <span class="kn">import</span> <span class="n">physics_compliances</span>
-        <span class="kn">from</span> <span class="nn">lips.metrics.power_grid.verify_voltage_equality</span> <span class="kn">import</span> <span class="n">verify_voltage_at_bus</span>
-        <span class="kn">from</span> <span class="nn">lips.metrics.power_grid.local_conservation</span> <span class="kn">import</span> <span class="n">local_conservation</span>
-        <span class="kn">from</span> <span class="nn">lips.metrics.power_grid.global_conservation</span> <span class="kn">import</span> <span class="n">global_conservation</span>
-        <span class="kn">from</span> <span class="nn">lips.metrics</span> <span class="kn">import</span> <span class="n">DEFAULT_METRICS</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">criteria</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">DEFAULT_METRICS</span><span class="p">)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">criteria</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">CURRENT_POS</span><span class="o">=</span><span class="n">physics_compliances</span><span class="o">.</span><span class="n">verify_current_pos</span><span class="p">)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">criteria</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">VOLTAGE_POS</span><span class="o">=</span><span class="n">physics_compliances</span><span class="o">.</span><span class="n">verify_voltage_pos</span><span class="p">)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">criteria</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">LOSS_POS</span><span class="o">=</span><span class="n">physics_compliances</span><span class="o">.</span><span class="n">verify_loss_pos</span><span class="p">)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">criteria</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">DISC_LINES</span><span class="o">=</span><span class="n">physics_compliances</span><span class="o">.</span><span class="n">verify_disc_lines</span><span class="p">)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">criteria</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">CURRENT_EQ</span><span class="o">=</span><span class="n">physics_compliances</span><span class="o">.</span><span class="n">verify_current_eq</span><span class="p">)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">criteria</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">CHECK_LOSS</span><span class="o">=</span><span class="n">physics_compliances</span><span class="o">.</span><span class="n">verify_loss</span><span class="p">)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">criteria</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">CHECK_GC</span><span class="o">=</span><span class="n">global_conservation</span><span class="p">)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">criteria</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">CHECK_LC</span><span class="o">=</span><span class="n">local_conservation</span><span class="p">)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">criteria</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">CHECK_KCL</span><span class="o">=</span><span class="n">physics_compliances</span><span class="o">.</span><span class="n">verify_kcl</span><span class="p">)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">criteria</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">CHECK_VOLTAGE_EQ</span><span class="o">=</span><span class="n">verify_voltage_at_bus</span><span class="p">)</span>
-
-        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">criteria</span></div>
-
-<div class="viewcode-block" id="Mapper.map_label_to_func"><a class="viewcode-back" href="../../../lips.evaluation.html#lips.evaluation.Mapper.map_label_to_func">[docs]</a>    <span class="k">def</span> <span class="nf">map_label_to_func</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">label</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">func</span><span class="p">:</span> <span class="n">Callable</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;create new mappings</span>
+<div class="viewcode-block" id="MetricFactory.register_metric"><a class="viewcode-back" href="../../../lips.evaluation.html#lips.evaluation.utils.MetricFactory.register_metric">[docs]</a>    <span class="k">def</span> <span class="nf">register_metric</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">metric_name</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">creator</span><span class="p">:</span> <span class="n">Callable</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Register new metrics</span>
 
 <span class="sd">        Parameters</span>
 <span class="sd">        ----------</span>
-<span class="sd">        label : str</span>
-<span class="sd">            a new label</span>
-<span class="sd">        func : Callable</span>
-<span class="sd">            a metric function</span>
+<span class="sd">        metric_name : str</span>
+<span class="sd">            _description_</span>
+<span class="sd">        creator : Callable</span>
+<span class="sd">            _description_</span>
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">criteria</span><span class="p">[</span><span class="n">label</span><span class="p">]</span> <span class="o">=</span> <span class="n">func</span></div>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_creators</span><span class="p">[</span><span class="n">metric_name</span><span class="p">]</span> <span class="o">=</span> <span class="n">creator</span></div>
 
-<div class="viewcode-block" id="Mapper.get_func"><a class="viewcode-back" href="../../../lips.evaluation.html#lips.evaluation.Mapper.get_func">[docs]</a>    <span class="k">def</span> <span class="nf">get_func</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">label</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Callable</span><span class="p">:</span>
-        <span class="sd">&quot;&quot;&quot;get the function for a metric</span>
+<div class="viewcode-block" id="MetricFactory.register_metric_dict"><a class="viewcode-back" href="../../../lips.evaluation.html#lips.evaluation.utils.MetricFactory.register_metric_dict">[docs]</a>    <span class="k">def</span> <span class="nf">register_metric_dict</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">metric_dict</span><span class="p">:</span> <span class="nb">dict</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;register a dictionary including metrics</span>
 
 <span class="sd">        Parameters</span>
 <span class="sd">        ----------</span>
-<span class="sd">        label : str</span>
-<span class="sd">            the label of the metric</span>
+<span class="sd">        metric_dict : dict</span>
+<span class="sd">            _description_</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">for</span> <span class="n">key_</span><span class="p">,</span> <span class="n">fun_</span> <span class="ow">in</span> <span class="n">metric_dict</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">register_metric</span><span class="p">(</span><span class="n">key_</span><span class="p">,</span> <span class="n">fun_</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="MetricFactory.get_metric"><a class="viewcode-back" href="../../../lips.evaluation.html#lips.evaluation.utils.MetricFactory.get_metric">[docs]</a>    <span class="k">def</span> <span class="nf">get_metric</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">metric_name</span><span class="p">:</span><span class="nb">str</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Get the required metric</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        metric_name : str</span>
+<span class="sd">            _description_</span>
 
 <span class="sd">        Returns</span>
 <span class="sd">        -------</span>
 <span class="sd">        Callable</span>
-<span class="sd">            the corresponding function</span>
+<span class="sd">            _description_</span>
+
+<span class="sd">        Raises</span>
+<span class="sd">        ------</span>
+<span class="sd">        ValueError</span>
+<span class="sd">            _description_</span>
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">criteria</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">label</span><span class="p">)</span></div>
+        <span class="n">creator</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_creators</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">metric_name</span><span class="p">)</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">creator</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="n">metric_name</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">creator</span></div></div>
 
-<div class="viewcode-block" id="Mapper.rename_key"><a class="viewcode-back" href="../../../lips.evaluation.html#lips.evaluation.Mapper.rename_key">[docs]</a>    <span class="k">def</span> <span class="nf">rename_key</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">k_old</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">k_new</span><span class="p">:</span> <span class="nb">str</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;rename the a dictionary key</span>
-
-<span class="sd">        Parameters</span>
-<span class="sd">        ----------</span>
-<span class="sd">        k_old : str</span>
-<span class="sd">            old key</span>
-<span class="sd">        k_new : str</span>
-<span class="sd">            new key</span>
-<span class="sd">        &quot;&quot;&quot;</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">criteria</span><span class="p">[</span><span class="n">k_new</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">criteria</span><span class="p">[</span><span class="n">k_old</span><span class="p">]</span></div></div>
-
+<span class="n">metric_factory</span> <span class="o">=</span> <span class="n">MetricFactory</span><span class="p">()</span>
+<span class="n">metric_factory</span><span class="o">.</span><span class="n">register_metric_dict</span><span class="p">(</span><span class="n">DEFAULT_METRICS</span><span class="p">)</span>
 </pre></div>
 
            </div>

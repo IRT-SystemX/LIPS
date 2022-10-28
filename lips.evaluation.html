@@ -4,7 +4,7 @@
   <meta charset="utf-8" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>lips.evaluation package &mdash; LIPS 0.1 documentation</title>
+  <title>lips.evaluation package &mdash; LIPS 0.1.0 documentation</title>
       <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
       <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
   <!--[if lt IE 9]>
@@ -31,6 +31,9 @@
         <div class="wy-side-nav-search" >
             <a href="index.html" class="icon icon-home"> LIPS
           </a>
+              <div class="version">
+                0.1
+              </div>
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
     <input type="text" name="q" placeholder="Search docs" />
@@ -68,14 +71,6 @@
 <li class="toctree-l3"><a class="reference internal" href="#lips.evaluation.Evaluation.compare_simulators"><code class="docutils literal notranslate"><span class="pre">Evaluation.compare_simulators()</span></code></a></li>
 </ul>
 </li>
-<li class="toctree-l2"><a class="reference internal" href="#lips.evaluation.Mapper"><code class="docutils literal notranslate"><span class="pre">Mapper</span></code></a><ul>
-<li class="toctree-l3"><a class="reference internal" href="#lips.evaluation.Mapper.map_generic_criteria"><code class="docutils literal notranslate"><span class="pre">Mapper.map_generic_criteria()</span></code></a></li>
-<li class="toctree-l3"><a class="reference internal" href="#lips.evaluation.Mapper.map_powergrid_criteria"><code class="docutils literal notranslate"><span class="pre">Mapper.map_powergrid_criteria()</span></code></a></li>
-<li class="toctree-l3"><a class="reference internal" href="#lips.evaluation.Mapper.map_label_to_func"><code class="docutils literal notranslate"><span class="pre">Mapper.map_label_to_func()</span></code></a></li>
-<li class="toctree-l3"><a class="reference internal" href="#lips.evaluation.Mapper.get_func"><code class="docutils literal notranslate"><span class="pre">Mapper.get_func()</span></code></a></li>
-<li class="toctree-l3"><a class="reference internal" href="#lips.evaluation.Mapper.rename_key"><code class="docutils literal notranslate"><span class="pre">Mapper.rename_key()</span></code></a></li>
-</ul>
-</li>
 <li class="toctree-l2"><a class="reference internal" href="#submodules">Submodules</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#module-lips.evaluation.evaluation">lips.evaluation.evaluation module</a><ul>
 <li class="toctree-l3"><a class="reference internal" href="#lips.evaluation.evaluation.Evaluation"><code class="docutils literal notranslate"><span class="pre">Evaluation</span></code></a><ul>
@@ -109,14 +104,12 @@
 </li>
 </ul>
 </li>
-<li class="toctree-l2"><a class="reference internal" href="#module-lips.evaluation.transport_evaluation">lips.evaluation.transport_evaluation module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#lips-evaluation-transport-evaluation-module">lips.evaluation.transport_evaluation module</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#module-lips.evaluation.utils">lips.evaluation.utils module</a><ul>
-<li class="toctree-l3"><a class="reference internal" href="#lips.evaluation.utils.Mapper"><code class="docutils literal notranslate"><span class="pre">Mapper</span></code></a><ul>
-<li class="toctree-l4"><a class="reference internal" href="#lips.evaluation.utils.Mapper.map_generic_criteria"><code class="docutils literal notranslate"><span class="pre">Mapper.map_generic_criteria()</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="#lips.evaluation.utils.Mapper.map_powergrid_criteria"><code class="docutils literal notranslate"><span class="pre">Mapper.map_powergrid_criteria()</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="#lips.evaluation.utils.Mapper.map_label_to_func"><code class="docutils literal notranslate"><span class="pre">Mapper.map_label_to_func()</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="#lips.evaluation.utils.Mapper.get_func"><code class="docutils literal notranslate"><span class="pre">Mapper.get_func()</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="#lips.evaluation.utils.Mapper.rename_key"><code class="docutils literal notranslate"><span class="pre">Mapper.rename_key()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#lips.evaluation.utils.MetricFactory"><code class="docutils literal notranslate"><span class="pre">MetricFactory</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#lips.evaluation.utils.MetricFactory.register_metric"><code class="docutils literal notranslate"><span class="pre">MetricFactory.register_metric()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#lips.evaluation.utils.MetricFactory.register_metric_dict"><code class="docutils literal notranslate"><span class="pre">MetricFactory.register_metric_dict()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#lips.evaluation.utils.MetricFactory.get_metric"><code class="docutils literal notranslate"><span class="pre">MetricFactory.get_metric()</span></code></a></li>
 </ul>
 </li>
 </ul>
@@ -179,9 +172,6 @@ This file is part of LIPS, LIPS is a python platform for power networks benchmar
 <tbody>
 <tr class="row-odd"><td><p><a class="reference internal" href="#lips.evaluation.Evaluation" title="lips.evaluation.Evaluation"><code class="xref py py-obj docutils literal notranslate"><span class="pre">Evaluation</span></code></a>([config, config_path, ...])</p></td>
 <td><p>Evaluation base class</p></td>
-</tr>
-<tr class="row-even"><td><p><a class="reference internal" href="#lips.evaluation.Mapper" title="lips.evaluation.Mapper"><code class="xref py py-obj docutils literal notranslate"><span class="pre">Mapper</span></code></a>()</p></td>
-<td><p>Mapper class This class create a mapping dict between evaluation criteria and their respective functions available in metrics module</p></td>
 </tr>
 </tbody>
 </table>
@@ -372,99 +362,6 @@ This file is part of LIPS, LIPS is a python platform for power networks benchmar
 <dd><p>Bonus function</p>
 <p>It taks multiple trained simulators and evaluates them on test datasets
 and finally it reports the results side by side</p>
-</dd></dl>
-
-</dd></dl>
-
-<dl class="py class">
-<dt class="sig sig-object py" id="lips.evaluation.Mapper">
-<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">lips.evaluation.</span></span><span class="sig-name descname"><span class="pre">Mapper</span></span><a class="reference internal" href="_modules/lips/evaluation/utils.html#Mapper"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#lips.evaluation.Mapper" title="Permalink to this definition"></a></dt>
-<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
-<p>Mapper class
-This class create a mapping dict between evaluation criteria and their respective functions available in metrics module</p>
-<p>TODO:
-- it should register the mapping meta data to a file
-- to be able reload it from file
-- to be able to update it (modify current and add new mappings)</p>
-<p><strong>Methods:</strong></p>
-<table class="autosummary longtable docutils align-default">
-<colgroup>
-<col style="width: 10%" />
-<col style="width: 90%" />
-</colgroup>
-<tbody>
-<tr class="row-odd"><td><p><a class="reference internal" href="#lips.evaluation.Mapper.map_generic_criteria" title="lips.evaluation.Mapper.map_generic_criteria"><code class="xref py py-obj docutils literal notranslate"><span class="pre">map_generic_criteria</span></code></a>()</p></td>
-<td><p>Get a list of generic evaluation functions</p></td>
-</tr>
-<tr class="row-even"><td><p><a class="reference internal" href="#lips.evaluation.Mapper.map_powergrid_criteria" title="lips.evaluation.Mapper.map_powergrid_criteria"><code class="xref py py-obj docutils literal notranslate"><span class="pre">map_powergrid_criteria</span></code></a>()</p></td>
-<td><p>It populates the dictionary with available powergrids critiera</p></td>
-</tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="#lips.evaluation.Mapper.map_label_to_func" title="lips.evaluation.Mapper.map_label_to_func"><code class="xref py py-obj docutils literal notranslate"><span class="pre">map_label_to_func</span></code></a>(label, func)</p></td>
-<td><p>create new mappings</p></td>
-</tr>
-<tr class="row-even"><td><p><a class="reference internal" href="#lips.evaluation.Mapper.get_func" title="lips.evaluation.Mapper.get_func"><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_func</span></code></a>(label)</p></td>
-<td><p>get the function for a metric</p></td>
-</tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="#lips.evaluation.Mapper.rename_key" title="lips.evaluation.Mapper.rename_key"><code class="xref py py-obj docutils literal notranslate"><span class="pre">rename_key</span></code></a>(k_old, k_new)</p></td>
-<td><p>rename the a dictionary key</p></td>
-</tr>
-</tbody>
-</table>
-<dl class="py method">
-<dt class="sig sig-object py" id="lips.evaluation.Mapper.map_generic_criteria">
-<span class="sig-name descname"><span class="pre">map_generic_criteria</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/lips/evaluation/utils.html#Mapper.map_generic_criteria"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#lips.evaluation.Mapper.map_generic_criteria" title="Permalink to this definition"></a></dt>
-<dd><p>Get a list of generic evaluation functions</p>
-</dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="lips.evaluation.Mapper.map_powergrid_criteria">
-<span class="sig-name descname"><span class="pre">map_powergrid_criteria</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/lips/evaluation/utils.html#Mapper.map_powergrid_criteria"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#lips.evaluation.Mapper.map_powergrid_criteria" title="Permalink to this definition"></a></dt>
-<dd><p>It populates the dictionary with available powergrids critiera</p>
-</dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="lips.evaluation.Mapper.map_label_to_func">
-<span class="sig-name descname"><span class="pre">map_label_to_func</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">label</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">func</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Callable</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/lips/evaluation/utils.html#Mapper.map_label_to_func"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#lips.evaluation.Mapper.map_label_to_func" title="Permalink to this definition"></a></dt>
-<dd><p>create new mappings</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><ul class="simple">
-<li><p><strong>label</strong> (<em>str</em>) – a new label</p></li>
-<li><p><strong>func</strong> (<em>Callable</em>) – a metric function</p></li>
-</ul>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="lips.evaluation.Mapper.get_func">
-<span class="sig-name descname"><span class="pre">get_func</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">label</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">Callable</span></span></span><a class="reference internal" href="_modules/lips/evaluation/utils.html#Mapper.get_func"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#lips.evaluation.Mapper.get_func" title="Permalink to this definition"></a></dt>
-<dd><p>get the function for a metric</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><p><strong>label</strong> (<em>str</em>) – the label of the metric</p>
-</dd>
-<dt class="field-even">Returns</dt>
-<dd class="field-even"><p>the corresponding function</p>
-</dd>
-<dt class="field-odd">Return type</dt>
-<dd class="field-odd"><p>Callable</p>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="lips.evaluation.Mapper.rename_key">
-<span class="sig-name descname"><span class="pre">rename_key</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">k_old</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">k_new</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/lips/evaluation/utils.html#Mapper.rename_key"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#lips.evaluation.Mapper.rename_key" title="Permalink to this definition"></a></dt>
-<dd><p>rename the a dictionary key</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><ul class="simple">
-<li><p><strong>k_old</strong> (<em>str</em>) – old key</p></li>
-<li><p><strong>k_new</strong> (<em>str</em>) – new key</p></li>
-</ul>
-</dd>
-</dl>
 </dd></dl>
 
 </dd></dl>
@@ -680,18 +577,6 @@ and finally it reports the results side by side</p>
 </section>
 <section id="module-lips.evaluation.powergrid_evaluation">
 <span id="lips-evaluation-powergrid-evaluation-module"></span><h2>lips.evaluation.powergrid_evaluation module<a class="headerlink" href="#module-lips.evaluation.powergrid_evaluation" title="Permalink to this heading"></a></h2>
-<dl class="simple">
-<dt>Usage:</dt><dd><p>PowerGridEvaluation allows to evaluate the augmented simulators from power grid context</p>
-</dd>
-<dt>Licence:</dt><dd><p>Copyright (c) 2021, IRT SystemX (<a class="reference external" href="https://www.irt-systemx.fr/en/">https://www.irt-systemx.fr/en/</a>)
-See AUTHORS.txt
-This Source Code Form is subject to the terms of the Mozilla Public License, version 2.0.
-If a copy of the Mozilla Public License, version 2.0 was not distributed with this file,
-you can obtain one at <a class="reference external" href="http://mozilla.org/MPL/2.0/">http://mozilla.org/MPL/2.0/</a>.
-SPDX-License-Identifier: MPL-2.0
-This file is part of LIPS, LIPS is a python platform for power networks benchmarking</p>
-</dd>
-</dl>
 <p><strong>Classes:</strong></p>
 <table class="autosummary longtable docutils align-default">
 <colgroup>
@@ -811,24 +696,11 @@ It comprises various verifications which are:</p>
 </dd></dl>
 
 </section>
-<section id="module-lips.evaluation.transport_evaluation">
-<span id="lips-evaluation-transport-evaluation-module"></span><h2>lips.evaluation.transport_evaluation module<a class="headerlink" href="#module-lips.evaluation.transport_evaluation" title="Permalink to this heading"></a></h2>
+<section id="lips-evaluation-transport-evaluation-module">
+<h2>lips.evaluation.transport_evaluation module<a class="headerlink" href="#lips-evaluation-transport-evaluation-module" title="Permalink to this heading"></a></h2>
 </section>
 <section id="module-lips.evaluation.utils">
 <span id="lips-evaluation-utils-module"></span><h2>lips.evaluation.utils module<a class="headerlink" href="#module-lips.evaluation.utils" title="Permalink to this heading"></a></h2>
-<dl class="simple">
-<dt>Usage:</dt><dd><p>Helper classes and functions for evaluation</p>
-</dd>
-<dt>License:</dt><dd><p>Copyright (c) 2021, IRT SystemX (<a class="reference external" href="https://www.irt-systemx.fr/en/">https://www.irt-systemx.fr/en/</a>)
-See AUTHORS.txt
-This Source Code Form is subject to the terms of the Mozilla Public License, version 2.0.
-If a copy of the Mozilla Public License, version 2.0 was not distributed with this file,
-you can obtain one at <a class="reference external" href="http://mozilla.org/MPL/2.0/">http://mozilla.org/MPL/2.0/</a>.
-SPDX-License-Identifier: MPL-2.0</p>
-</dd>
-<dt>Description:</dt><dd><p>This file is part of LIPS, LIPS is a python platform for power networks benchmarking</p>
-</dd>
-</dl>
 <p><strong>Classes:</strong></p>
 <table class="autosummary longtable docutils align-default">
 <colgroup>
@@ -836,21 +708,16 @@ SPDX-License-Identifier: MPL-2.0</p>
 <col style="width: 90%" />
 </colgroup>
 <tbody>
-<tr class="row-odd"><td><p><a class="reference internal" href="#lips.evaluation.utils.Mapper" title="lips.evaluation.utils.Mapper"><code class="xref py py-obj docutils literal notranslate"><span class="pre">Mapper</span></code></a>()</p></td>
-<td><p>Mapper class This class create a mapping dict between evaluation criteria and their respective functions available in metrics module</p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="#lips.evaluation.utils.MetricFactory" title="lips.evaluation.utils.MetricFactory"><code class="xref py py-obj docutils literal notranslate"><span class="pre">MetricFactory</span></code></a>()</p></td>
+<td><p>Factory method to register the metrics</p></td>
 </tr>
 </tbody>
 </table>
 <dl class="py class">
-<dt class="sig sig-object py" id="lips.evaluation.utils.Mapper">
-<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">lips.evaluation.utils.</span></span><span class="sig-name descname"><span class="pre">Mapper</span></span><a class="reference internal" href="_modules/lips/evaluation/utils.html#Mapper"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#lips.evaluation.utils.Mapper" title="Permalink to this definition"></a></dt>
+<dt class="sig sig-object py" id="lips.evaluation.utils.MetricFactory">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">lips.evaluation.utils.</span></span><span class="sig-name descname"><span class="pre">MetricFactory</span></span><a class="reference internal" href="_modules/lips/evaluation/utils.html#MetricFactory"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#lips.evaluation.utils.MetricFactory" title="Permalink to this definition"></a></dt>
 <dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
-<p>Mapper class
-This class create a mapping dict between evaluation criteria and their respective functions available in metrics module</p>
-<p>TODO:
-- it should register the mapping meta data to a file
-- to be able reload it from file
-- to be able to update it (modify current and add new mappings)</p>
+<p>Factory method to register the metrics</p>
 <p><strong>Methods:</strong></p>
 <table class="autosummary longtable docutils align-default">
 <colgroup>
@@ -858,76 +725,58 @@ This class create a mapping dict between evaluation criteria and their respectiv
 <col style="width: 90%" />
 </colgroup>
 <tbody>
-<tr class="row-odd"><td><p><a class="reference internal" href="#lips.evaluation.utils.Mapper.map_generic_criteria" title="lips.evaluation.utils.Mapper.map_generic_criteria"><code class="xref py py-obj docutils literal notranslate"><span class="pre">map_generic_criteria</span></code></a>()</p></td>
-<td><p>Get a list of generic evaluation functions</p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="#lips.evaluation.utils.MetricFactory.register_metric" title="lips.evaluation.utils.MetricFactory.register_metric"><code class="xref py py-obj docutils literal notranslate"><span class="pre">register_metric</span></code></a>(metric_name, creator)</p></td>
+<td><p>Register new metrics</p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="#lips.evaluation.utils.Mapper.map_powergrid_criteria" title="lips.evaluation.utils.Mapper.map_powergrid_criteria"><code class="xref py py-obj docutils literal notranslate"><span class="pre">map_powergrid_criteria</span></code></a>()</p></td>
-<td><p>It populates the dictionary with available powergrids critiera</p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="#lips.evaluation.utils.MetricFactory.register_metric_dict" title="lips.evaluation.utils.MetricFactory.register_metric_dict"><code class="xref py py-obj docutils literal notranslate"><span class="pre">register_metric_dict</span></code></a>(metric_dict)</p></td>
+<td><p>register a dictionary including metrics</p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="#lips.evaluation.utils.Mapper.map_label_to_func" title="lips.evaluation.utils.Mapper.map_label_to_func"><code class="xref py py-obj docutils literal notranslate"><span class="pre">map_label_to_func</span></code></a>(label, func)</p></td>
-<td><p>create new mappings</p></td>
-</tr>
-<tr class="row-even"><td><p><a class="reference internal" href="#lips.evaluation.utils.Mapper.get_func" title="lips.evaluation.utils.Mapper.get_func"><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_func</span></code></a>(label)</p></td>
-<td><p>get the function for a metric</p></td>
-</tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="#lips.evaluation.utils.Mapper.rename_key" title="lips.evaluation.utils.Mapper.rename_key"><code class="xref py py-obj docutils literal notranslate"><span class="pre">rename_key</span></code></a>(k_old, k_new)</p></td>
-<td><p>rename the a dictionary key</p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="#lips.evaluation.utils.MetricFactory.get_metric" title="lips.evaluation.utils.MetricFactory.get_metric"><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_metric</span></code></a>(metric_name)</p></td>
+<td><p>Get the required metric</p></td>
 </tr>
 </tbody>
 </table>
 <dl class="py method">
-<dt class="sig sig-object py" id="lips.evaluation.utils.Mapper.map_generic_criteria">
-<span class="sig-name descname"><span class="pre">map_generic_criteria</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/lips/evaluation/utils.html#Mapper.map_generic_criteria"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#lips.evaluation.utils.Mapper.map_generic_criteria" title="Permalink to this definition"></a></dt>
-<dd><p>Get a list of generic evaluation functions</p>
-</dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="lips.evaluation.utils.Mapper.map_powergrid_criteria">
-<span class="sig-name descname"><span class="pre">map_powergrid_criteria</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/lips/evaluation/utils.html#Mapper.map_powergrid_criteria"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#lips.evaluation.utils.Mapper.map_powergrid_criteria" title="Permalink to this definition"></a></dt>
-<dd><p>It populates the dictionary with available powergrids critiera</p>
-</dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="lips.evaluation.utils.Mapper.map_label_to_func">
-<span class="sig-name descname"><span class="pre">map_label_to_func</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">label</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">func</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Callable</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/lips/evaluation/utils.html#Mapper.map_label_to_func"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#lips.evaluation.utils.Mapper.map_label_to_func" title="Permalink to this definition"></a></dt>
-<dd><p>create new mappings</p>
+<dt class="sig sig-object py" id="lips.evaluation.utils.MetricFactory.register_metric">
+<span class="sig-name descname"><span class="pre">register_metric</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">metric_name</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">creator</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Callable</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/lips/evaluation/utils.html#MetricFactory.register_metric"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#lips.evaluation.utils.MetricFactory.register_metric" title="Permalink to this definition"></a></dt>
+<dd><p>Register new metrics</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>label</strong> (<em>str</em>) – a new label</p></li>
-<li><p><strong>func</strong> (<em>Callable</em>) – a metric function</p></li>
+<li><p><strong>metric_name</strong> (<em>str</em>) – _description_</p></li>
+<li><p><strong>creator</strong> (<em>Callable</em>) – _description_</p></li>
 </ul>
 </dd>
 </dl>
 </dd></dl>
 
 <dl class="py method">
-<dt class="sig sig-object py" id="lips.evaluation.utils.Mapper.get_func">
-<span class="sig-name descname"><span class="pre">get_func</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">label</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">Callable</span></span></span><a class="reference internal" href="_modules/lips/evaluation/utils.html#Mapper.get_func"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#lips.evaluation.utils.Mapper.get_func" title="Permalink to this definition"></a></dt>
-<dd><p>get the function for a metric</p>
+<dt class="sig sig-object py" id="lips.evaluation.utils.MetricFactory.register_metric_dict">
+<span class="sig-name descname"><span class="pre">register_metric_dict</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">metric_dict</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">dict</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/lips/evaluation/utils.html#MetricFactory.register_metric_dict"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#lips.evaluation.utils.MetricFactory.register_metric_dict" title="Permalink to this definition"></a></dt>
+<dd><p>register a dictionary including metrics</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><p><strong>label</strong> (<em>str</em>) – the label of the metric</p>
+<dd class="field-odd"><p><strong>metric_dict</strong> (<em>dict</em>) – _description_</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="lips.evaluation.utils.MetricFactory.get_metric">
+<span class="sig-name descname"><span class="pre">get_metric</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">metric_name</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/lips/evaluation/utils.html#MetricFactory.get_metric"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#lips.evaluation.utils.MetricFactory.get_metric" title="Permalink to this definition"></a></dt>
+<dd><p>Get the required metric</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>metric_name</strong> (<em>str</em>) – _description_</p>
 </dd>
 <dt class="field-even">Returns</dt>
-<dd class="field-even"><p>the corresponding function</p>
+<dd class="field-even"><p>_description_</p>
 </dd>
 <dt class="field-odd">Return type</dt>
 <dd class="field-odd"><p>Callable</p>
 </dd>
-</dl>
-</dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="lips.evaluation.utils.Mapper.rename_key">
-<span class="sig-name descname"><span class="pre">rename_key</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">k_old</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">k_new</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/lips/evaluation/utils.html#Mapper.rename_key"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#lips.evaluation.utils.Mapper.rename_key" title="Permalink to this definition"></a></dt>
-<dd><p>rename the a dictionary key</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><ul class="simple">
-<li><p><strong>k_old</strong> (<em>str</em>) – old key</p></li>
-<li><p><strong>k_new</strong> (<em>str</em>) – new key</p></li>
-</ul>
+<dt class="field-even">Raises</dt>
+<dd class="field-even"><p><strong>ValueError</strong> – _description_</p>
 </dd>
 </dl>
 </dd></dl>
