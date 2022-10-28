@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Index &mdash; LIPS 0.1.0 documentation</title>
+  <title>Index &mdash; LIPS 0.1 documentation</title>
       <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
       <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
   <!--[if lt IE 9]>
@@ -28,9 +28,6 @@
         <div class="wy-side-nav-search" >
             <a href="index.html" class="icon icon-home"> LIPS
           </a>
-              <div class="version">
-                0.1
-              </div>
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
     <input type="text" name="q" placeholder="Search docs" />
@@ -426,8 +423,12 @@
         <li><a href="lips.physical_simulator.html#lips.physical_simulator.grid2opSimulator.get_env">(in module lips.physical_simulator.grid2opSimulator)</a>
 </li>
       </ul></li>
-      <li><a href="lips.evaluation.html#lips.evaluation.utils.MetricFactory.get_metric">get_metric() (lips.evaluation.utils.MetricFactory method)</a>
+      <li><a href="lips.evaluation.html#lips.evaluation.Mapper.get_func">get_func() (lips.evaluation.Mapper method)</a>
+
+      <ul>
+        <li><a href="lips.evaluation.html#lips.evaluation.utils.Mapper.get_func">(lips.evaluation.utils.Mapper method)</a>
 </li>
+      </ul></li>
   </ul></td>
   <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="lips.config.html#lips.config.ConfigManager.get_option">get_option() (lips.config.ConfigManager method)</a>
@@ -601,14 +602,21 @@
 </li>
       </ul></li>
       <li>
+    lips.evaluation.transport_evaluation
+
+      <ul>
+        <li><a href="lips.evaluation.html#module-lips.evaluation.transport_evaluation">module</a>
+</li>
+      </ul></li>
+  </ul></td>
+  <td style="width: 33%; vertical-align: top;"><ul>
+      <li>
     lips.evaluation.utils
 
       <ul>
         <li><a href="lips.evaluation.html#module-lips.evaluation.utils">module</a>
 </li>
       </ul></li>
-  </ul></td>
-  <td style="width: 33%; vertical-align: top;"><ul>
       <li>
     lips.logger
 
@@ -713,12 +721,34 @@
         <li><a href="lips.evaluation.html#lips.evaluation.evaluation.Evaluation.MACHINE_LEARNING">(lips.evaluation.evaluation.Evaluation attribute)</a>
 </li>
       </ul></li>
+      <li><a href="lips.evaluation.html#lips.evaluation.Mapper.map_generic_criteria">map_generic_criteria() (lips.evaluation.Mapper method)</a>
+
+      <ul>
+        <li><a href="lips.evaluation.html#lips.evaluation.utils.Mapper.map_generic_criteria">(lips.evaluation.utils.Mapper method)</a>
+</li>
+      </ul></li>
+      <li><a href="lips.evaluation.html#lips.evaluation.Mapper.map_label_to_func">map_label_to_func() (lips.evaluation.Mapper method)</a>
+
+      <ul>
+        <li><a href="lips.evaluation.html#lips.evaluation.utils.Mapper.map_label_to_func">(lips.evaluation.utils.Mapper method)</a>
+</li>
+      </ul></li>
+      <li><a href="lips.evaluation.html#lips.evaluation.Mapper.map_powergrid_criteria">map_powergrid_criteria() (lips.evaluation.Mapper method)</a>
+
+      <ul>
+        <li><a href="lips.evaluation.html#lips.evaluation.utils.Mapper.map_powergrid_criteria">(lips.evaluation.utils.Mapper method)</a>
+</li>
+      </ul></li>
       <li><a href="lips.metrics.html#lips.metrics.mape">mape() (in module lips.metrics)</a>
 </li>
       <li><a href="lips.metrics.html#lips.metrics.mape_quantile">mape_quantile() (in module lips.metrics)</a>
 </li>
-      <li><a href="lips.evaluation.html#lips.evaluation.utils.MetricFactory">MetricFactory (class in lips.evaluation.utils)</a>
+      <li><a href="lips.evaluation.html#lips.evaluation.Mapper">Mapper (class in lips.evaluation)</a>
+
+      <ul>
+        <li><a href="lips.evaluation.html#lips.evaluation.utils.Mapper">(class in lips.evaluation.utils)</a>
 </li>
+      </ul></li>
       <li><a href="lips.physical_simulator.html#lips.physical_simulator.Grid2opSimulator.modify_state">modify_state() (lips.physical_simulator.Grid2opSimulator method)</a>
 
       <ul>
@@ -760,6 +790,8 @@
         <li><a href="lips.evaluation.html#module-lips.evaluation.evaluation">lips.evaluation.evaluation</a>
 </li>
         <li><a href="lips.evaluation.html#module-lips.evaluation.powergrid_evaluation">lips.evaluation.powergrid_evaluation</a>
+</li>
+        <li><a href="lips.evaluation.html#module-lips.evaluation.transport_evaluation">lips.evaluation.transport_evaluation</a>
 </li>
         <li><a href="lips.evaluation.html#module-lips.evaluation.utils">lips.evaluation.utils</a>
 </li>
@@ -850,22 +882,24 @@
   <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="lips.dataset.html#lips.dataset.powergridDataSet.PowerGridDataSet.reconstruct_output">reconstruct_output() (lips.dataset.powergridDataSet.PowerGridDataSet method)</a>
 </li>
-      <li><a href="lips.evaluation.html#lips.evaluation.utils.MetricFactory.register_metric">register_metric() (lips.evaluation.utils.MetricFactory method)</a>
-</li>
-      <li><a href="lips.evaluation.html#lips.evaluation.utils.MetricFactory.register_metric_dict">register_metric_dict() (lips.evaluation.utils.MetricFactory method)</a>
-</li>
       <li><a href="lips.config.html#lips.config.ConfigManager.remove_config_option">remove_config_option() (lips.config.ConfigManager method)</a>
 
       <ul>
         <li><a href="lips.config.html#lips.config.configmanager.ConfigManager.remove_config_option">(lips.config.configmanager.ConfigManager method)</a>
 </li>
       </ul></li>
-  </ul></td>
-  <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="lips.config.html#lips.config.ConfigManager.remove_section">remove_section() (lips.config.ConfigManager method)</a>
 
       <ul>
         <li><a href="lips.config.html#lips.config.configmanager.ConfigManager.remove_section">(lips.config.configmanager.ConfigManager method)</a>
+</li>
+      </ul></li>
+  </ul></td>
+  <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="lips.evaluation.html#lips.evaluation.Mapper.rename_key">rename_key() (lips.evaluation.Mapper method)</a>
+
+      <ul>
+        <li><a href="lips.evaluation.html#lips.evaluation.utils.Mapper.rename_key">(lips.evaluation.utils.Mapper method)</a>
 </li>
       </ul></li>
       <li><a href="lips.augmented_simulators.html#lips.augmented_simulators.AugmentedSimulator.restore">restore() (lips.augmented_simulators.AugmentedSimulator method)</a>
