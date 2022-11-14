@@ -62,11 +62,11 @@ class PowerGridDataSet(DataSet):
                      "v_or", "v_ex", "theta_or", "theta_ex")
 
     def __init__(self,
+                 config: ConfigManager,
                  name: str="train",
                  # for compatibility with existing code this will be removed in future version
                  # (and serialize directly the output of the simulator)
                  attr_names: Union[tuple, None]=None,
-                 config: Union[ConfigManager, None]=None,
                  log_path: Union[str, None]=None
                  ):
         DataSet.__init__(self, name=name)
@@ -82,10 +82,7 @@ class PowerGridDataSet(DataSet):
         # logger
         self.logger = CustomLogger(__class__.__name__, log_path).logger
         # config
-        if config is not None:
-            self.config = config
-        else:
-            self.config = ConfigManager()
+        self.config = config
         # for the sampling
         self._previous = None
         self._order = None
@@ -599,3 +596,4 @@ class PowerGridDataSet(DataSet):
             predictions[attr_nm] = data[:, prev_:(prev_ + this_var_size)]
             prev_ += this_var_size
         return predictions
+

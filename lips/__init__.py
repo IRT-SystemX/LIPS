@@ -7,3 +7,8 @@
 # This file is part of LIPS, LIPS is a python platform for power networks benchmarking
 
 __version__ = "0.1.0"
+
+def GetRootPath():
+    """Returns the root path of LIPS."""
+    import os
+    return os.path.dirname(os.path.abspath(__file__)) + os.sep
