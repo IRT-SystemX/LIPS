@@ -56,7 +56,7 @@ class GetfemSimulator(PhysicalSimulator):
             self._simulator = lips_to_getfem_bridge(physical_domain,physical_properties)
             self._simulator.Preprocessing()
         else:
-            self._simulator=type(simulator_instance._simulator)(simulator_instance._simulator)
+            self._simulator=type(simulator_instance._simulator)(other=simulator_instance._simulator)
 
     def build_model(self):
         """
@@ -133,7 +133,7 @@ class GetfemSimulator(PhysicalSimulator):
         state: dict
             A dict representing the state.
         """
-        self._simulator.SetPhyParams(state)
+        self._simulator.SetProblemState(state)
 
     def __str__(self):
         """
@@ -219,7 +219,7 @@ def check_quasi_static_rolling():
         "sources":[["ALL",{"type" : "Uniform","source_x":0.0,"source_y":0.0}] ],
         "rolling":["HOLE_BOUND",{"type" : "DIS_Rolling", "theta_Rolling":150., 'd': 1.}],
         "contact":[ ["CONTACT_BOUND",{"type" : "Plane","gap":0.0,"fricCoeff":0.6}] ],
-        "transientParams":{"time": 5*dt, "timeStep": dt}
+        "transientParams":{"time": 4*dt, "timeStep": dt}
     }
     mySimulator=GetfemSimulator(physical_domain=physical_domain,physical_properties=physical_properties)
     mySimulator.build_model()
