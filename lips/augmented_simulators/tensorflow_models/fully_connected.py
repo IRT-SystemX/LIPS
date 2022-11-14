@@ -48,11 +48,11 @@ class TfFullyConnected(TensorflowSimulator):
     """
     def __init__(self,
                  sim_config_path: str,
+                 bench_config_path: Union[str, pathlib.Path],
+                 bench_config_name: Union[str, None]=None,
                  sim_config_name: Union[str, None]=None,
                  name: Union[str, None]=None,
                  scaler: Union[Scaler, None]=None,
-                 bench_config_path: Union[str, pathlib.Path, None]=None,
-                 bench_config_name: Union[str, None]=None,
                  log_path: Union[None, str]=None,
                  **kwargs):
         super().__init__(name=name, log_path=log_path, **kwargs)

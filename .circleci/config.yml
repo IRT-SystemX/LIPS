@@ -55,6 +55,8 @@ commands:
       - store_artifacts:
           path: test-results
           destination: tr1
+      - store_artifacts:
+          path: cov_html
 
   change_owner:
     description: "change owner before saving cache"
@@ -77,7 +79,7 @@ jobs:
           name: "run pytest"
           command: |
             . venv/bin/activate
-            python -m pytest ./lips --html=test-results/pytest_report.html --self-contained-html
+            python -m pytest --html=test-results/pytest_report.html --self-contained-html --cov-report html:cov_html --cov=lips ./lips/tests/
       - store_artifacts_test_results
 
   run_notebook_test:
@@ -159,6 +161,7 @@ jobs:
       - add_ssh_keys:
           fingerprints:
             - "c5:f1:b9:b9:fb:c4:fe:1f:b0:35:ba:e0:35:fb:20:6a"
+            - "af:14:d9:14:c6:a6:42:1b:51:94:9b:f9:c7:92:86:ab"
       - run:
           name: Deploy docs to gh-pages branch
           command: gh-pages --dotfiles --message "[skip ci] Updates" --dist ./docs/build/html
@@ -225,5 +228,4 @@ workflows:
           - docs_build
         filters:
           branches:
-            ignore:
-              - gh-pages
+            only: master
