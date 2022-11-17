@@ -7,8 +7,6 @@
 # This file is part of LIPS, LIPS is a python platform for power networks benchmarking
 
 from typing import Callable
-from lips.metrics import DEFAULT_METRICS
-
 
 class MetricFactory:
     """Factory method to register the metrics
@@ -63,4 +61,3 @@ class MetricFactory:
         return creator
 
 metric_factory = MetricFactory()
-metric_factory.register_metric_dict(DEFAULT_METRICS)
