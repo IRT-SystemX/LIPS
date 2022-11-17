@@ -19,6 +19,7 @@ from ...metrics.power_grid.global_conservation import global_conservation
 from ...metrics.power_grid.local_conservation import local_conservation
 from ...metrics.power_grid.verify_voltage_equality import verify_voltage_at_bus
 from ...metrics.power_grid.joule_law import verify_joule_law
+from ...metrics.power_grid.ohm_law import verify_ohm_law
 from ...metrics.power_grid.kirchhoff_law import verify_kirchhoff_law
 from ...logger import CustomLogger
 
@@ -356,10 +357,12 @@ def verify_loss(predictions,
 metric_factory.register_metric("CURRENT_POS", verify_current_pos)
 metric_factory.register_metric("VOLTAGE_POS", verify_voltage_pos)
 metric_factory.register_metric("LOSS_POS", verify_loss_pos)
+metric_factory.register_metric("CURRENT_EQ", verify_current_eq)
 metric_factory.register_metric("DISC_LINES", verify_disc_lines)
 metric_factory.register_metric("CHECK_LOSS", verify_loss)
 metric_factory.register_metric("CHECK_GC", global_conservation)
 metric_factory.register_metric("CHECK_LC", local_conservation)
 metric_factory.register_metric("CHECK_VOLTAGE_EQ", verify_voltage_at_bus)
 metric_factory.register_metric("CHECK_JOULE_LAW", verify_joule_law)
+metric_factory.register_metric("CHECK_OHM_LAW", verify_ohm_law)
 metric_factory.register_metric("CHECK_KCL", verify_kirchhoff_law)
