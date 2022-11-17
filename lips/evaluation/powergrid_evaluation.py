@@ -10,13 +10,14 @@ from typing import Union
 from collections.abc import Iterable
 import time
 
+
 from .evaluation import Evaluation
 from .utils import metric_factory
 from ..logger import CustomLogger
 from ..config import ConfigManager
 from ..physical_simulator.dcApproximationAS import DCApproximationAS
 from ..metrics.power_grid import physics_compliances
-
+from ..metrics.ml_metrics import metrics
 
 class PowerGridEvaluation(Evaluation):
     """Evaluation of the power grid specific metrics
