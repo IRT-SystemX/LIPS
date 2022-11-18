@@ -12,7 +12,7 @@ from cmath import exp, pi
 import numpy as np
 
 from ...logger import CustomLogger
-#from lips.logger import CustomLogger
+# from lips.logger import CustomLogger
 
 def verify_kirchhoff_law(predictions: dict,
                          log_path: Union[str, None]=None,
@@ -20,7 +20,7 @@ def verify_kirchhoff_law(predictions: dict,
                          **kwargs):
     """
     This function verifies the Kirchhoff's law based on power flow equations:
-        
+
         - For active power
             ``$P_k = \sum_{j=1}^N |V_k||V_j|\left(G_{kj} cos(\theta_k - \theta_j) + B_{kj} sin(\theta_k - \theta_j)\right)$``
 
@@ -29,8 +29,6 @@ def verify_kirchhoff_law(predictions: dict,
 
 
     We compare the left hand side and right hand side of the power flow equations.
-    The right hand side is computed based on predictions
-    For the left hand side, power values from observations are used
 
     Parameters
     ----------
@@ -92,13 +90,13 @@ def verify_kirchhoff_law(predictions: dict,
         data = benchmark3.train_dataset.data
         env = benchmark3.training_simulator._simulator
 
-        # For the verification purpose, real data are used as prediction and observation 
+        # For the verification purpose, real data are used as prediction and observation
         # Feel free to use your predictions
         verifications = verify_kirchhoff_law(predictions=data, observations=data, env=env, tolerance=0.01)
     """
      # logger
     logger = CustomLogger("PhysicsCompliances(Joule_law)", log_path).logger
-    
+
     try:
         env = kwargs["env"]
     except KeyError:
@@ -129,29 +127,32 @@ def verify_kirchhoff_law(predictions: dict,
 
     verifications = dict()
     ybuses = observations["YBus"]
-    sbuses = observations["SBus"]
-    prod_qs = observations["prod_q"]
+    p_ors = predictions["p_or"]
+    p_exs = predictions["p_ex"]
+    q_ors = predictions["q_or"]
+    q_exs = predictions["q_ex"]
 
     obs = env.reset()
-    data_size = observations["prod_p"].shape[0]
-    sbuses_after_pf = np.zeros_like(ybuses)
-    bus_ps = np.zeros_like(ybuses)
-    bus_qs = np.zeros_like(ybuses)
+    data_size = ybuses.shape[0]
+    bus_ps = np.zeros((data_size, ybuses.shape[1]))
+    bus_qs = np.zeros((data_size, ybuses.shape[1]))
+    p_ks = np.zeros((data_size, ybuses.shape[1]))
+    q_ks = np.zeros((data_size, ybuses.shape[1]))
+
     for idx in range(data_size):
         obs.topo_vect = observations["topo_vect"][idx]
+        lor_bus, _ = obs._get_bus_id(obs.line_or_pos_topo_vect, obs.line_or_to_subid)
+        lex_bus, _ = obs._get_bus_id(obs.line_ex_pos_topo_vect, obs.line_ex_to_subid)
         ybus = ybuses[idx]
-        sbus_init = sbuses[idx]
 
-        #get SBus after powerflow: reactive power of generators have been computed and should be added
-        sbus_after_pf = sbus_init
-        prod_bus, _ = obs._get_bus_id(obs.gen_pos_topo_vect, obs.gen_to_subid)
-        prod_q = prod_qs[idx]
-        for i, prod_bus_item in enumerate(prod_bus):
-            sbus_after_pf[prod_bus_item] += 1j * prod_q[i] / env.backend._grid.get_sn_mva()
+        bus_v_complex, _ = get_complex_v(env, obs, predictions, idx, ybus)
+        bus_s = np.conj(np.matmul(np.array(ybus), bus_v_complex)) * bus_v_complex * env.backend._grid.get_sn_mva()
+        bus_ps[idx] = bus_s.real
+        bus_qs[idx] = bus_s.imag
 
-        #bus_connectivity = get_bus_connectivity_full(obs)
+        """
+        # this is the very basic computation directly from power equations to obtain active and reactive powers separately
         bus_connectivity = [list(np.where(row)[0]) for row in ybus]
-        bus_v_complex, bus_theta = get_complex_v(env, obs, predictions, idx, ybus)
         bus_theta_rad = bus_theta * (pi / 180)
         bus_p = np.zeros(ybus.shape[0])
         bus_q = np.zeros(ybus.shape[0])
@@ -163,29 +164,18 @@ def verify_kirchhoff_law(predictions: dict,
                 tmp_q += np.abs(bus_v_complex[k]) * np.abs(bus_v_complex[j]) * (ybus[k,j].real*np.sin(bus_theta_rad[k] - bus_theta_rad[j]) - ybus[k,j].imag*np.cos(bus_theta_rad[k] - bus_theta_rad[j]))
             bus_p[k] = tmp_p
             bus_q[k] = tmp_q
-        
-        bus_ps[idx] = bus_p
-        bus_qs[idx] = bus_q
-        sbuses_after_pf[idx] = sbus_after_pf
-        # the other more fast computation of 
-        # SBus_computed = np.conj(np.matmul(ybus, bus_v_complex))*bus_v_complex
-        # print("MAE between two S calculation:", np.mean(np.abs(bus_p + 1j*bus_q - SBus_computed)))
-        # print(np.mean(np.abs(np.round(SBus_computed.real,2) - np.round(sbus_after_pf.real, 2))))
-    
-    # we check for all nodes execpt for the slack. For the slack, the active power has been adjusted to compensate for the losses, 
-    # hence we should have adjusted for it in sbus_after_pf.
-    # but we cannot recover the adjustment from the data we saved, so we ignore that index
-    slack_id=prod_bus[-1]
-    index_to_keep=np.ones(len(sbus_after_pf),dtype=bool)
-    index_to_keep[slack_id]=False
+        """
+        for i in range(ybus.shape[0]):
+            p_ks[idx, i] = np.sum(p_ors[idx][lor_bus==i]) + np.sum(p_exs[idx][lex_bus==i])
+            q_ks[idx, i] = np.sum(q_ors[idx][lor_bus==i]) + np.sum(q_exs[idx][lex_bus==i])
 
-    mae_active_per_obs = np.mean(np.abs(np.round(bus_ps,2) - np.round(sbuses_after_pf.real, 2))[:,index_to_keep], axis=1)
+    mae_active_per_obs = np.mean(np.abs(bus_ps - p_ks), axis=1)
     mae_active = np.mean(mae_active_per_obs)
-    wmape_active = np.mean(np.abs(np.round(bus_ps,2) - np.round(sbuses_after_pf.real, 2))[:,index_to_keep]) / np.mean(np.abs(np.round(sbuses_after_pf.real, 2))[:,index_to_keep])
+    wmape_active = np.mean(np.abs(bus_ps - p_ks)) / np.mean(np.abs(p_ks))
     violation_prop_active = np.sum(mae_active_per_obs > tolerance) / mae_active_per_obs.size
-    mae_reactive_per_obs = np.mean(np.abs(np.round(bus_qs,2) - np.round(sbuses_after_pf.imag, 2))[:,index_to_keep], axis=1)
+    mae_reactive_per_obs = np.mean(np.abs(bus_qs - q_ks), axis=1)
     mae_reactive = np.mean(mae_reactive_per_obs)
-    wmape_reactive = np.mean(np.abs(np.round(bus_qs,2) - np.round(sbuses_after_pf.imag, 2))[:,index_to_keep]) / np.mean(np.abs(np.round(sbuses_after_pf.imag, 2))[:,index_to_keep])
+    wmape_reactive = np.mean(np.abs(bus_qs - q_ks)) / np.mean(np.abs(q_ks))
     violation_prop_reactive = np.sum(mae_reactive_per_obs > tolerance) / mae_reactive_per_obs.size
 
     logger.info("Kirchhoff law active power violation proportion: %.3f", violation_prop_active)
@@ -235,7 +225,7 @@ def get_complex_v(env, obs, predictions, idx, ybus):
 def get_bus_connectivity_full(obs) -> list:
     """
     This function returns the connectivity at bus level under an array of tuples
-    
+
     Parameters
     ----------
     obs : ``grid2op.Observation``
