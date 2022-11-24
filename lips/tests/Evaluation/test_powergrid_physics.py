@@ -16,8 +16,8 @@ from lips.metrics.power_grid import physics_compliances
 from lips.metrics.power_grid.verify_voltage_equality import verify_voltage_at_bus
 from lips.metrics.power_grid.global_conservation import global_conservation
 from lips.metrics.power_grid.local_conservation import local_conservation
+from lips.metrics.power_grid.ohm_law import verify_ohm_law
 from lips.dataset.utils.powergrid_utils import get_kwargs_simulator_scenario
-
 
 LIPS_PATH = pathlib.Path(__file__).parent.parent.parent.parent.absolute()
 CONFIG_PATH = LIPS_PATH / "configurations" / "powergrid" / "benchmarks" / "l2rpn_case14_sandbox.ini"
@@ -149,6 +149,23 @@ def test_verify_voltage_equality():
     assert verifications["prop_voltages_violation"] == 0
     assert verifications["prop_theta_violation"] == 0
 
+def test_verify_ohm_law():
+    """
+    Verify if the Ohm law is respected with respect to the indicated threshold
+    """
+    benchmark3= PowerGridBenchmark(benchmark_path=DATA_PATH,
+                                   benchmark_name="Benchmark3",
+                                   load_data_set=True,
+                                   config_path=CONFIG_PATH,
+                                   log_path=LOG_PATH)
+
+    data = benchmark3._test_dataset.data
+    # env = benchmark3.training_simulator._simulator
+    env = get_env(get_kwargs_simulator_scenario(benchmark3.config))
+
+    verifications = verify_ohm_law(predictions=data, observations=data, env=env, result_level=0, tolerance=1e-4)#, tolerance=0.01)
+    assert verifications["violation_prop_p_or"] < 1e-3
+    assert verifications["violation_prop_p_ex"] < 1e-3
 '''
 if __name__ == "__main__":
     #test_evaluation()
