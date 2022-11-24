@@ -305,30 +305,31 @@ def test_bench3_data_reproducibility():
     """This test aims at verifying if the same exact data could be reproduced after each FrameWork update
     BENCHMARK 3
     """
-    benchmark1_ex1 = PowerGridBenchmark(benchmark_path=DATA_PATH,
+    benchmark3_ex1 = PowerGridBenchmark(benchmark_path=DATA_PATH,
                                         benchmark_name="Benchmark3",
                                         load_data_set=True,
                                         config_path=CONFIG_PATH,
                                         log_path=LOG_PATH)
 
-    benchmark1_ex2 = PowerGridBenchmark(benchmark_path=None,
+    benchmark3_ex2 = PowerGridBenchmark(benchmark_path=None,
                                         benchmark_name="Benchmark3",
                                         load_data_set=False,
                                         config_path=CONFIG_PATH,
                                         log_path=LOG_PATH)
 
-    data_size = int(2e3)
-    benchmark1_ex2.generate(nb_sample_train=data_size,
+    data_size = int(1e2)
+    benchmark3_ex2.generate(nb_sample_train=data_size,
                             nb_sample_val=data_size,
                             nb_sample_test=data_size,
-                            nb_sample_test_ood_topo=data_size
+                            nb_sample_test_ood_topo=data_size,
+                            do_store_physics=True
                            )
     dataset_labels = ("train_dataset", "val_dataset", "_test_dataset", "_test_ood_topo_dataset")
     #data_ex1 = benchmark1_ex1.train_dataset.data
     #data_ex2 = benchmark1_ex2.train_dataset.data
     for label_ in dataset_labels:
-        data_ex1 = getattr(benchmark1_ex1, label_).data
-        data_ex2 = getattr(benchmark1_ex2, label_).data
+        data_ex1 = getattr(benchmark3_ex1, label_).data
+        data_ex2 = getattr(benchmark3_ex2, label_).data
         keys = data_ex1.keys()
         errors = list()
         for key_ in keys:
