@@ -1,0 +1,14 @@
+{
+  "simulator_config": {
+    "scaler_class" : "StandardScaler",
+    "name": "MyAugmentedSimulator"
+  },
+
+  "trained_model_path" : "./trained_model",
+  "requires_training" : "true",
+
+  "simulator_training_config": {
+    "epochs": 2
+  }
+
+}

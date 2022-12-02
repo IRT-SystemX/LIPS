@@ -1,6 +1,9 @@
+filelock==3.7.1
 Grid2Op==1.7.2
+json2table==1.1.5
 leap-net @ https://github.com/BDonnot/leap_net/tarball/master#egg=leap_net
 lightsim2grid==0.7.0.post1
+loguru==0.6.0
 numpy==1.21.5
 numba==0.55.1
 pandapower==2.7.0
@@ -12,6 +15,7 @@ pytest==6.2.5
 pytest-cov==3.0.0
 pytest-html==3.1.1
 pytest-metadata==1.11.0
+PyYAML==6.0
 scikit-learn==1.0.1
 scipy==1.4.1
 six==1.16.0

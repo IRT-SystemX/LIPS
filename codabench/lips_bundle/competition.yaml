@@ -1,0 +1,95 @@
+version: 2
+title: LIPS Benchmark
+description: Learning Industrial Physical Simulation benchmark suite
+image: LIPS_logo.png
+docker_image: jeromepicault/lips:0.3
+enable_detailed_results: True # If True, competition will watch for a detailed_results.html file and send its contents to storage.
+registration_auto_approve: True
+
+terms: terms.md
+pages:
+  - title: Get Started
+    file: get_started.md
+  - title: Data
+    file: data.md
+  - title: Evaluation
+    file: evaluation.md
+  - title: Submission
+    file: submission.md
+  - title: Get starting kit
+    file: get_starting_kit.md
+
+tasks:
+  - index: 0
+    name: 1 - Risk assessment through contingency screening
+    #input_data: input_data/
+    #reference_data: reference_data/
+    ingestion_program: ingestion_program_1/
+    scoring_program: scoring_program_1/
+  - index: 1
+    name: 2 - Remedial action search
+    #input_data: input_data/
+    #reference_data: reference_data/
+    ingestion_program: ingestion_program_2/
+    scoring_program: scoring_program_2/
+  - index: 2
+    name: 3 - Validation of decision
+    #input_data: input_data/
+    #reference_data: reference_data/
+    ingestion_program: ingestion_program_3/
+    scoring_program: scoring_program_3/
+  - index: 3
+    name: Wheel Simulation
+    #input_data: input_data/
+    #reference_data: reference_data/
+    ingestion_program: ingestion_program_1/
+    scoring_program: scoring_program_1/
+  - index: 4
+    name: Railway fatigue
+    #input_data: input_data/
+    #reference_data: reference_data/
+    ingestion_program: ingestion_program_1/
+    scoring_program: scoring_program_1/
+
+phases:
+  - name: Use case Power Grids
+    description: 'Use case Power Grids'
+    start: 01-06-2022
+    end: 12-30-2023
+    tasks:
+      - 0
+      - 1
+      #- 2
+    max_submissions_per_day: 10
+    max_submissions: 100
+    execution_time_limit_ms: 1800000
+
+
+leaderboards:
+  - title: Results
+    key: main
+    columns: # keys: size max 36 chars...
+      - title: ML-related perf (A)
+        key: cedd7ffd3075d2cb344f65765274d2ce
+        index: 0
+        sorting: desc
+      - title: ML-related perf (p)
+        key: 8ce0c40bf088be76df41f29e442b9ad7
+        index: 1
+        sorting: desc
+      - title: OOD gen (A)
+        key: 7cf001949c4677484dbb4febbee77da6
+        index: 2
+        sorting: desc
+      - title: OOD gen (p)
+        key: 262cb652565539837c7ec7dab866b244
+        index: 3
+        sorting: desc
+      - title: Physics CURRENT_POS % violation
+        key: ca4b20e81673936319cf4b8f6fa70200
+        index: 4
+        sorting: desc
+      - title: Physics CURRENT_POS % violation
+        key: 741ebbe2c1a8a2d85700d71dedf5a7ec
+        index: 5
+        sorting: desc
