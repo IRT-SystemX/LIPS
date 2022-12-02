@@ -375,7 +375,12 @@ class PowerGridDataSet(DataSet):
         self.data = {}
         self.size = None
         #for attr_nm in (*self._attr_names, *self._theta_attr_names):
-        for attr_nm in self._attr_names:
+        if self.config.get_option("attr_physics"):
+            attr_names = self._attr_names + self.config.get_option("attr_physics")
+        else: 
+            attr_names = self._attr_names
+
+        for attr_nm in attr_names:
             path_this_array = f"{os.path.join(full_path, attr_nm)}.npz"
             self.data[attr_nm] = np.load(path_this_array)["data"]
             self.size = self.data[attr_nm].shape[0]
