@@ -1,0 +1,12 @@
+version: "3.7"
+services:
+  app:
+    image: jeromepicault/lips:0.3
+    environment:
+      - LIPS_HOME=/LIPS
+      - HTTP_PROXY=$HTTP_PROXY
+      - HTTPS_PROXY=$HTTPS_PROXY
+    stdin_open: true
+    tty: true
+    #volumes:
+    #  - .:/app

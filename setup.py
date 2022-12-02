@@ -44,6 +44,12 @@ pkgs = {
             "autodocsumm>=0.1.13",
             "gym>=0.17.2"
         ],
+        "codabench": [
+            "filelock==3.7.1",
+            "json2table==1.1.5",
+            "loguru==0.6.0",
+            "PyYAML==6.0"
+        ],
         "test": [
             "pytest",
             "pytest-cov",
@@ -59,6 +65,7 @@ pkgs = {
 
 pkgs["extras"]["test"] += pkgs["extras"]["recommended"]
 pkgs["extras"]["test"] += pkgs["extras"]["docs"]
+pkgs["extras"]["test"] += pkgs["extras"]["codabench"]
 
 with open("README.md", "r", encoding="utf-8") as fh:
     long_description = fh.read()
