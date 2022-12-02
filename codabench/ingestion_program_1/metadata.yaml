@@ -1,0 +1,1 @@
+command: python3 ingestion.py --benchmark_name=Benchmark1 --dataset_dir=/LIPS/reference_data --benchmark_output_dir=/app/output/benchmark_output --benchmark_config=/app/program/GridBenchmark_conf.ini --submission_dir=/app/ingested_program

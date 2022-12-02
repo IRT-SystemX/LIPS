@@ -1,0 +1,1 @@
+command: python3 score.py --benchmark_output_dir /app/input/res/benchmark_output --score_dir /app/output/ --benchmark_name=Benchmark3 --benchmark_config=./GridBenchmark_conf.ini
