@@ -116,10 +116,6 @@ class PowerGridBenchmark(Benchmark):
                      self.config.get_option("attr_tau") + \
                      self.config.get_option("attr_y")
 
-        if self.config.get_option("attr_physics"):
-            attr_names += self.config.get_option("attr_physics")
-
-
         self.train_dataset = PowerGridDataSet(name="train",
                                               attr_names=attr_names,
                                               config=self.config,
