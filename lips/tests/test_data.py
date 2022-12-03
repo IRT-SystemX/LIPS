@@ -22,13 +22,11 @@
 # unittest.TextTestRunner(verbosity=2).run(suite)
 
 import pathlib
-import numpy as np
-from sklearn.metrics import mean_absolute_error
-
-from lips.config import ConfigManager
-from lips.benchmark.powergridBenchmark import PowerGridBenchmark
 from cmath import exp
 from math import pi
+import numpy as np
+
+from lips.benchmark.powergridBenchmark import PowerGridBenchmark
 
 LIPS_PATH = pathlib.Path(__file__).parent.parent.parent.absolute()
 CONFIG_PATH = LIPS_PATH / "lips" / "tests" / "configs" / "powergrid" / "benchmarks" / "l2rpn_case14_sandbox.ini"
@@ -69,10 +67,10 @@ def test_generation_reproducibiltiy():
     keys = data_ex1.keys()
     errors = list()
     for key_ in keys:
-        if key_ == "line_status":
-            data_ex1["line_status"] = np.asarray(data_ex1.get("line_status"), dtype=int)
-            data_ex2["line_status"] = np.asarray(data_ex2.get("line_status"), dtype=int)
-        error = mean_absolute_error(data_ex1.get(key_), data_ex2.get(key_))
+        if key_ == "line_status" or key_ == "PV_nodes":
+            data_ex1[key_] = np.asarray(data_ex1.get(key_), dtype=int)
+            data_ex2[key_] = np.asarray(data_ex2.get(key_), dtype=int)
+        error = np.mean(np.abs(data_ex1.get(key_) - data_ex2.get(key_)))
         errors.append(error)
 
     assert(np.sum(errors) < 1e-3)
@@ -134,10 +132,10 @@ def test_generation_seeds():
     keys = data_ex1.keys()
     errors = list()
     for key_ in keys:
-        if key_ == "line_status":
-            data_ex1["line_status"] = np.asarray(data_ex1.get("line_status"), dtype=int)
-            data_ex2["line_status"] = np.asarray(data_ex2.get("line_status"), dtype=int)
-        error = mean_absolute_error(data_ex1.get(key_), data_ex2.get(key_))
+        if key_ == "line_status" or key_ == "PV_nodes":
+            data_ex1[key_] = np.asarray(data_ex1.get(key_), dtype=int)
+            data_ex2[key_] = np.asarray(data_ex2.get(key_), dtype=int)
+        error = np.mean(np.abs(data_ex1.get(key_) - data_ex2.get(key_)))
         errors.append(error)
 
     assert(np.sum(errors) > 0)
@@ -173,12 +171,156 @@ def test_bench1_data_reproducibility():
         keys = data_ex1.keys()
         errors = list()
         for key_ in keys:
-            if key_ == "line_status":
-                data_ex1["line_status"] = np.asarray(data_ex1.get("line_status"), dtype=int)
-                data_ex2["line_status"] = np.asarray(data_ex2.get("line_status"), dtype=int)
-            error = mean_absolute_error(data_ex1.get(key_)[:data_size, :], data_ex2.get(key_))
+            print(key_)
+            if key_ == "line_status" or key_ == "PV_nodes":
+                data_ex1[key_] = np.asarray(data_ex1.get(key_), dtype=int)
+                data_ex2[key_] = np.asarray(data_ex2.get(key_), dtype=int)
+            error = np.mean(np.abs(data_ex1.get(key_)[:data_size, :] - data_ex2.get(key_)))
             errors.append(error)
         assert(np.sum(errors) < 1e-3)
+
+def test_bench2_data_reproducibility():
+    """This test aims at verifying if the same exact data could be reproduced after each FrameWork update
+    BENCHMARK 2
+    """
+    benchmark2_ex1 = PowerGridBenchmark(benchmark_path=DATA_PATH,
+                                        benchmark_name="Benchmark2",
+                                        load_data_set=True,
+                                        config_path=CONFIG_PATH,
+                                        log_path=LOG_PATH)
+
+    benchmark2_ex2 = PowerGridBenchmark(benchmark_path=None,
+                                        benchmark_name="Benchmark2",
+                                        load_data_set=False,
+                                        config_path=CONFIG_PATH,
+                                        log_path=LOG_PATH)
+
+    data_size = int(2e3)
+    benchmark2_ex2.generate(nb_sample_train=data_size,
+                            nb_sample_val=data_size,
+                            nb_sample_test=data_size,
+                            nb_sample_test_ood_topo=data_size
+                           )
+    dataset_labels = ("train_dataset", "val_dataset", "_test_dataset", "_test_ood_topo_dataset")
+    #data_ex1 = benchmark1_ex1.train_dataset.data
+    #data_ex2 = benchmark1_ex2.train_dataset.data
+    for label_ in dataset_labels:
+        data_ex1 = getattr(benchmark2_ex1, label_).data
+        data_ex2 = getattr(benchmark2_ex2, label_).data
+        keys = data_ex1.keys()
+        errors = list()
+        for key_ in keys:
+            print(key_)
+            if key_ == "line_status" or key_ == "PV_nodes":
+                data_ex1[key_] = np.asarray(data_ex1.get(key_), dtype=int)
+                data_ex2[key_] = np.asarray(data_ex2.get(key_), dtype=int)
+            error = np.mean(np.abs(data_ex1.get(key_)[:data_size, :] - data_ex2.get(key_)))
+            errors.append(error)
+        assert(np.sum(errors) < 1e-3)
+
+def test_bench3_data_reproducibility():
+    """This test aims at verifying if the same exact data could be reproduced after each FrameWork update
+    BENCHMARK 3
+    """
+    benchmark3_ex1 = PowerGridBenchmark(benchmark_path=DATA_PATH,
+                                        benchmark_name="Benchmark3",
+                                        load_data_set=True,
+                                        config_path=CONFIG_PATH,
+                                        log_path=LOG_PATH)
+
+    benchmark3_ex2 = PowerGridBenchmark(benchmark_path=None,
+                                        benchmark_name="Benchmark3",
+                                        load_data_set=False,
+                                        config_path=CONFIG_PATH,
+                                        log_path=LOG_PATH)
+
+    data_size = int(1e2)
+    benchmark3_ex2.generate(nb_sample_train=data_size,
+                            nb_sample_val=data_size,
+                            nb_sample_test=data_size,
+                            nb_sample_test_ood_topo=data_size,
+                            do_store_physics=True
+                           )
+    dataset_labels = ("train_dataset", "val_dataset", "_test_dataset", "_test_ood_topo_dataset")
+    #data_ex1 = benchmark1_ex1.train_dataset.data
+    #data_ex2 = benchmark1_ex2.train_dataset.data
+    for label_ in dataset_labels:
+        data_ex1 = getattr(benchmark3_ex1, label_).data
+        data_ex2 = getattr(benchmark3_ex2, label_).data
+        keys = data_ex1.keys()
+        errors = list()
+        for key_ in keys:
+            print(key_)
+            if key_ == "line_status" or key_ == "PV_nodes":
+                data_ex1[key_] = np.asarray(data_ex1.get(key_), dtype=int)
+                data_ex2[key_] = np.asarray(data_ex2.get(key_), dtype=int)
+            error = np.mean(np.abs(data_ex1.get(key_)[:data_size, :] - data_ex2.get(key_)))
+            errors.append(error)
+        assert(np.sum(errors) < 1e-3)
+
+def test_bench1_consistency():
+    """Consistency check wrt. config
+
+    This test verifies if generated variables and those indicated in config file are consistent.
+    """
+    benchmark1 = PowerGridBenchmark(benchmark_path=DATA_PATH,
+                                    benchmark_name="Benchmark1",
+                                    load_data_set=True,
+                                    config_path=CONFIG_PATH,
+                                    log_path=LOG_PATH)
+    config_keys = benchmark1.config.get_option("attr_x") + \
+                  benchmark1.config.get_option("attr_tau") + \
+                  benchmark1.config.get_option("attr_y")
+    if benchmark1.config.get_option("attr_physics"):
+        config_keys = config_keys + benchmark1.config.get_option("attr_physics")
+    dataset_labels = ("train_dataset", "val_dataset", "_test_dataset", "_test_ood_topo_dataset")
+    for label_ in dataset_labels:
+        data = getattr(benchmark1, label_).data
+        dataset_keys = tuple(data.keys())
+        assert dataset_keys == config_keys
+
+def test_bench2_consistency():
+    """Consistency check wrt. config
+
+    This test verifies if generated variables and those indicated in config file are consistent.
+    """
+    benchmark2 = PowerGridBenchmark(benchmark_path=DATA_PATH,
+                                    benchmark_name="Benchmark2",
+                                    load_data_set=True,
+                                    config_path=CONFIG_PATH,
+                                    log_path=LOG_PATH)
+    config_keys = benchmark2.config.get_option("attr_x") + \
+                  benchmark2.config.get_option("attr_tau") + \
+                  benchmark2.config.get_option("attr_y")
+    if benchmark2.config.get_option("attr_physics"):
+        config_keys = config_keys + benchmark2.config.get_option("attr_physics")
+    dataset_labels = ("train_dataset", "val_dataset", "_test_dataset", "_test_ood_topo_dataset")
+    dataset_labels = ("train_dataset", "val_dataset", "_test_dataset", "_test_ood_topo_dataset")
+    for label_ in dataset_labels:
+        data = getattr(benchmark2, label_).data
+        dataset_keys = tuple(data.keys())
+        assert dataset_keys == config_keys
+
+def test_bench3_consistency():
+    """Consistency check wrt. config
+
+    This test verifies if generated variables and those indicated in config file are consistent.
+    """
+    benchmark3 = PowerGridBenchmark(benchmark_path=DATA_PATH,
+                                    benchmark_name="Benchmark3",
+                                    load_data_set=True,
+                                    config_path=CONFIG_PATH,
+                                    log_path=LOG_PATH)
+    config_keys = benchmark3.config.get_option("attr_x") + \
+                  benchmark3.config.get_option("attr_tau") + \
+                  benchmark3.config.get_option("attr_y")
+    if benchmark3.config.get_option("attr_physics"):
+        config_keys = config_keys + benchmark3.config.get_option("attr_physics")
+    dataset_labels = ("train_dataset", "val_dataset", "_test_dataset", "_test_ood_topo_dataset")
+    for label_ in dataset_labels:
+        data = getattr(benchmark3, label_).data
+        dataset_keys = tuple(data.keys())
+        assert dataset_keys == config_keys
 
 def test_power_grid_physics_informed_data():
     """This test aims at verifying that the generated data structure representing the physics (admittance matrix YBus, SBus vector)
@@ -260,139 +402,4 @@ def test_power_grid_physics_informed_data():
         index_to_keep=np.ones(len(SBus_after_pf),dtype=bool)
         index_to_keep[slack_id]=False
         assert np.all(np.abs(np.round(SBus_after_pf - SBus_computed,2))[index_to_keep]<=0.01) #[pv_nodes]
-
-
-
-def test_bench2_data_reproducibility():
-    """This test aims at verifying if the same exact data could be reproduced after each FrameWork update
-    BENCHMARK 2
-    """
-    benchmark1_ex1 = PowerGridBenchmark(benchmark_path=DATA_PATH,
-                                        benchmark_name="Benchmark2",
-                                        load_data_set=True,
-                                        config_path=CONFIG_PATH,
-                                        log_path=LOG_PATH)
-
-    benchmark1_ex2 = PowerGridBenchmark(benchmark_path=None,
-                                        benchmark_name="Benchmark2",
-                                        load_data_set=False,
-                                        config_path=CONFIG_PATH,
-                                        log_path=LOG_PATH)
-
-    data_size = int(2e3)
-    benchmark1_ex2.generate(nb_sample_train=data_size,
-                            nb_sample_val=data_size,
-                            nb_sample_test=data_size,
-                            nb_sample_test_ood_topo=data_size
-                           )
-    dataset_labels = ("train_dataset", "val_dataset", "_test_dataset", "_test_ood_topo_dataset")
-    #data_ex1 = benchmark1_ex1.train_dataset.data
-    #data_ex2 = benchmark1_ex2.train_dataset.data
-    for label_ in dataset_labels:
-        data_ex1 = getattr(benchmark1_ex1, label_).data
-        data_ex2 = getattr(benchmark1_ex2, label_).data
-        keys = data_ex1.keys()
-        errors = list()
-        for key_ in keys:
-            if key_ == "line_status":
-                data_ex1["line_status"] = np.asarray(data_ex1.get("line_status"), dtype=int)
-                data_ex2["line_status"] = np.asarray(data_ex2.get("line_status"), dtype=int)
-            error = mean_absolute_error(data_ex1.get(key_)[:data_size, :], data_ex2.get(key_))
-            errors.append(error)
-        assert(np.sum(errors) < 1e-3)
-
-def test_bench3_data_reproducibility():
-    """This test aims at verifying if the same exact data could be reproduced after each FrameWork update
-    BENCHMARK 3
-    """
-    benchmark3_ex1 = PowerGridBenchmark(benchmark_path=DATA_PATH,
-                                        benchmark_name="Benchmark3",
-                                        load_data_set=True,
-                                        config_path=CONFIG_PATH,
-                                        log_path=LOG_PATH)
-
-    benchmark3_ex2 = PowerGridBenchmark(benchmark_path=None,
-                                        benchmark_name="Benchmark3",
-                                        load_data_set=False,
-                                        config_path=CONFIG_PATH,
-                                        log_path=LOG_PATH)
-
-    data_size = int(1e2)
-    benchmark3_ex2.generate(nb_sample_train=data_size,
-                            nb_sample_val=data_size,
-                            nb_sample_test=data_size,
-                            nb_sample_test_ood_topo=data_size,
-                            do_store_physics=True
-                           )
-    dataset_labels = ("train_dataset", "val_dataset", "_test_dataset", "_test_ood_topo_dataset")
-    #data_ex1 = benchmark1_ex1.train_dataset.data
-    #data_ex2 = benchmark1_ex2.train_dataset.data
-    for label_ in dataset_labels:
-        data_ex1 = getattr(benchmark3_ex1, label_).data
-        data_ex2 = getattr(benchmark3_ex2, label_).data
-        keys = data_ex1.keys()
-        errors = list()
-        for key_ in keys:
-            if key_ == "line_status":
-                data_ex1["line_status"] = np.asarray(data_ex1.get("line_status"), dtype=int)
-                data_ex2["line_status"] = np.asarray(data_ex2.get("line_status"), dtype=int)
-            error = mean_absolute_error(data_ex1.get(key_)[:data_size, :], data_ex2.get(key_))
-            errors.append(error)
-        assert(np.sum(errors) < 1e-3)
-
-def test_bench1_consistency():
-    """Consistency check wrt. config
-
-    This test verifies if generated variables and those indicated in config file are consistent.
-    """
-    benchmark1 = PowerGridBenchmark(benchmark_path=DATA_PATH,
-                                    benchmark_name="Benchmark1",
-                                    load_data_set=True,
-                                    config_path=CONFIG_PATH,
-                                    log_path=LOG_PATH)
-    config_keys = benchmark1.config.get_option("attr_x") + \
-                  benchmark1.config.get_option("attr_tau") + \
-                  benchmark1.config.get_option("attr_y")
-    dataset_labels = ("train_dataset", "val_dataset", "_test_dataset", "_test_ood_topo_dataset")
-    for label_ in dataset_labels:
-        data = getattr(benchmark1, label_).data
-        dataset_keys = tuple(data.keys())
-        assert dataset_keys == config_keys
-
-def test_bench2_consistency():
-    """Consistency check wrt. config
-
-    This test verifies if generated variables and those indicated in config file are consistent.
-    """
-    benchmark2 = PowerGridBenchmark(benchmark_path=DATA_PATH,
-                                    benchmark_name="Benchmark2",
-                                    load_data_set=True,
-                                    config_path=CONFIG_PATH,
-                                    log_path=LOG_PATH)
-    config_keys = benchmark2.config.get_option("attr_x") + \
-                  benchmark2.config.get_option("attr_tau") + \
-                  benchmark2.config.get_option("attr_y")
-    dataset_labels = ("train_dataset", "val_dataset", "_test_dataset", "_test_ood_topo_dataset")
-    for label_ in dataset_labels:
-        data = getattr(benchmark2, label_).data
-        dataset_keys = tuple(data.keys())
-        assert dataset_keys == config_keys
-
-def test_bench3_consistency():
-    """Consistency check wrt. config
-
-    This test verifies if generated variables and those indicated in config file are consistent.
-    """
-    benchmark3 = PowerGridBenchmark(benchmark_path=DATA_PATH,
-                                    benchmark_name="Benchmark3",
-                                    load_data_set=True,
-                                    config_path=CONFIG_PATH,
-                                    log_path=LOG_PATH)
-    config_keys = benchmark3.config.get_option("attr_x") + \
-                  benchmark3.config.get_option("attr_tau") + \
-                  benchmark3.config.get_option("attr_y")
-    dataset_labels = ("train_dataset", "val_dataset", "_test_dataset", "_test_ood_topo_dataset")
-    for label_ in dataset_labels:
-        data = getattr(benchmark3, label_).data
-        dataset_keys = tuple(data.keys())
-        assert dataset_keys == config_keys
+        
