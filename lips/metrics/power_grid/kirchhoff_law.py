@@ -109,12 +109,18 @@ def verify_kirchhoff_law(predictions: dict,
         try:
             tolerance = kwargs["tolerance"]
         except KeyError:
-            logger.error("The tolerance could not be found for verify_joule_law function")
-            # raise
+            logger.error("The tolerance could not be found for verify_kirchhoff_law function")
+            # load default values for tolerance
             tolerance = 1e-1
-            verify_reactive_power = False
         else:
             tolerance = float(tolerance)
+        try:
+            verify_reactive_power = kwargs["verify_reactive_power"]
+        except KeyError:
+            logger.error("The verify_reactive_power could not be found for verify_kirchhoff_law function")
+            verify_reactive_power = False
+        else:
+            verify_reactive_power = bool(verify_reactive_power)
     else:
         tolerance = float(config.get_option("eval_params")["KCL"]["tolerance"])
         verify_reactive_power = bool(config.get_option("eval_params")["KCL"]["verify_reactive_power"])
