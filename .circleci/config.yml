@@ -102,7 +102,16 @@ jobs:
                                                                 --ignore=./getting_started/04_Complete_example.ipynb \
                                                                 --ignore=./getting_started/auxiliary/06_NIPS_environment.ipynb \
                                                                 --ignore=./getting_started/auxiliary/07_Complete_example_Nips_Track1.ipynb \
-                                                                --ignore=./getting_started/auxiliary/EvaluateDC.ipynb
+                                                                --ignore=./getting_started/auxiliary/EvaluateDC.ipynb \
+                                                                --ignore=./getting_started/training_baselines/01_FC_Case14_Benchmark1.ipynb \
+                                                                --ignore=./getting_started/training_baselines/02_FC_Case14_Benchmark2.ipynb \
+                                                                --ignore=./getting_started/training_baselines/03_FC_Neurips_Benchmark1.ipynb \
+                                                                --ignore=./getting_started/training_baselines/04_FC_Neurips_Benchmark2.ipynb \
+                                                                --ignore=./getting_started/training_baselines/05_LeapNet_Case14_Benchmark1.ipynb \
+                                                                --ignore=./getting_started/training_baselines/06_LeapNet_Case14_Benchmark2.ipynb \
+                                                                --ignore=./getting_started/training_baselines/07_LeapNet_Neurips_Benchmark1.ipynb \
+                                                                --ignore=./getting_started/training_baselines/08_LeapNet_Neurips_Benchmark2.ipynb \
+
       - store_artifacts_test_results
 
   run_pylint:

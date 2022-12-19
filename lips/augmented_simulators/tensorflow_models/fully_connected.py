@@ -1,6 +1,11 @@
-"""
-Tensorflow fully connected Model
-"""
+# Copyright (c) 2021, IRT SystemX (https://www.irt-systemx.fr/en/)
+# See AUTHORS.txt
+# This Source Code Form is subject to the terms of the Mozilla Public License, version 2.0.
+# If a copy of the Mozilla Public License, version 2.0 was not distributed with this file,
+# you can obtain one at http://mozilla.org/MPL/2.0/.
+# SPDX-License-Identifier: MPL-2.0
+# This file is part of LIPS, LIPS is a python platform for power networks benchmarking
+
 import os
 import pathlib
 from typing import Union
@@ -8,6 +13,7 @@ import json
 import warnings
 
 import numpy as np
+# from leap_net import ResNetLayer
 
 with warnings.catch_warnings():
     warnings.filterwarnings("ignore", category=FutureWarning)
@@ -22,7 +28,6 @@ from ...utils import NpEncoder
 
 class TfFullyConnected(TensorflowSimulator):
     """Fully Connected architecture
-
     Parameters
     ----------
     sim_config_path : ``str``
@@ -40,7 +45,6 @@ class TfFullyConnected(TensorflowSimulator):
         _description_, by default None
     log_path : Union[None, str], optional
         _description_, by default None
-
     Raises
     ------
     RuntimeError
@@ -70,12 +74,13 @@ class TfFullyConnected(TensorflowSimulator):
         # Logger
         self.log_path = log_path
         self.logger = CustomLogger(__class__.__name__, log_path).logger
-        # Define layer to be used for the model
-        self.layers = {"linear": keras.layers.Dense}
-        self.layer = self.layers[self.sim_config.get_option("layer")]
         # model parameters
         self.params = self.sim_config.get_options_dict()
         self.params.update(kwargs)
+        # Define layer to be used for the model
+        self.layers = {"linear": keras.layers.Dense}#, "resnet" : ResNetLayer}
+        self.layer = self.layers[self.params["layer"]] if kwargs.get("layer") in self.layers else None
+
         # optimizer
         if "optimizer" in kwargs:
             if not isinstance(kwargs["optimizer"], keras.optimizers.Optimizer):
@@ -91,7 +96,6 @@ class TfFullyConnected(TensorflowSimulator):
 
     def build_model(self):
         """Build the model
-
         Returns
         -------
         Model
@@ -113,13 +117,10 @@ class TfFullyConnected(TensorflowSimulator):
 
     def process_dataset(self, dataset: DataSet, training: bool=False) -> tuple:
         """process the datasets for training and evaluation
-
         This function transforms all the dataset into something that can be used by the neural network (for example)
-
         Warning
         -------
         It works with StandardScaler only for the moment.
-
         Parameters
         ----------
         dataset : DataSet
@@ -128,7 +129,6 @@ class TfFullyConnected(TensorflowSimulator):
             _description_, by default True
         training : bool, optional
             _description_, by default False
-
         Returns
         -------
         tuple
@@ -148,12 +148,10 @@ class TfFullyConnected(TensorflowSimulator):
 
     def _infer_size(self, dataset: DataSet):
         """Infer the size of the model
-
         Parameters
         ----------
         dataset : DataSet
             _description_
-
         Returns
         -------
         None

@@ -6,12 +6,7 @@
 # SPDX-License-Identifier: MPL-2.0
 # This file is part of LIPS, LIPS is a python platform for power networks benchmarking
 
-__all__ = ["TfFullyConnected"]
+__all__ = ["TfResNetPowerGrid", "TfFullyConnectedPowerGrid"]
 
-from lips.augmented_simulators.tensorflow_models.fully_connected import TfFullyConnected
-
-try:
-    from lips.augmented_simulators.tensorflow_models.powergrid.leap_net import LeapNet
-    __all__.append("LeapNet")
-except ImportError as err:
-    pass
+from lips.augmented_simulators.tensorflow_models.powergrid.resnet import TfResNetPowerGrid
+from lips.augmented_simulators.tensorflow_models.powergrid.fully_connected import TfFullyConnectedPowerGrid
