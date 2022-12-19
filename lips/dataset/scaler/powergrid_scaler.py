@@ -28,13 +28,14 @@ class PowerGridScaler(Scaler):
 
     def fit(self, dataset: PowerGridDataSet):
         self.dataset = dataset
-        self._attr_x = dataset.env_data["_attr_x"]
-        self._attr_y = dataset.env_data["_attr_y"]
-        self._attr_tau = dataset.env_data["_attr_tau"]
+        self._attr_x = dataset._attr_x
+        self._attr_y = dataset._attr_y
+        self._attr_tau = dataset._attr_tau
         obss = self._make_fake_obs(dataset)
         self.obss = obss
 
         for attr_nm in self._attr_x:
+            # Fetch for tau
             self._m_x.append(self._get_mean(obss, attr_nm))
             self._sd_x.append(self._get_sd(obss, attr_nm))
         for attr_nm in self._attr_y:
@@ -99,7 +100,11 @@ class PowerGridScaler(Scaler):
         This function can be overridden (for example if you want more control on how to scale the data)
         obss is a list of observation
         """
-        add_, mul = self._get_adds_mults_from_name(obss, attr_nm)
+
+        if attr_nm =="topo_vect" : # Exclude topo_vect from scaling
+            add_ = 0
+        else :
+            add_, _ = self._get_adds_mults_from_name(obss, attr_nm)
         return add_
 
     def _get_sd(self, obss, attr_nm):
@@ -108,7 +113,10 @@ class PowerGridScaler(Scaler):
         This function can be overridden (for example if you want more control on how to scale the data)
         obss is a list of observation
         """
-        add_, mul_ = self._get_adds_mults_from_name(obss, attr_nm)
+        if attr_nm == "topo_vect": # Exclude topo_vect from scaling
+            mul_ = 1
+        else :
+            _, mul_ = self._get_adds_mults_from_name(obss, attr_nm)
         return mul_
 
     def _get_adds_mults_from_name(self, obss, attr_nm):
@@ -178,8 +186,7 @@ class PowerGridScaler(Scaler):
         elif attr_nm == "line_status":
             # encode back to 0: connected, 1: disconnected
             add_tmp = self.dtype(1.)
-            mult_tmp = self.dtype(-1.0)
-
+            mult_tmp = self.dtype(-1.)
         return add_tmp, mult_tmp
 
     def _make_fake_obs(self, dataset: PowerGridDataSet):
