@@ -159,7 +159,9 @@ reference_data/powergrid/l2rpn_case14_sandbox/benchmark1/*
 reference_data/powergrid/l2rpn_case14_sandbox/benchmark2/*
 reference_data/powergrid/l2rpn_case14_sandbox/benchmark3/*
 
-
+reference_data/powergrid/l2rpn_neurips_2020_track1_small/benchmark1/*
+reference_data/powergrid/l2rpn_neurips_2020_track1_small/benchmark2/*
+reference_data/powergrid/l2rpn_neurips_2020_track1_small/benchmark3/*
 
 # getting started
 getting_started/Analyzing_Benchmark_class.ipynb
