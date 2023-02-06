@@ -153,6 +153,9 @@ docs/source/conf.py.bkp
 docs/_templates
 docs/build
 
+# data
+reference_data
+
 # getting started
 getting_started/Analyzing_Benchmark_class.ipynb
 getting_started/03_TrainAnAugmentedSimulator-Copy1.ipynb
