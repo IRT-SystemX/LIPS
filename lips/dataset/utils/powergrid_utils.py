@@ -477,9 +477,9 @@ def compute_all_combinations(action_space, sub_id):
     """
     sub_topo = get_sub_topo(action_space, sub_id=sub_id)
     n_elements = len(sub_topo)
-    if n_elements == 0 or n_elements == 1:
-        raise ValueError("Cannot generate combinations out of a configuration with len = 1 or 2")
-    elif n_elements == 2:
+    #if n_elements == 0 or n_elements == 1:
+    #    raise ValueError("Cannot generate combinations out of a configuration with len = 1 or 2")
+    if n_elements <= 2:
         #return np.array([[2, 2], [1, 1]])
         #return np.array([[2, 2]])
         return np.array([])
