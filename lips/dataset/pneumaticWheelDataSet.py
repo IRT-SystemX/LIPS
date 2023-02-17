@@ -499,7 +499,7 @@ class WheelDataSet(DataSet):
 
         self._infer_sizes()
 
-    def load_from_data(self, data:dict):
+    def load_from_data(self, data:dict,attr_names_to_keep=None):
         """Load the internal data from external data
 
         Parameters
@@ -510,7 +510,10 @@ class WheelDataSet(DataSet):
         self.data = {}
         self.size = None
 
-        for attr_nm in self._attr_names:
+        if attr_names_to_keep is None:
+            attr_names=self._attr_names
+
+        for attr_nm in attr_names_to_keep:
             self.data[attr_nm] = data[attr_nm]
             self.size = self.data[attr_nm].shape[0]
 
@@ -635,6 +638,14 @@ class WheelDataSet(DataSet):
         currentInput = {inputName:self.data[inputName][item] for inputName in self._attr_x}
         currentOutput = {outputName:self.data[outputName][item] for outputName in self._attr_y}
         return currentInput,currentOutput
+
+    def __str__(self)->str:
+        s_info="Instance of "+type(self).__name__+"\n"
+        s_info+="Dataset name: "+str(self.name)+"\n"
+        for paramName, paramVal in self.data.items():
+            s_info+="\t"+str(paramName)+"\n"
+            s_info+="\t\t Data size: "+str(paramVal.shape)+"\n"
+        return s_info
 
 class QuasiStaticWheelDataSet(WheelDataSet):
     """
