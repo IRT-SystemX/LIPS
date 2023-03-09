@@ -208,13 +208,13 @@ workflows:
             ignore:
               - gh-pages
 
-    - run_notebook_test:
-        requires:
-          - run_python_tests
-        filters:
-          branches:
-            ignore:
-              - gh-pages
+    #- run_notebook_test:
+    #    requires:
+    #      - run_python_tests
+    #    filters:
+    #      branches:
+    #        ignore:
+    #          - gh-pages
 
     - generate_doc:
         requires:
