@@ -160,7 +160,8 @@ class PowerGridBenchmark(Benchmark):
         self.is_loaded = True
 
     def generate(self, nb_sample_train: int, nb_sample_val: int,
-                 nb_sample_test: int, nb_sample_test_ood_topo: int,do_store_physics=False):
+                 nb_sample_test: int, nb_sample_test_ood_topo: int, 
+                 do_store_physics: bool=False, is_dc: bool=False):
         """
         generate the different datasets required for the benchmark
         """
@@ -173,6 +174,13 @@ class PowerGridBenchmark(Benchmark):
             self.logger.info("Creating path %s to save the current data", self.path_datasets)
             os.mkdir(self.path_datasets)
 
+        # it should be done before `_fills_actor_simulator`
+        if is_dc:
+            params = self.config.get_option("env_params")
+            params["ENV_DC"] = True
+            self.config.edit_config_option(option="env_params", value=str(params), scenario_name=self.benchmark_name)
+
+
         with warnings.catch_warnings():
             warnings.filterwarnings("ignore")
             self._fills_actor_simulator()
@@ -182,28 +190,32 @@ class PowerGridBenchmark(Benchmark):
                                     path_out=self.path_datasets,
                                     nb_samples=nb_sample_train,
                                     nb_samples_per_chronic=self.config.get_option("samples_per_chronic").get("train", 864),
-                                    do_store_physics=do_store_physics
+                                    do_store_physics=do_store_physics,
+                                    is_dc=is_dc
                                     )
         self.val_dataset.generate(simulator=self.val_simulator,
                                   actor=self.val_actor,
                                   path_out=self.path_datasets,
                                   nb_samples=nb_sample_val,
                                   nb_samples_per_chronic=self.config.get_option("samples_per_chronic").get("val", 288),
-                                  do_store_physics=do_store_physics
+                                  do_store_physics=do_store_physics,
+                                  is_dc=is_dc
                                   )
         self._test_dataset.generate(simulator=self.test_simulator,
                                     actor=self.test_actor,
                                     path_out=self.path_datasets,
                                     nb_samples=nb_sample_test,
                                     nb_samples_per_chronic=self.config.get_option("samples_per_chronic").get("test", 288),
-                                    do_store_physics=do_store_physics
+                                    do_store_physics=do_store_physics,
+                                    is_dc=is_dc
                                     )
         self._test_ood_topo_dataset.generate(simulator=self.test_ood_topo_simulator,
                                              actor=self.test_ood_topo_actor,
                                              path_out=self.path_datasets,
                                              nb_samples=nb_sample_test_ood_topo,
                                              nb_samples_per_chronic=self.config.get_option("samples_per_chronic").get("test_ood", 288),
-                                             do_store_physics=do_store_physics
+                                             do_store_physics=do_store_physics,
+                                             is_dc=is_dc
                                              )
 
     def evaluate_simulator(self,
