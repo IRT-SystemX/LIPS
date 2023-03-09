@@ -164,13 +164,14 @@ reference_data/powergrid/l2rpn_neurips_2020_track1_small/benchmark2/*
 reference_data/powergrid/l2rpn_neurips_2020_track1_small/benchmark3/*
 
 # getting started
-getting_started/Analyzing_Benchmark_class.ipynb
-getting_started/03_TrainAnAugmentedSimulator-Copy1.ipynb
-getting_started/3_EvaluateBenchmark2.ipynb
-getting_started/4_EvaluateBenchmark3.ipynb
 getting_started/auxiliary/Untitled.ipynb
 getting_started/auxiliary/FindActions.ipynb
 getting_started/auxiliary/Generation_tests.ipynb
+getting_started/auxiliary/Kirchhoff_law.ipynb
+getting_started/auxiliary/Ohm_law.ipynb
+getting_started/auxiliary/Ohm_law_tests.ipynb
+getting_started/Tentative to implement Ohm law (to be removed).ipynb
+getting_started/Test_joule_law.ipynb
 
 # metrics
 lips/metrics/power_grid/BasicVerifier.py.bkp
@@ -193,32 +194,4 @@ lips/tests/Evaluation/test_evaluation.py
 logs.log
 lips_logs.log
 
-lips/Outputs/Scenario1/Data/super_test
-lips/Outputs/Scenario1/Data/test
-lips/Outputs/Scenario1/Data/training
-lips/Outputs/Scenario1/Data/validation
-
-lips/Outputs
-lips/Outputs/Scenario1/Data/init_obs.npy
-lips/Outputs/Scenario1/Benchmarks/benchmark1/leap_net/test/*
-lips/Outputs/Scenario1/Benchmarks/benchmark1/leap_net/super_test/*
-
-
-lips/Outputs/Scenario1_old
-lips/Outputs/Scenario2
-lips/Outputs/Scenario5
-
-.idea
-test_generate_data.py
-test_feature/
-test_save/
-test_dc_proxy.py
-test_fully_connected.py
 trained_models/
-test_leap_net.py
-
-
-# test files
-pytest_report.html
-assets/
-requirements copy.txt
