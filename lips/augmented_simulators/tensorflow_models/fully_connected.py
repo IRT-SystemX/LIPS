@@ -79,7 +79,9 @@ class TfFullyConnected(TensorflowSimulator):
         self.params.update(kwargs)
         # Define layer to be used for the model
         self.layers = {"linear": keras.layers.Dense}#, "resnet" : ResNetLayer}
-        self.layer = self.layers[self.params["layer"]] if kwargs.get("layer") in self.layers else None
+        self.layer = self.layers.get(self.params["layer"], None)
+        if self.layer is None:
+            self.layer = keras.layers.Dense 
 
         # optimizer
         if "optimizer" in kwargs:
