@@ -6,8 +6,10 @@ from pathlib import Path
 
 def test_ingestion_scoring_programs():
     dirname = Path(__file__).parent
-    dataset_dir = dirname / ".." / ".." / ".." / "reference_data"
+    #dataset_dir = dirname / ".." / ".." / ".." / "reference_data"
+    dataset_dir = dirname.parent / "data"
     benchmark_config = dirname / ".." / ".." / ".." / "configurations" / "powergrid" / "benchmarks" / "l2rpn_case14_sandbox.ini"
+    #benchmark_config = dirname.parent / "configs" / "powergrid" / "benchmarks" / "l2rpn_case14_sandbox.ini"
     benchmark_name = "Benchmark1"
 
     # creates temporary folder for output
