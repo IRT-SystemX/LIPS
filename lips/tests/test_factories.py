@@ -90,5 +90,3 @@ def test_class_factory():
     
     test_instance_builder=myClassFactory.create_instance(class_name="DummyD",ops=42)
     assert test_instance_builder.dummyvariable==42
-
-        

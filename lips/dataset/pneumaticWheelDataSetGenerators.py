@@ -148,3 +148,4 @@ if __name__ == '__main__':
     extract_x, extract_y=pneumaticDataset.extract_data()
     print(extract_x)
     print(extract_y)
+    

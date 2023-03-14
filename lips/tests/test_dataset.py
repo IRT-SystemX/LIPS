@@ -64,3 +64,4 @@ def test_dataset_iterable():
 
     for iterIndex,iterData in enumerate(myDataset):
         np.testing.assert_equal(iterData,expectedResult[iterIndex])
+        
