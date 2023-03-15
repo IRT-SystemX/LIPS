@@ -18,7 +18,7 @@ from lips.logger import CustomLogger
 from lips.dataset.dataSet import DataSet
 from lips.physical_simulator.physicalSimulator import PhysicalSimulator
 
-class DataSetGeneratorBase:
+class DataSetGeneratorBase(metaclass=abc.ABCMeta):
     def __init__(self,
                  name:str,
                  simulator:PhysicalSimulator,
@@ -45,11 +45,11 @@ class DataSetGeneratorBase:
         pass
 
     @abc.abstractmethod
-    def _init_store_data(self, simulator:PhysicalSimulator, nb_samples:int):
+    def _init_data(self, simulator:PhysicalSimulator, nb_samples:int):
         pass
 
     @abc.abstractmethod
-    def _generate_store_data(self):
+    def _generate_data(self):
         pass
 
     @abc.abstractmethod

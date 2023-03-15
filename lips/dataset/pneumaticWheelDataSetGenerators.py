@@ -58,8 +58,8 @@ class PneumaticWheelDataSetStaticGenerator(DataSetGeneratorBase):
 
     def generate(self):
         self._generate_inputs()
-        self._init_store_data()
-        self._generate_store_data()
+        self._init_data(simulator=self._simulator, nb_samples=self._nb_samples)
+        self._generate_data()
         dataset=self._load_dataset_from_store_data()
         return dataset
 
@@ -68,15 +68,14 @@ class PneumaticWheelDataSetStaticGenerator(DataSetGeneratorBase):
         self._inputs=self._sampler.generate_samples(nb_samples=self._nb_samples,sampler_seed=self._sampler_seed)
 
 
-    def _init_store_data(self):
-        simulator=self._simulator
+    def _init_data(self,simulator, nb_samples):
         simulator.build_model()
         for attr_nm in self._attr_names:
             variableInitVal = simulator.get_variable_value(field_name=attr_nm)
-            self._data[attr_nm] = np.zeros((self._nb_samples, variableInitVal.shape[0]), dtype=variableInitVal.dtype)
+            self._data[attr_nm] = np.zeros((nb_samples, variableInitVal.shape[0]), dtype=variableInitVal.dtype)
 
 
-    def _generate_store_data(self):
+    def _generate_data(self):
         for current_size,sample in enumerate(tqdm(self._inputs, desc=self._name)):
             simulator=type(self._simulator)(simulator_instance=self._simulator)
             simulator.modify_state(state=sample)
