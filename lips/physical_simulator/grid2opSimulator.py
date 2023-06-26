@@ -154,6 +154,11 @@ class Grid2opSimulator(PhysicalSimulator):
             _diff_time_pf = _end_time_pf - _beg_time_pf
             _diff_time_cp = _end_time_cp - _beg_time_cp
 
+            # verify for isolated injections
+            check = self.__any_isolated_injections(self._obs)
+            if check:
+                done=True
+
             self._time_powerflow += _diff_time_pf
             self.comp_time += _diff_time_cp
 
@@ -213,6 +218,62 @@ class Grid2opSimulator(PhysicalSimulator):
                 self._visited_ts.append(0)
         self._reward = self._simulator.reward_range[0]
         self._info = {}
+
+    def __any_isolated_injections(self, obs):
+        """Verifies if there are any isolated injections in current obs
+
+        Parameters
+        ----------
+        obs : _type_
+            the current observation for which this verification should be performed
+
+        Returns
+        -------
+        ``bool``
+            If `True` there are some isolated injections
+        """
+        check_list = []
+        for sub_id in range(obs.n_sub):
+            sub_obj = obs.get_obj_connect_to(substation_id=sub_id)
+            gens = sub_obj["generators_id"]
+            loads = sub_obj["loads_id"]
+            if len(gens) < 1 and len(loads) < 1:
+                continue
+            lines_or = sub_obj["lines_or_id"]
+            lines_ex = sub_obj["lines_ex_id"]
+            lines_topo = []
+            injections_topo = []
+            if len(lines_or) > 0:
+                for line_or in lines_or:
+                    line_pos = obs.line_or_pos_topo_vect[line_or]
+                    line_topo_vect = obs.topo_vect[line_pos]
+                    lines_topo.append(line_topo_vect)
+            if len(lines_ex) > 0:
+                for line_ex in lines_ex:
+                    line_pos = obs.line_ex_pos_topo_vect[line_ex]
+                    line_topo_vect = obs.topo_vect[line_pos]
+                    lines_topo.append(line_topo_vect)
+            if len(loads) > 0:
+                for load in loads:
+                    load_pos = obs.load_pos_topo_vect[load]
+                    load_topo_vect = obs.topo_vect[load_pos]
+                    injections_topo.append(load_topo_vect)
+            if len(gens) > 0:
+                for gen in gens:
+                    gen_pos = obs.gen_pos_topo_vect[gen]
+                    gen_topo_vect = obs.topo_vect[gen_pos]
+                    injections_topo.append(gen_topo_vect)
+
+            check = any(item in lines_topo for item in injections_topo)
+        
+            #if check is not True:
+            #    print(f"At least one isolated injection found at substation {sub_id}")
+            check_list.append(check)
+        
+        check_all = not(all(check_list))
+        #if check_all:
+        #    print("There are some isolated injections")
+        return check_all
 
 def get_env(env_kwargs: dict):
     """Getter for the environment
