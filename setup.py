@@ -31,7 +31,7 @@ pkgs = {
             "leap_net @ https://github.com/BDonnot/leap_net/tarball/master#egg=leap_net",
             "protobuf==3.20.1",
             "pandapower==2.7.0",
-            "pandas",
+            "pandas==1.4.2",
             "jupyter",
             "tensorflow==2.8.0",
             "torch",
