@@ -45,7 +45,7 @@ class WheelDataSet(DataSet):
                  log_path: Union[str, None]=None,
                  **kwargs):
         super(WheelDataSet,self).__init__(name=name)
-        self._attr_names = copy.deepcopy(attr_names)
+        self._attr_names = attr_names
         self.size = 0
         self._inputs = []
 
@@ -63,7 +63,7 @@ class WheelDataSet(DataSet):
 
     def _infer_sizes(self):
         """Infer the data sizes"""
-        data = copy.deepcopy(self.data)
+        data = self.data
         attrs_x=np.array([np.expand_dims(data[el], axis=1) for el in self._attr_x], dtype=int)
         self._sizes_x = np.array([attr_x.shape[1] for attr_x in attrs_x], dtype=int)
         self._size_x = np.sum(self._sizes_x)
@@ -77,7 +77,7 @@ class WheelDataSet(DataSet):
         Returns
         -------
         tuple
-            A tuple of size (nb_sample, size_x, size_y)
+            A tuple of size (size_x, size_y)
 
         """
         return self._size_x, self._size_y
@@ -245,7 +245,7 @@ class WheelDataSet(DataSet):
             extracted inputs and outputs
         """
         # init the sizes and everything
-        data = copy.deepcopy(self.data)
+        data = self.data
         extract_x = [data[el].astype(np.float32) for el in self._attr_x]
         extract_y = [data[el].astype(np.float32) for el in self._attr_y]
 
