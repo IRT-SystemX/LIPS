@@ -22,8 +22,6 @@ from tqdm import tqdm
 from lips.dataset.dataSet import DataSet
 from lips.logger import CustomLogger
 from lips.config.configmanager import ConfigManager
-from lips.physical_simulator.getfemSimulator import GetfemSimulator
-from lips.dataset.sampler import LHSSampler
 
 class WheelDataSet(DataSet):
     """Base class for pneumatic datasets
@@ -310,62 +308,6 @@ class QuasiStaticWheelDataSet(WheelDataSet):
                  **kwargs):
         super(QuasiStaticWheelDataSet,self).__init__(name=name,attr_names=attr_names,config=config,log_path=log_path,**kwargs)
 
-    def generate(self,
-                 simulator: GetfemSimulator,
-                 path_out: Union[str, None]= None):
-        """Generate a pneumatic dataset in a quasi-static configuration
-
-        For this dataset, we use a Getfem simulator to generate data from the pneumatic.
-
-        Parameters
-        ----------
-        simulator : GetfemSimulator
-            In this case, this should be a GetfemSimulator instance
-        path_out : Union[``str``, ``None``]
-            The path where the data will be saved
-
-        Raises
-        ------
-        RuntimeError
-            Impossible to generate pneumatic data, getfem library is not installed
-
-        """
-        try:
-            import getfem
-        except ImportError as exc_:
-            raise RuntimeError("Impossible to `generate` a wheel dateset if you don't have "
-                               "the getfem package installed") from exc_
-
-        transientParams=getattr(simulator._simulator,"transientParams")
-        nb_samples=int(transientParams["time"]//transientParams["timeStep"]) + 1
-        self._init_store_data(simulator=simulator,nb_samples=nb_samples)
-        solverState=simulator.run_problem()
-            
-        self._store_obs(obs=simulator)
-
-        timesteps=getattr(simulator._simulator,"timeSteps")
-        self.data["timeSteps"]=timesteps
-        self._infer_sizes()
-
-        if path_out is not None:
-            # I should save the data
-            self._save_internal_data(path_out)
-            attrib_name="timeSteps"
-            full_path_out = os.path.join(os.path.abspath(path_out), self.name)
-            np.savez_compressed(f"{os.path.join(full_path_out, attrib_name)}.npz", data=timesteps)
-
-    def _store_obs(self, obs:GetfemSimulator):
-        """store an observation in internal data
-
-        Parameters
-        ----------
-        simulator : GetfemSimulator
-            In this case, this should be a GetfemSimulator instance
-        """
-        for attr_nm in self._attr_names:
-            array_ = obs.get_solution(field_name=attr_nm)
-            self.data[attr_nm] = np.array(array_)
-
 class SamplerStaticWheelDataSet(WheelDataSet):
     """
     This specific DataSet uses Getfem framework to simulate data arising from a rolling wheel problem.
@@ -390,42 +332,3 @@ class SamplerStaticWheelDataSet(WheelDataSet):
                  **kwargs
                  ):
         super(SamplerStaticWheelDataSet,self).__init__(name=name,attr_names=attr_names,config=config,log_path=log_path,**kwargs)
-
-
-#Check integrities
-
-import math
-import lips.physical_simulator.GetfemSimulator.PhysicalFieldNames as PFN
-
-
-def check_quasi_static_generation(configFilePath):
-    physical_domain={
-        "Mesher":"Getfem",
-        "refNumByRegion":{"HOLE_BOUND": 1,"CONTACT_BOUND": 2, "EXTERIOR_BOUND": 3},
-        "wheelDimensions":(8.,15.),
-        "meshSize":1
-    }
-
-    dt = 10e-4
-    physical_properties={
-        "problem_type":"QuasiStaticMechanicalRolling",
-        "materials":[["ALL", {"law": "IncompressibleMooneyRivlin", "MooneyRivlinC1": 1, "MooneyRivlinC2": 1} ]],
-        "sources":[["ALL",{"type" : "Uniform","source_x":0.0,"source_y":0.0}] ],
-        "rolling":["HOLE_BOUND",{"type" : "DIS_Rolling", "theta_Rolling":150., 'd': 1.}],
-        "contact":[ ["CONTACT_BOUND",{"type" : "Plane","gap":0.0,"fricCoeff":0.6}] ],
-        "transientParams":{"time": 3*dt, "timeStep": dt}
-    }
-
-    training_simulator=GetfemSimulator(physical_domain=physical_domain,physical_properties=physical_properties)
-    attr_names=(PFN.displacement,PFN.contactMultiplier)
-
-    quasiStaticWheelDataSet=QuasiStaticWheelDataSet("train",attr_names=attr_names,attr_x = ("timeSteps",),attr_y = ("disp","contactMult"))
-    quasiStaticWheelDataSet.generate(simulator=training_simulator,
-                                    path_out="WheelRolDir",
-                                    )
-
-from lips import GetRootPath
-
-if __name__ == '__main__':
-    configFilePath=GetRootPath()+os.path.join("..","configurations","pneumatic","benchmarks","confWheel.ini")
-    check_quasi_static_generation(configFilePath=configFilePath)
