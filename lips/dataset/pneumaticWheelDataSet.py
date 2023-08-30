@@ -10,12 +10,9 @@ Licence:
     This file is part of LIPS, LIPS is a python platform for power networks benchmarking
 """
 
-import os
 import warnings
 import numpy as np
-import shutil
 
-import copy
 from typing import Union
 from tqdm import tqdm 
 
@@ -82,45 +79,6 @@ class WheelDataSet(DataSet):
         """
         return self._size_x, self._size_y
 
-
-    def load(self, path:str):
-        """Load the internal data
-
-        Parameters
-        ----------
-        path: input path
-            A str to indicate where to load the data from.
-        """
-        if not os.path.exists(path):
-            raise RuntimeError(f"{path} cannot be found on your computer")
-        if not os.path.isdir(path):
-            raise RuntimeError(f"{path} is not a valid directory")
-        full_path = os.path.join(path, self.name)
-        if not os.path.exists(full_path):
-            raise RuntimeError(f"There is no data saved in {full_path}. Have you called `dataset.generate()` with "
-                               f"a given `path_out` ?")
-
-        for attr_nm in self._attr_names:
-            path_this_array = f"{os.path.join(full_path, attr_nm)}.npz"
-            if not os.path.exists(path_this_array):
-                raise RuntimeError(f"Impossible to load data {attr_nm}. Have you called `dataset.generate()` with "
-                                   f"a given `path_out` and such that `dataset` is built with the right `attr_names` ?")
-
-        if self.data is not None:
-            warnings.warn(f"Deleting previous run in attempting to load the new one located at {path}")
-        self.data = {}
-        self.size = None
-
-        for attr_nm in self._attr_names:
-            path_this_array = f"{os.path.join(full_path, attr_nm)}.npz"
-            self.data[attr_nm] = np.load(path_this_array)["data"]
-            self.size = self.data[attr_nm].shape[0]
-
-        inputs = {attr_x:self.data[attr_x] for attr_x in self._attr_x}
-        self._inputs = [dict(zip(inputs,t)) for t in zip(*inputs.values())]
-
-        self._infer_sizes()
-
     def load_from_data(self, data:dict,attr_names_to_keep=None):
         """Load the internal data from external data
 
@@ -179,38 +137,6 @@ class WheelDataSet(DataSet):
 
         return res
 
-    def _save_internal_data(self, path_out:str):
-        """Save the internal data in a proper format
-
-        Parameters
-        ----------
-        path_out: output path
-            A str to indicate where to save the data.
-        """
-        full_path_out = os.path.join(os.path.abspath(path_out), self.name)
-
-        if not os.path.exists(os.path.abspath(path_out)):
-            os.mkdir(os.path.abspath(path_out))
-            # TODO logger
-            #print(f"Creating the path {path_out} to store the datasets [data will be stored under {full_path_out}]")
-            self.logger.info(f"Creating the path {path_out} to store the datasets [data will be stored under {full_path_out}]")
-
-        if os.path.exists(full_path_out):
-            # deleting previous saved data
-            # TODO logger
-            #print(f"Deleting previous run at {full_path_out}")
-            self.logger.warning(f"Deleting previous run at {full_path_out}")
-            shutil.rmtree(full_path_out)
-
-        os.mkdir(full_path_out)
-        # TODO logger
-        #print(f"Creating the path {full_path_out} to store the dataset name {self.name}")
-        self.logger.info(f"Creating the path {full_path_out} to store the dataset name {self.name}")
-
-        for attr_nm in self._attr_names:
-            np.savez_compressed(f"{os.path.join(full_path_out, attr_nm)}.npz", data=self.data[attr_nm])
-
-
     def reconstruct_output(self, data: "np.ndarray") -> dict:
         """It reconstruct the data from the extracted data
 
@@ -255,6 +181,16 @@ class WheelDataSet(DataSet):
             extract_x = np.concatenate(extract_x, axis=1)
             extract_y = np.concatenate(extract_y, axis=1)
         return extract_x, extract_y
+
+    def __eq__(self, other)->bool:
+        if sorted(self.data.keys())!=sorted(other.data.keys()):
+            return False
+        for dataAttribName in self.data.keys():
+            try:
+                np.testing.assert_almost_equal(self.data[dataAttribName],other.data[dataAttribName])
+            except AssertionError:
+                return False
+        return True
 
     def __getitem__(self, item:int)->tuple:
         currentInput = {inputName:self.data[inputName][item] for inputName in self._attr_x}

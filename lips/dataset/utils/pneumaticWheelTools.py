@@ -16,8 +16,6 @@ import shutil
 import numpy as np
 
 from lips.dataset.pneumaticWheelDataSet import WheelDataSet
-from lips.dataset.sampler import LHSSampler
-
 from lips.physical_simulator.getfemSimulator import GetfemSimulator
 import lips.physical_simulator.GetfemSimulator.PhysicalFieldNames as PFN
 from lips.physical_simulator.GetfemSimulator.GetfemSimulatorBridge import GetfemInterpolationOnSupport,InterpolationOnCloudPoints
@@ -385,6 +383,7 @@ class DataSetInterpolatorOnMesh():
             self.accumulated_data_from_grid[attr_nm] = np.load(path_this_array)["data"]
 
 from lips.dataset.pneumaticWheelDataSetGenerators import PneumaticWheelDataSetStaticGenerator
+from lips.dataset.utils.sampler import LHSSampler
 
 def check_interpolation_back_and_forth(configFilePath):
     physical_domain={

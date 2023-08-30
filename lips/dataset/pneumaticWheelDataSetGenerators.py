@@ -18,10 +18,10 @@ from tqdm import tqdm
 
 from lips.logger import CustomLogger
 from lips.config.configmanager import ConfigManager
-from lips.dataset.pneumaticWheelDataSet import WheelDataSet
-from lips.physical_simulator.getfemSimulator import GetfemSimulator
-from lips.dataset.sampler import LHSSampler
 from lips.dataset.datasetGeneratorBase import DataSetGeneratorBase
+from lips.dataset.pneumaticWheelDataSet import WheelDataSet
+from lips.dataset.utils.sampler import LHSSampler
+from lips.physical_simulator.getfemSimulator import GetfemSimulator
 
 class PneumaticDataSetGeneratorBase(DataSetGeneratorBase):
     def __init__(self,
@@ -62,6 +62,7 @@ class PneumaticDataSetGeneratorBase(DataSetGeneratorBase):
                                      attr_y= self._attr_outputs)
 
         attr_names_to_keep=self._attr_inputs+self._attr_outputs
+        datasetFromData._attr_names=self._attr_inputs+self._attr_outputs
         datasetFromData.load_from_data(data=self._data,attr_names_to_keep=attr_names_to_keep)
         return datasetFromData
 
