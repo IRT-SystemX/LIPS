@@ -24,7 +24,7 @@ from grid2op.Agent import BaseAgent
 from . import DataSet
 from ..utils import NpEncoder
 from ..logger import CustomLogger
-from ..physical_simulator import Grid2opSimulator
+from ..physical_simulator import Grid2opSimulator,PhysicalSimulator
 from ..config import ConfigManager
 
 class PowerGridDataSet(DataSet):
@@ -152,7 +152,12 @@ class PowerGridDataSet(DataSet):
             raise RuntimeError("Impossible to generate a negative number of data.")
 
         # check that the proper data types are received
-        super().generate(simulator, actor, path_out, nb_samples, simulator_seed, actor_seed)
+        assert isinstance(simulator, PhysicalSimulator), f"simulator should be a derived type of `PhysicalSimulator` " \
+                                                         f"you provided {type(simulator)}"
+        if actor is not None and not isinstance(actor, simulator.actor_types):
+            raise RuntimeError(f"actor should be compatible with your simulator. You provided an actor of "
+                               f"type {type(actor)} while your simulator accepts only actor from types "
+                               f"{simulator.actor_types}")
 
         if actor is None:
             # TODO refactoring this, this is weird here

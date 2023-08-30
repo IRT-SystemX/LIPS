@@ -18,7 +18,7 @@ from tqdm import tqdm
 
 from lips.logger import CustomLogger
 from lips.config.configmanager import ConfigManager
-from lips.dataset.pneumaticWheelDataSet import SamplerStaticWheelDataSet,QuasiStaticWheelDataSet
+from lips.dataset.pneumaticWheelDataSet import WheelDataSet
 from lips.physical_simulator.getfemSimulator import GetfemSimulator
 from lips.dataset.sampler import LHSSampler
 from lips.dataset.datasetGeneratorBase import DataSetGeneratorBase
@@ -53,7 +53,7 @@ class PneumaticWheelDataSetStaticGenerator(DataSetGeneratorBase):
         self._sampler=sampler
         self._sampler_seed=sampler_seed
 
-        self._dataset_type=SamplerStaticWheelDataSet
+        self._dataset_type=WheelDataSet
 
 
     def generate(self):
@@ -126,7 +126,7 @@ class PneumaticWheelDataSetQuasiStaticGenerator(DataSetGeneratorBase):
         except ImportError as exc_:
             raise RuntimeError("Impossible to `generate` a wheel dateset  if you don't have "
                                "the getfem package installed") from exc_
-        self._dataset_type=QuasiStaticWheelDataSet
+        self._dataset_type=WheelDataSet
 
     def generate(self):
         self._init_data(simulator=self._simulator, nb_samples=self._nb_samples)
@@ -190,7 +190,7 @@ def check_static_samples_generation():
     training_sampler=LHSSampler(space_params=trainingInput)
     attr_names=(PFN.displacement,PFN.contactMultiplier)
 
-    staticWheelDataSet=PneumaticWheelDataSetStaticGenerator(name="Train",
+    staticWheelGenerator=PneumaticWheelDataSetStaticGenerator(name="Train",
                                                             simulator=training_simulator,
                                                             attr_inputs=("young","poisson","fricCoeff"),
                                                             attr_outputs=("disp",),
@@ -199,7 +199,7 @@ def check_static_samples_generation():
                                                             nb_samples=5,
                                                             sampler_seed=42)
 
-    pneumaticDataset=staticWheelDataSet.generate()
+    pneumaticDataset=staticWheelGenerator.generate()
     print(pneumaticDataset)
     extract_x, extract_y=pneumaticDataset.extract_data()
     print(extract_x)
@@ -227,14 +227,14 @@ def check_quasi_static_generation():
     training_simulator=GetfemSimulator(physical_domain=physical_domain,physical_properties=physical_properties)
     attr_names=(PFN.displacement,PFN.contactMultiplier)
 
-    quasiStaticWheelDataSet=PneumaticWheelDataSetQuasiStaticGenerator(name="Train",
+    quasiStaticWheelGenerator=PneumaticWheelDataSetQuasiStaticGenerator(name="Train",
                                                             simulator=training_simulator,
                                                             attr_inputs=("timeSteps",),
                                                             attr_outputs=("disp","contactMult"),
                                                             attr_names=attr_names)
-    pneumaticDataset=quasiStaticWheelDataSet.generate()
+    pneumaticDataset=quasiStaticWheelGenerator.generate()
     print(pneumaticDataset)
 
 if __name__ == '__main__':
-    #check_static_samples_generation()
+    check_static_samples_generation()
     check_quasi_static_generation()

@@ -44,9 +44,9 @@ class WheelDataSet(DataSet):
         path to write the log file
     """
     def __init__(self,
-                 config: ConfigManager,
                  name="train",
                  attr_names=("disp",),
+                 config: Union[ConfigManager, None]=None,
                  log_path: Union[str, None]=None,
                  **kwargs):
         super(WheelDataSet,self).__init__(name=name)
@@ -75,14 +75,6 @@ class WheelDataSet(DataSet):
 
         self._sizes_y = np.array([data[el].shape[1] for el in self._attr_y], dtype=int)
         self._size_y = np.sum(self._sizes_y)
-
-    def _init_store_data(self, simulator:GetfemSimulator, nb_samples:int):
-        """Initialize the data (to be stored) sizes"""
-        simulator.build_model()
-        self.data=dict()
-        for attr_nm in self._attr_names:
-            array_ = simulator.get_variable_value(field_name=attr_nm)
-            self.data[attr_nm] = np.zeros((nb_samples, array_.shape[0]), dtype=array_.dtype)
 
     def get_sizes(self):
         """Get the sizes of the dataset
@@ -281,54 +273,3 @@ class WheelDataSet(DataSet):
             s_info+="\t"+str(paramName)+"\n"
             s_info+="\t\t Data size: "+str(paramVal.shape)+"\n"
         return s_info
-
-class QuasiStaticWheelDataSet(WheelDataSet):
-    """
-    This specific DataSet uses Getfem framework to simulate data arising from a rolling wheel problem in a quasi-static configuration.
-
-    This is the derived class of WheelDataSet
-
-    Parameters
-    ----------
-    name: str
-        the name of the dataset
-    attr_names: tuple
-        collection of attributes specific to the dataset
-    config: ConfigManager
-        instance of configuration
-    log_path: str
-        path to write the log file
-    """
-
-    def __init__(self,
-                 name="train",
-                 attr_names=("disp",),
-                 config: Union[ConfigManager, None]=None,
-                 log_path: Union[str, None]=None,
-                 **kwargs):
-        super(QuasiStaticWheelDataSet,self).__init__(name=name,attr_names=attr_names,config=config,log_path=log_path,**kwargs)
-
-class SamplerStaticWheelDataSet(WheelDataSet):
-    """
-    This specific DataSet uses Getfem framework to simulate data arising from a rolling wheel problem.
-
-    Parameters
-    ----------
-    name: str
-        the name of the dataset
-    attr_names: tuple
-        collection of attributes specific to the dataset
-    config: ConfigManager
-        instance of configuration
-    log_path: str
-        path to write the log file
-    """
-
-    def __init__(self,
-                 name="train",
-                 attr_names=("disp",),
-                 config: Union[ConfigManager, None]=None,
-                 log_path: Union[str, None]=None,
-                 **kwargs
-                 ):
-        super(SamplerStaticWheelDataSet,self).__init__(name=name,attr_names=attr_names,config=config,log_path=log_path,**kwargs)

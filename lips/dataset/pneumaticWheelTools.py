@@ -15,10 +15,9 @@ import shutil
 
 import numpy as np
 
-from lips.dataset.dataSet import DataSet
-from lips.dataset.pneumaticWheelDataSet import SamplerStaticWheelDataSet
-
+from lips.dataset.pneumaticWheelDataSet import WheelDataSet
 from lips.dataset.sampler import LHSSampler
+
 from lips.physical_simulator.getfemSimulator import GetfemSimulator
 import lips.physical_simulator.GetfemSimulator.PhysicalFieldNames as PFN
 from lips.physical_simulator.GetfemSimulator.GetfemSimulatorBridge import GetfemInterpolationOnSupport,InterpolationOnCloudPoints
@@ -66,7 +65,7 @@ class DataSetInterpolatorOnGrid():
     def __init__(self,
                  name:str,
                  simulator:GetfemSimulator,
-                 dataset:DataSet,
+                 dataset:WheelDataSet,
                  grid_support):
         self.name = name
         self.simulator = simulator
@@ -252,7 +251,7 @@ class DataSetInterpolatorOnMesh():
     def __init__(self,
                  name:str,
                  simulator:GetfemSimulator,
-                 dataset:DataSet):
+                 dataset:WheelDataSet):
         self.name=name
         self.simulator=simulator
         self.dataset=dataset
@@ -385,6 +384,8 @@ class DataSetInterpolatorOnMesh():
             path_this_array = f"{os.path.join(full_path, attr_nm)}.npz"
             self.accumulated_data_from_grid[attr_nm] = np.load(path_this_array)["data"]
 
+from lips.dataset.pneumaticWheelDataSetGenerators import PneumaticWheelDataSetStaticGenerator
+
 def check_interpolation_back_and_forth(configFilePath):
     physical_domain={
         "Mesher":"Getfem",
@@ -405,20 +406,17 @@ def check_interpolation_back_and_forth(configFilePath):
               "Force":(1.0e4,1.0e7),
               }
 
-    training_actor=LHSSampler(space_params=trainingInput)
-
+    training_sampler=LHSSampler(space_params=trainingInput)
     attr_names=(PFN.displacement,PFN.contactMultiplier)
-    pneumatic_wheel_dataset_train=SamplerStaticWheelDataSet("train",attr_names=attr_names,attr_x= ("Force",),attr_y= ("disp",))
-    path_out="WheelRegular"
-    pneumatic_wheel_dataset_train.generate(simulator=simulator,
-                                    actor=training_actor,
-                                    nb_samples=3,
-                                    actor_seed=42,
-                                    path_out=path_out
-                                    )
-
-    regular_dataset_reloaded=SamplerStaticWheelDataSet("train",attr_names=(PFN.displacement,PFN.contactMultiplier,"Force"),attr_x= ("Force",),attr_y= ("disp",))
-    regular_dataset_reloaded.load(path=path_out)
+    staticWheelGenerator=PneumaticWheelDataSetStaticGenerator(name="train",
+                                                                  simulator=simulator,
+                                                                  attr_inputs=("Force",),
+                                                                  attr_outputs=("disp",),
+                                                                  attr_names=(PFN.displacement,),
+                                                                  sampler=training_sampler,
+                                                                  nb_samples=3,
+                                                                  sampler_seed=42)
+    regular_dataset_reloaded=staticWheelGenerator.generate()
 
 
     charac_sizes=[32,48,64,96,128]
