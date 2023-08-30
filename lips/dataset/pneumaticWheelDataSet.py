@@ -27,11 +27,6 @@ class WheelDataSet(DataSet):
     """Base class for pneumatic datasets
     This class represent a single dataset dedicated to the pneumatic usecase, that comes from a database.
 
-    It also offers the possibility to generate data. The data generation come from a simulator
-    that will be called when generating the dataset.
-
-    This is the base class of all DataSet in LIPS repository
-
     Parameters
     ----------
     name: str

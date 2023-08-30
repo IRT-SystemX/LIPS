@@ -23,8 +23,49 @@ from lips.physical_simulator.getfemSimulator import GetfemSimulator
 from lips.dataset.sampler import LHSSampler
 from lips.dataset.datasetGeneratorBase import DataSetGeneratorBase
 
+class PneumaticDataSetGeneratorBase(DataSetGeneratorBase):
+    def __init__(self,
+                 name:str,
+                 simulator:GetfemSimulator,
+                 attr_inputs:Iterable,
+                 attr_outputs:Iterable,
+                 attr_names:Iterable,
+                 nb_samples:int,
+                 log_path: Union[str, None]=None):
+        super(PneumaticDataSetGeneratorBase,self).__init__(name=name,
+                                                           simulator=simulator,
+                                                           attr_inputs=attr_inputs,
+                                                           attr_outputs=attr_outputs,
+                                                           attr_names=attr_names,
+                                                           nb_samples=nb_samples,
+                                                           log_path=log_path)
 
-class PneumaticWheelDataSetStaticGenerator(DataSetGeneratorBase):
+        self._dataset_type=WheelDataSet
+        try:
+            import getfem
+        except ImportError as exc_:
+            raise RuntimeError("Impossible to `generate` a wheel dateset  if you don't have "
+                               "the getfem package installed") from exc_
+        if nb_samples <= 0:
+            raise RuntimeError("Impossible to generate a negative number of data.")
+
+    def _init_data(self, simulator:GetfemSimulator, nb_samples:int):
+        simulator.build_model()
+        for attr_nm in self._attr_names:
+            variableInitVal = simulator.get_variable_value(field_name=attr_nm)
+            self._data[attr_nm] = np.zeros((nb_samples, variableInitVal.shape[0]), dtype=variableInitVal.dtype)
+
+    def _load_dataset_from_store_data(self):
+        datasetFromData=self._dataset_type(name=self._name,
+                                     attr_names=self._attr_names,
+                                     attr_x= self._attr_inputs,
+                                     attr_y= self._attr_outputs)
+
+        attr_names_to_keep=self._attr_inputs+self._attr_outputs
+        datasetFromData.load_from_data(data=self._data,attr_names_to_keep=attr_names_to_keep)
+        return datasetFromData
+
+class PneumaticWheelDataSetStaticGenerator(PneumaticDataSetGeneratorBase):
     def __init__(self,
                  name:str,
                  simulator:GetfemSimulator,
@@ -42,19 +83,9 @@ class PneumaticWheelDataSetStaticGenerator(DataSetGeneratorBase):
                                                                   attr_names=attr_names,
                                                                   nb_samples=nb_samples,
                                                                   log_path=log_path)
-        try:
-            import getfem
-        except ImportError as exc_:
-            raise RuntimeError("Impossible to `generate` a wheel dateset  if you don't have "
-                               "the getfem package installed") from exc_
-        if nb_samples <= 0:
-            raise RuntimeError("Impossible to generate a negative number of data.")
 
         self._sampler=sampler
         self._sampler_seed=sampler_seed
-
-        self._dataset_type=WheelDataSet
-
 
     def generate(self):
         self._generate_inputs()
@@ -63,17 +94,8 @@ class PneumaticWheelDataSetStaticGenerator(DataSetGeneratorBase):
         dataset=self._load_dataset_from_store_data()
         return dataset
 
-
     def _generate_inputs(self):
         self._inputs=self._sampler.generate_samples(nb_samples=self._nb_samples,sampler_seed=self._sampler_seed)
-
-
-    def _init_data(self,simulator, nb_samples):
-        simulator.build_model()
-        for attr_nm in self._attr_names:
-            variableInitVal = simulator.get_variable_value(field_name=attr_nm)
-            self._data[attr_nm] = np.zeros((nb_samples, variableInitVal.shape[0]), dtype=variableInitVal.dtype)
-
 
     def _generate_data(self):
         for current_size,sample in enumerate(tqdm(self._inputs, desc=self._name)):
@@ -93,17 +115,7 @@ class PneumaticWheelDataSetStaticGenerator(DataSetGeneratorBase):
             self._data[attr_nm][current_size, :] = solution
 
 
-    def _load_dataset_from_store_data(self):
-        datasetFromData=self._dataset_type(name=self._name,
-                                     attr_names=self._attr_names,
-                                     attr_x= self._attr_inputs,
-                                     attr_y= self._attr_outputs)
-
-        attr_names_to_keep=self._attr_inputs+self._attr_outputs
-        datasetFromData.load_from_data(data=self._data,attr_names_to_keep=attr_names_to_keep)
-        return datasetFromData
-
-class PneumaticWheelDataSetQuasiStaticGenerator(DataSetGeneratorBase):
+class PneumaticWheelDataSetQuasiStaticGenerator(PneumaticDataSetGeneratorBase):
     def __init__(self,
                  name:str,
                  simulator:GetfemSimulator,
@@ -121,24 +133,12 @@ class PneumaticWheelDataSetQuasiStaticGenerator(DataSetGeneratorBase):
                                                                   nb_samples=nb_samples,
                                                                   log_path=log_path)
 
-        try:
-            import getfem
-        except ImportError as exc_:
-            raise RuntimeError("Impossible to `generate` a wheel dateset  if you don't have "
-                               "the getfem package installed") from exc_
-        self._dataset_type=WheelDataSet
 
     def generate(self):
         self._init_data(simulator=self._simulator, nb_samples=self._nb_samples)
         self._generate_data()
         dataset=self._load_dataset_from_store_data()
         return dataset
-
-    def _init_data(self, simulator:GetfemSimulator, nb_samples:int):
-        simulator.build_model()
-        for attr_nm in self._attr_names:
-            variableInitVal = simulator.get_variable_value(field_name=attr_nm)
-            self._data[attr_nm] = np.zeros((nb_samples, variableInitVal.shape[0]), dtype=variableInitVal.dtype)
 
     def _generate_data(self):
         solverState=self._simulator.run_problem()
@@ -151,15 +151,6 @@ class PneumaticWheelDataSetQuasiStaticGenerator(DataSetGeneratorBase):
             array_ = obs.get_solution(field_name=attr_nm)
             self._data[attr_nm] = np.array(array_)
 
-    def _load_dataset_from_store_data(self):
-        datasetFromData=self._dataset_type(name=self._name,
-                                     attr_names=self._attr_names,
-                                     attr_x= self._attr_inputs,
-                                     attr_y= self._attr_outputs)
-
-        attr_names_to_keep=self._attr_inputs+self._attr_outputs
-        datasetFromData.load_from_data(data=self._data,attr_names_to_keep=attr_names_to_keep)
-        return datasetFromData
 
 import math
 import lips.physical_simulator.GetfemSimulator.PhysicalFieldNames as PFN
