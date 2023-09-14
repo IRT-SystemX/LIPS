@@ -12,8 +12,8 @@ Licence:
 
 """
 from typing import Union, Callable
-from ..physical_simulator import PhysicalSimulator
 
+from lips.physical_simulator import PhysicalSimulator
 
 class DataSet(object):
     """Base class for data management
