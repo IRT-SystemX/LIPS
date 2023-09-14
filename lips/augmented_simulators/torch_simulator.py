@@ -8,6 +8,7 @@ import shutil
 import time
 import json
 import tempfile
+from tqdm import tqdm
 
 import numpy as np
 from matplotlib import pyplot as plt
@@ -115,10 +116,14 @@ class TorchSimulator(AugmentedSimulator):
             the path where the trained model should be saved, by default None
         """
         self.params.update(kwargs)
+        self._model.params.update(kwargs)
         super().train(train_dataset, val_dataset)
+
         train_loader = self._model.process_dataset(train_dataset, training=True)
         if val_dataset is not None:
             val_loader = self._model.process_dataset(val_dataset, training=False)
+        else:
+            val_loader = None
 
         # build the model
         self.build_model()
@@ -133,7 +138,9 @@ class TorchSimulator(AugmentedSimulator):
 
         self.logger.info("Training of {%s} started", self.name)
         #losses, elapsed_time = train_model(self.model, data_loaders=data)
-        for epoch in range(1, self.params["epochs"]+1):
+        pbar = tqdm(range(1, self.params["epochs"]+1))
+        for epoch in pbar:
+            pbar.set_description("Epoch %s" % str(epoch))
             train_loss_epoch, train_metrics_epoch = self._train_one_epoch(epoch, train_loader, optimizer)
             self.train_losses.append(train_loss_epoch)
             for nm_, arr_ in self.train_metrics.items():
@@ -168,7 +175,9 @@ class TorchSimulator(AugmentedSimulator):
         for metric in self.params["metrics"]:
             metric_dict[metric] = 0
 
-        for _, batch_ in enumerate(train_loader):
+        pbar=tqdm(train_loader)
+        for batch_ in pbar:
+            pbar.set_description("Batch within epoch (Training)")
             architecture_type=self.params["architecture_type"]
             if architecture_type == "Classical":
                 data, target = batch_
@@ -234,7 +243,10 @@ class TorchSimulator(AugmentedSimulator):
             metric_dict[metric] = 0
 
         with torch.no_grad():
-            for _, batch_ in enumerate(val_loader):
+
+            pbar=tqdm(val_loader)
+            for batch_ in pbar:
+                pbar.set_description("Batch within epoch (Evaluation)")
                 architecture_type=self.params["architecture_type"]
                 if architecture_type == "Classical":
                     data, target = batch_
@@ -320,8 +332,12 @@ class TorchSimulator(AugmentedSimulator):
                     prediction = self._model._post_process(prediction)
                     target = self._model._post_process(target)
 
-                predictions.append(prediction.numpy())
-                observations.append(target.numpy())
+                try:
+                    predictions.append(prediction.numpy())
+                    observations.append(target.numpy())
+                except TypeError:
+                    predictions.append(prediction.cpu().data.numpy())
+                    observations.append(target.cpu().data.numpy())
 
                 loss = loss_func(prediction, target)
                 total_loss += loss.item()*len(data)
