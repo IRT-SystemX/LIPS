@@ -221,7 +221,7 @@ class AirfRANSBenchmark(Benchmark):
         return res
 
 if __name__ == '__main__':
-    from lips import GetRootPath
+    from lips import get_root_path
     from lips.dataset.airfransDataSet import AirfRANSDataSet,download_data
     from lips.augmented_simulators.torch_models.fully_connected import TorchFullyConnected
     from lips.augmented_simulators.torch_simulator import TorchSimulator
@@ -230,14 +230,14 @@ if __name__ == '__main__':
     if not os.path.isdir("Dataset"):
          download_data(root_path=".", directory_name=directory_name)
 
-    config_path_benchmark=GetRootPath()+os.path.join("..","configurations","airfrans","benchmarks","confAirfoil.ini")
+    config_path_benchmark=get_root_path()+os.path.join("..","configurations","airfrans","benchmarks","confAirfoil.ini")
     benchmark=AirfRANSBenchmark(benchmark_path = directory_name,
                                 config_path = config_path_benchmark,
                                 benchmark_name = "Case1",
                                 log_path = "log_benchmark")
     benchmark.load(path_train=directory_name,path_test=directory_name)
 
-    sim_config_path=GetRootPath()+os.path.join("..","configurations","airfrans","simulators","torch_fc.ini")
+    sim_config_path=get_root_path()+os.path.join("..","configurations","airfrans","simulators","torch_fc.ini")
     augmented_simulator = TorchSimulator(name="torch_fc",
                                          model=TorchFullyConnected,
                                          log_path="log_benchmark",

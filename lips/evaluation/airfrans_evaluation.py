@@ -107,7 +107,7 @@ class AirfRANSEvaluation(Evaluation):
         """
         self.logger.info("Evaluate machine learning metrics")
         metric_val_by_name = self.metrics[self.MACHINE_LEARNING]
-        self.metrics[self.MACHINE_LEARNING]=[]
+        self.metrics[self.MACHINE_LEARNING]={}
         for metric_name in self.eval_dict[self.MACHINE_LEARNING]:
             metric_fun = metric_factory.get_metric(metric_name)
             metric_val_by_name[metric_name] = {}
@@ -122,7 +122,7 @@ class AirfRANSEvaluation(Evaluation):
                 else:
                     metric_val_by_name[metric_name][nm_] = float(tmp)
                     self.logger.info("%s for %s: %.2E", metric_name, nm_, tmp)
-                self.metrics[self.MACHINE_LEARNING].append(metric_val_by_name[metric_name])
+            self.metrics[self.MACHINE_LEARNING][metric_name] = metric_val_by_name[metric_name]
 
     def evaluate_physics(self):
         """
@@ -186,7 +186,7 @@ class AirfRANSEvaluation(Evaluation):
 if __name__ == '__main__':
     import os
 
-    from lips import GetRootPath
+    from lips import get_root_path
     from lips.dataset.airfransDataSet import AirfRANSDataSet,download_data
 
     directory_name='Dataset'
@@ -219,6 +219,6 @@ if __name__ == '__main__':
                                  attr_y = attr_y)
     my_dataset.load(path = directory_name)
     print(my_dataset)
-    config_path_benchmark=GetRootPath()+os.path.join("..","configurations","airfrans","benchmarks","confAirfoil.ini")
+    config_path_benchmark=get_root_path()+os.path.join("..","configurations","airfrans","benchmarks","confAirfoil.ini")
     evaluation = AirfRANSEvaluation(config_path=config_path_benchmark,scenario="Case1",data_path = directory_name, log_path = 'log_eval')
     evaluation.evaluate(observations = my_dataset.data, predictions = my_dataset.data)
