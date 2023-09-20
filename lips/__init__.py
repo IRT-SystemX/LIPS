@@ -8,7 +8,7 @@
 
 __version__ = "0.1.0"
 
-def GetRootPath():
+def get_root_path():
     """Returns the root path of LIPS."""
     import os
     return os.path.dirname(os.path.abspath(__file__)) + os.sep

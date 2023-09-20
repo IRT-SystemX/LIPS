@@ -150,7 +150,7 @@ def save_internal(dataset, path_out):
     for attr_nm in dataset._attr_names:
         np.savez_compressed(f"{os.path.join(full_path_out, attr_nm)}.npz", data = dataset.data[attr_nm])
 
-def load_dataset(path_in,name,task,split,attr_x,attr_y):
+def reload_dataset(path_in,name,task,split,attr_x,attr_y):
     """Load the internal data
 
     Parameters
@@ -167,6 +167,7 @@ def load_dataset(path_in,name,task,split,attr_x,attr_y):
         raise RuntimeError(f"There is no data saved in {full_path}. Have you called `dataset.generate()` with "
                            f"a given `path_out` ?")
 
+    attr_names=attr_x+attr_y
     for attr_nm in attr_names:
         path_this_array = f"{os.path.join(full_path, attr_nm)}.npz"
         if not os.path.exists(path_this_array):
@@ -177,7 +178,7 @@ def load_dataset(path_in,name,task,split,attr_x,attr_y):
                                     name=name,
                                     task = task,
                                     split = split,
-                                    attr_names=attr_x+attr_y,
+                                    attr_names=attr_names,
                                     attr_x= attr_x,
                                     attr_y= attr_y)
 
@@ -230,7 +231,7 @@ if __name__ == '__main__':
     print(my_dataset, "Loaded in %.2E s" %end_time)
     save_internal(dataset=my_dataset,path_out="AirfRANSDataset")
     start_time = time.time()
-    reloaded_dataset=load_dataset(path_in = "AirfRANSDataset",
+    reloaded_dataset=reload_dataset(path_in = "AirfRANSDataset",
                                   name = "train",
                                   task = 'scarce',
                                   split = "training",
