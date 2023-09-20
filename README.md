@@ -68,9 +68,9 @@ To drive the above mentioned new research topic towards a better real-world appl
 ### Associated results
 To demonstrate this ability, we propose in this paper to investigate two distinct use-cases with different physical simulations, namely: Power Grids, Pneumatics and Air Foils. For each use case, several benchmarks (aka tasks or scenarios) may be described and assessed with existing models. In the figure below, we show an example of the results obtained for a specific task associated with each use case. To ease the reading of the numerical comparison table, the performances are reported using three colors computed on the basis of two thresholds. The meaning of colors is described below:
 
-- <div><span style="color:green">Great:</span> Designates the best performance that could be obtained for a metric and an associated variable. The metric value should be lower than the first threshold;</div>
-- <div><span style="color:orange">Acceptable:</span>Designates an acceptable performance that could be obtained for a metric and an associated variable. The metric value should be between the first and the second thresholds;</div> 
-- <div><span style="color:red">Not acceptable:</span>Designates a not acceptable performance using a metric and an associated variable. The metric value should higher than the second threshold;</div> 
+- $\color{green}Greate$: Designates the best performance that could be obtained for a metric and an associated variable. The metric value should be lower than the first threshold;
+- $\color{orange}Acceptable$: Designates an acceptable performance that could be obtained for a metric and an associated variable. The metric value should be between the first and the second thresholds;
+- $\color{red}Not\ acceptable$: Designates a not acceptable performance using a metric and an associated variable. The metric value should higher than the second threshold.
 
  The number of circles corresponds to the number of variables or laws that are evaluated.
 
