@@ -1,10 +1,17 @@
-# LIPS : Learning Industrial physical simulation benchmark suite: the power grid case
-This repository implements the benchmarking platform called LIPS and provides the necessary utilities to reproduce the generated datasets used in research.
+# LIPS - Learning Industrial Physical Simulation benchmark suite
+
+This repository implements LIPS benchmarking platform. 
+<!---
+and provides the necessary utilities to reproduce the generated datasets used in research.
+--->
+
+Paper: https://openreview.net/pdf?id=ObD_o92z4p
 
 The Readme file is organized as follows:
 
 *   [1 Introduction](#introduction)
     * [1.1 What is LIPS?](#what-is-lips)
+    * [1.2 Associated results](#associated-results)
 *   [2 Usage example](#usage-example)
     * [2.1 Train a simulator](#train-a-simulator)
     * [2.2 Reproducibility and evaluation](#reproducibility-and-evaluation)
@@ -17,12 +24,35 @@ The Readme file is organized as follows:
 *   [6 Documentation](#documentation)
 *   [7 Contribution](#contribution)
 *   [8 License information](#license-information)
+*   [9 Citation](#citation)
 
 ## Introduction
-Nowdays, the simulators are used in every domain to emulate a real-world situation or event or to reproduce the critical situations for which further investigation may be required. The simulators are based generally on physics equations and are costly in terms of time complexity.
+Physical simulations are at the core of many critical industrial systems. However, today's physical simulators  have some limitations such as computation time, dealing with missing or uncertain data, or even  non-convergence for some feasible cases. Recently, the use of data-driven approaches to learn complex physical simulations has been considered as a promising approach to address those issues. However, this comes often at the cost of some accuracy which may hinder the industrial use. 
+
+<!--Nowdays, the simulators are used in every domain (power grids, transport, aeronautics, radiation, etc.) to emulate a real-world situation or phenomena, and also to reproduce the critical situations for which further investigation may be required. The simulators are based generally on physics equations and are costly in terms of time complexity.]
+-->
 
 ### What is LIPS
-The learning industrial physical simulation benchmark suite allows to evaluate the performance of augmented simulators (aka surrogate models) specialized in a physical domain with respect to various evaluation criteria. The implementation is enough flexible to allow its adaptation to various domains such as power grids, transport, aeronotics etc. To do so, as it is depicted in the scheme provided in the figure below, the platform is designed to be modular and includes following modules:
+To drive the above mentioned new research topic towards a better real-world applicability, we propose a new benchmark suite "Learning Industrial Physical Simulations" (LIPS) to meet the need of developing efficient, industrial application-oriented, augmented simulators.  The proposed benchmark suite is a modular and configurable framework that can deal with different physical problems. To do so, as it is depicted in the scheme, the LIPS platform is designed to be modular and includes following modules:
+
+- **Data:** This module may be used to import the required datasets or to generate some synthetic data using physical solvers (*NB*. depending on the use case, the physical solver may not yet be avaiable);
+
+- **Augmented Simulator:** This module offers a list of already implemented data-driven models which could be used to augment or to substitute the physical solvers. The datasets imported using `Data` module may be used to learn these models. A set of instructions are also provided in [Contribution](#contribution) section and in related jupyte notebooks (see more details in [Getting started](#getting-started)) for who would like to implement their own augmented simulator and evaluate its performance using LIPS;
+
+- **Benchmark controller:** This module takes a dataset related to a specific task and usecase, an already trained augmented simulator (aka model) and a set of metrics and call the evaluator module to assess the performance of the model;
+
+- **Evaluator:** This module is responsible to evaluate the performance of a selected benchmark. To define how to assess such benchmark performance, we propose a set of four generic categories of criteria:
+
+  - <u>ML-related metrics</u>: Among classical ML metrics, we focus on  the trade-offs of typical model accuracy metrics such as Mean Absolute Error (MAE) vs computation time (optimal ML inference time without batch size consideration as opposed to application time later);
+
+  - <u>Physics compliance</u>: Physical laws compliance is decisive when simulation results are used to make consistent real-world decisions. Depending on the expected level of criticality of the benchmark, this criterion aims at determining the type and number of physical laws that should be satisfied;
+  - <u>Industrial readiness</u>:*  When deploying a model in real-world applications, it should consider the real data availability and scale-up to large systems. We hence consider:
+    1) *Scalability*: the computational complexity of a surrogate method should scale well with respect to the problem size, e.g. number of nodes in power grid, mesh refinement level in pneumatic;
+    2) *Application Time*: as we are looking for a model tailored to a specific application, we measure the computation time when integrated in this application. To this end, we define a realistic application-dependent batch size, which may affect the speed-up.
+  - <u>Application-based out-of-distribution (OOD) generalization</u>: For industrial physical simulation, there is always some expectation to extrapolate over minimal variations of the problem geometry depending on the application. We hence consider ood geometry evaluation such as unseen power grid topology or unseen pneumatic mesh variations. 
+
+  
+<!--The learning industrial physical simulation benchmark suite allows to evaluate the performance of augmented simulators (aka surrogate models) specialized in a physical domain with respect to various evaluation criteria. The implementation is enough flexible to allow its adaptation to various domains such as power grids, transport, aeronotics etc. To do so, as it is depicted in the scheme provided in the figure below, the platform is designed to be modular and includes following modules:
 
 - the **Data** module of the platform may be used to import the required datasets or to generate some synthetic data (for power grids for now)
 - A **simulator** may access the provided data to train or evaluate the peformance. The developed platform gives also the flexibility to its users to design and implement their own simulators and evaluate its performance with baselines. Various baseline simulators are already implemented and could be used, e.g., Direct Current (DC) approximation and neural netowrk based simulators which are _Fully Connected_ (FC) model and _Latent Encoding of Atypical Perturbations network_ [(LEAP net)](https://github.com/BDonnot/leap_net).
@@ -31,11 +61,27 @@ The learning industrial physical simulation benchmark suite allows to evaluate t
   - Physic compliance
   - Industrial readiness
   - Generalization metrics
+-->
 
 ![Scheme](./img/Benchmarking_scheme_v2.png)
 
+### Associated results
+To demonstrate this ability, we propose in this paper to investigate two distinct use-cases with different physical simulations, namely: Power Grids, Pneumatics and Air Foils. For each use case, several benchmarks (aka tasks or scenarios) may be described and assessed with existing models. In the figure below, we show an example of the results obtained for a specific task associated with each use case. To ease the reading of the numerical comparison table, the performances are reported using three colors computed on the basis of two thresholds. The meaning of colors is described below:
+
+- <div><span style="color:green">Great:</span> Designates the best performance that could be obtained for a metric and an associated variable. The metric value should be lower than the first threshold;</div>
+- <div><span style="color:orange">Acceptable:</span>Designates an acceptable performance that could be obtained for a metric and an associated variable. The metric value should be between the first and the second thresholds;</div> 
+- <div><span style="color:red">Not acceptable:</span>Designates a not acceptable performance using a metric and an associated variable. The metric value should higher than the second threshold;</div> 
+
+ The number of circles corresponds to the number of variables or laws that are evaluated.
+
+As it can be seen, none of the models perform well under all expected criteria, inviting the community to develop  new industry-applicable solutions and possibly showcase their performance publicly upon online LIPS instance on Codabench.
+
+![Results](./img/LIPS_results.png)
+
+The final score is computed on the basis of the obtained results for each metric (more information concerning the scoring algorithm will be provided).
+
 ## Usage example
-### Instantiate a benchmark for power grid use case
+### Instantiate a benchmark
 The paths should correctly point-out to generated data ([DATA_PATH](https://github.com/Mleyliabadi/LIPS/tree/main/reference_data)) and benchmark associated config file ([CONFIG_PATH](https://github.com/Mleyliabadi/LIPS/blob/main/configurations)). The log path (`LOG_PATH`) could be set by the user.
 
 ```python
@@ -193,3 +239,14 @@ Copyright 2022-2023 IRT SystemX & RTE
 
 This Source Code is subject to the terms of the Mozilla Public License (MPL) v2 also available
 [here](https://www.mozilla.org/en-US/MPL/2.0/)
+
+# Citation
+
+    @article{leyli2022lips,
+        title={LIPS-Learning Industrial Physical Simulation benchmark suite},
+        author={M. Leyli-Abadi, and A. Marot, Antoine and J. Picault, and D. Danan and M. Yagoubi, B. Donnot, S. Attoui, P. Dimitrov, A. Farjallah, C. Etienam},
+        journal={Advances in Neural Information Processing Systems},
+        volume={35},
+        pages={28095--28109},
+        year={2022}
+    }
