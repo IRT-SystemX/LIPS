@@ -1,12 +1,14 @@
-import numpy as np
-import airfrans as af
 import os, shutil
-from lips.dataset.dataSet import DataSet
 import copy
+import operator
+from typing import Union, Callable
+import numpy as np
+
+import airfrans as af
+
+from lips.dataset.dataSet import DataSet
 from lips.config.configmanager import ConfigManager
 from lips.logger.customLogger import CustomLogger
-
-from typing import Union, Callable
 
 def download_data(root_path, directory_name):
     af.dataset.download(root = root_path, file_name = directory_name, unzip = True, OpenFOAM = False)
@@ -174,7 +176,7 @@ def reload_dataset(path_in,name,task,split,attr_x,attr_y):
             raise RuntimeError(f"Impossible to load data {attr_nm}. Have you called `dataset.generate()` with "
                                f"a given `path_out` and such that `dataset` is built with the right `attr_names` ?")
 
-    datasetFromData=AirfRANSDataSet(config = None,
+    dataset_from_data=AirfRANSDataSet(config = None,
                                     name=name,
                                     task = task,
                                     split = split,
@@ -182,16 +184,44 @@ def reload_dataset(path_in,name,task,split,attr_x,attr_y):
                                     attr_x= attr_x,
                                     attr_y= attr_y)
 
-    if datasetFromData.data is not None:
+    if dataset_from_data.data is not None:
         warnings.warn(f"Deleting previous run in attempting to load the new one located at {path}")
-    datasetFromData.data = {}
+    dataset_from_data.data = {}
 
-    for attr_nm in datasetFromData._attr_names:
+    for attr_nm in dataset_from_data._attr_names:
         path_this_array = f"{os.path.join(full_path, attr_nm)}.npz"
-        datasetFromData.data[attr_nm] = np.load(path_this_array)["data"]
+        dataset_from_data.data[attr_nm] = np.load(path_this_array)["data"]
 
-    datasetFromData._infer_sizes()
-    return datasetFromData
+    dataset_from_data._infer_sizes()
+    return dataset_from_data
+
+def extract_sample_filtered_dataset(newdataset_name:str,
+                                    dataset:AirfRANSDataSet,
+                                    sample_indices_filter:list):
+    simulation_sizes=[int(simulation[1]) for simulation in dataset.data["simulation_names"]]
+    sample_sizes=[None]*len(simulation_sizes)
+    start_index=0
+    for simulation_Id,simulation_size in enumerate(simulation_sizes):
+        sample_sizes[simulation_Id]=range(start_index,start_index+simulation_size)
+        start_index+=simulation_size
+    values=operator.itemgetter(*sample_indices_filter)(sample_sizes)
+    sampledCellIndices=sorted([item for sublist in values for item in sublist])
+
+    new_data={}
+    for data_name in dataset._attr_names:
+        new_data[data_name]=dataset.data[data_name][sampledCellIndices]
+    new_data['simulation_names']=dataset.data['simulation_names'][sample_indices_filter]
+    new_dataset=type(dataset)(config = dataset.config, 
+                             name = newdataset_name,
+                             task = dataset._task,
+                             split = dataset._split,
+                             attr_names = dataset._attr_names, 
+                             attr_x = dataset._attr_x , 
+                             attr_y = dataset._attr_y)
+
+    new_dataset.data=new_data
+    new_dataset._infer_sizes()
+    return new_dataset
 
 
 if __name__ == '__main__':
