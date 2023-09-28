@@ -195,22 +195,22 @@ def reload_dataset(path_in,name,task,split,attr_x,attr_y):
     dataset_from_data._infer_sizes()
     return dataset_from_data
 
-def extract_sample_filtered_dataset(newdataset_name:str,
-                                    dataset:AirfRANSDataSet,
-                                    sample_indices_filter:list):
-    simulation_sizes=[int(simulation[1]) for simulation in dataset.data["simulation_names"]]
-    sample_sizes=[None]*len(simulation_sizes)
-    start_index=0
+def extract_dataset_by_simulations(newdataset_name:str,
+                                   dataset:AirfRANSDataSet,
+                                   simulation_indices:list):
+    simulation_sizes = [int(simulation[1]) for simulation in dataset.data["simulation_names"]]
+    sample_sizes = [None]*len(simulation_sizes)
+    start_index = 0
     for simulation_Id,simulation_size in enumerate(simulation_sizes):
-        sample_sizes[simulation_Id]=range(start_index,start_index+simulation_size)
-        start_index+=simulation_size
-    values=operator.itemgetter(*sample_indices_filter)(sample_sizes)
-    sampledCellIndices=sorted([item for sublist in values for item in sublist])
+        sample_sizes[simulation_Id] = range(start_index,start_index+simulation_size)
+        start_index+= simulation_size
+    values=operator.itemgetter(*simulation_indices)(sample_sizes)
+    nodes_simulation_indices = sorted([item for sublist in values for item in sublist])
 
     new_data={}
     for data_name in dataset._attr_names:
-        new_data[data_name]=dataset.data[data_name][sampledCellIndices]
-    new_data['simulation_names']=dataset.data['simulation_names'][sample_indices_filter]
+        new_data[data_name]=dataset.data[data_name][nodes_simulation_indices]
+    new_data['simulation_names']=dataset.data['simulation_names'][simulation_indices]
     new_dataset=type(dataset)(config = dataset.config, 
                              name = newdataset_name,
                              task = dataset._task,

@@ -23,15 +23,15 @@ import numpy as np
 
 from lips.benchmark import Benchmark
 from lips.augmented_simulators import AugmentedSimulator
-from lips.dataset.airfransDataSet import AirfRANSDataSet,extract_sample_filtered_dataset
+from lips.dataset.airfransDataSet import AirfRANSDataSet,extract_dataset_by_simulations
 from lips.evaluation.airfrans_evaluation import AirfRANSEvaluation
 from lips.utils import NpEncoder
 
 def reynolds_filter(dataset):
     simulation_names=dataset.data["simulation_names"]
     reynolds=np.array([float(name.split('_')[2])/1.56e-5 for name,numID in simulation_names])
-    indices=np.where((reynolds>2e6) & (reynolds<5e6))[0]
-    return indices
+    simulation_indices=np.where((reynolds>3e6) & (reynolds<5e6))[0]
+    return simulation_indices
 
 class AirfRANSBenchmark(Benchmark):
     """AirfRANS Benchmark class
@@ -120,12 +120,16 @@ class AirfRANSBenchmark(Benchmark):
             raise RuntimeError(f"No data are found in {path}. Have you generated or downloaded "
                                    f"some data ?")
         self.train_dataset.load(path = path)
-        indicesToKeepTrain=reynolds_filter(self.train_dataset)
-        self.train_dataset=extract_sample_filtered_dataset(self.train_dataset.name,self.train_dataset,indicesToKeepTrain)
+        simulation_indices_train=reynolds_filter(self.train_dataset)
+        self.train_dataset=extract_dataset_by_simulations(newdataset_name=self.train_dataset.name,
+                                                          dataset=self.train_dataset,
+                                                          simulation_indices=simulation_indices_train)
 
         self._test_dataset.load(path = path)
-        indicesToKeepTest=reynolds_filter(self._test_dataset)
-        self._test_dataset=extract_sample_filtered_dataset(self._test_dataset.name,self._test_dataset,indicesToKeepTest)
+        simulation_indices_test=reynolds_filter(self._test_dataset)
+        self._test_dataset=extract_dataset_by_simulations(newdataset_name=self._test_dataset.name,
+                                                          dataset=self._test_dataset,
+                                                          simulation_indices=simulation_indices_test)
 
         self._test_ood_dataset.load(path = path)
         self.is_loaded = True
