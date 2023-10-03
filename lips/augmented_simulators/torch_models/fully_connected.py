@@ -161,7 +161,10 @@ class TorchFullyConnected(nn.Module):
 
     def _post_process(self, data):
         if self.scaler is not None:
-            processed = self.scaler.inverse_transform(data)
+            try:
+                processed = self.scaler.inverse_transform(data)
+            except TypeError:
+                processed = self.scaler.inverse_transform(data.cpu())
         else:
             processed = data
         return processed
