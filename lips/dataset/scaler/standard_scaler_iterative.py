@@ -22,7 +22,7 @@ def iterative_fit(data,chunk_sizes):
     standard_dev = 0
     for chunk_size in chunk_sizes:
         data_chunk_indices = range(start_index,start_index+chunk_size)
-        data_chunk_x = x[data_chunk_indices,:]
+        data_chunk_x = data[data_chunk_indices,:]
         start_index+= chunk_size
         lenght = start_index  
         standard_dev +=(np.sum((data_chunk_x - mean)**2,axis = 0) - standard_dev*chunk_size)/lenght
@@ -34,13 +34,15 @@ class StandardScalerIterative(Scaler):
     for large dataset, mean/std values computation at once is not very accurate so we do it iteratively
     - X - mean(X) / std(X)
     """
-    def __init__(self,chunk_sizes):
+    def __init__(self,chunk_sizes,no_norm_x=None,no_norm_y=None):
         super().__init__()
         self.chunk_sizes=chunk_sizes
         self._m_x = None
         self._m_y = None
         self._std_x = None
         self._std_y = None
+        self.no_norm_x = no_norm_x
+        self.no_norm_y = no_norm_y
 
     def fit(self, x, y):
         self._m_x,self._std_x = iterative_fit(data=x, chunk_sizes=self.chunk_sizes)
@@ -48,6 +50,13 @@ class StandardScalerIterative(Scaler):
         # to avoid division by 0.
         self._std_x[np.abs(self._std_x) <= 1e-1] = 1
         self._std_y[np.abs(self._std_y) <= 1e-1] = 1
+        if self.no_norm_x is not None:
+            self._m_x[self.no_norm_x]=0
+            self._std_x[self.no_norm_x]=1
+
+        if self.no_norm_y is not None:
+            self._m_y[self.no_norm_y]=0
+            self._std_y[self.no_norm_y]=1
 
     def transform(self, x, y):
         x -= self._m_x

@@ -43,6 +43,8 @@ class AirfRANSDataSet(DataSet):
         self._sizes_y = None  # dimension of each variable
         self._attr_x = kwargs["attr_x"] if "attr_x" in kwargs.keys() else self.config.get_option("attr_x")
         self._attr_y = kwargs["attr_y"] if "attr_y" in kwargs.keys() else self.config.get_option("attr_y")
+        self.no_normalization_attr_x = ['x-normals','y-normals']
+        self.no_normalization_attr_y = ['surface']
 
     def load(self, path: str):
         if not os.path.exists(path):
@@ -83,6 +85,17 @@ class AirfRANSDataSet(DataSet):
         """
         return self._size_x, self._size_y
     
+    def get_simulations_sizes(self):
+        """Get the size of each simulation
+
+        Returns
+        -------
+        list
+            A list of size number of simulation
+
+        """
+        return [int(simulation[1]) for simulation in self.data["simulation_names"]]
+
     def extract_data(self) -> tuple:
         """extract the x and y data from the dataset
 
@@ -100,6 +113,11 @@ class AirfRANSDataSet(DataSet):
         extract_x = np.concatenate([self.data[key][:, None].astype(np.single) for key in self._attr_x], axis = 1)
         extract_y = np.concatenate([self.data[key][:, None].astype(np.single) for key in self._attr_y], axis = 1)
         return extract_x, extract_y
+
+    def get_no_normalization_axis_indices(self):
+        no_normalization_indices_x=np.array([self._attr_x.index(attr) for attr in self.no_normalization_attr_x])
+        no_normalization_indices_y=np.array([self._attr_y.index(attr) for attr in self.no_normalization_attr_y])
+        return no_normalization_indices_x, no_normalization_indices_y
 
     def reconstruct_output(self, data: "np.ndarray") -> dict:
         """It reconstruct the data from the extracted data
@@ -198,7 +216,7 @@ def reload_dataset(path_in,name,task,split,attr_x,attr_y):
 def extract_dataset_by_simulations(newdataset_name:str,
                                    dataset:AirfRANSDataSet,
                                    simulation_indices:list):
-    simulation_sizes = [int(simulation[1]) for simulation in dataset.data["simulation_names"]]
+    simulation_sizes = dataset.get_simulations_sizes()
     sample_sizes = [None]*len(simulation_sizes)
     start_index = 0
     for simulation_Id,simulation_size in enumerate(simulation_sizes):
