@@ -294,6 +294,8 @@ class TorchSimulator(AugmentedSimulator):
         super().predict(dataset)
         if "eval_batch_size" in kwargs:
             self.params["eval_batch_size"] = kwargs["eval_batch_size"]
+            self._model.params["eval_batch_size"] = kwargs["eval_batch_size"]
+
         #self.params.update(kwargs)
 
         test_loader = self._model.process_dataset(dataset, training=False)
@@ -308,7 +310,9 @@ class TorchSimulator(AugmentedSimulator):
 
         total_time = 0
         with torch.no_grad():
-            for _, batch_ in enumerate(test_loader):
+            pbar=tqdm(test_loader)
+            for batch_ in pbar:
+                pbar.set_description("Batch (Prediction)")
                 architecture_type=self.params["architecture_type"]
                 if architecture_type == "Classical":
                     data, target = batch_

@@ -96,7 +96,7 @@ class AirfRANSBenchmark(Benchmark):
         self._test_dataset = AirfRANSDataSet(name = "test",
                                              config = self.config,
                                              attr_names = attr_names,
-                                             task = 'scarce',
+                                             task = 'full',
                                              split = "testing",
                                              log_path = log_path
                                             )
@@ -126,10 +126,6 @@ class AirfRANSBenchmark(Benchmark):
                                                           simulation_indices=simulation_indices_train)
 
         self._test_dataset.load(path = path)
-        simulation_indices_test=reynolds_filter(self._test_dataset)
-        self._test_dataset=extract_dataset_by_simulations(newdataset_name=self._test_dataset.name,
-                                                          dataset=self._test_dataset,
-                                                          simulation_indices=simulation_indices_test)
 
         self._test_ood_dataset.load(path = path)
         self.is_loaded = True
