@@ -91,7 +91,7 @@ class WheelDataSet(DataSet):
         self.size = None
 
         if attr_names_to_keep is None:
-            attr_names=self._attr_names
+            attr_names_to_keep=self._attr_names
 
         for attr_nm in attr_names_to_keep:
             self.data[attr_nm] = data[attr_nm]
@@ -192,7 +192,7 @@ class WheelDataSet(DataSet):
                 return False
         return True
 
-    def __getitem__(self, item:int)->tuple:
+    def __getitem__(self, index:int)->tuple:
         currentInput = {inputName:self.data[inputName][item] for inputName in self._attr_x}
         currentOutput = {outputName:self.data[outputName][item] for outputName in self._attr_y}
         return currentInput,currentOutput

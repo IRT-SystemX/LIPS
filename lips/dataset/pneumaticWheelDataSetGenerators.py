@@ -194,8 +194,6 @@ def check_static_samples_generation():
     pneumaticDataset=staticWheelGenerator.generate()
     print(pneumaticDataset)
     extract_x, extract_y=pneumaticDataset.extract_data()
-    print(extract_x)
-    print(extract_y)
 
 
 def check_quasi_static_generation():

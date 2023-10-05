@@ -456,9 +456,9 @@ def check_interpolation_back_and_forth(configFilePath):
     print(abs_error)
     np.testing.assert_equal(abs_error[::-1],np.sort(abs_error))
 
-from lips import GetRootPath
+from lips import get_root_path
 import os
 
 if __name__ == '__main__':
-    configFilePath=GetRootPath()+os.path.join("..","configurations","pneumatic","benchmarks","confWheel.ini")
+    configFilePath=get_root_path()+os.path.join("..","configurations","pneumatic","benchmarks","confWheel.ini")
     check_interpolation_back_and_forth(configFilePath=configFilePath)
