@@ -159,6 +159,10 @@ class Grid2opSimulator(PhysicalSimulator):
             if check:
                 done=True
 
+            check = self.__any_nan_values(self._obs)
+            if check:
+                done=True
+
             self._time_powerflow += _diff_time_pf
             self.comp_time += _diff_time_cp
 
@@ -275,6 +279,19 @@ class Grid2opSimulator(PhysicalSimulator):
         #    print("There are some isolated injections")
         return check_all
 
+    def __any_nan_values(self, obs):
+        """Verify if there are any nan values during data generation
+
+        Parameters
+        ----------
+        obs : _type_
+            _description_
+        """
+        check = False
+        if any(np.isnan(obs.p_or)):
+            check = True
+        return check
+    
 def get_env(env_kwargs: dict):
     """Getter for the environment
 
