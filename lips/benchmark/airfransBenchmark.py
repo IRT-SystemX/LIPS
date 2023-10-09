@@ -23,10 +23,15 @@ import numpy as np
 
 from lips.benchmark import Benchmark
 from lips.augmented_simulators import AugmentedSimulator
-from lips.dataset.airfransDataSet import AirfRANSDataSet
+from lips.dataset.airfransDataSet import AirfRANSDataSet,extract_dataset_by_simulations
 from lips.evaluation.airfrans_evaluation import AirfRANSEvaluation
 from lips.utils import NpEncoder
 
+def reynolds_filter(dataset):
+    simulation_names=dataset.data["simulation_names"]
+    reynolds=np.array([float(name.split('_')[2])/1.56e-5 for name,numID in simulation_names])
+    simulation_indices=np.where((reynolds>3e6) & (reynolds<5e6))[0]
+    return simulation_indices
 
 class AirfRANSBenchmark(Benchmark):
     """AirfRANS Benchmark class
@@ -91,27 +96,42 @@ class AirfRANSBenchmark(Benchmark):
         self._test_dataset = AirfRANSDataSet(name = "test",
                                              config = self.config,
                                              attr_names = attr_names,
-                                             task = 'scarce',
+                                             task = 'full',
+                                             split = "testing",
+                                             log_path = log_path
+                                            )
+
+        self._test_ood_dataset = AirfRANSDataSet(name = "test_ood",
+                                             config = self.config,
+                                             attr_names = attr_names,
+                                             task = 'reynolds',
                                              split = "testing",
                                              log_path = log_path
                                             )
 
 
-    def load(self,path_train,path_test):
+    def load(self,path):
         """
         load the already generated datasets
         """
         if self.is_loaded:
             self.logger.info("Previously saved data will be freed and new data will be reloaded")
-        for path in [path_train,path_test]:
-            if not os.path.exists(path):
-                raise RuntimeError(f"No data are found in {path}. Have you generated or downloaded "
+        if not os.path.exists(path):
+            raise RuntimeError(f"No data are found in {path}. Have you generated or downloaded "
                                    f"some data ?")
-        self.train_dataset.load(path = path_train)
-        self._test_dataset.load(path = path_test)
+        self.train_dataset.load(path = path)
+        simulation_indices_train=reynolds_filter(self.train_dataset)
+        self.train_dataset=extract_dataset_by_simulations(newdataset_name=self.train_dataset.name,
+                                                          dataset=self.train_dataset,
+                                                          simulation_indices=simulation_indices_train)
+
+        self._test_dataset.load(path = path)
+
+        self._test_ood_dataset.load(path = path)
         self.is_loaded = True
 
     def evaluate_simulator(self,
+                           dataset: str = "all",
                            augmented_simulator: Union[AugmentedSimulator, None] = None,
                            save_path: Union[str, None]=None,
                            save_predictions: bool=False,
@@ -144,8 +164,17 @@ class AirfRANSBenchmark(Benchmark):
 
         """
         self.augmented_simulator = augmented_simulator
-        li_dataset = [self._test_dataset]
-        keys = ["test"]
+        if dataset == "all":
+            li_dataset = [self._test_dataset, self._test_ood_dataset]
+            keys = ["test", "test_ood"]
+        elif dataset == "test":
+            li_dataset = [self._test_dataset]
+            keys = ["test"]
+        elif dataset == "test_ood":
+            li_dataset = [self._test_ood_dataset]
+            keys = ["test_ood"]
+        else:
+            raise RuntimeError(f"Unknown dataset {dataset}")
 
         res = {}
         for dataset_, nm_ in zip(li_dataset, keys):
@@ -235,7 +264,7 @@ if __name__ == '__main__':
                                 config_path = config_path_benchmark,
                                 benchmark_name = "Case1",
                                 log_path = "log_benchmark")
-    benchmark.load(path_train=directory_name,path_test=directory_name)
+    benchmark.load(path=directory_name)
 
     sim_config_path=get_root_path()+os.path.join("..","configurations","airfrans","simulators","torch_fc.ini")
     augmented_simulator = TorchSimulator(name="torch_fc",

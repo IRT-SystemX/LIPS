@@ -1,12 +1,14 @@
-import numpy as np
-import airfrans as af
 import os, shutil
-from lips.dataset.dataSet import DataSet
 import copy
+import operator
+from typing import Union, Callable
+import numpy as np
+
+import airfrans as af
+
+from lips.dataset.dataSet import DataSet
 from lips.config.configmanager import ConfigManager
 from lips.logger.customLogger import CustomLogger
-
-from typing import Union, Callable
 
 def download_data(root_path, directory_name):
     af.dataset.download(root = root_path, file_name = directory_name, unzip = True, OpenFOAM = False)
@@ -41,6 +43,8 @@ class AirfRANSDataSet(DataSet):
         self._sizes_y = None  # dimension of each variable
         self._attr_x = kwargs["attr_x"] if "attr_x" in kwargs.keys() else self.config.get_option("attr_x")
         self._attr_y = kwargs["attr_y"] if "attr_y" in kwargs.keys() else self.config.get_option("attr_y")
+        self.no_normalization_attr_x = ['x-normals','y-normals']
+        self.no_normalization_attr_y = ['surface']
 
     def load(self, path: str):
         if not os.path.exists(path):
@@ -81,6 +85,17 @@ class AirfRANSDataSet(DataSet):
         """
         return self._size_x, self._size_y
     
+    def get_simulations_sizes(self):
+        """Get the size of each simulation
+
+        Returns
+        -------
+        list
+            A list of size number of simulation
+
+        """
+        return [int(simulation[1]) for simulation in self.data["simulation_names"]]
+
     def extract_data(self) -> tuple:
         """extract the x and y data from the dataset
 
@@ -98,6 +113,11 @@ class AirfRANSDataSet(DataSet):
         extract_x = np.concatenate([self.data[key][:, None].astype(np.single) for key in self._attr_x], axis = 1)
         extract_y = np.concatenate([self.data[key][:, None].astype(np.single) for key in self._attr_y], axis = 1)
         return extract_x, extract_y
+
+    def get_no_normalization_axis_indices(self):
+        no_normalization_indices_x=np.array([self._attr_x.index(attr) for attr in self.no_normalization_attr_x])
+        no_normalization_indices_y=np.array([self._attr_y.index(attr) for attr in self.no_normalization_attr_y])
+        return no_normalization_indices_x, no_normalization_indices_y
 
     def reconstruct_output(self, data: "np.ndarray") -> dict:
         """It reconstruct the data from the extracted data
@@ -174,7 +194,7 @@ def reload_dataset(path_in,name,task,split,attr_x,attr_y):
             raise RuntimeError(f"Impossible to load data {attr_nm}. Have you called `dataset.generate()` with "
                                f"a given `path_out` and such that `dataset` is built with the right `attr_names` ?")
 
-    datasetFromData=AirfRANSDataSet(config = None,
+    dataset_from_data=AirfRANSDataSet(config = None,
                                     name=name,
                                     task = task,
                                     split = split,
@@ -182,16 +202,44 @@ def reload_dataset(path_in,name,task,split,attr_x,attr_y):
                                     attr_x= attr_x,
                                     attr_y= attr_y)
 
-    if datasetFromData.data is not None:
+    if dataset_from_data.data is not None:
         warnings.warn(f"Deleting previous run in attempting to load the new one located at {path}")
-    datasetFromData.data = {}
+    dataset_from_data.data = {}
 
-    for attr_nm in datasetFromData._attr_names:
+    for attr_nm in dataset_from_data._attr_names:
         path_this_array = f"{os.path.join(full_path, attr_nm)}.npz"
-        datasetFromData.data[attr_nm] = np.load(path_this_array)["data"]
+        dataset_from_data.data[attr_nm] = np.load(path_this_array)["data"]
 
-    datasetFromData._infer_sizes()
-    return datasetFromData
+    dataset_from_data._infer_sizes()
+    return dataset_from_data
+
+def extract_dataset_by_simulations(newdataset_name:str,
+                                   dataset:AirfRANSDataSet,
+                                   simulation_indices:list):
+    simulation_sizes = dataset.get_simulations_sizes()
+    sample_sizes = [None]*len(simulation_sizes)
+    start_index = 0
+    for simulation_Id,simulation_size in enumerate(simulation_sizes):
+        sample_sizes[simulation_Id] = range(start_index,start_index+simulation_size)
+        start_index+= simulation_size
+    values=operator.itemgetter(*simulation_indices)(sample_sizes)
+    nodes_simulation_indices = sorted([item for sublist in values for item in sublist])
+
+    new_data={}
+    for data_name in dataset._attr_names:
+        new_data[data_name]=dataset.data[data_name][nodes_simulation_indices]
+    new_data['simulation_names']=dataset.data['simulation_names'][simulation_indices]
+    new_dataset=type(dataset)(config = dataset.config, 
+                             name = newdataset_name,
+                             task = dataset._task,
+                             split = dataset._split,
+                             attr_names = dataset._attr_names, 
+                             attr_x = dataset._attr_x , 
+                             attr_y = dataset._attr_y)
+
+    new_dataset.data=new_data
+    new_dataset._infer_sizes()
+    return new_dataset
 
 
 if __name__ == '__main__':
