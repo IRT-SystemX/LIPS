@@ -31,6 +31,7 @@ class AirfRANSDataSet(DataSet):
         assert split in ["training","testing"], "split %s not supported for this dataset. Available choices: training, testing"
         self._split = split
         self._attr_names = copy.deepcopy(attr_names)
+        self.extra_data = dict()
 
         # logger
         self.logger = CustomLogger(__class__.__name__, log_path).logger
@@ -44,7 +45,6 @@ class AirfRANSDataSet(DataSet):
         self._attr_x = kwargs["attr_x"] if "attr_x" in kwargs.keys() else self.config.get_option("attr_x")
         self._attr_y = kwargs["attr_y"] if "attr_y" in kwargs.keys() else self.config.get_option("attr_y")
         self.no_normalization_attr_x = ['x-normals','y-normals']
-        self.no_normalization_attr_y = ['surface']
 
     def load(self, path: str):
         if not os.path.exists(path):
@@ -64,7 +64,8 @@ class AirfRANSDataSet(DataSet):
         self.data = {}
         for key in self._attr_names:
             self.data[key] = np.concatenate([sim[:, indices_variables[key]] for sim in dataset], axis = 0)
-        self.data['simulation_names'] = simulation_names
+        self.extra_data['surface'] = np.concatenate([sim[:, indices_variables['surface']] for sim in dataset], axis = 0)
+        self.extra_data['simulation_names'] = simulation_names
         self._infer_sizes()
 
     def _infer_sizes(self):
@@ -94,7 +95,7 @@ class AirfRANSDataSet(DataSet):
             A list of size number of simulation
 
         """
-        return [int(simulation[1]) for simulation in self.data["simulation_names"]]
+        return [int(simulation[1]) for simulation in self.extra_data["simulation_names"]]
 
     def extract_data(self) -> tuple:
         """extract the x and y data from the dataset
@@ -116,8 +117,7 @@ class AirfRANSDataSet(DataSet):
 
     def get_no_normalization_axis_indices(self):
         no_normalization_indices_x=np.array([self._attr_x.index(attr) for attr in self.no_normalization_attr_x])
-        no_normalization_indices_y=np.array([self._attr_y.index(attr) for attr in self.no_normalization_attr_y])
-        return no_normalization_indices_x, no_normalization_indices_y
+        return no_normalization_indices_x
 
     def reconstruct_output(self, data: "np.ndarray") -> dict:
         """It reconstruct the data from the extracted data
@@ -156,7 +156,24 @@ class AirfRANSDataSet(DataSet):
             try:
                 np.testing.assert_almost_equal(self.data[data_attrib_name],other.data[data_attrib_name])
             except AssertionError:
+                self.logger.info("%s data not the same for both dataset",data_attrib_name)
                 return False
+
+        try:
+            np.testing.assert_almost_equal(self.extra_data['surface'],other.extra_data['surface'])
+        except AssertionError:
+            self.logger.info("surface data not the same for both dataset")
+            return False
+
+        try:
+            nbTerm=len(self.extra_data["simulation_names"][0])
+            for idTerm in range(nbTerm):
+                term=[term[idTerm] for term in self.extra_data["simulation_names"]]
+                termComp=[term[idTerm] for term in other.extra_data["simulation_names"]]
+                assert term==termComp
+        except AssertionError:
+            self.logger.info("simulation_names data not the same for both dataset")
+            return False
         return True
 
 def save_internal(dataset, path_out):
@@ -169,6 +186,9 @@ def save_internal(dataset, path_out):
     os.mkdir(full_path_out)
     for attr_nm in dataset._attr_names:
         np.savez_compressed(f"{os.path.join(full_path_out, attr_nm)}.npz", data = dataset.data[attr_nm])
+
+    for extra_attr_nm,extra_attr_val in dataset.extra_data.items():
+        np.savez_compressed(f"{os.path.join(full_path_out, extra_attr_nm)}.npz", data = extra_attr_val)
 
 def reload_dataset(path_in,name,task,split,attr_x,attr_y):
     """Load the internal data
@@ -210,6 +230,11 @@ def reload_dataset(path_in,name,task,split,attr_x,attr_y):
         path_this_array = f"{os.path.join(full_path, attr_nm)}.npz"
         dataset_from_data.data[attr_nm] = np.load(path_this_array)["data"]
 
+    extra_data_info = ['simulation_names','surface']
+    for extra_attr_nm in extra_data_info:
+        path_this_array = f"{os.path.join(full_path, extra_attr_nm)}.npz"
+        dataset_from_data.extra_data[extra_attr_nm] = np.load(path_this_array)["data"]
+
     dataset_from_data._infer_sizes()
     return dataset_from_data
 
@@ -228,7 +253,10 @@ def extract_dataset_by_simulations(newdataset_name:str,
     new_data={}
     for data_name in dataset._attr_names:
         new_data[data_name]=dataset.data[data_name][nodes_simulation_indices]
-    new_data['simulation_names']=dataset.data['simulation_names'][simulation_indices]
+    new_extra_data={
+                    'simulation_names':dataset.extra_data['simulation_names'][simulation_indices],
+                    'surface':dataset.extra_data['surface'][nodes_simulation_indices]
+                    }
     new_dataset=type(dataset)(config = dataset.config, 
                              name = newdataset_name,
                              task = dataset._task,
@@ -238,6 +266,7 @@ def extract_dataset_by_simulations(newdataset_name:str,
                              attr_y = dataset._attr_y)
 
     new_dataset.data=new_data
+    new_dataset.extra_data=new_extra_data
     new_dataset._infer_sizes()
     return new_dataset
 
