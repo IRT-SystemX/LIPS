@@ -438,6 +438,7 @@ class TorchSimulator(AugmentedSimulator):
             self.scaler.save(path)
         self._model._save_metadata(path)
         self._save_losses(path)
+        self.params["bench_config_path"] = str(self.params["bench_config_path"])
         with open((path / "config.json"), "w", encoding="utf-8") as f:
             json.dump(obj=self.params, fp=f, indent=4, sort_keys=True, cls=NpEncoder)
 
