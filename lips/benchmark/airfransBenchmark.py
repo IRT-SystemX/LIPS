@@ -28,7 +28,7 @@ from lips.evaluation.airfrans_evaluation import AirfRANSEvaluation
 from lips.utils import NpEncoder
 
 def reynolds_filter(dataset):
-    simulation_names=dataset.data["simulation_names"]
+    simulation_names=dataset.extra_data["simulation_names"]
     reynolds=np.array([float(name.split('_')[2])/1.56e-5 for name,numID in simulation_names])
     simulation_indices=np.where((reynolds>3e6) & (reynolds<5e6))[0]
     return simulation_indices
@@ -227,8 +227,10 @@ class AirfRANSBenchmark(Benchmark):
         predictions = self.augmented_simulator.predict(dataset, **kwargs)
         end_ = time.perf_counter()
         self.augmented_simulator.predict_time = end_ - begin_
+        observation_metadata = dataset.extra_data
         res = self.evaluation.evaluate(observations=dataset.data,
-                                       predictions=predictions
+                                       predictions=predictions,
+                                       observation_metadata=observation_metadata
                                        )
         if save_path:
             if not isinstance(save_path, pathlib.Path):

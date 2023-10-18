@@ -56,10 +56,12 @@ class AirfRANSEvaluation(Evaluation):
         self.data_path = data_path
         self.eval_dict = self.config.get_option("eval_dict")
         self.logger = CustomLogger(__class__.__name__, self.log_path).logger
+        self.observation_metadata = dict()
 
     def evaluate(self,
                  observations: dict,
                  predictions: dict,
+                 observation_metadata : dict,
                  save_path: Union[str, None]=None) -> dict:
         """The main function which evaluates all the required criteria noted in config file
 
@@ -74,6 +76,7 @@ class AirfRANSEvaluation(Evaluation):
         """
         # call the base class for generic evaluations
         super().evaluate(observations, predictions, save_path)
+        self.observation_metadata = observation_metadata
 
         for cat in self.eval_dict.keys():
             self._dispatch_evaluation(cat)
@@ -112,10 +115,10 @@ class AirfRANSEvaluation(Evaluation):
             metric_fun = metric_factory.get_metric(metric_name)
             metric_val_by_name[metric_name] = {}
             for nm_, pred_ in self.predictions.items():
-                if nm_=="simulation_names":
-                    continue
+                self.logger.info("Evaluating metric %s on variable %s", metric_name, nm_)
                 true_ = self.observations[nm_]
                 tmp = metric_fun(true_, pred_)
+
                 if isinstance(tmp, Iterable):
                     metric_val_by_name[metric_name][nm_] = [float(el) for el in tmp]
                     self.logger.info("%s for %s: %s", metric_name, nm_, tmp)
@@ -124,12 +127,20 @@ class AirfRANSEvaluation(Evaluation):
                     self.logger.info("%s for %s: %.2E", metric_name, nm_, tmp)
             self.metrics[self.MACHINE_LEARNING][metric_name] = metric_val_by_name[metric_name]
 
+            #Compute additional metric for pressure at surface
+            true_pressure = self.observations["pressure"]
+            pred_pressure = self.predictions["pressure"]
+            surface_data=self.observation_metadata["surface"]
+            tmp_surface = metric_fun(true_pressure[surface_data.astype(bool)], pred_pressure[surface_data.astype(bool)])
+            self.metrics[self.MACHINE_LEARNING][metric_name+"_surfacic"]={"pressure": float(tmp)}
+            self.logger.info("%s surfacic for %s: %s", metric_name, "pressure", tmp_surface)
+
     def evaluate_physics(self):
         """
         Evaluate physical criteria on given observations
         """
         self.logger.info("Evaluate physical metrics")
-        simulation_names=self.observations["simulation_names"]
+        simulation_names=self.observation_metadata["simulation_names"]
         pred_data = self.from_batch_to_simulation(data=self.predictions,simulation_names=simulation_names)
         true_coefs = []
         coefs = []
