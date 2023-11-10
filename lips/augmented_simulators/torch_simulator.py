@@ -128,7 +128,8 @@ class TorchSimulator(AugmentedSimulator):
         # build the model
         self.build_model()
         self._model.to(self.params["device"])
-
+        
+        loss_func = self._get_loss_func(kwargs)
         optimizer = self._get_optimizer(optimizer=OPTIMIZERS[self.params["optimizer"]["name"]],
                                         **self.params["optimizer"]["params"])
         for metric_ in self.params["metrics"]:
@@ -141,7 +142,7 @@ class TorchSimulator(AugmentedSimulator):
         pbar = tqdm(range(1, self.params["epochs"]+1))
         for epoch in pbar:
             pbar.set_description("Epoch %s" % str(epoch))
-            train_loss_epoch, train_metrics_epoch = self._train_one_epoch(epoch, train_loader, optimizer)
+            train_loss_epoch, train_metrics_epoch = self._train_one_epoch(epoch, train_loader, optimizer, loss_func)
             self.train_losses.append(train_loss_epoch)
             for nm_, arr_ in self.train_metrics.items():
                 arr_.append(train_metrics_epoch[nm_])
@@ -162,7 +163,7 @@ class TorchSimulator(AugmentedSimulator):
         if save_path:
             self.save(save_path)
 
-    def _train_one_epoch(self, epoch:int, train_loader: DataLoader, optimizer: optim.Optimizer) -> set:
+    def _train_one_epoch(self, epoch:int, train_loader: DataLoader, optimizer: optim.Optimizer, loss_func) -> set:
         """
         train the model at a epoch
         """
@@ -170,28 +171,27 @@ class TorchSimulator(AugmentedSimulator):
         torch.set_grad_enabled(True)
 
         total_loss = 0
+        device = self.params["device"]
         metric_dict = dict()
-
         for metric in self.params["metrics"]:
             metric_dict[metric] = 0
 
         pbar=tqdm(train_loader)
         for batch_ in pbar:
             pbar.set_description("Batch within epoch (Training)")
-            architecture_type=self.params["architecture_type"]
-            if architecture_type == "Classical":
-                data, target = batch_
-                loss_func = self._get_loss_func()
-            elif architecture_type == "RNN":
-                data, target, seq_len = batch_
-                loss_func = self._get_loss_func(seq_len)
-            else:
-                raise Exception("Don't know how to train using architecture type %s" % architecture_type )
-            data, target = data.to(self.params["device"]), target.to(self.params["device"])
+            #architecture_type=self.params["architecture_type"]
+            # if architecture_type == "Classical":
+            #     data, target = batch_
+            #     loss_func = self._get_loss_func()
+            # elif architecture_type == "RNN":
+            #     data, target, seq_len = batch_
+            #     loss_func = self._get_loss_func(seq_len)
+            # else:
+            #     raise Exception("Don't know how to train using architecture type %s" % architecture_type )
+            # data, target = data.to(self.params["device"]), target.to(self.params["device"])
             optimizer.zero_grad()
-            # h_0 = self.model.init_hidden(data.size(0))
-            # prediction, _ = self.model(data, h_0)
-            prediction = self._model(data)
+            prediction, target = self._model._do_forward(batch_, device=device)
+            # prediction = self._model(data)
             loss = loss_func(prediction, target)
             loss.backward()
             optimizer.step()
@@ -215,7 +215,7 @@ class TorchSimulator(AugmentedSimulator):
               [f"{metric}: {metric_dict[metric]:.5f}" for metric in self.params["metrics"]])
         return mean_loss, metric_dict
 
-    def _validate(self, val_loader: DataLoader, **kwargs) -> set:
+    def _validate(self, val_loader: DataLoader, loss_func, **kwargs) -> set:
         """function used for validation of the model
 
         It is separated from evaluate function, because it should be called at each epoch during training
@@ -238,6 +238,7 @@ class TorchSimulator(AugmentedSimulator):
         self.params.update(kwargs)
         self._model.eval()
         total_loss = 0
+        device = self.params["device"]
         metric_dict = dict()
         for metric in self.params["metrics"]:
             metric_dict[metric] = 0
@@ -247,21 +248,22 @@ class TorchSimulator(AugmentedSimulator):
             pbar=tqdm(val_loader)
             for batch_ in pbar:
                 pbar.set_description("Batch within epoch (Evaluation)")
-                architecture_type=self.params["architecture_type"]
-                if architecture_type == "Classical":
-                    data, target = batch_
-                    loss_func = self._get_loss_func()
-                elif architecture_type == "RNN":
-                    data, target, seq_len = batch_
-                    loss_func = self._get_loss_func(seq_len)
-                else:
-                    raise Exception("Don't know how to validate using architecture type %s" % architecture_type )
-                data, target = data.to(self.params["device"]), target.to(self.params["device"])
+                # architecture_type=self.params["architecture_type"]
+                # if architecture_type == "Classical":
+                #     data, target = batch_
+                #     loss_func = self._get_loss_func()
+                # elif architecture_type == "RNN":
+                #     data, target, seq_len = batch_
+                #     loss_func = self._get_loss_func(seq_len)
+                # else:
+                #     raise Exception("Don't know how to validate using architecture type %s" % architecture_type )
+                # data, target = data.to(self.params["device"]), target.to(self.params["device"])
                 #h_0 = self.model.init_hidden(data.size(0))
                 #prediction, _ = self.model(data, h_0)
-                prediction = self._model(data)
+                # prediction = self._model(data)
+                prediction, target = self._model._forward(batch_, device)
                 loss = loss_func(prediction, target)
-                total_loss += loss.item()*len(data)
+                total_loss += loss.item()*len(target)
 
                 for metric in self.params["metrics"]:
                     if architecture_type == "Classical":
@@ -304,6 +306,8 @@ class TorchSimulator(AugmentedSimulator):
         predictions = []
         observations = []
         total_loss = 0
+        loss_func = self._get_loss_func(kwargs)
+        device = self.params["device"]
         metric_dict = dict()
         for metric in self.params["metrics"]:
             metric_dict[metric] = 0
@@ -313,20 +317,21 @@ class TorchSimulator(AugmentedSimulator):
             pbar=tqdm(test_loader)
             for batch_ in pbar:
                 pbar.set_description("Batch (Prediction)")
-                architecture_type=self.params["architecture_type"]
-                if architecture_type == "Classical":
-                    data, target = batch_
-                    loss_func = self._get_loss_func()
-                elif architecture_type == "RNN":
-                    data, target, seq_len = batch_
-                    loss_func = self._get_loss_func(seq_len)
-                else:
-                    raise Exception("Don't know how to evaluate using architecture type %s" % architecture_type )
-                data, target = data.to(self.params["device"]), target.to(self.params["device"])
+                # architecture_type=self.params["architecture_type"]
+                # if architecture_type == "Classical":
+                #     data, target = batch_
+                #     loss_func = self._get_loss_func()
+                # elif architecture_type == "RNN":
+                #     data, target, seq_len = batch_
+                #     loss_func = self._get_loss_func(seq_len)
+                # else:
+                #     raise Exception("Don't know how to evaluate using architecture type %s" % architecture_type )
+                # data, target = data.to(self.params["device"]), target.to(self.params["device"])
                 #TODO : for RNN, we need to initialize hidden state, but it should be done inside the model
                 #h_0 = self.model.init_hidden(data.size(0))
                 #prediction, _ = self.model(data, h_0)
-                prediction = self._model(data)
+                # prediction = self._model(data)
+                prediction, target = self._model._forward(batch_, device)                
 
                 if "input_required_for_post_process" in kwargs and kwargs["input_required_for_post_process"]:
                     input_model=data
@@ -344,7 +349,7 @@ class TorchSimulator(AugmentedSimulator):
                     observations.append(target.cpu().data.numpy())
 
                 loss = loss_func(prediction, target)
-                total_loss += loss.item()*len(data)
+                total_loss += loss.item()*len(target)
 
                 for metric in self.params["metrics"]:
                     if architecture_type == "Classical":

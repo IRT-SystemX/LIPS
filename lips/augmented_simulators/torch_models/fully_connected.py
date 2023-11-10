@@ -211,3 +211,29 @@ class TorchFullyConnected(nn.Module):
             res_json = json.load(fp=f)
         self.input_size = res_json["input_size"]
         self.output_size = res_json["output_size"]
+
+    def _do_forward(self, batch, device):
+        """Do the forward step through a batch of data
+
+        This step could be very specific to each augmented simulator as each architecture
+        takes various inputs during the learning procedure. 
+
+        Parameters
+        ----------
+        batch : _type_
+            A batch of data including various information required by an architecture
+        device : _type_
+            the device on which the data should be processed
+
+        Returns
+        -------
+        ``tuple``
+            returns the predictions made by the augmented simulator and also the real targets
+            on which the loss function should be computed
+        """
+        data, target = batch
+        data = data.to(device)
+        target = target.to(device)
+        predictions = self.forward(data)
+        return predictions, target
+    
