@@ -129,7 +129,6 @@ class TorchSimulator(AugmentedSimulator):
         self.build_model()
         self._model.to(self.params["device"])
         
-        loss_func = self._get_loss_func(kwargs)
         optimizer = self._get_optimizer(optimizer=OPTIMIZERS[self.params["optimizer"]["name"]],
                                         **self.params["optimizer"]["params"])
         for metric_ in self.params["metrics"]:
@@ -142,7 +141,7 @@ class TorchSimulator(AugmentedSimulator):
         pbar = tqdm(range(1, self.params["epochs"]+1))
         for epoch in pbar:
             pbar.set_description("Epoch %s" % str(epoch))
-            train_loss_epoch, train_metrics_epoch = self._train_one_epoch(epoch, train_loader, optimizer, loss_func)
+            train_loss_epoch, train_metrics_epoch = self._train_one_epoch(epoch, train_loader, optimizer)
             self.train_losses.append(train_loss_epoch)
             for nm_, arr_ in self.train_metrics.items():
                 arr_.append(train_metrics_epoch[nm_])
@@ -163,7 +162,7 @@ class TorchSimulator(AugmentedSimulator):
         if save_path:
             self.save(save_path)
 
-    def _train_one_epoch(self, epoch:int, train_loader: DataLoader, optimizer: optim.Optimizer, loss_func) -> set:
+    def _train_one_epoch(self, epoch:int, train_loader: DataLoader, optimizer: optim.Optimizer) -> set:
         """
         train the model at a epoch
         """
@@ -191,22 +190,27 @@ class TorchSimulator(AugmentedSimulator):
             # data, target = data.to(self.params["device"]), target.to(self.params["device"])
             optimizer.zero_grad()
             prediction, target = self._model._do_forward(batch_, device=device)
+            loss_func = self._model.get_loss_func(loss_name=self.params["loss"]["name"], **self.params["loss"]["params"])
             # prediction = self._model(data)
             loss = loss_func(prediction, target)
             loss.backward()
             optimizer.step()
-            total_loss += loss.item()*len(data)
+            total_loss += loss.item()*len(target)
             for metric in self.params["metrics"]:
-                if architecture_type == "Classical":
-                    metric_func = LOSSES[metric](reduction="mean")
-                    metric_value = metric_func(prediction, target)
-                    metric_value = metric_value.item()*len(data)
-                    metric_dict[metric] += metric_value
-                elif architecture_type == "RNN":
-                    metric_func = LOSSES[metric](seq_len, self.params["device"], reduction="mean")
-                    metric_value = metric_func(prediction, target)
-                    metric_value = metric_value.item()*len(data)
-                    metric_dict[metric] += metric_value
+                metric_func = self._model.get_loss_func(loss_name=metric, reduction="mean")
+                metric_value = metric_func(prediction, target)
+                metric_value = metric_value.item()*len(target)
+                metric_dict[metric] += metric_value
+                # if architecture_type == "Classical":
+                #     metric_func = LOSSES[metric](reduction="mean")
+                #     metric_value = metric_func(prediction, target)
+                #     metric_value = metric_value.item()*len(data)
+                #     metric_dict[metric] += metric_value
+                # elif architecture_type == "RNN":
+                #     metric_func = LOSSES[metric](seq_len, self.params["device"], reduction="mean")
+                #     metric_value = metric_func(prediction, target)
+                #     metric_value = metric_value.item()*len(data)
+                #     metric_dict[metric] += metric_value
 
         mean_loss = total_loss/len(train_loader.dataset)
         for metric in self.params["metrics"]:
@@ -215,7 +219,7 @@ class TorchSimulator(AugmentedSimulator):
               [f"{metric}: {metric_dict[metric]:.5f}" for metric in self.params["metrics"]])
         return mean_loss, metric_dict
 
-    def _validate(self, val_loader: DataLoader, loss_func, **kwargs) -> set:
+    def _validate(self, val_loader: DataLoader, **kwargs) -> set:
         """function used for validation of the model
 
         It is separated from evaluate function, because it should be called at each epoch during training
@@ -262,20 +266,25 @@ class TorchSimulator(AugmentedSimulator):
                 #prediction, _ = self.model(data, h_0)
                 # prediction = self._model(data)
                 prediction, target = self._model._forward(batch_, device)
+                loss_func = self._model.get_loss_func(loss_name=self.params["loss"]["name"], **self.params["loss"]["params"])
                 loss = loss_func(prediction, target)
                 total_loss += loss.item()*len(target)
 
                 for metric in self.params["metrics"]:
-                    if architecture_type == "Classical":
-                        metric_func = LOSSES[metric](reduction="mean")
-                        metric_value = metric_func(prediction, target)
-                        metric_value = metric_value.item()*len(data)
-                        metric_dict[metric] += metric_value
-                    elif architecture_type == "RNN":
-                        metric_func = LOSSES[metric](seq_len, self.params["device"], reduction="mean")
-                        metric_value = metric_func(prediction, target)
-                        metric_value = metric_value.item()*len(data)
-                        metric_dict[metric] += metric_value
+                    metric_func = self._model.get_loss_func(loss_name=metric, reduction="mean")
+                    metric_value = metric_func(prediction, target)
+                    metric_value = metric_value.item()*len(target)
+                    metric_dict[metric] += metric_value
+                    # if architecture_type == "Classical":
+                    #     metric_func = LOSSES[metric](reduction="mean")
+                    #     metric_value = metric_func(prediction, target)
+                    #     metric_value = metric_value.item()*len(data)
+                    #     metric_dict[metric] += metric_value
+                    # elif architecture_type == "RNN":
+                    #     metric_func = LOSSES[metric](seq_len, self.params["device"], reduction="mean")
+                    #     metric_value = metric_func(prediction, target)
+                    #     metric_value = metric_value.item()*len(data)
+                    #     metric_dict[metric] += metric_value
 
         mean_loss = total_loss/len(val_loader.dataset)
         for metric in self.params["metrics"]:
@@ -333,6 +342,7 @@ class TorchSimulator(AugmentedSimulator):
                 # prediction = self._model(data)
                 prediction, target = self._model._forward(batch_, device)                
 
+                #TODO: get input data when forward using a boolean argument as `return_input: bool=True`
                 if "input_required_for_post_process" in kwargs and kwargs["input_required_for_post_process"]:
                     input_model=data
                     prediction = self._model._post_process_with_input(input_model,prediction)
@@ -352,16 +362,20 @@ class TorchSimulator(AugmentedSimulator):
                 total_loss += loss.item()*len(target)
 
                 for metric in self.params["metrics"]:
-                    if architecture_type == "Classical":
-                        metric_func = LOSSES[metric](reduction="mean")
-                        metric_value = metric_func(prediction, target)
-                        metric_value = metric_value.item()*len(data)
-                        metric_dict[metric] += metric_value
-                    elif architecture_type == "RNN":
-                        metric_func = LOSSES[metric](seq_len, self.params["device"], reduction="mean")
-                        metric_value = metric_func(prediction, target)
-                        metric_value = metric_value.item()*len(data)
-                        metric_dict[metric] += metric_value
+                    metric_func = self._model.get_loss_func(loss_name=metric, reduction="mean")
+                    metric_value = metric_func(prediction, target)
+                    metric_value = metric_value.item()*len(target)
+                    metric_dict[metric] += metric_value
+                    # if architecture_type == "Classical":
+                    #     metric_func = LOSSES[metric](reduction="mean")
+                    #     metric_value = metric_func(prediction, target)
+                    #     metric_value = metric_value.item()*len(data)
+                    #     metric_dict[metric] += metric_value
+                    # elif architecture_type == "RNN":
+                    #     metric_func = LOSSES[metric](seq_len, self.params["device"], reduction="mean")
+                    #     metric_value = metric_func(prediction, target)
+                    #     metric_value = metric_value.item()*len(data)
+                    #     metric_dict[metric] += metric_value
 
         mean_loss = total_loss/len(test_loader.dataset)
         for metric in self.params["metrics"]:
