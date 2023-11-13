@@ -9,10 +9,12 @@ import json
 import numpy as np
 
 import torch
+from torch import Tensor
 from torch import nn
 import torch.nn.functional as F
 from torch.utils.data import TensorDataset, DataLoader
 
+from .utils import LOSSES
 from ...dataset import DataSet
 from ...dataset.scaler import Scaler
 from ...logger import CustomLogger
@@ -86,6 +88,10 @@ class TorchFullyConnected(nn.Module):
         self.fc_layers = None
         self.dropout_layers = None
         self.output_layer = None
+
+        # batch information
+        self._data = None
+        self._target = None
 
         #self.__build_model()
 
@@ -231,9 +237,22 @@ class TorchFullyConnected(nn.Module):
             returns the predictions made by the augmented simulator and also the real targets
             on which the loss function should be computed
         """
-        data, target = batch
-        data = data.to(device)
-        target = target.to(device)
-        predictions = self.forward(data)
-        return predictions, target
+        self._data, self._target = batch
+        self._data = self._data.to(device)
+        self._target = self._target.to(device)
+        predictions = self.forward(self._data)
+        
+        return predictions, self._target
+
+    def get_loss_func(self, loss_name: str, **kwargs) -> Tensor:
+        """
+        Helper to get loss. It is specific to each architecture
+        """
+        # if len(args) > 0:
+        #     # for Masked RNN loss. args[0] is the list of sequence lengths
+        #     loss_func = LOSSES[self.params["loss"]["name"]](args[0], self.params["device"])
+        # else:
+        loss_func = LOSSES[loss_name](**kwargs)
+        
+        return loss_func
     
