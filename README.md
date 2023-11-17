@@ -144,7 +144,7 @@ source venv_lips/bin/activate
 
 ### Install from source
 ```commandline
-git clone https://github.com/Mleyliabadi/LIPS
+git clone https://github.com/IRT-SystemX/LIPS.git
 cd LIPS
 pip3 install -U .
 cd ..
