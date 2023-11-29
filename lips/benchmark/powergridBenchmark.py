@@ -79,7 +79,8 @@ class PowerGridBenchmark(Benchmark):
                          dataset=None,
                          augmented_simulator=None,
                          evaluation=evaluation,
-                         log_path=log_path
+                         log_path=log_path,
+                         **kwargs
                         )
 
         self.is_loaded=False

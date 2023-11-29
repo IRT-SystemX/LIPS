@@ -56,6 +56,7 @@ class Benchmark(ABC):
                  augmented_simulator: Union[AugmentedSimulator, PhysicsSolver, None]=None,
                  evaluation: Evaluation=None,
                  log_path: Union[pathlib.Path, str, None]=None,
+                 **kwargs
                  ):
         self.benchmark_name = benchmark_name
         self.benchmark_path = benchmark_path
@@ -68,7 +69,7 @@ class Benchmark(ABC):
             raise RuntimeError("The configuration file should have `.ini` extension!")
         else:
             self.config = ConfigManager(section_name=benchmark_name, path=config_path)
-
+        self.config.set_options_from_dict(**kwargs)
         # Object of class DataSet contianing datasets for testing
         # It contains the last dataset used for evaluation
         self.dataset = dataset
