@@ -11,6 +11,7 @@ import tempfile
 from tqdm import tqdm
 
 import numpy as np
+import numpy.typing as npt
 from matplotlib import pyplot as plt
 import torch
 from torch import optim
@@ -189,7 +190,7 @@ class TorchSimulator(AugmentedSimulator):
             #     raise Exception("Don't know how to train using architecture type %s" % architecture_type )
             # data, target = data.to(self.params["device"]), target.to(self.params["device"])
             optimizer.zero_grad()
-            prediction, target = self._model._do_forward(batch_, device=device)
+            _, prediction, target = self._model._do_forward(batch_, device=device)
             loss_func = self._model.get_loss_func(loss_name=self.params["loss"]["name"], **self.params["loss"]["params"])
             # prediction = self._model(data)
             loss = loss_func(prediction, target)
@@ -265,7 +266,7 @@ class TorchSimulator(AugmentedSimulator):
                 #h_0 = self.model.init_hidden(data.size(0))
                 #prediction, _ = self.model(data, h_0)
                 # prediction = self._model(data)
-                prediction, target = self._model._forward(batch_, device)
+                _, prediction, target = self._model._do_forward(batch_, device)
                 loss_func = self._model.get_loss_func(loss_name=self.params["loss"]["name"], **self.params["loss"]["params"])
                 loss = loss_func(prediction, target)
                 total_loss += loss.item()*len(target)
@@ -294,13 +295,24 @@ class TorchSimulator(AugmentedSimulator):
 
         return mean_loss, metric_dict
 
-    def predict(self, dataset: DataSet, **kwargs) -> dict:
+    def predict(self, dataset: DataSet, reconstruct_output: bool=True, **kwargs) -> Union[dict, npt.NDArray[np.float64]]:
         """_summary_
 
         Parameters
         ----------
         dataset : DataSet
             test datasets to evaluate
+
+        reconstruct_output: ``bool``
+            Whether to reconstruct the ouput of the model, by default True
+            This should be set to ``True`` if the evaluation is done using the evaluation module 
+            of LIPS platform. To be set to ``False`` for custom predictions and custom evaluations
+
+        Returns
+        -------
+        ``dict``
+            a dictionary including the predictions of the model with keys indicating the variables
+            name that are set in the configuration file as desired ouputs of the model
         """
         super().predict(dataset)
         if "eval_batch_size" in kwargs:
@@ -315,7 +327,7 @@ class TorchSimulator(AugmentedSimulator):
         predictions = []
         observations = []
         total_loss = 0
-        loss_func = self._get_loss_func(kwargs)
+        loss_func = self._model.get_loss_func(loss_name=self.params["loss"]["name"], **self.params["loss"]["params"])
         device = self.params["device"]
         metric_dict = dict()
         for metric in self.params["metrics"]:
@@ -340,13 +352,16 @@ class TorchSimulator(AugmentedSimulator):
                 #h_0 = self.model.init_hidden(data.size(0))
                 #prediction, _ = self.model(data, h_0)
                 # prediction = self._model(data)
-                prediction, target = self._model._forward(batch_, device)                
+                data, prediction, target = self._model._do_forward(batch_, device)
 
                 #TODO: get input data when forward using a boolean argument as `return_input: bool=True`
                 if "input_required_for_post_process" in kwargs and kwargs["input_required_for_post_process"]:
                     input_model=data
                     prediction = self._model._post_process_with_input(input_model,prediction)
                     target = self._model._post_process_with_input(input_model,target)
+                # elif "dataset_required" in kwargs and kwargs["dataset_required"]:
+                #     prediction = self._model._post_process_with_dataset(prediction, batch_.ybus)
+                #     target = self._model._post_process_with_dataset(target, dataset)
                 else:
                     prediction = self._model._post_process(prediction)
                     target = self._model._post_process(target)
@@ -383,12 +398,18 @@ class TorchSimulator(AugmentedSimulator):
         #print(f"Eval:   Avg_Loss: {mean_loss:.5f}",
         #      [f"{metric}: {metric_dict[metric]:.5f}" for metric in self.params["metrics"]])
 
+        #TODO: the output reconstruction should be done if indicated, or to be done by the augmented simulator itself
         predictions = np.concatenate(predictions)
-        predictions = dataset.reconstruct_output(predictions)
-        self._predictions[dataset.name] = predictions
         observations = np.concatenate(observations)
-        self._observations[dataset.name] = dataset.reconstruct_output(observations)
-        return predictions#mean_loss, metric_dict
+        if reconstruct_output:
+            predictions = self._model._reconstruct_output(dataset, predictions)
+            observations = self._model._reconstruct_output(dataset, observations)
+            # predictions = dataset.reconstruct_output(predictions)
+            # observations = dataset.reconstruct(observations)
+        self._predictions[dataset.name] = predictions
+        self._observations[dataset.name] = observations
+        
+        return predictions
 
     def _get_loss_func(self, *args) -> Tensor:
         """
