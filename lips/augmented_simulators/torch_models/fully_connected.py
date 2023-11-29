@@ -7,6 +7,7 @@ from typing import Union
 import json
 
 import numpy as np
+import numpy.typing as npt
 
 import torch
 from torch import Tensor
@@ -174,6 +175,25 @@ class TorchFullyConnected(nn.Module):
         else:
             processed = data
         return processed
+    
+    def _reconstruct_output(self, dataset: DataSet, data: npt.NDArray[np.float64]) -> dict:
+        """Reconstruct the outputs to obtain the desired shape for evaluation
+
+        In the simplest form, this function is implemented in DataSet class. It supposes that the predictions 
+        obtained by the augmented simulator are exactly the same as the one indicated in the configuration file
+
+        However, if some transformations required by each specific model, the extra operations to obtained the
+        desired output shape should be done in this function.
+
+        Parameters
+        ----------
+        dataset : DataSet
+            An object of the `DataSet` class 
+        data : npt.NDArray[np.float64]
+            the data which should be reconstructed to the desired form
+        """
+        data_rec = dataset.reconstruct_output(data)
+        return data_rec
 
     def _infer_size(self, dataset: DataSet):
         """Infer the size of the model
@@ -218,7 +238,7 @@ class TorchFullyConnected(nn.Module):
         self.input_size = res_json["input_size"]
         self.output_size = res_json["output_size"]
 
-    def _do_forward(self, batch, device):
+    def _do_forward(self, batch, device, return_input: bool=False):
         """Do the forward step through a batch of data
 
         This step could be very specific to each augmented simulator as each architecture
@@ -242,6 +262,8 @@ class TorchFullyConnected(nn.Module):
         self._target = self._target.to(device)
         predictions = self.forward(self._data)
         
+        if return_input:
+            return self._data, predictions, self._target
         return predictions, self._target
 
     def get_loss_func(self, loss_name: str, **kwargs) -> Tensor:
