@@ -78,6 +78,12 @@ class ConfigManager(object):
         if option is not None:
             option = self._str_to_list(option)
         return option
+    
+    def set_options_from_dict(self, scenario_name: Union[str, None]=None, **option_dict):
+        for key_, item_ in option_dict.items():
+            self.edit_config_option(option=key_,
+                                    value=str(item_),
+                                    scenario_name=scenario_name)
 
     def get_options_dict(self):
         """
