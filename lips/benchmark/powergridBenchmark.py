@@ -285,7 +285,7 @@ class PowerGridBenchmark(Benchmark):
                                                        save_path=save_path,
                                                        save_predictions=save_predictions,
                                                        **kwargs)
-            res[nm_] = copy.deepcopy(tmp)
+            res[nm_] = tmp
 
         return res
 
