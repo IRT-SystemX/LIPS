@@ -232,42 +232,31 @@ class TorchGCN(nn.Module):
                                       device=self.device)
         #data_loader = DataLoader(torch_dataset, batch_size=batch_size, shuffle=self.params["shuffle"])
         return data_loader
-
-    # def _post_process(self, data):
-    #     if self.scaler is not None:
-    #         try:
-    #             processed = self.scaler.inverse_transform(data)
-    #         except TypeError:
-    #             processed = self.scaler.inverse_transform(data.cpu())
-    #     else:
-    #         processed = data
-        
-    #     return processed
     
-    def _post_process_inplace(self, predictions):
-        """
-        Post process if the conversion of theta_bus to active powers should happen here
+    # def _post_process_inplace(self, predictions):
+    #     """
+    #     Post process if the conversion of theta_bus to active powers should happen here
 
-        Parameters
-        ----------
-        predictions : _type_
-            _description_
+    #     Parameters
+    #     ----------
+    #     predictions : _type_
+    #         _description_
 
-        Returns
-        -------
-        _type_
-            _description_
-        """
-        outputs = []
-        obs = self._get_obs()
-        p_ors_pred, p_exs_pred = get_all_active_powers(self._batch,
-                                                       obs,
-                                                       theta_bus=predictions.view(-1, 14).cpu())
-        #outputs.append(dataset.data["theta_or"])
-        #outputs.append(dataset.data["theta_ex"])
-        outputs.append(p_ors_pred)
-        outputs.append(p_exs_pred)
-        return outputs
+    #     Returns
+    #     -------
+    #     _type_
+    #         _description_
+    #     """
+    #     outputs = []
+    #     obs = self._get_obs()
+    #     p_ors_pred, p_exs_pred = get_all_active_powers(self._batch,
+    #                                                    obs,
+    #                                                    theta_bus=predictions.view(-1, 14).cpu())
+    #     #outputs.append(dataset.data["theta_or"])
+    #     #outputs.append(dataset.data["theta_ex"])
+    #     outputs.append(p_ors_pred)
+    #     outputs.append(p_exs_pred)
+    #     return outputs
     
     def _post_process(self, data):
         if self.scaler is not None:
@@ -352,7 +341,7 @@ class TorchGCN(nn.Module):
         self.input_size = res_json["input_size"]
         self.output_size = res_json["output_size"]
 
-    def _do_forward(self, batch, device, return_input: bool=False):
+    def _do_forward(self, batch, device):
         """Do the forward step through a batch of data
 
         This step could be very specific to each augmented simulator as each architecture

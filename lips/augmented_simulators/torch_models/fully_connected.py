@@ -238,7 +238,7 @@ class TorchFullyConnected(nn.Module):
         self.input_size = res_json["input_size"]
         self.output_size = res_json["output_size"]
 
-    def _do_forward(self, batch, device, return_input: bool=False):
+    def _do_forward(self, batch, device):
         """Do the forward step through a batch of data
 
         This step could be very specific to each augmented simulator as each architecture
@@ -262,9 +262,7 @@ class TorchFullyConnected(nn.Module):
         self._target = self._target.to(device)
         predictions = self.forward(self._data)
         
-        if return_input:
-            return self._data, predictions, self._target
-        return predictions, self._target
+        return self._data, predictions, self._target
 
     def get_loss_func(self, loss_name: str, **kwargs) -> Tensor:
         """
