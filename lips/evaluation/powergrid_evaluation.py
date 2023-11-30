@@ -18,6 +18,7 @@ from ..config import ConfigManager
 from ..physical_simulator.dcApproximationAS import DCApproximationAS
 from ..metrics.power_grid import physics_compliances
 from ..metrics.ml_metrics import metrics
+from ..metrics.ml_metrics import external_metrics
 
 class PowerGridEvaluation(Evaluation):
     """Evaluation of the power grid specific metrics
