@@ -132,7 +132,7 @@ class AirfRANSEvaluation(Evaluation):
             pred_pressure = self.predictions["pressure"]
             surface_data=self.observation_metadata["surface"]
             tmp_surface = metric_fun(true_pressure[surface_data.astype(bool)], pred_pressure[surface_data.astype(bool)])
-            self.metrics[self.MACHINE_LEARNING][metric_name+"_surfacic"]={"pressure": float(tmp)}
+            self.metrics[self.MACHINE_LEARNING][metric_name+"_surfacic"]={"pressure": float(tmp_surface)}
             self.logger.info("%s surfacic for %s: %s", metric_name, "pressure", tmp_surface)
 
     def evaluate_physics(self):
