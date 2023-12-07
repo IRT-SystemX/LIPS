@@ -239,7 +239,7 @@ class LeapNet(TensorflowSimulator):
                             dtype=np.float32))
         return tau
 
-    def write_history(self, history):
+    def write_history(self, history, val_dataset=None):
         """write the history of the training
 
         It should have its own history writer as it includes multiple variables
@@ -252,7 +252,10 @@ class LeapNet(TensorflowSimulator):
         hist = history.history
 
         self.train_losses = hist["loss"]
-        self.val_losses = hist["val_loss"]
+        if val_dataset is not None:
+            self.val_losses = hist["val_loss"]
+        else:
+            self.val_losses = None
         metrics=self.params["metrics"]
 
         for metric in metrics:#["mae"]:
@@ -263,9 +266,9 @@ class LeapNet(TensorflowSimulator):
                     tmp_val.append(hist[key])
                 if (metric in key) and ("val" not in key):
                     tmp_train.append(hist[key])
-            self.val_metrics[metric] = np.vstack(tmp_val).mean(axis=0)
+            if val_dataset is not None:
+                self.val_metrics[metric] = np.vstack(tmp_val).mean(axis=0)
             self.train_metrics[metric] = np.vstack(tmp_train).mean(axis=0)
-
 
     def _save_model(self, path: str):
         if self._leap_net_model is not None:
