@@ -174,7 +174,6 @@ class TorchSimulator(AugmentedSimulator):
         torch.set_grad_enabled(True)
 
         total_loss = 0
-        device = self.params["device"]
         metric_dict = dict()
         for metric in self.params["metrics"]:
             metric_dict[metric] = 0
@@ -184,7 +183,7 @@ class TorchSimulator(AugmentedSimulator):
         #for batch_ in pbar:
             #pbar.set_description("Batch within epoch (Training)")
             optimizer.zero_grad()
-            _, prediction, target = self._model._do_forward(batch_, device=device, **kwargs)
+            _, prediction, target = self._model._do_forward(batch_, **kwargs)
             loss_func = self._model.get_loss_func(loss_name=self.params["loss"]["name"], **self.params["loss"]["params"])
             loss = loss_func(prediction, target)
             loss.backward()
@@ -227,7 +226,6 @@ class TorchSimulator(AugmentedSimulator):
         self.params.update(kwargs)
         self._model.eval()
         total_loss = 0
-        device = self.params["device"]
         metric_dict = dict()
         for metric in self.params["metrics"]:
             metric_dict[metric] = 0
@@ -238,7 +236,7 @@ class TorchSimulator(AugmentedSimulator):
             #for batch_ in pbar:
             for batch_ in val_loader:
                 #pbar.set_description("Batch within epoch (Evaluation)")
-                _, prediction, target = self._model._do_forward(batch_, device=device, **kwargs)
+                _, prediction, target = self._model._do_forward(batch_, **kwargs)
                 loss_func = self._model.get_loss_func(loss_name=self.params["loss"]["name"], **self.params["loss"]["params"])
                 loss = loss_func(prediction, target)
                 total_loss += loss.item()*len(target)
@@ -289,7 +287,6 @@ class TorchSimulator(AugmentedSimulator):
         observations = []
         total_loss = 0
         loss_func = self._model.get_loss_func(loss_name=self.params["loss"]["name"], **self.params["loss"]["params"])
-        device = self.params["device"]
         metric_dict = dict()
         for metric in self.params["metrics"]:
             metric_dict[metric] = 0
@@ -300,7 +297,7 @@ class TorchSimulator(AugmentedSimulator):
             #for batch_ in pbar:
             for batch_ in test_loader:
                 #pbar.set_description("Batch (Prediction)")
-                data, prediction, target = self._model._do_forward(batch_, device=device, **kwargs)
+                data, prediction, target = self._model._do_forward(batch_, **kwargs)
                 
                 if "input_required_for_post_process" in kwargs and kwargs["input_required_for_post_process"]:
                     input_model=data
