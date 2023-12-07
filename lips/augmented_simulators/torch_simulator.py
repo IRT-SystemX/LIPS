@@ -120,15 +120,17 @@ class TorchSimulator(AugmentedSimulator):
         self._model.params.update(kwargs)
         super().train(train_dataset, val_dataset)
 
-        train_loader = self._model.process_dataset(train_dataset, training=True)
+        train_loader = self._model.process_dataset(train_dataset, training=True, **kwargs)
         if val_dataset is not None:
-            val_loader = self._model.process_dataset(val_dataset, training=False)
+            val_loader = self._model.process_dataset(val_dataset, training=False, **kwargs)
         else:
             val_loader = None
 
         # build the model
         self.build_model()
         self._model.to(self.params["device"])
+        dtype = kwargs.get("dtype", torch.float32)
+        self._model.to(dtype)
         
         optimizer = self._get_optimizer(optimizer=OPTIMIZERS[self.params["optimizer"]["name"]],
                                         **self.params["optimizer"]["params"])
@@ -139,10 +141,11 @@ class TorchSimulator(AugmentedSimulator):
 
         self.logger.info("Training of {%s} started", self.name)
         #losses, elapsed_time = train_model(self.model, data_loaders=data)
-        pbar = tqdm(range(1, self.params["epochs"]+1))
-        for epoch in pbar:
-            pbar.set_description("Epoch %s" % str(epoch))
-            train_loss_epoch, train_metrics_epoch = self._train_one_epoch(epoch, train_loader, optimizer)
+        #pbar = tqdm(range(1, self.params["epochs"]+1))
+        #for epoch in pbar:
+        for epoch in range(self.params["epochs"]):
+            #pbar.set_description("Epoch %s" % str(epoch))
+            train_loss_epoch, train_metrics_epoch = self._train_one_epoch(epoch, train_loader, optimizer, **kwargs)
             self.train_losses.append(train_loss_epoch)
             for nm_, arr_ in self.train_metrics.items():
                 arr_.append(train_metrics_epoch[nm_])
@@ -163,7 +166,7 @@ class TorchSimulator(AugmentedSimulator):
         if save_path:
             self.save(save_path)
 
-    def _train_one_epoch(self, epoch:int, train_loader: DataLoader, optimizer: optim.Optimizer) -> set:
+    def _train_one_epoch(self, epoch:int, train_loader: DataLoader, optimizer: optim.Optimizer, **kwargs) -> set:
         """
         train the model at a epoch
         """
@@ -176,23 +179,24 @@ class TorchSimulator(AugmentedSimulator):
         for metric in self.params["metrics"]:
             metric_dict[metric] = 0
 
-        pbar=tqdm(train_loader)
-        for batch_ in pbar:
-            pbar.set_description("Batch within epoch (Training)")
+        #pbar=tqdm(train_loader)
+        for batch_ in train_loader:
+        #for batch_ in pbar:
+            #pbar.set_description("Batch within epoch (Training)")
             optimizer.zero_grad()
-            _, prediction, target = self._model._do_forward(batch_, device=device)
+            _, prediction, target = self._model._do_forward(batch_, device=device, **kwargs)
             loss_func = self._model.get_loss_func(loss_name=self.params["loss"]["name"], **self.params["loss"]["params"])
             loss = loss_func(prediction, target)
             loss.backward()
             optimizer.step()
-            total_loss += loss.item()*len(target)
+            total_loss += (loss*len(target))
             for metric in self.params["metrics"]:
                 metric_func = self._model.get_loss_func(loss_name=metric, reduction="mean")
                 metric_value = metric_func(prediction, target)
                 metric_value = metric_value.item()*len(target)
                 metric_dict[metric] += metric_value
 
-        mean_loss = total_loss/len(train_loader.dataset)
+        mean_loss = total_loss.item()/len(train_loader.dataset)
         for metric in self.params["metrics"]:
             metric_dict[metric] /= len(train_loader.dataset)
         print(f"Train Epoch: {epoch}   Avg_Loss: {mean_loss:.5f}",
@@ -229,10 +233,11 @@ class TorchSimulator(AugmentedSimulator):
 
         with torch.no_grad():
 
-            pbar=tqdm(val_loader)
-            for batch_ in pbar:
-                pbar.set_description("Batch within epoch (Evaluation)")
-                _, prediction, target = self._model._do_forward(batch_, device)
+            #pbar=tqdm(val_loader)
+            #for batch_ in pbar:
+            for batch_ in val_loader:
+                #pbar.set_description("Batch within epoch (Evaluation)")
+                _, prediction, target = self._model._do_forward(batch_, device=device, **kwargs)
                 loss_func = self._model.get_loss_func(loss_name=self.params["loss"]["name"], **self.params["loss"]["params"])
                 loss = loss_func(prediction, target)
                 total_loss += loss.item()*len(target)
@@ -251,7 +256,10 @@ class TorchSimulator(AugmentedSimulator):
 
         return mean_loss, metric_dict
 
-    def predict(self, dataset: DataSet, reconstruct_output: bool=True, **kwargs) -> Union[dict, npt.NDArray[np.float64]]:
+    def predict(self,
+                dataset: DataSet,
+                reconstruct_output: bool=True,
+                **kwargs) -> Union[dict, npt.NDArray[np.float64]]:
         """_summary_
 
         Parameters
@@ -275,7 +283,7 @@ class TorchSimulator(AugmentedSimulator):
             self.params["eval_batch_size"] = kwargs["eval_batch_size"]
             self._model.params["eval_batch_size"] = kwargs["eval_batch_size"]
 
-        test_loader = self._model.process_dataset(dataset, training=False)
+        test_loader = self._model.process_dataset(dataset, training=False, **kwargs)
         # activate the evaluation mode
         self._model.eval()
         predictions = []
@@ -289,10 +297,11 @@ class TorchSimulator(AugmentedSimulator):
 
         total_time = 0
         with torch.no_grad():
-            pbar=tqdm(test_loader)
-            for batch_ in pbar:
-                pbar.set_description("Batch (Prediction)")
-                data, prediction, target = self._model._do_forward(batch_, device)
+            #pbar=tqdm(test_loader)
+            #for batch_ in pbar:
+            for batch_ in test_loader:
+                #pbar.set_description("Batch (Prediction)")
+                data, prediction, target = self._model._do_forward(batch_, device=device, **kwargs)
                 
                 if "input_required_for_post_process" in kwargs and kwargs["input_required_for_post_process"]:
                     input_model=data
