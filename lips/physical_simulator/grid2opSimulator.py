@@ -163,6 +163,10 @@ class Grid2opSimulator(PhysicalSimulator):
             if check:
                 done=True
 
+            check = self.__any_isolated_nodes(self._simulator)
+            if check:
+                done = True
+
             self._time_powerflow += _diff_time_pf
             self.comp_time += _diff_time_cp
 
@@ -289,6 +293,21 @@ class Grid2opSimulator(PhysicalSimulator):
         """
         check = False
         if any(np.isnan(obs.p_or)):
+            check = True
+        return check
+    
+    def __any_isolated_nodes(self, env):
+        """verify if there are isolated nodes in the graph
+
+        Parameters
+        ----------
+        env : _type_
+            _description_
+        """
+        check = False
+        grid = env.backend._grid
+        Sbus = grid.get_Sbus()
+        if len(Sbus) < env.n_sub:
             check = True
         return check
     

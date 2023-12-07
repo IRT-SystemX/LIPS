@@ -270,6 +270,7 @@ class TorchFullyConnected(nn.Module):
         self._data, self._target = batch
         self._data = self._data.to(device, non_blocking=non_blocking)
         self._target = self._target.to(device, non_blocking=non_blocking)
+
         predictions = self.forward(self._data)
         
         return self._data, predictions, self._target

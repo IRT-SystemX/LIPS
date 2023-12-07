@@ -190,6 +190,7 @@ class TorchSimulator(AugmentedSimulator):
             loss.backward()
             optimizer.step()
             total_loss += (loss*len(target))
+
             for metric in self.params["metrics"]:
                 metric_func = self._model.get_loss_func(loss_name=metric, reduction="mean")
                 metric_value = metric_func(prediction, target)
@@ -256,10 +257,7 @@ class TorchSimulator(AugmentedSimulator):
 
         return mean_loss, metric_dict
 
-    def predict(self,
-                dataset: DataSet,
-                reconstruct_output: bool=True,
-                **kwargs) -> Union[dict, npt.NDArray[np.float64]]:
+    def predict(self, dataset: DataSet, reconstruct_output: bool=True, **kwargs) -> Union[dict, npt.NDArray[np.float64]]:
         """_summary_
 
         Parameters
@@ -284,6 +282,7 @@ class TorchSimulator(AugmentedSimulator):
             self._model.params["eval_batch_size"] = kwargs["eval_batch_size"]
 
         test_loader = self._model.process_dataset(dataset, training=False, **kwargs)
+        
         # activate the evaluation mode
         self._model.eval()
         predictions = []
