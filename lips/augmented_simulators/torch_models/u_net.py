@@ -16,18 +16,20 @@ from typing import Union
 import json
 
 import numpy as np
+import numpy.typing as npt
 
+import torch
+from torch import Tensor
+import torch.nn as nn
+import torch.nn.functional as F
+from torch.utils.data import TensorDataset, DataLoader
+
+from .utils import LOSSES
 from ...dataset import DataSet
 from ...dataset.scaler import Scaler
 from ...logger import CustomLogger
 from ...config import ConfigManager
 from ...utils import NpEncoder
-
-
-import torch
-import torch.nn as nn
-import torch.nn.functional as F
-from torch.utils.data import TensorDataset, DataLoader
 
 #Credits goes to https://github.com/milesial/Pytorch-UNet
 
@@ -220,6 +222,10 @@ class TorchUnet(nn.Module):
         self.n_channels = None if kwargs.get("input_channel_size") is None else kwargs["input_channel_size"]
         self.n_classes = None if kwargs.get("output_channel_size") is None else kwargs["output_channel_size"]
 
+        # batch information
+        self._data = None
+        self._target = None
+
 
     def build_model(self):
         """Build the model flow
@@ -256,7 +262,7 @@ class TorchUnet(nn.Module):
         logits = self.outc(x)
         return logits
 
-    def process_dataset(self, dataset: DataSet, training: bool):
+    def process_dataset(self, dataset: DataSet, training: bool, **kwargs):
         """process the datasets for training and evaluation
 
         This function transforms all the dataset into something that can be used by the neural network (for example)
@@ -273,6 +279,10 @@ class TorchUnet(nn.Module):
         DataLoader
             dataloader
         """
+        pin_memory = kwargs.get("pin_memory", True)
+        num_workers = kwargs.get("num_workers", None)
+        dtype = kwargs.get("dtype", torch.float32)
+
         if training:
             self._infer_size(dataset)
             batch_size = self.params["train_batch_size"]
@@ -302,8 +312,8 @@ class TorchUnet(nn.Module):
             if self.scaler is not None:
                 extract_x, extract_y = self.scaler.transform(extract_x, extract_y)
 
-        torch_dataset = TensorDataset(torch.from_numpy(extract_x).float(), torch.from_numpy(extract_y).float())
-        data_loader = DataLoader(torch_dataset, batch_size=batch_size, shuffle=self.params["shuffle"])
+        torch_dataset = TensorDataset(torch.tensor(extract_x, dtype=dtype), torch.tensor(extract_y, dtype=dtype))
+        data_loader = DataLoader(torch_dataset, batch_size=batch_size, shuffle=self.params["shuffle"], pin_memory=pin_memory, num_workers=num_workers)
         return data_loader
 
     def _post_process(self, data:torch.tensor):
@@ -337,6 +347,67 @@ class TorchUnet(nn.Module):
         """
         *dim_inputs, self.n_classes = dataset.get_sizes()
         self.n_channels = np.sum(dim_inputs)
+
+    def _reconstruct_output(self, dataset: DataSet, data: npt.NDArray[np.float64]) -> dict:
+        """Reconstruct the outputs to obtain the desired shape for evaluation
+
+        In the simplest form, this function is implemented in DataSet class. It supposes that the predictions 
+        obtained by the augmented simulator are exactly the same as the one indicated in the configuration file
+
+        However, if some transformations required by each specific model, the extra operations to obtained the
+        desired output shape should be done in this function.
+
+        Parameters
+        ----------
+        dataset : DataSet
+            An object of the `DataSet` class 
+        data : npt.NDArray[np.float64]
+            the data which should be reconstructed to the desired form
+        """
+        data_rec = dataset.reconstruct_output(data)
+        return data_rec
+    
+    def _do_forward(self, batch, **kwargs):
+        """Do the forward step through a batch of data
+
+        This step could be very specific to each augmented simulator as each architecture
+        takes various inputs during the learning procedure. 
+
+        Parameters
+        ----------
+        batch : _type_
+            A batch of data including various information required by an architecture
+        device : _type_
+            the device on which the data should be processed
+
+        Returns
+        -------
+        ``tuple``
+            returns the predictions made by the augmented simulator and also the real targets
+            on which the loss function should be computed
+        """
+        non_blocking = kwargs.get("non_blocking", True)
+        device = self.params.get("device", "cpu")
+
+        self._data, self._target = batch
+        self._data = self._data.to(device, non_blocking=non_blocking)
+        self._target = self._target.to(device, non_blocking=non_blocking)
+
+        predictions = self.forward(self._data)
+        
+        return self._data, predictions, self._target
+
+    def get_loss_func(self, loss_name: str, **kwargs) -> Tensor:
+        """
+        Helper to get loss. It is specific to each architecture
+        """
+        # if len(args) > 0:
+        #     # for Masked RNN loss. args[0] is the list of sequence lengths
+        #     loss_func = LOSSES[self.params["loss"]["name"]](args[0], self.params["device"])
+        # else:
+        loss_func = LOSSES[loss_name](**kwargs)
+        
+        return loss_func
 
     def get_metadata(self):
         """Retrieve metadata

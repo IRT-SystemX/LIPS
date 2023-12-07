@@ -186,7 +186,7 @@ class TorchGCN(nn.Module):
         out = self.output_layer(out)
         return out
 
-    def process_dataset(self, dataset: DataSet, training: bool):
+    def process_dataset(self, dataset: DataSet, training: bool, **kwargs):
         """process the datasets for training and evaluation
 
         This function transforms all the dataset into something that can be used by the neural network (for example)
@@ -341,7 +341,7 @@ class TorchGCN(nn.Module):
         self.input_size = res_json["input_size"]
         self.output_size = res_json["output_size"]
 
-    def _do_forward(self, batch, device):
+    def _do_forward(self, batch, **kwargs):
         """Do the forward step through a batch of data
 
         This step could be very specific to each augmented simulator as each architecture
