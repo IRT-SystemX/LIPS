@@ -110,7 +110,7 @@ class TensorflowSimulator(AugmentedSimulator):
                                            batch_size=self.params["train_batch_size"],
                                            shuffle=self.params["shuffle"])
         self.logger.info("Training of {%s} finished", self.name)
-        self.write_history(history_callback)
+        self.write_history(history_callback, val_dataset)
         self.trained = True
         if save_path is not None:
             self.save(save_path)
@@ -321,7 +321,7 @@ class TensorflowSimulator(AugmentedSimulator):
             show_layer_activations=False,
         )
 
-    def write_history(self, history: dict):
+    def write_history(self, history: dict, val_dataset=None):
         """write the history of the training
 
         Parameters
@@ -330,11 +330,13 @@ class TensorflowSimulator(AugmentedSimulator):
             the history of the training
         """
         self.train_losses = history.history["loss"]
-        self.val_losses = history.history["val_loss"]
+        if val_dataset is not None:
+            self.val_losses = history.history["val_loss"]
 
         for metric in self.params["metrics"]:
             self.train_metrics[metric] = history.history[metric]
-            self.val_metrics[metric] = history.history["val_" + metric]
+            if val_dataset is not None:
+                self.val_metrics[metric] = history.history["val_" + metric]
 
     def count_parameters(self):
         """count the number of parameters of the model
