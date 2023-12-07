@@ -246,7 +246,7 @@ class TorchFullyConnected(nn.Module):
         self.input_size = res_json["input_size"]
         self.output_size = res_json["output_size"]
 
-    def _do_forward(self, batch, device: str="cpu", **kwargs):
+    def _do_forward(self, batch, **kwargs):
         """Do the forward step through a batch of data
 
         This step could be very specific to each augmented simulator as each architecture
@@ -266,7 +266,7 @@ class TorchFullyConnected(nn.Module):
             on which the loss function should be computed
         """
         non_blocking = kwargs.get("non_blocking", True)
-
+        device = self.params.get("device", "cpu")
         self._data, self._target = batch
         self._data = self._data.to(device, non_blocking=non_blocking)
         self._target = self._target.to(device, non_blocking=non_blocking)
