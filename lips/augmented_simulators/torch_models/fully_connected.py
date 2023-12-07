@@ -122,7 +122,7 @@ class TorchFullyConnected(nn.Module):
         out = self.output_layer(out)
         return out
 
-    def process_dataset(self, dataset: DataSet, training: bool):
+    def process_dataset(self, dataset: DataSet, training: bool, **kwargs):
         """process the datasets for training and evaluation
 
         This function transforms all the dataset into something that can be used by the neural network (for example)
@@ -141,6 +141,10 @@ class TorchFullyConnected(nn.Module):
         DataLoader
             _description_
         """
+        pin_memory = kwargs.get("pin_memory", True)
+        num_workers = kwargs.get("num_workers", None)
+        dtype = kwargs.get("dtype", torch.float32)
+
         if training:
             self._infer_size(dataset)
             batch_size = self.params["train_batch_size"]
@@ -153,8 +157,12 @@ class TorchFullyConnected(nn.Module):
             if self.scaler is not None:
                 extract_x, extract_y = self.scaler.transform(extract_x, extract_y)
 
-        torch_dataset = TensorDataset(torch.from_numpy(extract_x).float(), torch.from_numpy(extract_y).float())
-        data_loader = DataLoader(torch_dataset, batch_size=batch_size, shuffle=self.params["shuffle"])
+        torch_dataset = TensorDataset(torch.tensor(extract_x, dtype=dtype), torch.tensor(extract_y, dtype=dtype))
+        if num_workers is None:
+            data_loader = DataLoader(torch_dataset, batch_size=batch_size, shuffle=self.params["shuffle"], pin_memory=pin_memory)
+        else:
+            data_loader = DataLoader(torch_dataset, batch_size=batch_size, shuffle=self.params["shuffle"], pin_memory=pin_memory, num_workers=num_workers)
+        #data_loader = DataLoader(torch_dataset, batch_size=batch_size, shuffle=self.params["shuffle"])
         return data_loader
 
     def _post_process_with_input(self,input_model,data):
@@ -238,7 +246,7 @@ class TorchFullyConnected(nn.Module):
         self.input_size = res_json["input_size"]
         self.output_size = res_json["output_size"]
 
-    def _do_forward(self, batch, device):
+    def _do_forward(self, batch, device: str="cpu", **kwargs):
         """Do the forward step through a batch of data
 
         This step could be very specific to each augmented simulator as each architecture
@@ -257,9 +265,12 @@ class TorchFullyConnected(nn.Module):
             returns the predictions made by the augmented simulator and also the real targets
             on which the loss function should be computed
         """
+        non_blocking = kwargs.get("non_blocking", True)
+
         self._data, self._target = batch
-        self._data = self._data.to(device)
-        self._target = self._target.to(device)
+        self._data = self._data.to(device, non_blocking=non_blocking)
+        self._target = self._target.to(device, non_blocking=non_blocking)
+
         predictions = self.forward(self._data)
         
         return self._data, predictions, self._target
