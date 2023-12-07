@@ -87,20 +87,19 @@ class TensorflowSimulator(AugmentedSimulator):
         super().train(train_dataset, val_dataset)
         self.params.update(kwargs)
         processed_x, processed_y = self.process_dataset(train_dataset, training=True)
+        
         if val_dataset is not None:
             processed_x_val, processed_y_val = self.process_dataset(val_dataset, training=False)
+            validation_data = (processed_x_val, processed_y_val)
+        else:
+            validation_data = None
 
         # init the model
         self.build_model()
 
         self._model.compile(optimizer=self._optimizer,
                             loss=self.params["loss"]["name"],
-                            metrics=self.params["metrics"])
-
-        if val_dataset is not None:
-            validation_data = (processed_x_val, processed_y_val)
-        else:
-            validation_data = None
+                            metrics=self.params["metrics"])        
 
         self.logger.info("Training of {%s} started", self.name)
         history_callback = self._model.fit(x=processed_x,
@@ -110,7 +109,7 @@ class TensorflowSimulator(AugmentedSimulator):
                                            batch_size=self.params["train_batch_size"],
                                            shuffle=self.params["shuffle"])
         self.logger.info("Training of {%s} finished", self.name)
-        self.write_history(history_callback, val_dataset)
+        self.write_history(history=history_callback, val_dataset=validation_data)
         self.trained = True
         if save_path is not None:
             self.save(save_path)
