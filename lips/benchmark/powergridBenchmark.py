@@ -79,7 +79,8 @@ class PowerGridBenchmark(Benchmark):
                          dataset=None,
                          augmented_simulator=None,
                          evaluation=evaluation,
-                         log_path=log_path
+                         log_path=log_path,
+                         **kwargs
                         )
 
         self.is_loaded=False
@@ -284,7 +285,7 @@ class PowerGridBenchmark(Benchmark):
                                                        save_path=save_path,
                                                        save_predictions=save_predictions,
                                                        **kwargs)
-            res[nm_] = copy.deepcopy(tmp)
+            res[nm_] = tmp
 
         return res
 

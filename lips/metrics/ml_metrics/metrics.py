@@ -8,15 +8,6 @@
 
 from ...evaluation.utils import metric_factory
 
-try:
-    from leap_net.metrics import mape_quantile
-    metric_factory.register_metric("MAPE_90_avg", mape_quantile)
-    metric_factory.register_metric("MAPE_90", lambda y_true, y_pred: mape_quantile(y_true=y_true,
-                                                                                   y_pred=y_pred,
-                                                                                   multioutput="raw_values"))
-except ImportError as exc_:
-    pass
-
 from .normalized_mean_squared_error import normalized_mean_squared_error
 from .mean_squared_error import mean_squared_error 
 from .mean_absolute_error import mean_absolute_error 

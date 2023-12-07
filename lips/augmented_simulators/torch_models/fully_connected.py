@@ -7,12 +7,15 @@ from typing import Union
 import json
 
 import numpy as np
+import numpy.typing as npt
 
 import torch
+from torch import Tensor
 from torch import nn
 import torch.nn.functional as F
 from torch.utils.data import TensorDataset, DataLoader
 
+from .utils import LOSSES
 from ...dataset import DataSet
 from ...dataset.scaler import Scaler
 from ...logger import CustomLogger
@@ -86,6 +89,10 @@ class TorchFullyConnected(nn.Module):
         self.fc_layers = None
         self.dropout_layers = None
         self.output_layer = None
+
+        # batch information
+        self._data = None
+        self._target = None
 
         #self.__build_model()
 
@@ -168,6 +175,25 @@ class TorchFullyConnected(nn.Module):
         else:
             processed = data
         return processed
+    
+    def _reconstruct_output(self, dataset: DataSet, data: npt.NDArray[np.float64]) -> dict:
+        """Reconstruct the outputs to obtain the desired shape for evaluation
+
+        In the simplest form, this function is implemented in DataSet class. It supposes that the predictions 
+        obtained by the augmented simulator are exactly the same as the one indicated in the configuration file
+
+        However, if some transformations required by each specific model, the extra operations to obtained the
+        desired output shape should be done in this function.
+
+        Parameters
+        ----------
+        dataset : DataSet
+            An object of the `DataSet` class 
+        data : npt.NDArray[np.float64]
+            the data which should be reconstructed to the desired form
+        """
+        data_rec = dataset.reconstruct_output(data)
+        return data_rec
 
     def _infer_size(self, dataset: DataSet):
         """Infer the size of the model
@@ -211,3 +237,42 @@ class TorchFullyConnected(nn.Module):
             res_json = json.load(fp=f)
         self.input_size = res_json["input_size"]
         self.output_size = res_json["output_size"]
+
+    def _do_forward(self, batch, device):
+        """Do the forward step through a batch of data
+
+        This step could be very specific to each augmented simulator as each architecture
+        takes various inputs during the learning procedure. 
+
+        Parameters
+        ----------
+        batch : _type_
+            A batch of data including various information required by an architecture
+        device : _type_
+            the device on which the data should be processed
+
+        Returns
+        -------
+        ``tuple``
+            returns the predictions made by the augmented simulator and also the real targets
+            on which the loss function should be computed
+        """
+        self._data, self._target = batch
+        self._data = self._data.to(device)
+        self._target = self._target.to(device)
+        predictions = self.forward(self._data)
+        
+        return self._data, predictions, self._target
+
+    def get_loss_func(self, loss_name: str, **kwargs) -> Tensor:
+        """
+        Helper to get loss. It is specific to each architecture
+        """
+        # if len(args) > 0:
+        #     # for Masked RNN loss. args[0] is the list of sequence lengths
+        #     loss_func = LOSSES[self.params["loss"]["name"]](args[0], self.params["device"])
+        # else:
+        loss_func = LOSSES[loss_name](**kwargs)
+        
+        return loss_func
+    

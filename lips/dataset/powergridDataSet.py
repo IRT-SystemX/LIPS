@@ -550,15 +550,15 @@ class PowerGridDataSet(DataSet):
         return res
 
     def _infer_sizes(self):
-        data = copy.deepcopy(self.data)
-        self._sizes_x = np.array([data[el].shape[1] for el in self._attr_x], dtype=int)
-        self._sizes_tau = np.array([data[el].shape[1] for el in self._attr_tau], dtype=int)
-        self._sizes_y = np.array([data[el].shape[1] for el in self._attr_y], dtype=int)
+        #data = copy.deepcopy(self.data)
+        self._sizes_x = np.array([self.data[el].shape[1] for el in self._attr_x], dtype=int)
+        self._sizes_tau = np.array([self.data[el].shape[1] for el in self._attr_tau], dtype=int)
+        self._sizes_y = np.array([self.data[el].shape[1] for el in self._attr_y], dtype=int)
         self._size_x = np.sum(self._sizes_x)
         self._size_tau = np.sum(self._sizes_tau)
         self._size_y = np.sum(self._sizes_y)
 
-    def get_sizes(self):
+    def get_sizes(self, attr_x: Union[tuple, None]=None, attr_tau: Union[tuple, None]=None, attr_y: Union[tuple, None]=None):
         """Get the sizes of the dataset
 
         Returns
@@ -567,7 +567,26 @@ class PowerGridDataSet(DataSet):
             A tuple of size (nb_sample, size_x, size_tau, size_y)
 
         """
-        return self._size_x, self._size_tau, self._size_y
+        if attr_x is not None:
+            sizes_x = np.array([self.data[el].shape[1] for el in attr_x], dtype=int)
+            size_x = np.sum(sizes_x)
+        else:
+            size_x = self._size_x
+
+        if attr_tau is not None:
+            sizes_tau = np.array([self.data[el].shape[1] for el in attr_tau], dtype=int)
+            size_tau = np.sum(sizes_tau)
+        else:
+            size_tau = self._size_tau
+
+
+        if attr_y is not None:
+            sizes_y = np.array([self.data[el].shape[1] for el in attr_y], dtype=int)
+            size_y = np.sum(sizes_y)
+        else:
+            size_y = self._size_y
+        
+        return size_x, size_tau, size_y
 
     def extract_data(self, concat: bool=True) -> tuple:
         """extract the x and y data from the dataset

@@ -27,19 +27,19 @@ The Readme file is organized as follows:
 *   [9 Citation](#citation)
 
 ## Introduction
-Physical simulations are at the core of many critical industrial systems. However, today's physical simulators  have some limitations such as computation time, dealing with missing or uncertain data, or even  non-convergence for some feasible cases. Recently, the use of data-driven approaches to learn complex physical simulations has been considered as a promising approach to address those issues. However, this comes often at the cost of some accuracy which may hinder the industrial use. 
+Physical simulations are at the core of many critical industrial systems. However, today's physical simulators have some limitations such as computation time, dealing with missing or uncertain data, or even non-convergence for some feasible cases. Recently, the use of data-driven approaches to learn complex physical simulations has been considered as a promising approach to address those issues. However, this comes often at the cost of some accuracy which may hinder the industrial use.
 
 <!--Nowdays, the simulators are used in every domain (power grids, transport, aeronautics, radiation, etc.) to emulate a real-world situation or phenomena, and also to reproduce the critical situations for which further investigation may be required. The simulators are based generally on physics equations and are costly in terms of time complexity.]
 -->
 
 ### What is LIPS
-To drive the above mentioned new research topic towards a better real-world applicability, we propose a new benchmark suite "Learning Industrial Physical Simulations" (LIPS) to meet the need of developing efficient, industrial application-oriented, augmented simulators.  The proposed benchmark suite is a modular and configurable framework that can deal with different physical problems. To do so, as it is depicted in the scheme, the LIPS platform is designed to be modular and includes following modules:
+To drive the above mentioned new research topic towards a better real-world applicability, we propose a new benchmark suite "Learning Industrial Physical Simulations" (LIPS) to meet the need of developing efficient, industrial application-oriented, augmented simulators. The proposed benchmark suite is a modular and configurable framework that can deal with different physical problems. To do so, as it is depicted in the scheme, the LIPS platform is designed to be modular and includes following modules:
 
 - **Data:** This module may be used to import the required datasets or to generate some synthetic data using physical solvers (*NB*. depending on the use case, the physical solver may not yet be avaiable);
 
-- **Augmented Simulator:** This module offers a list of already implemented data-driven models which could be used to augment or to substitute the physical solvers. The datasets imported using `Data` module may be used to learn these models. A set of instructions are also provided in [Contribution](#contribution) section and in related jupyte notebooks (see more details in [Getting started](#getting-started)) for who would like to implement their own augmented simulator and evaluate its performance using LIPS;
+- **Augmented Simulator:** This module offers a list of already implemented data-driven models which could be used to augment or to substitute the physical solvers. The datasets imported using `Data` module may be used to learn these models. A set of instructions are also provided in [Contribution](#contribution) section and in related jupyter notebooks (see more details in [Getting started](#getting-started)) for who would like to implement their own augmented simulator and evaluate its performance using LIPS;
 
-- **Benchmark controller:** This module takes a dataset related to a specific task and usecase, an already trained augmented simulator (aka model) and a set of metrics and call the evaluator module to assess the performance of the model;
+- **Benchmark configurator:** This module takes a dataset related to a specific task and usecase, an already trained augmented simulator (aka model) and a set of metrics and call the evaluator module to assess the performance of the model;
 
 - **Evaluator:** This module is responsible to evaluate the performance of a selected benchmark. To define how to assess such benchmark performance, we propose a set of four generic categories of criteria:
 
@@ -63,7 +63,7 @@ To drive the above mentioned new research topic towards a better real-world appl
   - Generalization metrics
 -->
 
-![Scheme](./img/Benchmarking_scheme_v2.png)
+![Scheme](./img/LIPS.png)
 
 ### Associated results
 To demonstrate this ability, we propose in this paper to investigate two distinct use-cases with different physical simulations, namely: Power Grids, Pneumatics and Air Foils. For each use case, several benchmarks (aka tasks or scenarios) may be described and assessed with existing models. In the figure below, we show an example of the results obtained for a specific task associated with each use case. To ease the reading of the numerical comparison table, the performances are reported using three colors computed on the basis of two thresholds. The meaning of colors is described below:
@@ -144,7 +144,7 @@ source venv_lips/bin/activate
 
 ### Install from source
 ```commandline
-git clone https://github.com/Mleyliabadi/LIPS
+git clone https://github.com/IRT-SystemX/LIPS.git
 cd LIPS
 pip3 install -U .
 cd ..
