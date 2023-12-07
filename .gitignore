@@ -158,15 +158,17 @@ reference_data/pneumatic/*
 reference_data/powergrid/l2rpn_case14_sandbox/benchmark1/*
 reference_data/powergrid/l2rpn_case14_sandbox/benchmark2/*
 reference_data/powergrid/l2rpn_case14_sandbox/benchmark3/*
-<<<<<<< HEAD
-reference_data/powergrid/l2rpn_case14_sandbox/DC
-=======
 reference_data/powergrid/l2rpn_case14_sandbox/DC/*
->>>>>>> 5ac86eb3d8300a5e7ee03702b89c603b8f42c89e
-
 reference_data/powergrid/l2rpn_neurips_2020_track1_small/benchmark1/*
 reference_data/powergrid/l2rpn_neurips_2020_track1_small/benchmark2/*
 reference_data/powergrid/l2rpn_neurips_2020_track1_small/benchmark3/*
+reference_data/powergrid/l2rpn_neurips_2020_track1_small/DC/*
+
+getting_started/AirfoilUsecase/AirfRANSDataset
+getting_started/AirfoilUsecase/Dataset
+getting_started/AirfoilUsecase/dataset_log
+getting_started/AirfoilUsecase/Dataset.zip
+getting_started/AirfoilUsecase/log_benchmark
 
 # getting started
 getting_started/auxiliary/Untitled.ipynb
