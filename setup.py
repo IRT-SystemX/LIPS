@@ -8,9 +8,10 @@
 
 import setuptools
 from setuptools import setup
+from lips import get_version
 
-
-__version__ = '0.1.0'
+#__version__ = '0.1.0'
+#print(get_version("__init__.py"))
 
 pkgs = {
     "required": [
@@ -28,7 +29,7 @@ pkgs = {
             "grid2op==1.8.1", #>=1.7.2",
             "pybind11==2.8.1",
             "lightsim2grid==0.7.1", #>=0.7.0.post1",
-            "leap_net @ https://github.com/BDonnot/leap_net/tarball/master#egg=leap_net",
+            #"leap_net @ https://github.com/BDonnot/leap_net/tarball/master#egg=leap_net",
             "protobuf==3.20.1",
             "pandapower==2.7.0",
             "pandas==1.4.2",
@@ -71,7 +72,7 @@ with open("README.md", "r", encoding="utf-8") as fh:
     long_description = fh.read()
 
 setup(name='lips',
-      version=__version__,
+      version=get_version("__init__.py"),
       description='LIPS : Learning Industrial Physical Simulation benchmark suite',
       long_description=long_description,
       long_description_content_type="text/markdown",
