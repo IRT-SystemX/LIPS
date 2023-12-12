@@ -5,14 +5,24 @@
 # you can obtain one at http://mozilla.org/MPL/2.0/.
 # SPDX-License-Identifier: MPL-2.0
 # This file is part of LIPS, LIPS is a python platform for power networks benchmarking
+import pathlib
 
-__version__ = "0.1.0"
+__version__ = "0.2.0"
+
+here = pathlib.Path(__file__).parent.resolve()
+
+def get_version(rel_path):
+    init_content = (here / rel_path).read_text(encoding='utf-8')
+    for line in init_content.split('\n'):
+        if line.startswith('__version__'):
+            delim = '"' if '"' in line else "'"
+            return line.split(delim)[1]
+    raise RuntimeError("Unable to find version string.")
 
 def get_root_path(pathlib_format=False):
     """Returns the root path of LIPS."""
     import os
     path = os.path.dirname(os.path.abspath(__file__)) + os.sep
     if pathlib_format:
-        import pathlib
         return pathlib.Path(path)
     return path
