@@ -1,0 +1,7 @@
+recursive-include configurations/*  *.py
+global-exclude */__pycache__/*
+global-exclude *.pyc
+global-exclude codabench/*
+global-exclude evaluation_results/*
+global-exclude reference_data/*
+global-exclude trained_baselines/* 
