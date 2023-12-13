@@ -6,12 +6,21 @@
 # SPDX-License-Identifier: MPL-2.0
 # This file is part of leap_net, leap_net a keras implementation of the LEAP Net model.
 
+import os
 import setuptools
 from setuptools import setup
 from lips import get_version
 
 #__version__ = '0.1.0'
 #print(get_version("__init__.py"))
+
+
+def get_data_files(directory):
+    my_list = []
+    for dirpath,_,filenames in os.walk(directory):
+        for f in filenames:
+            my_list.append((dirpath, [os.path.join(dirpath,f)]))
+    return my_list
 
 pkgs = {
     "required": [
@@ -91,7 +100,7 @@ setup(name='lips-benchmark',
       keywords='Physical system solver, augmented simulator, benchmarking',
       author='Milad Leyli-abadi',
       author_email='milad.leyli-abadi@irt-systemx.fr',
-      url="https://github.com/Mleyliabadi/LIPS",
+      url="https://github.com/IRT-SystemX/LIPS",
       license='MPL',
       packages=setuptools.find_packages(),
       include_package_data=True,
@@ -99,6 +108,7 @@ setup(name='lips-benchmark',
             # If any package contains *.txt or *.rst files, include them:
             "": ["*.ini"],
             },
+      data_files=get_data_files("configurations"),#[("configurations/powergrid/benchmarks/", ["configurations/powergrid/benchmarks/l2rpn_case14_sandbox.ini"])],
       install_requires=pkgs["required"],
       extras_require=pkgs["extras"],
       zip_safe=False,

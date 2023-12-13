@@ -11,7 +11,7 @@ __version__ = "0.2.0"
 
 here = pathlib.Path(__file__).parent.resolve()
 
-def get_version(rel_path):
+def get_version(rel_path="__init__.py"):
     init_content = (here / rel_path).read_text(encoding='utf-8')
     for line in init_content.split('\n'):
         if line.startswith('__version__'):
