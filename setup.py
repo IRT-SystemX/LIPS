@@ -80,7 +80,7 @@ pkgs["extras"]["test"] += pkgs["extras"]["codabench"]
 with open("README.md", "r", encoding="utf-8") as fh:
     long_description = fh.read()
 
-setup(name='lips',
+setup(name='lips-benchmark',
       version=get_version("__init__.py"),
       description='LIPS : Learning Industrial Physical Simulation benchmark suite',
       long_description=long_description,
