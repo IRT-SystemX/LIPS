@@ -82,6 +82,7 @@ class TorchGCN(nn.Module):
         self.params = self.sim_config.get_options_dict()
         self.params.update(kwargs)
 
+        # TODO: verify that these parameters exist in config file
         self.encoder_sizes = self.params["encoder_sizes"]
         self.hidden_sizes = self.params["hidden_sizes"]
         self.decoder_sizes = self.params["decoder_sizes"]
@@ -104,11 +105,7 @@ class TorchGCN(nn.Module):
         self.device = "cpu" if self.params.get("device") is None else self.params["device"]
 
         self.input_size = None if self.params.get("input_size") is None else self.params["input_size"]
-        self.output_size = None if self.params.get("output_size") is None else self.params["output_size"]
-        #TODO: Raise error if the following params keys could not be found
-        self.encoder_sizes = self.params["encoder_sizes"]
-        self.hidden_sizes = self.params["hidden_sizes"]
-        self.decoder_sizes = self.params["decoder_sizes"]
+        self.output_size = None if self.params.get("output_size") is None else self.params["output_size"]        
 
         self.input_layer = None
         self.encoder_layers = None
