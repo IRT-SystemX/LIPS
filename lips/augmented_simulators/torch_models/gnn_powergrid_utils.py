@@ -331,7 +331,7 @@ def get_active_power(dataset, obs, theta, index):
     """
     lor_bus, lor_conn = obs._get_bus_id(obs.line_or_pos_topo_vect, obs.line_or_to_subid)
     lex_bus, lex_conn = obs._get_bus_id(obs.line_ex_pos_topo_vect, obs.line_ex_to_subid)
-    index_array = np.vstack((np.arange(obs.n_line), lor_bus, lex_bus)).T 
+    index_array = np.vstack((np.arange(obs.n_line), lor_bus, lex_bus)).T
     # Create the adjacency matrix (MxN) M: branches and N: Nodes
     A_or = np.zeros((obs.n_line, obs.n_sub))
     A_ex = np.zeros((obs.n_line, obs.n_sub))
@@ -341,10 +341,10 @@ def get_active_power(dataset, obs, theta, index):
             A_or[line, index_array[line,1]] = 1
             A_or[line, index_array[line,2]] = -1
             A_ex[line, index_array[line,1]] = -1
-            A_ex[line, index_array[line,2]] = 1        
+            A_ex[line, index_array[line,2]] = 1
     
     # Create the diagonal matrix D (MxM)
-    Ybus = dataset["YBus"][index][:14,:14]
+    Ybus = dataset["YBus"][index][:obs.n_sub,:obs.n_sub]
     D = np.zeros((obs.n_line, obs.n_line), dtype=complex)
     for line in index_array[:, 0]:
         bus_from = index_array[line, 1]
@@ -376,15 +376,50 @@ def get_all_active_powers(dataset, obs, theta_bus):
     _type_
         _description_
     """
-    data_size = len(dataset["p_or"])
-    p_or = np.zeros_like(dataset["p_or"])
-    p_ex = np.zeros_like(dataset["p_ex"])
+    data = dataset.data
+    p_or = np.zeros_like(data["p_or"])
+    p_ex = np.zeros_like(data["p_ex"])
 
     #theta_bus = get_theta_bus(dataset, obs)
-    for ind in range(data_size):
-        obs = create_fake_obs(obs, dataset, ind)
-        p_or_computed, p_ex_computed = get_active_power(dataset, obs, theta_bus, index=ind)
+    for ind in range(dataset.size):
+        obs = create_fake_obs(obs, data, ind)
+        p_or_computed, p_ex_computed = get_active_power(data, obs, theta_bus, index=ind)
         p_or[ind, :] = p_or_computed.flatten()
         p_ex[ind, :] = p_ex_computed.flatten()
 
     return p_or, p_ex
+
+def reconstruct_theta_line(dataset, obs, theta_sub) -> tuple:
+    """Reconstruct the voltage angles through lines from thetas on subs
+
+    Parameters
+    ----------
+    dataset : _type_
+        _description_
+    obs : _type_
+        _description_
+    theta_sub : _type_
+        _description_
+
+    Returns
+    -------
+    tuple
+        theta_or: voltage angle at the origin side of the power line
+        theta_ex: voltage angle at the extrem side of the power line
+    """
+    data = dataset.data
+    theta_or = np.zeros_like(data["theta_or"])
+    theta_ex = np.zeros_like(data["theta_ex"])
+
+    for idx in range(dataset.size):
+        obs.line_status = data["line_status"][idx]
+        obs.topo_vect = data["topo_vect"][idx]
+        lor_bus, _ = obs._get_bus_id(obs.line_or_pos_topo_vect, obs.line_or_to_subid)
+        lex_bus, _ = obs._get_bus_id(obs.line_ex_pos_topo_vect, obs.line_ex_to_subid)
+        index_array = np.vstack((np.arange(obs.n_line), lor_bus, lex_bus)).T
+
+        for line in range(obs.n_line):
+            if index_array[line, 1] != -1:
+                theta_or[idx][line] = theta_sub[idx][index_array[line, 1]]
+                theta_ex[idx][line] = theta_sub[idx][index_array[line, 2]]
+    return theta_or, theta_ex
