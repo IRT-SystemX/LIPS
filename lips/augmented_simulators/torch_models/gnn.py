@@ -82,6 +82,7 @@ class TorchGCN(nn.Module):
         self.params = self.sim_config.get_options_dict()
         self.params.update(kwargs)
 
+        # TODO: verify that these parameters exist in config file
         self.encoder_sizes = self.params["encoder_sizes"]
         self.hidden_sizes = self.params["hidden_sizes"]
         self.decoder_sizes = self.params["decoder_sizes"]
@@ -104,11 +105,7 @@ class TorchGCN(nn.Module):
         self.device = "cpu" if self.params.get("device") is None else self.params["device"]
 
         self.input_size = None if self.params.get("input_size") is None else self.params["input_size"]
-        self.output_size = None if self.params.get("output_size") is None else self.params["output_size"]
-        #TODO: Raise error if the following params keys could not be found
-        self.encoder_sizes = self.params["encoder_sizes"]
-        self.hidden_sizes = self.params["hidden_sizes"]
-        self.decoder_sizes = self.params["decoder_sizes"]
+        self.output_size = None if self.params.get("output_size") is None else self.params["output_size"]        
 
         self.input_layer = None
         self.encoder_layers = None
@@ -205,31 +202,43 @@ class TorchGCN(nn.Module):
         DataLoader
             _description_
         """
-        obs = self._get_obs()
-        if training:
+        load_from_file = kwargs.get("load_from_file", None)
+        if load_from_file is not None:
+            loader_name = dataset.name + "_loader.pth"
+            load_from_file = pathlib.Path(load_from_file)
+            path_to_loader = load_from_file / loader_name
+            if not path_to_loader.exists():
+                raise RuntimeError("Data loader path not found for the benchmark!")
             self._infer_size(dataset)
-            batch_size = self.params["train_batch_size"]
-            features, targets, edge_indices, edge_weights = prepare_dataset(obs, dataset.data, return_edge_weights=self.consider_edge_weights)
-            #extract_x, extract_y = dataset.extract_data()
-            #TODO: adapt the normalization for GNN
-            # if self.scaler is not None:
-            #     extract_x, extract_y = self.scaler.fit_transform(extract_x, extract_y)
+            data_loader = torch.load(path_to_loader)
         else:
-            batch_size = self.params["eval_batch_size"]
-            #extract_x, extract_y = dataset.extract_data()
-            features, targets, edge_indices, edge_weights = prepare_dataset(obs, dataset.data, return_edge_weights=self.consider_edge_weights)
-            # if self.scaler is not None:
-            #     extract_x, extract_y = self.scaler.transform(extract_x, extract_y)
+            print("processing the dataset: ", dataset.name)
+            obs = self._get_obs()
+            device = kwargs.get("device", self.device)
+            if training:
+                self._infer_size(dataset)
+                batch_size = self.params["train_batch_size"]
+                features, targets, edge_indices, edge_weights = prepare_dataset(obs, dataset.data, return_edge_weights=self.consider_edge_weights)
+                #extract_x, extract_y = dataset.extract_data()
+                #TODO: adapt the normalization for GNN
+                # if self.scaler is not None:
+                #     extract_x, extract_y = self.scaler.fit_transform(extract_x, extract_y)
+            else:
+                batch_size = self.params["eval_batch_size"]
+                #extract_x, extract_y = dataset.extract_data()
+                features, targets, edge_indices, edge_weights = prepare_dataset(obs, dataset.data, return_edge_weights=self.consider_edge_weights)
+                # if self.scaler is not None:
+                #     extract_x, extract_y = self.scaler.transform(extract_x, extract_y)
 
-        data_loader = get_batches_pyg(edge_indices=edge_indices,
-                                      features=features,
-                                      targets=targets,
-                                      edge_weights=edge_weights,
-                                      batch_size=batch_size,
-                                      #ybus=dataset.data["YBus"],
-                                      #line_status=dataset.data["line_status"],
-                                      #topo_vect=dataset.data["topo_vect"],
-                                      device=self.device)
+            data_loader = get_batches_pyg(edge_indices=edge_indices,
+                                        features=features,
+                                        targets=targets,
+                                        edge_weights=edge_weights,
+                                        batch_size=batch_size,
+                                        #ybus=dataset.data["YBus"],
+                                        #line_status=dataset.data["line_status"],
+                                        #topo_vect=dataset.data["topo_vect"],
+                                        device=device)
         #data_loader = DataLoader(torch_dataset, batch_size=batch_size, shuffle=self.params["shuffle"])
         return data_loader
     
@@ -286,9 +295,11 @@ class TorchGCN(nn.Module):
         """
         outputs = []
         obs = self._get_obs()
-        p_ors_pred, p_exs_pred = get_all_active_powers(dataset.data, obs, theta_bus=data.reshape(-1, obs.n_sub))
-        outputs.append(dataset.data["theta_or"])
-        outputs.append(dataset.data["theta_ex"])
+        theta_bus = data.reshape(-1, obs.n_sub)
+        p_ors_pred, p_exs_pred = get_all_active_powers(dataset, obs, theta_bus=theta_bus)
+        theta_ors_pred, theta_exs_pred = reconstruct_theta_line(dataset, obs, theta_sub=theta_bus)
+        outputs.append(theta_ors_pred)
+        outputs.append(theta_exs_pred)
         outputs.append(p_ors_pred)
         outputs.append(p_exs_pred)
         outputs = np.hstack(outputs)
