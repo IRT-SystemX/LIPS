@@ -436,7 +436,7 @@ class TorchSimulator(AugmentedSimulator):
         with open((path / "config.json"), "r", encoding="utf-8") as f:
             res_json = json.load(fp=f)
         self.params.update(res_json)
-        self.device = torch.device(self.params["device"])
+        #self.device = torch.device(self.params["device"])
         return self.params
 
     def _load_model(self, epoch, path: str):
@@ -447,7 +447,7 @@ class TorchSimulator(AugmentedSimulator):
             raise FileNotFoundError(f"Weights file {path_weights} not found")
         self._model._load_metadata(path)
         self.build_model()
-        self._model.to(self.params["device"])
+        self._model.to(self.device)
         # load the weights
         with tempfile.TemporaryDirectory() as path_tmp:
             nm_tmp = os.path.join(path_tmp, nm_file)
