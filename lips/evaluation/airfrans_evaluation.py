@@ -12,17 +12,27 @@ Licence:
 """
 from typing import Union
 from collections.abc import Iterable
+
 import numpy as np
+from scipy.stats import spearmanr
 
 from lips.config.configmanager import ConfigManager
 from lips.logger import CustomLogger
-
 from lips.evaluation import Evaluation
 from lips.evaluation.utils import metric_factory
 from lips.metrics.ml_metrics import metrics
+from lips.dataset.scaler.standard_scaler_iterative import iterative_fit
 
 import airfrans as af
-from scipy.stats import spearmanr
+
+def normalize_data(data,chunk_sizes,field_names):
+    flattened_data = np.concatenate([data[field_name][:, None] for field_name in field_names], axis = 1)
+    mean_data,std_data = iterative_fit(flattened_data,chunk_sizes)
+    flattened_data -= mean_data
+    flattened_data /= std_data
+    normalized_data = {field_name:flattened_data[:,field_id] for field_id,field_name in enumerate(field_names)}
+    return normalized_data
+
 
 class AirfRANSEvaluation(Evaluation):
     """Evaluation of the AirfRANS specific metrics
@@ -109,14 +119,21 @@ class AirfRANSEvaluation(Evaluation):
         Verify AirfRANS Machine Learning metrics
         """
         self.logger.info("Evaluate machine learning metrics")
+        #Normalize prediction and observation before computing mlMetrics
+        chunk_sizes = [int(simulation[1]) for simulation in self.observation_metadata["simulation_names"]]
+
+        field_names = self.observations.keys()
+        normalized_predictions = normalize_data(data=self.predictions,chunk_sizes=chunk_sizes,field_names=field_names)
+        normalized_observations = normalize_data(data=self.observations,chunk_sizes=chunk_sizes,field_names=field_names)
+
         metric_val_by_name = self.metrics[self.MACHINE_LEARNING]
         self.metrics[self.MACHINE_LEARNING]={}
         for metric_name in self.eval_dict[self.MACHINE_LEARNING]:
             metric_fun = metric_factory.get_metric(metric_name)
             metric_val_by_name[metric_name] = {}
-            for nm_, pred_ in self.predictions.items():
+            for nm_, pred_ in normalized_predictions.items():
                 self.logger.info("Evaluating metric %s on variable %s", metric_name, nm_)
-                true_ = self.observations[nm_]
+                true_ = normalized_observations[nm_]
                 tmp = metric_fun(true_, pred_)
 
                 if isinstance(tmp, Iterable):
@@ -128,8 +145,8 @@ class AirfRANSEvaluation(Evaluation):
             self.metrics[self.MACHINE_LEARNING][metric_name] = metric_val_by_name[metric_name]
 
             #Compute additional metric for pressure at surface
-            true_pressure = self.observations["pressure"]
-            pred_pressure = self.predictions["pressure"]
+            true_pressure = normalized_observations["pressure"]
+            pred_pressure = normalized_predictions["pressure"]
             surface_data=self.observation_metadata["surface"]
             tmp_surface = metric_fun(true_pressure[surface_data.astype(bool)], pred_pressure[surface_data.astype(bool)])
             self.metrics[self.MACHINE_LEARNING][metric_name+"_surfacic"]={"pressure": float(tmp_surface)}
@@ -219,7 +236,7 @@ if __name__ == '__main__':
         'surface'
     )
     attr_x = attr_names[:7]
-    attr_y = attr_names[7:]
+    attr_y = attr_names[7:-1]
     my_dataset = AirfRANSDataSet(config = None,
                                  name = 'train',
                                  task = 'scarce',
@@ -230,6 +247,8 @@ if __name__ == '__main__':
                                  attr_y = attr_y)
     my_dataset.load(path = directory_name)
     print(my_dataset)
-    config_path_benchmark=get_root_path()+os.path.join("..","configurations","airfrans","benchmarks","confAirfoil.ini")
+    config_path_benchmark=get_root_path()+os.path.join("..","configurations","airfoil","benchmarks","confAirfoil.ini")
     evaluation = AirfRANSEvaluation(config_path=config_path_benchmark,scenario="Case1",data_path = directory_name, log_path = 'log_eval')
-    evaluation.evaluate(observations = my_dataset.data, predictions = my_dataset.data)
+    output_values = {key:value for key,value in my_dataset.data.items() if key in attr_y}
+    metrics = evaluation.evaluate(observations = output_values, predictions = output_values, observation_metadata = my_dataset.extra_data)
+    print(metrics)
