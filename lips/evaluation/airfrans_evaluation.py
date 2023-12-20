@@ -25,11 +25,10 @@ from lips.dataset.scaler.standard_scaler_iterative import iterative_fit
 
 import airfrans as af
 
-def normalize_data(data,chunk_sizes,field_names):
+def normalize_data(data,mean,std,field_names):
     flattened_data = np.concatenate([data[field_name][:, None] for field_name in field_names], axis = 1)
-    mean_data,std_data = iterative_fit(flattened_data,chunk_sizes)
-    flattened_data -= mean_data
-    flattened_data /= std_data
+    flattened_data -= mean
+    flattened_data /= std
     normalized_data = {field_name:flattened_data[:,field_id] for field_id,field_name in enumerate(field_names)}
     return normalized_data
 
@@ -122,35 +121,38 @@ class AirfRANSEvaluation(Evaluation):
         #Normalize prediction and observation before computing mlMetrics
         chunk_sizes = [int(simulation[1]) for simulation in self.observation_metadata["simulation_names"]]
 
-        field_names = self.observations.keys()
-        normalized_predictions = normalize_data(data=self.predictions,chunk_sizes=chunk_sizes,field_names=field_names)
-        normalized_observations = normalize_data(data=self.observations,chunk_sizes=chunk_sizes,field_names=field_names)
+        field_names = self.predictions.keys()
+        flattened_observation = np.concatenate([self.observations[field_name][:, None] for field_name in field_names], axis = 1)
+        mean_observ,std_observ = iterative_fit(flattened_observation,chunk_sizes)
+        normalized_predictions = normalize_data(data=self.predictions,mean=mean_observ,std=std_observ,field_names=field_names)
+        normalized_observations = normalize_data(data=self.observations,mean=mean_observ,std=std_observ,field_names=field_names)
 
         metric_val_by_name = self.metrics[self.MACHINE_LEARNING]
         self.metrics[self.MACHINE_LEARNING]={}
         for metric_name in self.eval_dict[self.MACHINE_LEARNING]:
             metric_fun = metric_factory.get_metric(metric_name)
-            metric_val_by_name[metric_name] = {}
+            metric_name_normalized = metric_name+"_normalized"
+            metric_val_by_name[metric_name_normalized] = {}
             for nm_, pred_ in normalized_predictions.items():
-                self.logger.info("Evaluating metric %s on variable %s", metric_name, nm_)
+                self.logger.info("Evaluating metric %s on variable %s", metric_name_normalized, nm_)
                 true_ = normalized_observations[nm_]
                 tmp = metric_fun(true_, pred_)
 
                 if isinstance(tmp, Iterable):
-                    metric_val_by_name[metric_name][nm_] = [float(el) for el in tmp]
-                    self.logger.info("%s for %s: %s", metric_name, nm_, tmp)
+                    metric_val_by_name[metric_name_normalized][nm_] = [float(el) for el in tmp]
+                    self.logger.info("%s for %s: %s",metric_name_normalized, nm_, tmp)
                 else:
-                    metric_val_by_name[metric_name][nm_] = float(tmp)
-                    self.logger.info("%s for %s: %.2E", metric_name, nm_, tmp)
-            self.metrics[self.MACHINE_LEARNING][metric_name] = metric_val_by_name[metric_name]
+                    metric_val_by_name[metric_name_normalized][nm_] = float(tmp)
+                    self.logger.info("%s for %s: %.2E", metric_name_normalized, nm_, tmp)
+            self.metrics[self.MACHINE_LEARNING][metric_name_normalized] = metric_val_by_name[metric_name_normalized]
 
             #Compute additional metric for pressure at surface
             true_pressure = normalized_observations["pressure"]
             pred_pressure = normalized_predictions["pressure"]
             surface_data=self.observation_metadata["surface"]
             tmp_surface = metric_fun(true_pressure[surface_data.astype(bool)], pred_pressure[surface_data.astype(bool)])
-            self.metrics[self.MACHINE_LEARNING][metric_name+"_surfacic"]={"pressure": float(tmp_surface)}
-            self.logger.info("%s surfacic for %s: %s", metric_name, "pressure", tmp_surface)
+            self.metrics[self.MACHINE_LEARNING][metric_name_normalized+"_surfacic"]={"pressure": float(tmp_surface)}
+            self.logger.info("%s surfacic for %s: %s", metric_name_normalized, "pressure", tmp_surface)
 
     def evaluate_physics(self):
         """
@@ -251,4 +253,5 @@ if __name__ == '__main__':
     evaluation = AirfRANSEvaluation(config_path=config_path_benchmark,scenario="Case1",data_path = directory_name, log_path = 'log_eval')
     output_values = {key:value for key,value in my_dataset.data.items() if key in attr_y}
     metrics = evaluation.evaluate(observations = output_values, predictions = output_values, observation_metadata = my_dataset.extra_data)
+    print("Evaluation for solution equal to reference")
     print(metrics)
