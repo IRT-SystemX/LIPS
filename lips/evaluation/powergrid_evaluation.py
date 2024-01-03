@@ -51,8 +51,6 @@ class PowerGridEvaluation(Evaluation):
         self.eval_params = self.config.get_option("eval_params")
 
         self.logger = CustomLogger(__class__.__name__, self.log_path).logger
-        # read the criteria and their mapped functions for power grid
-        # self.criteria = self.mapper.map_powergrid_criteria()
 
     @classmethod
     def from_benchmark(cls,
@@ -90,17 +88,19 @@ class PowerGridEvaluation(Evaluation):
         # call the base class for generic evaluations
         super().evaluate(observations, predictions, save_path)
 
+        criteria = {}
+
         # evaluate powergrid specific evaluations based on config
         for cat in self.eval_dict.keys():
-            self._dispatch_evaluation(cat, **kwargs)
+            criteria = self._dispatch_evaluation(cat, criteria, **kwargs)
 
         # TODO: save the self.metrics variable
         if save_path:
             pass
 
-        return self.metrics
+        return criteria
 
-    def _dispatch_evaluation(self, category: str, **kwargs):
+    def _dispatch_evaluation(self, category: str, criteria: dict, **kwargs):
         """
         This helper function select the evaluation function with respect to the category
 
@@ -114,19 +114,21 @@ class PowerGridEvaluation(Evaluation):
         """
         if category == self.MACHINE_LEARNING:
             if self.eval_dict[category]:
-                self.evaluate_ml(**kwargs)
+                criteria[self.MACHINE_LEARNING] = self.evaluate_ml(**kwargs)
         if category == self.PHYSICS_COMPLIANCES:
             if self.eval_dict[category]:
-                self.evaluate_physics(**kwargs)
+                criteria[self.PHYSICS_COMPLIANCES] = self.evaluate_physics(**kwargs)
         if category == self.INDUSTRIAL_READINESS:
             if self.eval_dict[category]:
-                self.evaluate_industrial_readiness(**kwargs)
+                criteria[self.INDUSTRIAL_READINESS] = self.evaluate_industrial_readiness(**kwargs)
 
-    def evaluate_ml(self, **kwargs):
+        return criteria
+
+    def evaluate_ml(self, **kwargs) -> dict:
         """
         Verify PowerGrid Specific Machine Learning metrics such as MAPE90
         """
-        metric_dict = self.metrics[self.MACHINE_LEARNING]
+        metrics_ml = {}
         for metric_name in self.eval_dict[self.MACHINE_LEARNING]:
             if metric_name == "TIME_INF":
                 try:
@@ -138,18 +140,18 @@ class PowerGridEvaluation(Evaluation):
                         _ = augmented_simulator.predict(dataset, eval_batch_size=dataset.size)
                         end_ = time.perf_counter()
                         total_time = end_ - beg_
-                        metric_dict[metric_name] = total_time
+                        metrics_ml[metric_name] = total_time
                         self.logger.info("%s for %s: %s", metric_name, augmented_simulator.name, total_time)
                     else:
                         dc_comp_time = augmented_simulator.comp_time
-                        metric_dict[metric_name] = dc_comp_time
+                        metrics_ml[metric_name] = dc_comp_time
                         self.logger.info("%s for %s: %s", metric_name, augmented_simulator.name, dc_comp_time)
                 except KeyError:
                     self.logger.error("The augmented simulator or dataset are not provided to estimate the inference time.")
             else:
                 metric_fun = metric_factory.get_metric(metric_name)
                 # metric_fun = self.criteria.get(metric_name)
-                metric_dict[metric_name] = {}
+                metrics_ml[metric_name] = {}
                 for nm_, pred_ in self.predictions.items():
                     if nm_ == "__prod_p_dc":
                         # fix for the DC approximation
@@ -157,13 +159,14 @@ class PowerGridEvaluation(Evaluation):
                     true_ = self.observations[nm_]
                     tmp = metric_fun(true_, pred_)
                     if isinstance(tmp, Iterable):
-                        metric_dict[metric_name][nm_] = [float(el) for el in tmp]
+                        metrics_ml[metric_name][nm_] = [float(el) for el in tmp]
                         self.logger.info("%s for %s: %s", metric_name, nm_, tmp)
                     else:
-                        metric_dict[metric_name][nm_] = float(tmp)
+                        metrics_ml[metric_name][nm_] = float(tmp)
                         self.logger.info("%s for %s: %.2f", metric_name, nm_, tmp)
+        return metrics_ml
 
-    def evaluate_physics(self, **kwargs):
+    def evaluate_physics(self, **kwargs) -> dict:
         """
         function that evaluates the physics compliances on given observations
         It comprises various verifications which are:
@@ -178,20 +181,21 @@ class PowerGridEvaluation(Evaluation):
             env = kwargs["env"]
         except KeyError:
             self.logger.error("The environment (physical solver) is required for some physics critiera and should be provided")
-        metric_dict = self.metrics[self.PHYSICS_COMPLIANCES]
+        metrics_physics = {}
         for metric_name in self.eval_dict[self.PHYSICS_COMPLIANCES]:
             metric_fun = metric_factory.get_metric(metric_name)
             #metric_fun = self.criteria.get(metric_name)
-            metric_dict[metric_name] = {}
+            metrics_physics[metric_name] = {}
             tmp = metric_fun(self.predictions,
                              log_path=self.log_path,
                              observations=self.observations,
                              config=self.config,
                              **kwargs)
                              #env=env)
-            metric_dict[metric_name] = tmp
+            metrics_physics[metric_name] = tmp
+        return metrics_physics
 
-    def evaluate_industrial_readiness(self, **kwargs):
+    def evaluate_industrial_readiness(self, **kwargs) -> dict:
         """
         Evaluate the augmented simulators from Industrial Readiness point of view
 
@@ -199,7 +203,7 @@ class PowerGridEvaluation(Evaluation):
         - Scalability
 
         """
-        metric_dict = self.metrics[self.INDUSTRIAL_READINESS]
+        metrics_ind = {}
         for metric_name in self.eval_dict[self.INDUSTRIAL_READINESS]:
             if metric_name == "TIME_INF":
                 try:
@@ -217,12 +221,13 @@ class PowerGridEvaluation(Evaluation):
                         _ = augmented_simulator.predict(dataset, eval_batch_size=eval_batch_size)
                         end_ = time.perf_counter()
                         total_time = end_ - beg_
-                        metric_dict[metric_name] = total_time
+                        metrics_ind[metric_name] = total_time
                         self.logger.info("%s for %s: %s", metric_name, augmented_simulator.name, total_time)
 
                     else:
                         dc_comp_time = augmented_simulator.comp_time
-                        metric_dict[metric_name] = dc_comp_time
+                        metrics_ind[metric_name] = dc_comp_time
                         self.logger.info("%s for %s: %s", metric_name, augmented_simulator.name, dc_comp_time)
                 except KeyError:
                     self.logger.error("The augmented simulator or dataset are not provided to estimate the inference time.")
+        return metrics_ind

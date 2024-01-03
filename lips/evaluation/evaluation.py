@@ -58,8 +58,6 @@ class Evaluation(object):
         # logger
         self.log_path = log_path
         self.logger = CustomLogger(__class__.__name__, self.log_path).logger
-        #self.mapper = Mapper()
-        self.metrics = {}
 
     @classmethod
     #@abstractmethod
@@ -83,20 +81,6 @@ class Evaluation(object):
         Class method to initialize the evaluation from DataSet instance
         """
         pass
-
-    def __init_metric_dict(self) -> dict:
-        """
-        Initialize the metrics dictionary structure
-
-        It should be called if any modification to default category names
-        """
-        metrics_cat = {}
-        metrics_cat[self.MACHINE_LEARNING] = {}
-        metrics_cat[self.PHYSICS_COMPLIANCES] = {}
-        metrics_cat[self.INDUSTRIAL_READINESS] = {}
-        # metrics_cat[self.OOD_GENERALIZATION] = {}
-
-        return metrics_cat
 
     def evaluate(self,
                  observations: dict,
@@ -126,8 +110,6 @@ class Evaluation(object):
         """
         self.observations = observations #dataset.data
         self.predictions = predictions
-        # create metrics dictionary
-        self.metrics.update(self.__init_metric_dict())
         
     def evaluate_ml(self):
         """
