@@ -76,14 +76,16 @@ class AirfRANSEvaluation(Evaluation):
         """
         # call the base class for generic evaluations
         super().evaluate(observations, predictions, save_path)
+        criteria = {}
+
         self.observation_metadata = observation_metadata
 
         for cat in self.eval_dict.keys():
-            self._dispatch_evaluation(cat)
+            criteria = self._dispatch_evaluation(cat, criteria)
 
-        return self.metrics
+        return criteria
 
-    def _dispatch_evaluation(self, category: str):
+    def _dispatch_evaluation(self, category: str, criteria: dict):
         """
         This helper function select the evaluation function with respect to the category
 
@@ -97,45 +99,50 @@ class AirfRANSEvaluation(Evaluation):
         """
         if category == self.MACHINE_LEARNING:
             if self.eval_dict[category]:
-                self.evaluate_ml()
+                criteria[self.MACHINE_LEARNING] = self.evaluate_ml()
         if category == self.PHYSICS_COMPLIANCES:
             if self.eval_dict[category]:
-                self.evaluate_physics()
+                criteria[self.PHYSICS_COMPLIANCES] = self.evaluate_physics()
         if category == self.INDUSTRIAL_READINESS:
             raise Exception("Not done yet, sorry")
+        
+        return criteria
 
-    def evaluate_ml(self):
+    def evaluate_ml(self) -> dict:
         """
         Verify AirfRANS Machine Learning metrics
         """
         self.logger.info("Evaluate machine learning metrics")
-        metric_val_by_name = self.metrics[self.MACHINE_LEARNING]
-        self.metrics[self.MACHINE_LEARNING]={}
+        # metric_val_by_name = self.metrics[self.MACHINE_LEARNING]
+        # self.metrics[self.MACHINE_LEARNING]={}
+        metrics_ml = {}
         for metric_name in self.eval_dict[self.MACHINE_LEARNING]:
             metric_fun = metric_factory.get_metric(metric_name)
-            metric_val_by_name[metric_name] = {}
+            metrics_ml[metric_name] = {}
             for nm_, pred_ in self.predictions.items():
                 self.logger.info("Evaluating metric %s on variable %s", metric_name, nm_)
                 true_ = self.observations[nm_]
                 tmp = metric_fun(true_, pred_)
 
                 if isinstance(tmp, Iterable):
-                    metric_val_by_name[metric_name][nm_] = [float(el) for el in tmp]
+                    metrics_ml[metric_name][nm_] = [float(el) for el in tmp]
                     self.logger.info("%s for %s: %s", metric_name, nm_, tmp)
                 else:
-                    metric_val_by_name[metric_name][nm_] = float(tmp)
+                    metrics_ml[metric_name][nm_] = float(tmp)
                     self.logger.info("%s for %s: %.2E", metric_name, nm_, tmp)
-            self.metrics[self.MACHINE_LEARNING][metric_name] = metric_val_by_name[metric_name]
+            #self.metrics[self.MACHINE_LEARNING][metric_name] = metric_val_by_name[metric_name]
 
             #Compute additional metric for pressure at surface
             true_pressure = self.observations["pressure"]
             pred_pressure = self.predictions["pressure"]
             surface_data=self.observation_metadata["surface"]
             tmp_surface = metric_fun(true_pressure[surface_data.astype(bool)], pred_pressure[surface_data.astype(bool)])
-            self.metrics[self.MACHINE_LEARNING][metric_name+"_surfacic"]={"pressure": float(tmp)}
+            #self.metrics[self.MACHINE_LEARNING][metric_name+"_surfacic"]={"pressure": float(tmp)}
+            metrics_ml[metric_name+"_surfacic"]={"pressure": float(tmp)}
             self.logger.info("%s surfacic for %s: %s", metric_name, "pressure", tmp_surface)
-
-    def evaluate_physics(self):
+        return metrics_ml
+    
+    def evaluate_physics(self) -> dict:
         """
         Evaluate physical criteria on given observations
         """
@@ -178,8 +185,9 @@ class AirfRANSEvaluation(Evaluation):
         metrics_values["std_relative_lift"]=std_rel_err[1]
         self.logger.info('The standard deviation of the relative absolute error for the lift coefficient is: {:.3f}'.format(std_rel_err[1]))
 
-        self.metrics[self.PHYSICS_COMPLIANCES]=metrics_values
-        return {'target_coefficients': true_coefs, 'predicted_coefficients': coefs, 'relative absolute error': rel_err}
+        #self.metrics[self.PHYSICS_COMPLIANCES]=metrics_values
+        #return {'target_coefficients': true_coefs, 'predicted_coefficients': coefs, 'relative absolute error': rel_err}
+        return metrics_values
 
     def from_batch_to_simulation(self, data, simulation_names):
         sim_data = {}
@@ -233,3 +241,4 @@ if __name__ == '__main__':
     config_path_benchmark=get_root_path()+os.path.join("..","configurations","airfrans","benchmarks","confAirfoil.ini")
     evaluation = AirfRANSEvaluation(config_path=config_path_benchmark,scenario="Case1",data_path = directory_name, log_path = 'log_eval')
     evaluation.evaluate(observations = my_dataset.data, predictions = my_dataset.data)
+    
