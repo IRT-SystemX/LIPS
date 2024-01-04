@@ -93,17 +93,18 @@ class PneumaticEvaluation(Evaluation):
         """
         # call the base class for generic evaluations
         super().evaluate(observations, predictions, save_path)
+        criteria = {}
 
         for cat in self.eval_dict.keys():
-            self._dispatch_evaluation(cat)
+            self._dispatch_evaluation(cat, criteria)
 
         # TODO: save the self.metrics variable
         if save_path:
             pass
 
-        return self.metrics
+        return criteria
 
-    def _dispatch_evaluation(self, category: str):
+    def _dispatch_evaluation(self, category: str, criteria: dict):
         """
         This helper function select the evaluation function with respect to the category
 
@@ -117,36 +118,41 @@ class PneumaticEvaluation(Evaluation):
         """
         if category == self.MACHINE_LEARNING:
             if self.eval_dict[category]:
-                self.evaluate_ml()
+                criteria[self.MACHINE_LEARNING] = self.evaluate_ml()
         if category == self.PHYSICS_COMPLIANCES:
             if self.eval_dict[category]:
-                self.evaluate_physics()
+                criteria[self.PHYSICS_COMPLIANCES] = self.evaluate_physics()
         if category == self.INDUSTRIAL_READINESS:
             raise Exception("Not done yet, sorry")
 
-    def evaluate_ml(self):
+        return criteria
+
+    def evaluate_ml(self) -> dict:
         """
         Verify Pneumatic Machine Learning metrics
         """
-        metric_val_by_name = self.metrics[self.MACHINE_LEARNING]
+        metrics_ml = {}
+        #metric_val_by_name = self.metrics[self.MACHINE_LEARNING]
         for metric_name in self.eval_dict[self.MACHINE_LEARNING]:
             metric_fun = metric_factory.get_metric(metric_name)
-            metric_val_by_name[metric_name] = {}
+            metrics_ml[metric_name] = {}
             for nm_, pred_ in self.predictions.items():
                 true_ = self.observations[nm_]
                 tmp = metric_fun(true_, pred_)
                 if isinstance(tmp, Iterable):
-                    metric_val_by_name[metric_name][nm_] = [float(el) for el in tmp]
+                    metrics_ml[metric_name][nm_] = [float(el) for el in tmp]
                     self.logger.info("%s for %s: %s", metric_name, nm_, tmp)
                 else:
-                    metric_val_by_name[metric_name][nm_] = float(tmp)
+                    metrics_ml[metric_name][nm_] = float(tmp)
                     self.logger.info("%s for %s: %.2E", metric_name, nm_, tmp)
+        return metrics_ml
 
-    def evaluate_physics(self):
+    def evaluate_physics(self) -> dict:
         """
         function that evaluates physical criteria on given observations and may rely on the physical solver
         """
-        metric_val_by_name = self.metrics[self.PHYSICS_COMPLIANCES]
+        #metric_val_by_name = self.metrics[self.PHYSICS_COMPLIANCES]
+        metrics_physics = {}
         attr_x=self.config.get_option("attr_x")
         obs_inputs={key: self.observations[key] for key in attr_x}
         inputs_separated = [dict(zip(obs_inputs,t)) for t in zip(*obs_inputs.values())]
@@ -157,7 +163,7 @@ class PneumaticEvaluation(Evaluation):
         
         prediction_separated = [dict(zip(self.predictions,t)) for t in zip(*self.predictions.values())]
 
-        metric_val_by_name = {metric_name:[] for metric_name in self.eval_dict[self.PHYSICS_COMPLIANCES]}
+        metrics_physics = {metric_name:[] for metric_name in self.eval_dict[self.PHYSICS_COMPLIANCES]}
         for obs_input,obs_output,predict_out in zip(inputs_separated,output_separated,prediction_separated):
             simulator=type(self.simulator)(simulator_instance=self.simulator)
             simulator.modify_state(state=obs_input)
@@ -171,16 +177,16 @@ class PneumaticEvaluation(Evaluation):
                 obs_crit = PhysicalCriteriaComputation(criteria_type=metric_name,simulator=simulator,field=obs_output,criteria_params=criteria_params)
                 pred_crit = PhysicalCriteriaComputation(criteria_type=metric_name,simulator=simulator,field=predict_out,criteria_params=criteria_params)
 
-                delta_absolute=np.array(obs_crit)-np.array(pred_crit) 
-                delta_relative=delta_absolute/np.array(obs_crit)  
+                delta_absolute=np.array(obs_crit)-np.array(pred_crit)
+                delta_relative=delta_absolute/np.array(obs_crit)
                 delta={
                     "absolute":delta_absolute,
                     "relative":delta_relative
-                } 
-                metric_val_by_name[metric_name].append(delta)
+                }
+                metrics_physics[metric_name].append(delta)
 
         for metric_name in self.eval_dict[self.PHYSICS_COMPLIANCES]:
-            deltas=metric_val_by_name[metric_name]
+            deltas=metrics_physics[metric_name]
             deltas_united = {error_type: np.array([single_comparison[error_type] for single_comparison in deltas]) for error_type in deltas[0]}
 
             mean_relative_error=np.mean(deltas_united["relative"],axis=0)
@@ -196,3 +202,5 @@ class PneumaticEvaluation(Evaluation):
                     self.logger.info("%s mean absolute error for component %d: %.2E", metric_name, component_id, value)
             else:
                 self.logger.info("%s mean absolute error for %.2E", metric_name, mean_absolute_error)
+
+        return metrics_physics
