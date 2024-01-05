@@ -66,11 +66,13 @@ class AirfRANSEvaluation(Evaluation):
         self.eval_dict = self.config.get_option("eval_dict")
         self.logger = CustomLogger(__class__.__name__, self.log_path).logger
         self.observation_metadata = dict()
+        self.ml_normalization = None
 
     def evaluate(self,
                  observations: dict,
                  predictions: dict,
                  observation_metadata : dict,
+                 ml_normalization : Union[dict, None]=None,
                  save_path: Union[str, None]=None) -> dict:
         """The main function which evaluates all the required criteria noted in config file
 
@@ -86,7 +88,7 @@ class AirfRANSEvaluation(Evaluation):
         # call the base class for generic evaluations
         super().evaluate(observations, predictions, save_path)
         criteria = {}
-
+        self.ml_normalization = ml_normalization
         self.observation_metadata = observation_metadata
 
         for cat in self.eval_dict.keys():
@@ -123,13 +125,19 @@ class AirfRANSEvaluation(Evaluation):
         """
         self.logger.info("Evaluate machine learning metrics")
         #Normalize prediction and observation before computing mlMetrics
-        chunk_sizes = [int(simulation[1]) for simulation in self.observation_metadata["simulation_names"]]
 
         field_names = self.predictions.keys()
-        flattened_observation = np.concatenate([self.observations[field_name][:, None] for field_name in field_names], axis = 1)
-        mean_observ,std_observ = iterative_fit(flattened_observation,chunk_sizes)
+        if self.ml_normalization is None:
+            self.logger.info("Using current dataset to normalize")
+            chunk_sizes = [int(simulation[1]) for simulation in self.observation_metadata["simulation_names"]]
+            flattened_observation = np.concatenate([self.observations[field_name][:, None] for field_name in field_names], axis = 1)
+            mean_observ,std_observ = iterative_fit(flattened_observation,chunk_sizes)
+        else:
+            self.logger.info("Using reference dataset data to normalize")
+            mean_observ,std_observ = self.ml_normalization["mean"],self.ml_normalization["std"]
         normalized_predictions = normalize_data(data=self.predictions,mean=mean_observ,std=std_observ,field_names=field_names)
         normalized_observations = normalize_data(data=self.observations,mean=mean_observ,std=std_observ,field_names=field_names)
+
 
         metrics_ml = {}
         for metric_name in self.eval_dict[self.MACHINE_LEARNING]:
@@ -199,8 +207,6 @@ class AirfRANSEvaluation(Evaluation):
         metrics_values["std_relative_lift"]=std_rel_err[1]
         self.logger.info('The standard deviation of the relative absolute error for the lift coefficient is: {:.3f}'.format(std_rel_err[1]))
 
-        #self.metrics[self.PHYSICS_COMPLIANCES]=metrics_values
-        #return {'target_coefficients': true_coefs, 'predicted_coefficients': coefs, 'relative absolute error': rel_err}
         return metrics_values
 
     def from_batch_to_simulation(self, data, simulation_names):

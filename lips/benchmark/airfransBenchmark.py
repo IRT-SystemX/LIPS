@@ -25,6 +25,7 @@ from lips.benchmark import Benchmark
 from lips.augmented_simulators import AugmentedSimulator
 from lips.dataset.airfransDataSet import AirfRANSDataSet,extract_dataset_by_simulations
 from lips.evaluation.airfrans_evaluation import AirfRANSEvaluation
+from lips.dataset.scaler.standard_scaler_iterative import iterative_fit
 from lips.utils import NpEncoder
 
 def reynolds_filter(dataset):
@@ -108,6 +109,7 @@ class AirfRANSBenchmark(Benchmark):
                                              split = "testing",
                                              log_path = log_path
                                             )
+        self.ml_normalization = dict()
 
 
     def load(self,path):
@@ -164,6 +166,14 @@ class AirfRANSBenchmark(Benchmark):
 
         """
         self.augmented_simulator = augmented_simulator
+
+        field_names = self.train_dataset._attr_y
+        chunk_sizes = [int(simulation[1]) for simulation in self.train_dataset.extra_data["simulation_names"]]
+        flattened_train = np.concatenate([self.train_dataset.data[field_name][:, None] for field_name in field_names], axis = 1)
+        mean_observ,std_observ = iterative_fit(flattened_train,chunk_sizes)
+        self.ml_normalization["mean"] = mean_observ
+        self.ml_normalization["std"] = std_observ
+
         if dataset == "all":
             li_dataset = [self._test_dataset, self._test_ood_dataset]
             keys = ["test", "test_ood"]
@@ -228,9 +238,11 @@ class AirfRANSBenchmark(Benchmark):
         end_ = time.perf_counter()
         self.augmented_simulator.predict_time = end_ - begin_
         observation_metadata = dataset.extra_data
+
         res = self.evaluation.evaluate(observations=dataset.data,
                                        predictions=predictions,
-                                       observation_metadata=observation_metadata
+                                       observation_metadata=observation_metadata,
+                                       ml_normalization = self.ml_normalization
                                        )
         if save_path:
             if not isinstance(save_path, pathlib.Path):
