@@ -72,6 +72,7 @@ class AirfRANSEvaluation(Evaluation):
                  observations: dict,
                  predictions: dict,
                  observation_metadata : dict,
+                 ml_normalization : Union[dict, None]=None,
                  save_path: Union[str, None]=None) -> dict:
         """The main function which evaluates all the required criteria noted in config file
 
@@ -87,7 +88,7 @@ class AirfRANSEvaluation(Evaluation):
         # call the base class for generic evaluations
         super().evaluate(observations, predictions, save_path)
         criteria = {}
-
+        self.ml_normalization = ml_normalization
         self.observation_metadata = observation_metadata
 
         for cat in self.eval_dict.keys():

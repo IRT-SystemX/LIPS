@@ -173,7 +173,6 @@ class AirfRANSBenchmark(Benchmark):
         mean_observ,std_observ = iterative_fit(flattened_train,chunk_sizes)
         self.ml_normalization["mean"] = mean_observ
         self.ml_normalization["std"] = std_observ
-        self.evaluation.ml_normalization = self.ml_normalization
 
         if dataset == "all":
             li_dataset = [self._test_dataset, self._test_ood_dataset]
@@ -239,9 +238,11 @@ class AirfRANSBenchmark(Benchmark):
         end_ = time.perf_counter()
         self.augmented_simulator.predict_time = end_ - begin_
         observation_metadata = dataset.extra_data
+
         res = self.evaluation.evaluate(observations=dataset.data,
                                        predictions=predictions,
-                                       observation_metadata=observation_metadata
+                                       observation_metadata=observation_metadata,
+                                       ml_normalization = self.ml_normalization
                                        )
         if save_path:
             if not isinstance(save_path, pathlib.Path):
