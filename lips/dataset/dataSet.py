@@ -35,47 +35,6 @@ class DataSet(object):
         self.data = None
         self.size = 0
 
-    def __len__(self):
-        return self.size
-
-    def generate(self,
-                 simulator: PhysicalSimulator,
-                 actor: Union[None, object],
-                 path_out: Union[str, None],
-                 nb_samples: int,
-                 simulator_seed: Union[None, int]=None,
-                 actor_seed: Union[None, int]=None):
-        """Generate a dataset from a simulator
-        function to generate some data. It takes a "simulator" as input and will save the results into path_out.
-
-        We expect that the results are saved in `path_out/simulation_name` if they are stored
-        in plain text. Otherwise, if stored in a database we expect them to have (at least) some metadata involving the
-        the `simulation_name`.
-
-        Parameters
-        ----------
-        simulator: PhysicalSimulator
-            A simulator. The exact definition of the interface of the simulator is for now free. This means that a
-            specific dataset class should be used for all different usecase.
-        actor: Union[None, object]
-            Something that is able to modify the simulator to generate different kind of data. It can be ``None``
-            if this is irrelevant.
-        path_out: Union[str, None]
-            The path where the data should be saved
-        nb_samples: int
-            The number of "step" to generate
-        simulator_seed: Union[None, int]
-            Seed used to set the simulator for reproducible experiments
-        actor_seed: Union[None, int]
-            Seed used to set the actor for reproducible experiments
-        """
-        assert isinstance(simulator, PhysicalSimulator), f"simulator should be a derived type of `PhysicalSimulator` " \
-                                                         f"you provided {type(simulator)}"
-        if actor is not None and not isinstance(actor, simulator.actor_types):
-            raise RuntimeError(f"actor should be compatible with your simulator. You provided an actor of "
-                               f"type {type(actor)} while your simulator accepts only actor from types "
-                               f"{simulator.actor_types}")
-
     def load(self, path:str):
         """Load a dataset from a file
         This function loads a dataset previously generated, for example by a call to `generate` it is expected
@@ -133,9 +92,8 @@ class DataSet(object):
                                "Have you called `dataset.load(...)` "
                                "or `dataset.generate(...)` ?")
 
-    def __len__(self)->int:
-        data=self.GetData()
-        return data[list(data.keys())[0]].shape[0]
+    def __len__(self):
+        return self.size
 
     def __iter__(self):
         self.current_index = 0
@@ -143,10 +101,10 @@ class DataSet(object):
 
     def __next__(self):
         if self.current_index < len(self):
-            currentData=self.__getitem__(self.current_index)
+            currentData=self.__getitem__(index=self.current_index)
             self.current_index += 1
             return currentData
         raise StopIteration
 
-    def __getitem__(self, item:int):
+    def __getitem__(self, index:int):
         return self.get_data(index)

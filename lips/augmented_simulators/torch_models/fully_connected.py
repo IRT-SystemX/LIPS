@@ -218,6 +218,9 @@ class TorchFullyConnected(nn.Module):
         """
         *dim_inputs, self.output_size = dataset.get_sizes()
         self.input_size = np.sum(dim_inputs)
+        for data in [self.input_size,self.output_size]:
+            if data is None:
+                raise Exception("Dataset input/output sizes not defined properly!") 
 
     def get_metadata(self):
         res_json = {}
