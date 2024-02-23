@@ -48,8 +48,8 @@ class StandardScalerIterative(Scaler):
         self._m_x,self._std_x = iterative_fit(data=x, chunk_sizes=self.chunk_sizes)
         self._m_y,self._std_y = iterative_fit(data=y, chunk_sizes=self.chunk_sizes)
         # to avoid division by 0.
-        self._std_x[np.abs(self._std_x) <= 1e-1] = 1
-        self._std_y[np.abs(self._std_y) <= 1e-1] = 1
+        self._std_x[np.abs(self._std_x) <= 1e-6] = 1
+        self._std_y[np.abs(self._std_y) <= 1e-6] = 1
         if self.no_norm_x is not None:
             self._m_x[self.no_norm_x]=0
             self._std_x[self.no_norm_x]=1
