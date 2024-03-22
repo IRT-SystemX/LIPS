@@ -19,6 +19,7 @@ import json
 from tqdm import tqdm  # TODO remove for final push
 
 import numpy as np
+from scipy import sparse
 from grid2op.Agent import BaseAgent
 
 from . import DataSet
@@ -113,6 +114,7 @@ class PowerGridDataSet(DataSet):
                  simulator_seed: Union[None, int]=None,
                  actor_seed: Union[None, int]=None,
                  do_store_physics: bool=False,
+                 store_as_sparse: bool=False,
                  is_dc: bool=False):
         """Generate a powergrid dataset
 
@@ -172,7 +174,13 @@ class PowerGridDataSet(DataSet):
         #to save physical variables if required
         if (do_store_physics):
             n_bus_bars = simulator._simulator.n_sub * 2
-            self.data["YBus"] = np.zeros((nb_samples, n_bus_bars, n_bus_bars), dtype=np.complex128) #for admittance matrix
+            # store the Ybus as sparse matrix, mendatory for large envs as the memory is highly impacted by this matrix
+            if store_as_sparse:
+                self.__ybus_data = []
+                self.__row_indices = []
+                self.__col_indices = []
+            else:
+                self.data["YBus"] = np.zeros((nb_samples, n_bus_bars, n_bus_bars), dtype=np.complex128) #for admittance matrix
             self.data["SBus"] = np.zeros((nb_samples, n_bus_bars), dtype=np.complex128) #for vector of nodal injections
             self.data["PV_nodes"] = np.zeros((nb_samples, n_bus_bars), dtype=bool) #for indices of P-V nodes
             self.data["slack"] = np.zeros((nb_samples, 2), dtype=np.float16) #for indice of slack and active power adjusment from chronic
@@ -187,13 +195,16 @@ class PowerGridDataSet(DataSet):
                 simulator.modify_state(actor)
                 current_state, _ = simulator.get_state()
                 grid = simulator._simulator.backend._grid
-                self._store_obs(ds_size, current_state, grid, do_store_physics, is_LightSimBackend, is_dc)
+                self._store_obs(ds_size, current_state, grid, do_store_physics, is_LightSimBackend, is_dc, store_as_sparse)
                 nb_steps += 1
                 ds_size += 1
                 pbar.update(1)
                 if ds_size >= nb_samples:
                     break
-
+        if do_store_physics & store_as_sparse:
+            sparse_matrix = sparse.csr_matrix((self.__ybus_data, (self.__row_indices, self.__col_indices)),
+                                              shape=(nb_samples,n_bus_bars*n_bus_bars))
+            self.data["YBus"] = sparse_matrix
         pbar.close()
         self.size = nb_samples
         self._init_sample()
@@ -202,9 +213,9 @@ class PowerGridDataSet(DataSet):
         self._store_chronics_info(simulator)
         if path_out is not None:
             # I should save the data
-            self._save_internal_data(path_out)
+            self._save_internal_data(path_out, do_save_physics=do_store_physics, store_as_sparse=store_as_sparse)
 
-    def _store_obs(self, current_size, obs, grid, do_store_physics=True, is_lightSimBackend=True, is_dc=False):
+    def _store_obs(self, current_size, obs, grid, do_store_physics=True, is_lightSimBackend=True, is_dc=False, store_as_sparse=False):
         """store an observation in self.data"""
         for attr_nm in self._attr_names:
             array_ = getattr(obs, attr_nm)
@@ -212,10 +223,10 @@ class PowerGridDataSet(DataSet):
 
         #Also Store Admittance Matrix YBus and Injection Vector SBus (if backend is LightSim2Grid
         if(do_store_physics):
-            self._store_physics(current_size, obs, grid, is_lightSimBackend, is_dc)
+            self._store_physics(current_size, obs, grid, is_lightSimBackend, is_dc, store_as_sparse)
 
 
-    def _store_physics(self, current_size: int, obs, grid, is_lightSimBackend: bool, is_dc: bool=False):
+    def _store_physics(self, current_size: int, obs, grid, is_lightSimBackend: bool, is_dc: bool=False, store_as_sparse: bool=False):
         """Store physical variables related to grid in addition to regular observations
 
         Parameters
@@ -261,7 +272,15 @@ class PowerGridDataSet(DataSet):
             index_gens_slack = (prod_bus==node_slack_id)
             adjusted_prod_slack = obs.gen_p[index_gens_slack].sum() - Sbus[node_slack_id].real #after_powerflow - in_chronics
 
-            self.data["YBus"][current_size, :] = admittance_matrix
+            if store_as_sparse:
+                array_2d = admittance_matrix.reshape(1,-1)
+                row_index, col_index = np.nonzero(array_2d)
+                data = array_2d[row_index, col_index]
+                self.__row_indices.extend(row_index + current_size)
+                self.__col_indices.extend(col_index)
+                self.__ybus_data.extend(data)
+            else:
+                self.data["YBus"][current_size, :] = admittance_matrix
             self.data["SBus"][current_size, :] = Injection_vect
             self.data["PV_nodes"][current_size, :] = pv_nodes
             self.data["slack"][current_size, :] = np.array([node_slack_id,adjusted_prod_slack], dtype=np.float16)
@@ -302,7 +321,7 @@ class PowerGridDataSet(DataSet):
                 array_ = np.asanyarray(array_, dtype=object)
             np.savez_compressed(f"{os.path.join(chronics_path, attr_nm)}.npz", data=array_)
 
-    def _save_internal_data(self, path_out:str,do_save_physics=True):
+    def _save_internal_data(self, path_out:str,do_save_physics=True, store_as_sparse: bool=False):
         """save the self.data in a proper format
 
         Parameters
@@ -336,7 +355,10 @@ class PowerGridDataSet(DataSet):
             np.savez_compressed(f"{os.path.join(full_path_out, attr_nm)}.npz", data=self.data[attr_nm])
         if(do_save_physics):
             if("YBus" in self.data.keys()):
-                np.savez_compressed(os.path.join(full_path_out, "YBus")+".npz", data=self.data["YBus"])
+                if store_as_sparse:
+                    sparse.save_npz(os.path.join(full_path_out, "YBus")+".npz", matrix=self.data["YBus"])
+                else:
+                    np.savez_compressed(os.path.join(full_path_out, "YBus")+".npz", data=self.data["YBus"])
             if("SBus" in self.data.keys()):
                 np.savez_compressed(os.path.join(full_path_out, "SBus") + ".npz", data=self.data["SBus"])
             if("PV_nodes" in self.data.keys()):
@@ -350,7 +372,7 @@ class PowerGridDataSet(DataSet):
         with open(os.path.join(full_path_out ,"metadata.json"), "w", encoding="utf-8") as f:
             json.dump(obj=self.env_data, fp=f, indent=4, sort_keys=True, cls=NpEncoder)
 
-    def load(self, path:str):
+    def load(self, path:str, load_ybus_as_sparse: bool=False):
         """load the dataset from a path
 
         Parameters
@@ -392,13 +414,17 @@ class PowerGridDataSet(DataSet):
         #for attr_nm in (*self._attr_names, *self._theta_attr_names):
         if self.config.get_option("attr_physics"):
             attr_names = self._attr_names + self.config.get_option("attr_physics")
-        else: 
+        else:
             attr_names = self._attr_names
 
         for attr_nm in attr_names:
             path_this_array = f"{os.path.join(full_path, attr_nm)}.npz"
-            self.data[attr_nm] = np.load(path_this_array)["data"]
-            self.size = self.data[attr_nm].shape[0]
+            if (attr_nm == "YBus") and (load_ybus_as_sparse):
+                self.data[attr_nm] = sparse.load_npz(path_this_array)
+            else:
+                self.data[attr_nm] = np.load(path_this_array)["data"]
+
+        self.size = self.data[attr_nm].shape[0]
 
         self._init_sample()
         self._infer_sizes()
@@ -552,11 +578,12 @@ class PowerGridDataSet(DataSet):
     def _infer_sizes(self):
         #data = copy.deepcopy(self.data)
         self._sizes_x = np.array([self.data[el].shape[1] for el in self._attr_x], dtype=int)
-        self._sizes_tau = np.array([self.data[el].shape[1] for el in self._attr_tau], dtype=int)
-        self._sizes_y = np.array([self.data[el].shape[1] for el in self._attr_y], dtype=int)
         self._size_x = np.sum(self._sizes_x)
-        self._size_tau = np.sum(self._sizes_tau)
+        self._sizes_y = np.array([self.data[el].shape[1] for el in self._attr_y], dtype=int)
         self._size_y = np.sum(self._sizes_y)
+        if self._attr_tau is not None:
+            self._sizes_tau = np.array([self.data[el].shape[1] for el in self._attr_tau], dtype=int)
+            self._size_tau = np.sum(self._sizes_tau)
 
     def get_sizes(self, attr_x: Union[tuple, None]=None, attr_tau: Union[tuple, None]=None, attr_y: Union[tuple, None]=None):
         """Get the sizes of the dataset
@@ -573,18 +600,18 @@ class PowerGridDataSet(DataSet):
         else:
             size_x = self._size_x
 
-        if attr_tau is not None:
-            sizes_tau = np.array([self.data[el].shape[1] for el in attr_tau], dtype=int)
-            size_tau = np.sum(sizes_tau)
-        else:
-            size_tau = self._size_tau
-
-
         if attr_y is not None:
             sizes_y = np.array([self.data[el].shape[1] for el in attr_y], dtype=int)
             size_y = np.sum(sizes_y)
         else:
             size_y = self._size_y
+
+        if attr_tau is not None:
+            sizes_tau = np.array([self.data[el].shape[1] for el in attr_tau], dtype=int)
+            size_tau = np.sum(sizes_tau)
+        else:
+            # size_tau = self._size_tau
+            return size_x, size_y
         
         return size_x, size_tau, size_y
 
@@ -604,16 +631,21 @@ class PowerGridDataSet(DataSet):
         data = copy.deepcopy(self.data)
 
         if concat:
-            attr_x = self._attr_tau + self._attr_x
+            if self._attr_tau is not None:
+                attr_x = self._attr_tau + self._attr_x
+            else:
+                attr_x = self._attr_x
             extract_x = np.concatenate([data[el].astype(np.float32) for el in attr_x], axis=1)
             extract_y = np.concatenate([data[el].astype(np.float32) for el in self._attr_y], axis=1)
             return extract_x, extract_y
         else:
             extract_x = [data[el].astype(np.float32) for el in self._attr_x]
-            extract_tau = [data[el].astype(np.float32) for el in self._attr_tau]
             extract_y = [data[el].astype(np.float32) for el in self._attr_y]
-            return (extract_x, extract_tau), extract_y
-
+            if self._attr_tau is not None:
+                extract_tau = [data[el].astype(np.float32) for el in self._attr_tau]
+                return (extract_x, extract_tau), extract_y
+            else:
+                return extract_x, extract_y
 
     def reconstruct_output(self, data: "np.ndarray") -> dict:
         """It reconstruct the data from the extracted data
