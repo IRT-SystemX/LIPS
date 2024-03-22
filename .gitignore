@@ -163,6 +163,7 @@ reference_data/powergrid/l2rpn_neurips_2020_track1_small/benchmark1/*
 reference_data/powergrid/l2rpn_neurips_2020_track1_small/benchmark2/*
 reference_data/powergrid/l2rpn_neurips_2020_track1_small/benchmark3/*
 reference_data/powergrid/l2rpn_neurips_2020_track1_small/DC/*
+reference_data/powergrid/l2rpn_idf_2023/Benchmark_competition/*
 
 getting_started/AirfoilUsecase/AirfRANSDataset
 getting_started/AirfoilUsecase/Dataset
@@ -195,7 +196,8 @@ lips/evaluation/conf.ini
 lips/evaluation/__init__.py.bkp
 
 # tests
-lips/tests/Evaluation/test_evaluation.py
+lips/tests/Evaluation/test_evaluation.py.bkp
+lips/tests/data/powergrid/l2rpn_idf_2023
 
 # LIPS
 logs.log

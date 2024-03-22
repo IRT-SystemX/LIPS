@@ -6,8 +6,9 @@ import itertools
 import warnings
 import numpy as np
 
-from grid2op.Chronics import GridStateFromFile
-from grid2op.Action.DontAct import DontAct
+# from grid2op.Chronics import GridStateFromFile
+from grid2op.Chronics import GridStateFromFileWithForecasts
+from grid2op.Action import DontAct
 from grid2op.Action import PlayableAction
 from grid2op.Agent import BaseAgent
 from grid2op.Parameters import Parameters
@@ -42,7 +43,7 @@ def get_kwargs_simulator_scenario(config: ConfigManager) -> dict:
     return {"dataset": env_name,
             "param": param,
             # disable maintenances
-            "data_feeding_kwargs": {"gridvalueClass": GridStateFromFile},
+            "data_feeding_kwargs": {"gridvalueClass": GridStateFromFileWithForecasts},
             # inhibit the opponent
             "action_class": PlayableAction,
             "opponent_init_budget": 0,
@@ -100,7 +101,7 @@ class XDepthAgent(BaseAgent):
     # TODO: Do not take the same actions as the opponent (if opponent is avoided, this is not necessary)
     """
     def __init__(self,
-                 action_space,
+                 env,
                  all_topo_actions: Union[list, None]=None,
                  reference_params: Union[dict, None]=None,
                  scenario_params: Union[dict, None]=None,
@@ -109,7 +110,9 @@ class XDepthAgent(BaseAgent):
                  **kwargs
                 ):
 
-        super().__init__(action_space)
+        super().__init__(env.action_space)
+        self.env = env
+        action_space = self.env.action_space
         self.params = scenario_params if scenario_params is not None else {}
         self.params.update(kwargs)
         self.topo_actions = self.params.get("topo_actions", None)
@@ -119,6 +122,10 @@ class XDepthAgent(BaseAgent):
         self.prob_type = self.params.get("prob_type", (1., 0.))
         self.prob_do_nothing = self.params.get("prob_do_nothing", 1)
         self.max_disc = self.params.get("max_disc", 0)
+        self.action_by_area = self.params.get("action_by_area", False)
+        if self.action_by_area:
+            self.lines_id_by_area = list(env._game_rules.legal_action.lines_id_by_area.values())
+
         if reference_params == {}:
             self.reference_args = None
         else:
@@ -175,7 +182,7 @@ class XDepthAgent(BaseAgent):
             self.ref_prob_do_nothing = self.reference_args.get("prob_do_nothing", 1.)
             self.ref_max_disc = self.reference_args.get("max_disc", 0)
 
-            self.ref_agent = self.__class__(action_space=self.action_space,
+            self.ref_agent = self.__class__(self.env,
                                             all_topo_actions=self.all_topo_actions,
                                             log_path=self.log_path,
                                             seed=seed,
@@ -328,7 +335,16 @@ class XDepthAgent(BaseAgent):
         self._remaining_lines = list(set(np.arange(len(self.line_ids))) -
                                      set(self.disconnected_lines_id)) #-
                                      #set(self.opponent_attack_line))
-        id_ = self.space_prng.choice(self._remaining_lines)
+        #id_ = self.space_prng.choice(self._remaining_lines)
+        
+        # select a line if it is in the same region of the first disconnection
+        if (len(self.disconnected_lines_id) > 0) & (self.action_by_area): # ensure that there is already a disconnected line
+            # get the area in which we have already disconnected a line
+            area_id_ = [i for i, area in enumerate(self.lines_id_by_area) if self.disconnected_lines_id[-1] in area][0]
+            remaining_lines = list(set(self.lines_id_by_area[area_id_]) - set(self.disconnected_lines_id))
+            id_ = self.space_prng.choice(remaining_lines)
+        else:
+            id_ = self.space_prng.choice(self._remaining_lines)
         return self.line_ids[id_], self._disc_actions[id_]
 
     def _select_topo_action(self, sub_id):
