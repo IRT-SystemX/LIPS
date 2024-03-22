@@ -331,7 +331,7 @@ def get_active_power(dataset, obs, theta, index):
     """
     lor_bus, lor_conn = obs._get_bus_id(obs.line_or_pos_topo_vect, obs.line_or_to_subid)
     lex_bus, lex_conn = obs._get_bus_id(obs.line_ex_pos_topo_vect, obs.line_ex_to_subid)
-    index_array = np.vstack((np.arange(obs.n_line), lor_bus, lex_bus)).T 
+    index_array = np.vstack((np.arange(obs.n_line), lor_bus, lex_bus)).T
     # Create the adjacency matrix (MxN) M: branches and N: Nodes
     A_or = np.zeros((obs.n_line, obs.n_sub))
     A_ex = np.zeros((obs.n_line, obs.n_sub))
@@ -341,10 +341,10 @@ def get_active_power(dataset, obs, theta, index):
             A_or[line, index_array[line,1]] = 1
             A_or[line, index_array[line,2]] = -1
             A_ex[line, index_array[line,1]] = -1
-            A_ex[line, index_array[line,2]] = 1        
+            A_ex[line, index_array[line,2]] = 1
     
     # Create the diagonal matrix D (MxM)
-    Ybus = dataset["YBus"][index][:14,:14]
+    Ybus = dataset["YBus"][index][:obs.n_sub,:obs.n_sub]
     D = np.zeros((obs.n_line, obs.n_line), dtype=complex)
     for line in index_array[:, 0]:
         bus_from = index_array[line, 1]
