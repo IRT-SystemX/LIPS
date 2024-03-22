@@ -454,7 +454,7 @@ class TorchSimulator(AugmentedSimulator):
             # copy the weights into this file
             shutil.copy(path_weights, nm_tmp)
             # load this copy (make sure the proper file is not corrupted even if the loading fails)
-            self._model.load_state_dict(torch.load(nm_tmp))
+            self._model.load_state_dict(torch.load(nm_tmp), strict=False)
 
     def _save_losses(self, path: Union[str, pathlib.Path]):
         """
