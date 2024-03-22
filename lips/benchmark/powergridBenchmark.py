@@ -69,6 +69,7 @@ class PowerGridBenchmark(Benchmark):
                  config_path: Union[pathlib.Path, str],
                  benchmark_name: str="Benchmark1",
                  load_data_set: bool=False,
+                 load_ybus_as_sparse: bool=False,
                  evaluation: Union[PowerGridEvaluation, None]=None,
                  log_path: Union[pathlib.Path, str, None]=None,
                  **kwargs
@@ -113,9 +114,17 @@ class PowerGridBenchmark(Benchmark):
         self.initial_chronics_id = kwargs.get("initial_chronics_id") if "initial_chronics_id" in kwargs else self.config.get_option("benchmark_seeds").get("initial_chronics_id", 0)
 
         # concatenate all the variables for data generation
-        attr_names = self.config.get_option("attr_x") + \
-                     self.config.get_option("attr_tau") + \
-                     self.config.get_option("attr_y")
+        attr_names = ()
+        if self.config.get_option("attr_x") is not None:
+            attr_names += self.config.get_option("attr_x")
+        if self.config.get_option("attr_tau") is not None:
+            attr_names += self.config.get_option("attr_tau")
+        if self.config.get_option("attr_y") is not None:
+            attr_names += self.config.get_option("attr_y")
+        
+        # attr_names = self.config.get_option("attr_x") + \
+        #              self.config.get_option("attr_tau") + \
+        #              self.config.get_option("attr_y")
 
         self.train_dataset = PowerGridDataSet(name="train",
                                               attr_names=attr_names,
@@ -142,9 +151,9 @@ class PowerGridBenchmark(Benchmark):
                                                        )
 
         if load_data_set:
-            self.load()
+            self.load(load_ybus_as_sparse)
 
-    def load(self):
+    def load(self, load_ybus_as_sparse: bool = False):
         """
         load the already generated datasets
         """
@@ -154,15 +163,16 @@ class PowerGridBenchmark(Benchmark):
         if not os.path.exists(self.path_datasets):
             raise RuntimeError(f"No data are found in {self.path_datasets}. Have you generated or downloaded "
                                f"some data ?")
-        self.train_dataset.load(path=self.path_datasets)
-        self.val_dataset.load(path=self.path_datasets)
-        self._test_dataset.load(path=self.path_datasets)
-        self._test_ood_topo_dataset.load(path=self.path_datasets)
+        self.train_dataset.load(path=self.path_datasets, load_ybus_as_sparse=load_ybus_as_sparse)
+        self.val_dataset.load(path=self.path_datasets, load_ybus_as_sparse=load_ybus_as_sparse)
+        self._test_dataset.load(path=self.path_datasets, load_ybus_as_sparse=load_ybus_as_sparse)
+        self._test_ood_topo_dataset.load(path=self.path_datasets, load_ybus_as_sparse=load_ybus_as_sparse)
         self.is_loaded = True
 
     def generate(self, nb_sample_train: int, nb_sample_val: int,
-                 nb_sample_test: int, nb_sample_test_ood_topo: int, 
-                 do_store_physics: bool=False, is_dc: bool=False):
+                 nb_sample_test: int, nb_sample_test_ood_topo: int,
+                 do_store_physics: bool=False, is_dc: bool=False,
+                 store_as_sparse: bool=False):
         """
         generate the different datasets required for the benchmark
         """
@@ -192,7 +202,8 @@ class PowerGridBenchmark(Benchmark):
                                     nb_samples=nb_sample_train,
                                     nb_samples_per_chronic=self.config.get_option("samples_per_chronic").get("train", 864),
                                     do_store_physics=do_store_physics,
-                                    is_dc=is_dc
+                                    is_dc=is_dc,
+                                    store_as_sparse=store_as_sparse
                                     )
         self.val_dataset.generate(simulator=self.val_simulator,
                                   actor=self.val_actor,
@@ -200,7 +211,8 @@ class PowerGridBenchmark(Benchmark):
                                   nb_samples=nb_sample_val,
                                   nb_samples_per_chronic=self.config.get_option("samples_per_chronic").get("val", 288),
                                   do_store_physics=do_store_physics,
-                                  is_dc=is_dc
+                                  is_dc=is_dc,
+                                  store_as_sparse=store_as_sparse
                                   )
         self._test_dataset.generate(simulator=self.test_simulator,
                                     actor=self.test_actor,
@@ -208,7 +220,8 @@ class PowerGridBenchmark(Benchmark):
                                     nb_samples=nb_sample_test,
                                     nb_samples_per_chronic=self.config.get_option("samples_per_chronic").get("test", 288),
                                     do_store_physics=do_store_physics,
-                                    is_dc=is_dc
+                                    is_dc=is_dc,
+                                    store_as_sparse=store_as_sparse
                                     )
         self._test_ood_topo_dataset.generate(simulator=self.test_ood_topo_simulator,
                                              actor=self.test_ood_topo_actor,
@@ -216,7 +229,8 @@ class PowerGridBenchmark(Benchmark):
                                              nb_samples=nb_sample_test_ood_topo,
                                              nb_samples_per_chronic=self.config.get_option("samples_per_chronic").get("test_ood", 288),
                                              do_store_physics=do_store_physics,
-                                             is_dc=is_dc
+                                             is_dc=is_dc,
+                                             store_as_sparse=store_as_sparse
                                              )
 
     def evaluate_simulator(self,
@@ -400,25 +414,25 @@ class PowerGridBenchmark(Benchmark):
         self.test_ood_topo_simulator.seed(self.test_ood_topo_env_seed)
 
         all_topo_actions = get_action_list(self.env.action_space)
-        self.training_actor = XDepthAgent(self.env.action_space,
+        self.training_actor = XDepthAgent(self.env,
                                           all_topo_actions=all_topo_actions,
                                           reference_params=self.config.get_option("dataset_create_params").get("reference_args", None),
                                           scenario_params=self.config.get_option("dataset_create_params")["train"],
                                           seed=self.train_actor_seed,
                                           log_path=self.log_path)
-        self.val_actor = XDepthAgent(self.env.action_space,
+        self.val_actor = XDepthAgent(self.env,
                                      all_topo_actions=all_topo_actions,
                                      reference_params=self.config.get_option("dataset_create_params").get("reference_args", None),
                                      scenario_params=self.config.get_option("dataset_create_params")["test"],
                                      seed=self.val_actor_seed,
                                      log_path=self.log_path)
-        self.test_actor = XDepthAgent(self.env.action_space,
+        self.test_actor = XDepthAgent(self.env,
                                       all_topo_actions=all_topo_actions,
                                       reference_params=self.config.get_option("dataset_create_params").get("reference_args", None),
                                       scenario_params=self.config.get_option("dataset_create_params")["test"],
                                       seed=self.test_actor_seed,
                                       log_path=self.log_path)
-        self.test_ood_topo_actor = XDepthAgent(self.env.action_space,
+        self.test_ood_topo_actor = XDepthAgent(self.env,
                                                all_topo_actions=all_topo_actions,
                                                reference_params=self.config.get_option("dataset_create_params").get("reference_args", None),
                                                scenario_params=self.config.get_option("dataset_create_params")["test_ood"],
