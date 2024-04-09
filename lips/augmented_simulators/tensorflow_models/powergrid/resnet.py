@@ -12,7 +12,7 @@ with warnings.catch_warnings():
     warnings.filterwarnings("ignore", category=FutureWarning)
     from tensorflow import keras
 
-from leap_net.tf_keras import ResNetLayer
+from leap_net import ResNetLayer
 
 from .utils import TopoVectTransformation
 from ..fully_connected import TfFullyConnected
