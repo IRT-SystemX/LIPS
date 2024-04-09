@@ -610,8 +610,8 @@ class PowerGridDataSet(DataSet):
             sizes_tau = np.array([self.data[el].shape[1] for el in attr_tau], dtype=int)
             size_tau = np.sum(sizes_tau)
         else:
-            # size_tau = self._size_tau
-            return size_x, size_y
+            size_tau = self._size_tau
+            #return size_x, size_y
         
         return size_x, size_tau, size_y
 
