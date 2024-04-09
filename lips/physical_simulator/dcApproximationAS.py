@@ -45,6 +45,7 @@ class DCApproximationAS(PhysicsSolver):
                  config_path: Union[str, None] = None,
                  grid_path: Union[str, None] = None,
                  simulator: Union[Grid2opSimulator, None] = None,
+                 ignore_assert: bool=False
                  ):
         PhysicsSolver.__init__(self, name=name)
         self.config_manager = ConfigManager(path=config_path, section_name=benchmark_name)
@@ -60,7 +61,8 @@ class DCApproximationAS(PhysicsSolver):
         if grid_path is not None:
             self._raw_grid_simulator = PandaPowerBackend()
             self._raw_grid_simulator.load_grid(grid_path)
-            self._raw_grid_simulator.assert_grid_correct()
+            if not(ignore_assert):
+                self._raw_grid_simulator.assert_grid_correct()
         elif simulator is not None:
             assert isinstance(simulator, Grid2opSimulator), "To make the DC approximation augmented simulator, you " \
                                                             "should provide the reference grid as a Grid2opSimulator"

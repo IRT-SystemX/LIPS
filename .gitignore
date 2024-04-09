@@ -158,12 +158,20 @@ reference_data/pneumatic/*
 reference_data/powergrid/l2rpn_case14_sandbox/benchmark1/*
 reference_data/powergrid/l2rpn_case14_sandbox/benchmark2/*
 reference_data/powergrid/l2rpn_case14_sandbox/benchmark3/*
+reference_data/powergrid/l2rpn_case14_sandbox/Benchmark_competition_complete/*
+reference_data/powergrid/l2rpn_case14_sandbox/Benchmark_competition_demo/*
 reference_data/powergrid/l2rpn_case14_sandbox/DC/*
 reference_data/powergrid/l2rpn_neurips_2020_track1_small/benchmark1/*
 reference_data/powergrid/l2rpn_neurips_2020_track1_small/benchmark2/*
 reference_data/powergrid/l2rpn_neurips_2020_track1_small/benchmark3/*
+reference_data/powergrid/l2rpn_neurips_2020_track1_small/Benchmark_competition_complete/*
+reference_data/powergrid/l2rpn_neurips_2020_track1_small/Benchmark_competition_demo/*
 reference_data/powergrid/l2rpn_neurips_2020_track1_small/DC/*
-reference_data/powergrid/l2rpn_idf_2023/Benchmark_competition/*
+reference_data/powergrid/l2rpn_idf_2023/Benchmark_competition_complete/*
+reference_data/powergrid/l2rpn_idf_2023/Benchmark_competition_demo/*
+
+# Trained baseline
+trained_baselines/powergrid/*
 
 getting_started/AirfoilUsecase/AirfRANSDataset
 getting_started/AirfoilUsecase/Dataset
@@ -194,6 +202,7 @@ lips/evaluation/Evaluation.py.bkp
 lips/evaluation/Evaluation_new.py.bkp
 lips/evaluation/conf.ini
 lips/evaluation/__init__.py.bkp
+evaluation_results/PowerGrid/l2rpn_idf_2023/*
 
 # tests
 lips/tests/Evaluation/test_evaluation.py.bkp

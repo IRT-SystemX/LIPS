@@ -2,7 +2,7 @@ version: 2.1
 
 references:
   dep_key: &dep_key
-              deps8-{{ .Branch }}-{{ checksum "requirements.txt" }}
+              deps9-{{ .Branch }}-{{ checksum "requirements.txt" }}
 
 executors:
   docker-executor:
