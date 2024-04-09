@@ -6,17 +6,10 @@
 # SPDX-License-Identifier: MPL-2.0
 # This file is part of LIPS, LIPS is a python platform for power networks benchmarking
 
-import copy
 import pathlib
-import time
-import numpy as np
-import tensorflow as tf
-
 from lips.benchmark.powergridBenchmark import PowerGridBenchmark
-from lips.augmented_simulators.tensorflow_models import LeapNet
+from lips.augmented_simulators.tensorflow_models.powergrid.leap_net import LeapNet
 from lips.dataset.scaler.powergrid_scaler import PowerGridScaler
-from lips.config import ConfigManager
-
 
 # indicate required paths
 LIPS_PATH = pathlib.Path(__file__).parent.parent.parent.absolute()
@@ -82,4 +75,3 @@ def test_train_leapnet_raw():
                    )
 
     assert leap_net.trained is True
-
