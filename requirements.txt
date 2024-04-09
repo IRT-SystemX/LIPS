@@ -1,7 +1,7 @@
 filelock==3.7.1
 Grid2Op==1.9.8
 json2table==1.1.5
-leap-net==0.1.1
+leap-net==0.0.5
 lightsim2grid==0.7.5
 loguru==0.6.0
 numpy==1.21.5
