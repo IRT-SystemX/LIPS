@@ -34,9 +34,7 @@ class DataSet(object):
         self.name = name
         self.data = None
         self.size = 0
-
-    def __len__(self):
-        return self.size
+        self.current_index = 0
 
     def generate(self,
                  simulator: PhysicalSimulator,
@@ -133,9 +131,12 @@ class DataSet(object):
                                "Have you called `dataset.load(...)` "
                                "or `dataset.generate(...)` ?")
 
-    def __len__(self)->int:
-        data=self.GetData()
-        return data[list(data.keys())[0]].shape[0]
+    def __len__(self):
+        return self.size
+    
+    # def __len__(self)->int:
+    #     data = self.get_data()
+    #     return data[list(data.keys())[0]].shape[0]
 
     def __iter__(self):
         self.current_index = 0
@@ -143,10 +144,10 @@ class DataSet(object):
 
     def __next__(self):
         if self.current_index < len(self):
-            currentData=self.__getitem__(self.current_index)
+            current_data = self.__getitem__(self.current_index)
             self.current_index += 1
-            return currentData
+            return current_data
         raise StopIteration
 
-    def __getitem__(self, item:int):
+    def __getitem__(self, index:int):
         return self.get_data(index)
