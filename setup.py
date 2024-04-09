@@ -35,16 +35,16 @@ pkgs = {
     ],
     "extras": {
         "recommended": [
-            "grid2op==1.8.1", #>=1.7.2",
+            "grid2op==1.9.8", #>=1.7.2",
             "pybind11==2.8.1",
-            "lightsim2grid==0.7.1", #>=0.7.0.post1",
-            #"leap_net @ https://github.com/BDonnot/leap_net/tarball/master#egg=leap_net",
+            "lightsim2grid==0.7.5", #>=0.7.0.post1",
+            "leap-net==0.1.1",
             "protobuf==3.20.1",
             "pandapower==2.7.0",
             "pandas==1.4.2",
             "jupyter",
             "tensorflow==2.8.0",
-            "torch",
+            "torch==2.0.1",
         ],
         "docs": [
             "numpydoc>=0.9.2",
