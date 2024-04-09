@@ -12,7 +12,7 @@ with warnings.catch_warnings():
     warnings.filterwarnings("ignore", category=FutureWarning)
     from tensorflow import keras
 
-from leap_net import ResNetLayer
+from leap_net.tf_keras import ResNetLayer
 
 from .utils import TopoVectTransformation
 from ..fully_connected import TfFullyConnected
@@ -51,6 +51,7 @@ class TfResNetPowerGrid(TfFullyConnected):
         # Define layer to be used for the model
         self.layers = {"resnet": ResNetLayer}
         self.layer = self.layers[self.params["layer"]]
+        self._topo_vect_transformer = None
 
     def build_model(self):
         """Build the model
@@ -77,6 +78,14 @@ class TfResNetPowerGrid(TfFullyConnected):
                                   outputs=output_,
                                   name=f"{self.name}_model")
         return self._model
+    
+    def init_topo_vect_transformer(self, dataset: DataSet):
+        """Initialize the topo_vect_transformer using the training dataset
+
+        Args:
+            dataset (DataSet): _description_
+        """
+        self._topo_vect_transformer = TopoVectTransformation(self.bench_config, self.params, dataset)
 
     def process_dataset(self, dataset: DataSet, training: bool = False) -> tuple:
         """process the datasets for training and evaluation
@@ -107,7 +116,12 @@ class TfResNetPowerGrid(TfFullyConnected):
         line_status = extract_tau[0]
 
         if training:
-            self._topo_vect_transformer = TopoVectTransformation(self.bench_config, self.params, dataset)
+            self.init_topo_vect_transformer(dataset)
+            #self._topo_vect_transformer = TopoVectTransformation(self.bench_config, self.params, dataset)
+        else:
+            if self._topo_vect_transformer is None:
+                raise RuntimeError(f"If you load a pretrained model, you should first call the `init_topo_vect_transformer` function on training data!")
+
         # extract tau using LeapNetProxy function
         extract_tau = self._topo_vect_transformer.transform_topo_vect(dataset)
 
