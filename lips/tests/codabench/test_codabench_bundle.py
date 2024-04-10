@@ -3,12 +3,14 @@ import subprocess
 from loguru import logger
 from tempfile import TemporaryDirectory
 from pathlib import Path
+from lips import get_root_path
 
 def test_ingestion_scoring_programs():
+    LIPS_PATH = get_root_path(pathlib_format=True).parent
     dirname = Path(__file__).parent
     #dataset_dir = dirname / ".." / ".." / ".." / "reference_data"
     dataset_dir = dirname.parent / "data"
-    benchmark_config = dirname / ".." / ".." / ".." / "configurations" / "powergrid" / "benchmarks" / "l2rpn_case14_sandbox.ini"
+    benchmark_config = LIPS_PATH / "configurations" / "powergrid" / "benchmarks" / "l2rpn_case14_sandbox.ini"
     #benchmark_config = dirname.parent / "configs" / "powergrid" / "benchmarks" / "l2rpn_case14_sandbox.ini"
     benchmark_name = "Benchmark1"
 
@@ -18,7 +20,7 @@ def test_ingestion_scoring_programs():
 
         # check ingestion behaviour
         logger.info(f"Checking ingestion program for {benchmark_name}...")
-        ingestion_script = dirname / ".." / ".." / ".." / "codabench" / "ingestion_program" / "ingestion.py"
+        ingestion_script = LIPS_PATH / "codabench" / "ingestion_program" / "ingestion.py"
         ans_ingestion = subprocess.call(
             ["python", ingestion_script,
              "--dataset_dir", dataset_dir,
@@ -36,7 +38,7 @@ def test_ingestion_scoring_programs():
 
         # check scoring behaviour
         logger.info(f"Checking scoring program for {benchmark_name}...")
-        scoring_script = dirname / ".." / ".." / ".." / "codabench" / "scoring_program" / "score.py"
+        scoring_script = LIPS_PATH / "codabench" / "scoring_program" / "score.py"
         ans_scoring = subprocess.call(
             ["python", scoring_script,
              "--benchmark_config", benchmark_config,
@@ -54,3 +56,6 @@ def test_ingestion_scoring_programs():
         assert Path.exists(Path(tempdir + "/scores.json"))
         assert Path.exists(Path(tempdir + "/detailed_scores.json"))
         assert Path.exists(Path(tempdir + "/detailed_results.html"))
+
+if __name__ == "__main__":
+    test_ingestion_scoring_programs()
