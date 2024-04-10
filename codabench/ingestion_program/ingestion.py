@@ -80,7 +80,7 @@ def _parse_args() -> Tuple[Namespace, Dict]:
     default_dataset_dir = root_dir / "dataset"
     default_output_dir = root_dir / "benchmark_output"
     default_config = root_dir / "conf.ini"
-    default_submission_dir = root_dir / "code_submission"
+    default_submission_dir = root_dir / "basic_code_submission"
     parser = ArgumentParser()
     parser.add_argument(
         "--use_case",
