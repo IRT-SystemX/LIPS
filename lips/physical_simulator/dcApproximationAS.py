@@ -16,6 +16,7 @@ import numpy as np
 from grid2op.Backend import PandaPowerBackend
 from grid2op.Action._BackendAction import _BackendAction
 from grid2op.Action import CompleteAction
+from lightsim2grid import LightSimBackend
 
 from . import Grid2opSimulator
 from . import PhysicsSolver
@@ -45,7 +46,9 @@ class DCApproximationAS(PhysicsSolver):
                  config_path: Union[str, None] = None,
                  grid_path: Union[str, None] = None,
                  simulator: Union[Grid2opSimulator, None] = None,
-                 ignore_assert: bool=False
+                 backend: Union[PandaPowerBackend, LightSimBackend]=PandaPowerBackend,
+                 is_dc: bool = True,
+                 ignore_assert: bool = False
                  ):
         PhysicsSolver.__init__(self, name=name)
         self.config_manager = ConfigManager(path=config_path, section_name=benchmark_name)
@@ -59,7 +62,7 @@ class DCApproximationAS(PhysicsSolver):
         self._attr_fix_gen_p = "__prod_p_dc"
 
         if grid_path is not None:
-            self._raw_grid_simulator = PandaPowerBackend()
+            self._raw_grid_simulator = backend()
             self._raw_grid_simulator.load_grid(grid_path)
             if not(ignore_assert):
                 self._raw_grid_simulator.assert_grid_correct()
@@ -74,7 +77,7 @@ class DCApproximationAS(PhysicsSolver):
 
         self._bk_act_class = _BackendAction.init_grid(self._raw_grid_simulator)
         self._act_class = CompleteAction.init_grid(self._raw_grid_simulator)
-
+        self.is_dc = is_dc
         self.comp_time = 0
 
     def compute(self, dataset: PowerGridDataSet):
@@ -158,9 +161,14 @@ class DCApproximationAS(PhysicsSolver):
         self._raw_grid_simulator.apply_action(modifer)
 
         # start the simulator
-        _beg = time.time()
-        self._raw_grid_simulator.runpf(is_dc=True)
-        self.comp_time += time.time() - _beg
+        if isinstance(self._raw_grid_simulator, PandaPowerBackend):
+            _beg = time.time()
+            self._raw_grid_simulator.runpf(is_dc=self.is_dc)
+            self.comp_time += time.time() - _beg
+        elif isinstance(self._raw_grid_simulator, LightSimBackend):
+            beg_ = self._raw_grid_simulator._timer_solver
+            self._raw_grid_simulator.runpf(is_dc=self.is_dc)
+            self.comp_time += self._raw_grid_simulator._timer_solver - beg_
 
     def save(self, path_out):
         """
