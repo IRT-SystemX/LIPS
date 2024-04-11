@@ -54,6 +54,7 @@ class TfFullyConnected(TensorflowSimulator):
                  sim_config_path: str,
                  bench_config_path: Union[str, pathlib.Path],
                  bench_config_name: Union[str, None]=None,
+                 bench_kwargs: dict={},
                  sim_config_name: Union[str, None]=None,
                  name: Union[str, None]=None,
                  scaler: Union[Scaler, None]=None,
@@ -67,6 +68,7 @@ class TfFullyConnected(TensorflowSimulator):
         sim_config_name = sim_config_name if sim_config_name is not None else "DEFAULT"
         self.sim_config = ConfigManager(section_name=sim_config_name, path=sim_config_path)
         self.bench_config = ConfigManager(section_name=bench_config_name, path=bench_config_path)
+        self.bench_config.set_options_from_dict(**bench_kwargs)
         self.name = name if name is not None else self.sim_config.get_option("name")
         self.name = self.name + '_' + sim_config_name
         # scaler
