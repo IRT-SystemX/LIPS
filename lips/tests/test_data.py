@@ -25,10 +25,11 @@ import pathlib
 from cmath import exp
 from math import pi
 import numpy as np
+from lips import get_root_path
 
 from lips.benchmark.powergridBenchmark import PowerGridBenchmark
 
-LIPS_PATH = pathlib.Path(__file__).parent.parent.parent.absolute()
+LIPS_PATH = get_root_path(pathlib_format=True).parent
 CONFIG_PATH = LIPS_PATH / "lips" / "tests" / "configs" / "powergrid" / "benchmarks" / "l2rpn_case14_sandbox.ini"
 #DATA_PATH = LIPS_PATH / "reference_data" / "test"
 #DATA_PATH = LIPS_PATH / "reference_data" / "powergrid" / "l2rpn_case14_sandbox"
@@ -163,8 +164,6 @@ def test_bench1_data_reproducibility():
                             nb_sample_test_ood_topo=data_size
                            )
     dataset_labels = ("train_dataset", "val_dataset", "_test_dataset", "_test_ood_topo_dataset")
-    #data_ex1 = benchmark1_ex1.train_dataset.data
-    #data_ex2 = benchmark1_ex2.train_dataset.data
     for label_ in dataset_labels:
         data_ex1 = getattr(benchmark1_ex1, label_).data
         data_ex2 = getattr(benchmark1_ex2, label_).data
@@ -403,3 +402,26 @@ def test_power_grid_physics_informed_data():
         index_to_keep[slack_id]=False
         assert np.all(np.abs(np.round(SBus_after_pf - SBus_computed,2))[index_to_keep]<=0.01) #[pv_nodes]
         
+if __name__ == "__main__":
+    benchmark2_ex1 = PowerGridBenchmark(benchmark_path=DATA_PATH,
+                                        benchmark_name="Benchmark2",
+                                        load_data_set=True,
+                                        config_path=CONFIG_PATH,
+                                        log_path=LOG_PATH)
+    print(len(benchmark2_ex1.train_dataset))
+    print(benchmark2_ex1.train_dataset[0])
+
+    benchmark2_ex2 = PowerGridBenchmark(benchmark_path=None,
+                                        benchmark_name="Benchmark2",
+                                        load_data_set=False,
+                                        config_path=CONFIG_PATH,
+                                        log_path=LOG_PATH)
+
+    data_size = int(2e3)
+    benchmark2_ex2.generate(nb_sample_train=data_size,
+                            nb_sample_val=data_size,
+                            nb_sample_test=data_size,
+                            nb_sample_test_ood_topo=data_size)
+    
+    print(benchmark2_ex2.train_dataset.size)
+    print(benchmark2_ex2.train_dataset[0])

@@ -53,6 +53,7 @@ class TorchFullyConnected(nn.Module):
                  bench_config_path: Union[str, pathlib.Path],
                  sim_config_name: Union[str, None]=None,
                  bench_config_name: Union[str, None]=None,
+                 bench_kwargs: dict = {},
                  name: Union[str, None]=None,
                  scaler: Union[Scaler, None]=None,
                  log_path: Union[None, pathlib.Path, str]=None,
@@ -65,6 +66,7 @@ class TorchFullyConnected(nn.Module):
         sim_config_name = sim_config_name if sim_config_name is not None else "DEFAULT"
         self.sim_config = ConfigManager(section_name=sim_config_name, path=sim_config_path)
         self.bench_config = ConfigManager(section_name=bench_config_name, path=bench_config_path)
+        self.bench_config.set_options_from_dict(**bench_kwargs)
         self.name = name if name is not None else self.sim_config.get_option("name")
         # scaler
         self.scaler = scaler
