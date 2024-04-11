@@ -30,14 +30,14 @@ def test_env_idf():
 					opponent_action_class=DontAct,
 					data_feeding_kwargs={"gridvalueClass": GridStateFromFileWithForecasts})
 
-	env.deactivate_forecast()
+	# env.deactivate_forecast()
 
-	chronics = {
-		"train": ".*_[0-6]$",#6 chronics per month for 12 months
-		"val": ".*_[7-9]",#3 chronics per month for 12 months
-		"test": ".*_1[0-2]",#3 chronics per month for 12 months
-		"test_ood": ".*_1[3-5]"#3 chronics per month  for 12 months
-		}
+	# chronics = {
+	# 	"train": ".*_[0-6]$",#6 chronics per month for 12 months
+	# 	"val": ".*_[7-9]",#3 chronics per month for 12 months
+	# 	"test": ".*_1[0-2]",#3 chronics per month for 12 months
+	# 	"test_ood": ".*_1[3-5]"#3 chronics per month  for 12 months
+	# 	}
 
 	# chronics = {
 	# 	"train": "^((?!(.*9[0-9][0-9].*)).)*$", # # i use 994 chronics out of the 904 for training
@@ -46,13 +46,11 @@ def test_env_idf():
 	# 	"test_ood": ".*9[5-9][5-9].*" # i use 25 full chronics for testing
 	# }
 
-	# special case of the grid2Op environment: data are read from chronics that should be part of the dataset
-	# here i keep only certain chronics for the training, and the other for the test
-	chronics_selected_regex = re.compile(chronics.get("test_ood"))
-	env.chronics_handler.set_filter(lambda path:
-									re.match(chronics_selected_regex, path) is not None)
-	env.chronics_handler.real_data.reset()
-	env.set_id(0)
+	# chronics_selected_regex = re.compile(chronics.get("test_ood"))
+	# env.chronics_handler.set_filter(lambda path:
+	# 								re.match(chronics_selected_regex, path) is not None)
+	# env.chronics_handler.real_data.reset()
+	# env.set_id(0)
 
 	assert(env.env_name == "l2rpn_idf_2023")
 	#print(len(os.listdir(env.chronics_handler.path)))
