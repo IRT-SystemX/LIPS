@@ -632,7 +632,7 @@ class PowerGridDataSet(DataSet):
 
         if concat:
             if self._attr_tau is not None:
-                attr_x = self._attr_tau + self._attr_x
+                attr_x = self._attr_x + self._attr_tau
             else:
                 attr_x = self._attr_x
             extract_x = np.concatenate([data[el].astype(np.float32) for el in attr_x], axis=1)
