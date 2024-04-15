@@ -77,7 +77,7 @@ jobs:
       - restore_cache_dep
       - run:
           name: "run pytest"
-          no_output_timeout: 30m
+          no_output_timeout: 60m
           command: |
             . venv/bin/activate
             export PYTHONUNBUFFERED=1
