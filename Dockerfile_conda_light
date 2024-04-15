@@ -1,0 +1,51 @@
+# start with pytorch image
+FROM pytorch/pytorch:2.0.1-cuda11.7-cudnn8-devel
+# RUN rm /bin/sh && ln -s /bin/bash /bin/sh
+
+ENV DEBIAN_FRONTEND noninteractive
+
+
+# generic install
+RUN apt-get update && \
+    apt-get install -y \
+    python3.8 python3.8-dev python3-pip\
+    gfortran \
+    less \
+    apt-transport-https \
+    git\
+    ssh \
+    tar
+
+# Create and activate conda environment
+RUN conda create python=3.8 --name lips
+SHELL ["conda", "run", "-n", "lips", "/bin/bash", "-c"]
+
+# Install LIPS package and dependencies
+# Only copy needed elements
+COPY setup.* /LIPS/.
+COPY requirements* /LIPS/.
+COPY MANIFEST.in /LIPS/.
+COPY LICENSE /LIPS/.
+COPY README.md /LIPS/.
+COPY configurations /LIPS/.
+COPY lips /LIPS/lips
+
+WORKDIR /LIPS
+RUN pip install -r requirements_docker.txt
+RUN pip install -U --no-cache-dir .
+
+
+## check python version
+RUN python --version
+
+## activate conda env
+RUN echo "source activate lips" > ~/.bashrc
+ENV PATH /opt/conda/envs/lips/bin:$PATH
+
+ENV LIPS_HOME=/LIPS
+
+WORKDIR /
+
+# Env variables for CUDA / GPUs 
+ENV NVIDIA_VISIBLE_DEVICES=all
+

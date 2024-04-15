@@ -1,0 +1,12 @@
+pybind11==2.8.1
+protobuf==3.20.1
+pandapower==2.7.0
+pandas==1.4.2
+jupyter
+tensorflow==2.8.0
+torch==2.0.1
+filelock==3.7.1
+json2table==1.1.5
+loguru==0.6.0
+PyYAML==6.0
+tqdm==4.62.3
