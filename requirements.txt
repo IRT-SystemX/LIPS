@@ -22,3 +22,5 @@ six==1.16.0
 tqdm==4.62.3
 tensorflow==2.8.0
 torch==2.0.1
+imageio==2.34.0
+plotly==5.20.0
