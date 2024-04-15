@@ -1,14 +1,10 @@
-"""
-Licence:
-    Copyright (c) 2021, IRT SystemX (https://www.irt-systemx.fr/en/)
-    See AUTHORS.txt
-    This Source Code Form is subject to the terms of the Mozilla Public License, version 2.0.
-    If a copy of the Mozilla Public License, version 2.0 was not distributed with this file,
-    you can obtain one at http://mozilla.org/MPL/2.0/.
-    SPDX-License-Identifier: MPL-2.0
-    This file is part of LIPS, LIPS is a python platform for power networks benchmarking
-
-"""
+# Copyright (c) 2021, IRT SystemX (https://www.irt-systemx.fr/en/)
+# See AUTHORS.txt
+# This Source Code Form is subject to the terms of the Mozilla Public License, version 2.0.
+# If a copy of the Mozilla Public License, version 2.0 was not distributed with this file,
+# you can obtain one at http://mozilla.org/MPL/2.0/.
+# SPDX-License-Identifier: MPL-2.0
+# This file is part of LIPS, LIPS is a python platform for power networks benchmarking
 
 import os
 import shutil
@@ -18,10 +14,6 @@ import json
 import time
 from typing import Union
 import pathlib
-
-from tqdm import tqdm 
-import zipfile
-from urllib.request import urlretrieve
 
 import numpy as np
 import grid2op
@@ -36,21 +28,6 @@ from ..dataset.utils.powergrid_utils import get_kwargs_simulator_scenario
 from ..dataset.utils.powergrid_utils import XDepthAgent, get_action_list
 from ..evaluation.powergrid_evaluation import PowerGridEvaluation
 from ..utils import NpEncoder
-
-class DownloadProgressBar(tqdm):
-    """Provides `update_to(n)` which uses `tqdm.update(delta_n)`."""
-    def update_to(self, b = 1, bsize = 1, tsize = None):
-        """
-        b  : int, optional
-            Number of blocks transferred so far [default: 1].
-        bsize  : int, optional
-            Size of each block (in tqdm units) [default: 1].
-        tsize  : int, optional
-            Total size (in tqdm units). If [default: None] remains unchanged.
-        """
-        if tsize is not None:
-            self.total = tsize
-        self.update(b*bsize - self.n) # also sets self.n = b * bsize
 
 class PowerGridBenchmark(Benchmark):
     """PowerGrid Benchmark class
@@ -185,47 +162,6 @@ class PowerGridBenchmark(Benchmark):
         self._test_dataset.load(path=self.path_datasets, load_ybus_as_sparse=load_ybus_as_sparse)
         self._test_ood_topo_dataset.load(path=self.path_datasets, load_ybus_as_sparse=load_ybus_as_sparse)
         self.is_loaded = True
-
-    def download(self, dataset_name: str="l2rpn_case14_sandbox", unzip: bool=True):
-        """Download the dataset
-
-        Parameters
-        ----------
-
-        dataset_name : ``str``, optional
-            the dataset name, by default "l2rpn_case14_sandbox"
-        
-        unzip : ``bool``, optional
-            whether to unzip the downloaded file, by default True
-
-        Function
-        ------
-        Download the powergrid dataset and unzip it in the given path
-        available datasets are:
-            - l2rpn_case14_sandbox
-            - Benchmark_competition
-            - l2rpn_idf_2023 
-        """
-        if self.path_datasets is not None:
-            path = self.path_datasets
-
-        else :
-            raise RuntimeError("The path to download the dataset is not defined")
-        
-        try:
-            base_url = "https://data.lips.irt-systemx.fr/data/"
-            url = base_url + dataset_name + ".zip"
-            os.makedirs(path, exist_ok = True)
-            with DownloadProgressBar(unit = 'B', unit_scale = True, miniters = 1, unit_divisor = 1024, desc = 'Downloading test') as t:
-                urlretrieve(url, filename = os.path.join(path, dataset_name + '.zip'), reporthook = t.update_to)
-
-            if unzip:
-                print("Extracting " + dataset_name + ".zip at " + path + "...")
-                with zipfile.ZipFile(os.path.join(path, dataset_name + '.zip'), 'r') as zipf:
-                    zipf.extractall(path)
-
-        except ImportError as exc_:
-            raise RuntimeError("Impossible to `download` powergrid ") from exc_
 
     def generate(self, nb_sample_train: int, nb_sample_val: int,
                  nb_sample_test: int, nb_sample_test_ood_topo: int,
