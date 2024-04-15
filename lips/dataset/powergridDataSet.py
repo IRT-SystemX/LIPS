@@ -16,7 +16,9 @@ import shutil
 import copy
 from typing import Union, Callable
 import json
-from tqdm import tqdm  # TODO remove for final push
+from tqdm import tqdm 
+import zipfile
+from urllib.request import urlretrieve
 
 import numpy as np
 from scipy import sparse
@@ -27,6 +29,21 @@ from ..utils import NpEncoder
 from ..logger import CustomLogger
 from ..physical_simulator import Grid2opSimulator
 from ..config import ConfigManager
+
+class DownloadProgressBar(tqdm):
+    """Provides `update_to(n)` which uses `tqdm.update(delta_n)`."""
+    def update_to(self, b = 1, bsize = 1, tsize = None):
+        """
+        b  : int, optional
+            Number of blocks transferred so far [default: 1].
+        bsize  : int, optional
+            Size of each block (in tqdm units) [default: 1].
+        tsize  : int, optional
+            Total size (in tqdm units). If [default: None] remains unchanged.
+        """
+        if tsize is not None:
+            self.total = tsize
+        self.update(b*bsize - self.n) # also sets self.n = b * bsize
 
 class PowerGridDataSet(DataSet):
     """Class to manage powergrid data
@@ -104,6 +121,44 @@ class PowerGridDataSet(DataSet):
         self._slack_id = None
 
         #TODO add a seed for reproducible experiment !
+
+    def download(self, path: str, dataset_name: str="l2rpn_case14_sandbox", unzip: bool=True):
+        """Download the dataset
+
+        Parameters
+        ----------
+        path : ``str``
+            path to download the dataset
+
+        dataset_name : ``str``, optional
+            the dataset name, by default "l2rpn_case14_sandbox"
+        
+        unzip : ``bool``, optional
+            whether to unzip the downloaded file, by default True
+
+        Function
+        ------
+        Download the powergrid dataset and unzip it in the given path
+        available datasets are:
+            - l2rpn_case14_sandbox
+            - Benchmark_competition
+            - l2rpn_idf_2023 
+        """
+        try:
+            base_url = "https://data.lips.irt-systemx.fr/data/"
+            url = base_url + dataset_name + ".zip"
+            os.makedirs(path, exist_ok = True)
+            with DownloadProgressBar(unit = 'B', unit_scale = True, miniters = 1, unit_divisor = 1024, desc = 'Downloading test') as t:
+                urlretrieve(url, filename = os.path.join(path, dataset_name + '.zip'), reporthook = t.update_to)
+
+            if unzip:
+                print("Extracting " + dataset_name + ".zip at " + path + "...")
+                with zipfile.ZipFile(os.path.join(path, dataset_name + '.zip'), 'r') as zipf:
+                    zipf.extractall(path)
+
+        except ImportError as exc_:
+            raise RuntimeError("Impossible to `download` powergrid ") from exc_
+            
 
     def generate(self,
                  simulator: Grid2opSimulator,
