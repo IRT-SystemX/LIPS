@@ -77,8 +77,10 @@ jobs:
       - restore_cache_dep
       - run:
           name: "run pytest"
+          no_output_timeout: 30m
           command: |
             . venv/bin/activate
+            export PYTHONUNBUFFERED=1
             python -m pytest --html=test-results/pytest_report.html --self-contained-html --cov-report html:cov_html --cov=lips ./lips/tests/
       - store_artifacts_test_results
 
