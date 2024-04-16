@@ -181,7 +181,7 @@ def verify_disc_lines(predictions: dict,
     `dict`
         a dictionary reporting the evaluation results
     """
-    FLOW_VARIABLES = ("p_or", "p_ex", "q_or", "q_ex", "a_or", "a_ex")
+    FLOW_VARIABLES = ("p_or", "p_ex", "q_or", "q_ex", "a_or", "a_ex", "v_or", "v_ex")
     # logger
     logger = CustomLogger("PhysicsCompliances", log_path).logger
     try:
@@ -201,16 +201,19 @@ def verify_disc_lines(predictions: dict,
     len_disc = np.sum(ind_disc)
 
     if np.any(ind_disc):
-        for g, key_pairs in zip(("p", "q", "a"), FLOW_VARIABLES):
-            if key_pairs[0] in predictions.keys():
-                for key_ in key_pairs:
-                    pred_disc = predictions[key_][ind_disc]
-                    violation = float(np.sum(np.abs(pred_disc)>0))
-                    verifications[key_] = violation
-                    sum_disconnected_values += violation
-                verifications[g] = float(np.sum((np.abs(key_pairs[0]) +
-                                                        np.abs(key_pairs[1]))>0) /
-                                                        len_disc)
+        num_var = 0
+        for var_ in FLOW_VARIABLES:
+            if var_ in predictions.keys():
+                print(var_)
+                num_var += 1
+                pred_disc = predictions[var_][ind_disc]
+                violation = float(np.sum(np.abs(pred_disc)>0))
+                verifications[var_] = violation / len_disc
+                sum_disconnected_values += violation
+        mean_disconnected_values = sum_disconnected_values / (len_disc * num_var)
+        verifications["violation_proportion"] = mean_disconnected_values
+    else:
+        verifications["violation_proportion"] = 0
 
     if sum_disconnected_values > 0:
         logger.info("Prediction in presence of line disconnection. Problem encountered !")
