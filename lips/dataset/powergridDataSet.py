@@ -45,7 +45,7 @@ class DownloadProgressBar(tqdm):
             self.total = tsize
         self.update(b*bsize - self.n) # also sets self.n = b * bsize
 
-def downloadPowergridDataset(path: str, dataset_name: str="l2rpn_case14_sandbox", unzip: bool=True):
+def downloadPowergridDataset(path: str, dataset_name: str="lips_case14_sandbox", unzip: bool=True):
     """Download the dataset
 
     Parameters
@@ -63,9 +63,9 @@ def downloadPowergridDataset(path: str, dataset_name: str="l2rpn_case14_sandbox"
     ------
     Download the powergrid dataset and unzip it in the given path
     available datasets are:
-        - l2rpn_case14_sandbox
-        - Benchmark_competition
-        - l2rpn_idf_2023 
+        - lips_case14_sandbox
+        - lips_neurips_2020_track1_small
+        - lips_idf_2023 
     """
     try:
         base_url = "https://data.lips.irt-systemx.fr/data/"
@@ -159,7 +159,7 @@ class PowerGridDataSet(DataSet):
 
         #TODO add a seed for reproducible experiment !
 
-    def download(self, path: str, dataset_name: str="l2rpn_case14_sandbox", unzip: bool=True):
+    def download(self, path: str, dataset_name: str="lips_case14_sandbox", unzip: bool=True):
         downloadPowergridDataset(path, dataset_name, unzip)
             
 

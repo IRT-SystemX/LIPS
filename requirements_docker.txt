@@ -10,3 +10,8 @@ json2table==1.1.5
 loguru==0.6.0
 PyYAML==6.0
 tqdm==4.62.3
+Grid2Op==1.9.8
+lightsim2grid==0.7.5
+leap-net==0.0.5
+imageio==2.34.0
+plotly==5.20.0
