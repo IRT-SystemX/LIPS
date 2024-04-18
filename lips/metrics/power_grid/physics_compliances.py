@@ -204,7 +204,6 @@ def verify_disc_lines(predictions: dict,
         num_var = 0
         for var_ in FLOW_VARIABLES:
             if var_ in predictions.keys():
-                print(var_)
                 num_var += 1
                 pred_disc = predictions[var_][ind_disc]
                 violation = float(np.sum(np.abs(pred_disc)>0))
@@ -213,7 +212,7 @@ def verify_disc_lines(predictions: dict,
         mean_disconnected_values = sum_disconnected_values / (len_disc * num_var)
         verifications["violation_proportion"] = mean_disconnected_values
     else:
-        verifications["violation_proportion"] = 0
+        verifications["violation_proportion"] = 0.
 
     if sum_disconnected_values > 0:
         logger.info("Prediction in presence of line disconnection. Problem encountered !")
