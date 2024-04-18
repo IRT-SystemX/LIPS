@@ -1,6 +1,7 @@
 import numpy as np
 import re
 from itertools import combinations
+from tqdm.auto import tqdm
 
 
 import grid2op
@@ -9,6 +10,25 @@ import warnings
 from lightsim2grid import LightSimBackend, ContingencyAnalysis
 
 from lips.config import ConfigManager
+
+def reset_simulator(env, max_episode_duration, visited_ts):
+    # select chronics and shuffle them
+    _ = env.reset()
+    env.chronics_handler.shuffle()
+    _ = env.reset()
+
+    # Fast forward the environment to reach a different time stamps
+    remaining_timesteps = set(np.arange(max_episode_duration)) - set(visited_ts)
+    nb_ff = env.space_prng.choice(list(remaining_timesteps))
+
+    if nb_ff > 0:
+        env.fast_forward_chronics(nb_ff)
+        obs = env.get_obs()
+        visited_ts.append(nb_ff)
+    else:
+        visited_ts.append(0)
+
+    return env
 
 def compute_solver_time(nb_samples: int, config: ConfigManager):
     #env_name = "l2rpn_neurips_2020_track2_small"
@@ -33,7 +53,7 @@ def compute_solver_time(nb_samples: int, config: ConfigManager):
                            )
         chronics_selected_regex = re.compile(chronics_selected_regex)
         env.chronics_handler.set_filter(lambda path:
-                                                re.match(chronics_selected_regex, path) is not None)
+                                        re.match(chronics_selected_regex, path) is not None)
         env.chronics_handler.real_data.reset()
         env.set_id(initial_chronics_id)
 
@@ -41,34 +61,45 @@ def compute_solver_time(nb_samples: int, config: ConfigManager):
     all_combinations = list(combinations(actions_list, 2))
     all_combinations.extend(actions_list)
     solver_times = []
-    for actions in all_combinations:
-        # select chronics and shuffle them        
-        env.chronics_handler.shuffle()
-        _ = env.reset()
-        # print(env.chronics_handler.get_name())
+    max_episode_duration = env.chronics_handler.max_episode_duration()
+    nb_divergence = 0
 
-        if len(actions) > 1:
-            action = env.action_space()
-            for action_ in actions:
-                action += env.action_space(action_)
-        else:
-            action = env.action_space(actions)
+    for actions in tqdm(all_combinations):
+        visited_ts = []
+        for _ in range(3):
+            env = reset_simulator(env, max_episode_duration, visited_ts)
 
-        obs, reward, done, info = env.step(action)
-        # print(obs.topo_vect)
-    
-        # Run the environment on a scenario using the TimeSerie module
-        security_analysis = ContingencyAnalysis(env)
-        security_analysis.add_all_n1_contingencies()
-        p_or, a_or, voltages = security_analysis.get_flows()
+            if len(actions) > 1:
+                action = env.action_space()
+                for action_ in actions:
+                    action += env.action_space(action_)
+            else:
+                action = env.action_space(actions)
+            
+            # ensure that the action does not cause gameover
+            done = True
+            while done:
+                _, _, done, _ = env.step(action)
+                if done:
+                    nb_divergence += 1
+                    env = reset_simulator(env, max_episode_duration, visited_ts)
+            
+            # Prints to verify that the chronics and timestamps changes over actions
+            # print(env.chronics_handler.get_name())
+            # print(env.chronics_handler.real_data.data.current_datetime)
 
-        computer = security_analysis.computer
-        time_solver_one_pf = computer.solver_time() / computer.nb_solved()
+            # Run the environment on a scenario using the TimeSerie module
+            security_analysis = ContingencyAnalysis(env)
+            security_analysis.add_all_n1_contingencies()
+            p_or, a_or, voltages = security_analysis.get_flows()
 
-        solver_times.append(time_solver_one_pf * nb_samples)
+            computer = security_analysis.computer
+            time_solver_one_pf = computer.solver_time() / computer.nb_solved()
+
+            solver_times.append(time_solver_one_pf * nb_samples)
     # print(solver_times)
+    # print(f"Number of divergent cases : {nb_divergence}")
     return np.mean(solver_times)
-
 
 if __name__ == "__main__":
     from lips import get_root_path
