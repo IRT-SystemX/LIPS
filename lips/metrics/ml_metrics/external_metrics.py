@@ -14,5 +14,12 @@ try:
     metric_factory.register_metric("MAPE_90", lambda y_true, y_pred: mape_quantile(y_true=y_true,
                                                                                    y_pred=y_pred,
                                                                                    multioutput="raw_values"))
+    metric_factory.register_metric("MAPE_10_avg", lambda y_true, y_pred: mape_quantile(y_true=y_true,
+                                                                                       y_pred=y_pred,
+                                                                                       quantile=0.9))
+    metric_factory.register_metric("MAPE_10", lambda y_true, y_pred: mape_quantile(y_true=y_true,
+                                                                                   y_pred=y_pred,
+                                                                                   multioutput="raw_values",
+                                                                                   quantile=0.9))
 except ImportError as exc_:
     pass
