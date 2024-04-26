@@ -142,6 +142,11 @@ python3 -m virtualenv venv_lips
 source venv_lips/bin/activate
 ```
 
+### Install using Python Package Index (PyPI)
+```commandline
+pip install lips-benchmark
+```
+
 ### Install from source
 ```commandline
 git clone https://github.com/IRT-SystemX/LIPS.git
