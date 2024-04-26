@@ -59,7 +59,7 @@ pkgs = {
         "codabench": [
             "pybind11==2.8.1",
             "protobuf==3.20.1",
-            "pandapower==2.7.0",
+            "pandapower==2.8.0",
             "pandas==1.4.2",
             "jupyter",
             "tensorflow==2.8.0",
