@@ -7,7 +7,7 @@
 # This file is part of LIPS, LIPS is a python platform for power networks benchmarking
 import pathlib
 
-__version__ = "0.2.3"
+__version__ = "0.2.4"
 
 here = pathlib.Path(__file__).parent.resolve()
 
