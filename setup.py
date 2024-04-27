@@ -24,11 +24,11 @@ def get_data_files(directory):
 
 pkgs = {
     "required": [
-        "numpy==1.21.5",
+        "numpy==1.25.2",
         "scikit_learn",
         "tqdm",
         "matplotlib",
-        "scipy<=1.6.0",
+        "scipy==1.11.4",
         "six",
         "pathlib",
         "numba",
@@ -39,12 +39,12 @@ pkgs = {
             "pybind11==2.8.1",
             "lightsim2grid==0.7.5", #>=0.7.0.post1",
             "leap-net==0.0.5",
-            "protobuf==3.20.1",
+            "protobuf==3.20.3",
             "pandapower==2.8.0",
-            "pandas==1.4.2",
+            "pandas==1.5.3",
             "jupyter",
-            "tensorflow==2.8.0",
-            "torch==2.0.1",
+            "tensorflow==2.15.0",
+            "torch==2.2.1",
             "imageio==2.34.0",
             "plotly==5.20.0"
         ],
