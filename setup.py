@@ -24,11 +24,11 @@ def get_data_files(directory):
 
 pkgs = {
     "required": [
-        "numpy==1.21.5",
+        "numpy==1.25.2",
         "scikit_learn",
         "tqdm",
         "matplotlib",
-        "scipy<=1.6.0",
+        "scipy==1.11.4",
         "six",
         "pathlib",
         "numba",
@@ -39,11 +39,11 @@ pkgs = {
             "pybind11==2.8.1",
             "lightsim2grid==0.7.5", #>=0.7.0.post1",
             "leap-net==0.0.5",
-            "protobuf==3.20.1",
+            "protobuf==3.20.2",
             "pandapower==2.8.0",
-            "pandas==1.4.2",
+            "pandas==1.5.3",
             "jupyter",
-            "tensorflow==2.8.0",
+            "tensorflow==2.8.1",
             "torch==2.0.1",
             "imageio==2.34.0",
             "plotly==5.20.0"
@@ -57,22 +57,10 @@ pkgs = {
             "gym>=0.17.2"
         ],
         "codabench": [
-            "pybind11==2.8.1",
-            "protobuf==3.20.1",
-            "pandapower==2.8.0",
-            "pandas==1.4.2",
-            "jupyter",
-            "tensorflow==2.8.0",
-            "torch==2.0.1",
             "filelock==3.7.1",
             "json2table==1.1.5",
             "loguru==0.6.0",
             "PyYAML==6.0",
-            "Grid2Op==1.9.8",
-            "lightsim2grid==0.7.5",
-            "leap-net==0.0.5",
-            "imageio==2.34.0",
-            "plotly==5.20.0",
             "tqdm==4.62.3"
         ],
         "test": [
@@ -88,6 +76,7 @@ pkgs = {
     }
 }
 
+pkgs["extras"]["codabench"] += pkgs["extras"]["recommended"]
 pkgs["extras"]["test"] += pkgs["extras"]["recommended"]
 pkgs["extras"]["test"] += pkgs["extras"]["docs"]
 pkgs["extras"]["test"] += pkgs["extras"]["codabench"]
@@ -106,6 +95,7 @@ setup(name='lips-benchmark',
           'Programming Language :: Python :: 3.7',
           'Programming Language :: Python :: 3.8',
           'Programming Language :: Python :: 3.9',
+          'Programming Language :: Python :: 3.10',
           "License :: OSI Approved :: Mozilla Public License 2.0 (MPL 2.0)",
           "Intended Audience :: Developers",
           "Intended Audience :: Education",

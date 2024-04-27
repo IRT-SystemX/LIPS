@@ -202,13 +202,13 @@ def verify_voltage_at_bus(predictions: dict,
     obs = _get_fake_obs(config)
     n_buses = 2 * obs.n_sub
 
-    mean_matrix_voltage = np.zeros((n_obs, n_buses), dtype=np.float)
+    mean_matrix_voltage = np.zeros((n_obs, n_buses), dtype=float)
     mean_matrix_voltage[:] = np.NaN
-    std_matrix_voltage = np.zeros((n_obs, n_buses), dtype=np.float)
+    std_matrix_voltage = np.zeros((n_obs, n_buses), dtype=float)
     std_matrix_voltage[:] = np.NaN
-    mean_matrix_theta = np.zeros((n_obs, n_buses), dtype=np.float)
+    mean_matrix_theta = np.zeros((n_obs, n_buses), dtype=float)
     mean_matrix_theta[:] = np.NaN
-    std_matrix_theta = np.zeros((n_obs, n_buses), dtype=np.float)
+    std_matrix_theta = np.zeros((n_obs, n_buses), dtype=float)
     std_matrix_theta[:] = np.NaN
 
 

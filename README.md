@@ -130,6 +130,11 @@ To be able to run the experiments in this repository, the users should install t
 - Python >= 3.6
 
 ### Setup a Virtualenv (optional)
+#### Create a Conda env (recommended)
+```commandline
+conda create -n venv_lips python=3.10
+conda activate venv_lips
+```
 #### Create a virtual environment
 
 ```commandline
@@ -144,14 +149,14 @@ source venv_lips/bin/activate
 
 ### Install using Python Package Index (PyPI)
 ```commandline
-pip install lips-benchmark
+pip install lips-benchmark .[recommended]
 ```
 
 ### Install from source
 ```commandline
 git clone https://github.com/IRT-SystemX/LIPS.git
 cd LIPS
-pip3 install -U .
+pip3 install -U .[recommended]
 cd ..
 ```
 
