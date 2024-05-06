@@ -2,7 +2,7 @@ filelock==3.7.1
 Grid2Op==1.9.8
 json2table==1.1.5
 leap-net==0.0.5
-lightsim2grid==0.7.5
+lightsim2grid==0.8.1
 loguru==0.6.0
 numpy==1.25.2
 numba==0.59.1
