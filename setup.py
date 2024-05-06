@@ -35,9 +35,9 @@ pkgs = {
     ],
     "extras": {
         "recommended": [
-            "grid2op==1.9.8", #>=1.7.2",
+            "grid2op==1.9.8",
             "pybind11==2.8.1",
-            "lightsim2grid==0.7.5", #>=0.7.0.post1",
+            "lightsim2grid==0.8.1",
             "leap-net==0.0.5",
             "protobuf==3.20.2",
             "pandapower==2.8.0",
