@@ -149,7 +149,7 @@ source venv_lips/bin/activate
 
 ### Install using Python Package Index (PyPI)
 ```commandline
-pip install lips-benchmark .[recommended]
+pip install "lips-benchmark[recommended]"
 ```
 
 ### Install from source
