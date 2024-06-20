@@ -313,11 +313,13 @@ class PowerGridDataSet(DataSet):
             pv_nodes = np.zeros(shape=(n_bus_bars), dtype=bool)
 
             #get admittance matrix and injection vector values from LightSim2Grid
-            Sbus = grid.get_Sbus()
+            
             if is_dc:
                 YBus = grid.get_dcYbus()
+                Sbus = grid.get_dcSbus()
             else:
                 YBus = grid.get_Ybus()
+                Sbus = grid.get_Sbus()
 
             #fill data structures with expected dimensions
             admittance_matrix[np.ix_(unique_bus, unique_bus)] = YBus.todense()

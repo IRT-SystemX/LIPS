@@ -79,6 +79,8 @@ class Grid2opSimulator(PhysicalSimulator):
         self._timer_solver = 0
         self._timer_preproc = 0
         self._timer_postproc = 0
+        
+        self.is_dc = self._simulator.parameters.ENV_DC
 
         try:
             from lightsim2grid import LightSimBackend
@@ -249,8 +251,9 @@ class Grid2opSimulator(PhysicalSimulator):
             # exclude the already selected time stamps from which the scenario should started
             remaining_timesteps = set(np.arange(self._max_episode_duration)) - set(self._visited_ts)
             # randomly skip a given number of steps in the first day (to improve the randomness)
-            nb_ff = self._simulator.space_prng.choice(list(remaining_timesteps))
-            if nb_ff > 0:
+            if len(remaining_timesteps) > 0:
+                nb_ff = self._simulator.space_prng.choice(list(remaining_timesteps))
+            #if nb_ff > 0:
                 self._simulator.fast_forward_chronics(nb_ff)
                 self._obs = self._simulator.get_obs()
                 self._visited_ts.append(nb_ff)
@@ -338,7 +341,12 @@ class Grid2opSimulator(PhysicalSimulator):
         """
         check = False
         grid = env.backend._grid
-        Sbus = grid.get_Sbus()
+        
+        if self.is_dc:
+            Sbus = grid.get_dcSbus()
+        else:
+            Sbus = grid.get_Sbus()
+            
         if len(Sbus) < env.n_sub:
             check = True
         return check
