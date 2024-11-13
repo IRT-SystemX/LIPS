@@ -40,7 +40,7 @@ pkgs = {
             "lightsim2grid==0.8.1",
             "leap-net==0.0.5",
             "protobuf==3.20.2",
-            "pandapower==2.8.0",
+            "pandapower==2.11.0",
             "pandas==1.5.3",
             "jupyter",
             "tensorflow==2.8.1",
