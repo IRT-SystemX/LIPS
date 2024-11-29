@@ -1,11 +1,10 @@
-import math
 from abc import ABC
-from typing import Union, Dict
+from typing import Union, Dict, List
 
 from lips.config import ConfigManager
 from lips.logger import CustomLogger
 from lips.scoring import Scoring
-from lips.scoring.utils import read_json
+from lips.scoring import utils
 
 
 class PowerGridScoring(Scoring, ABC):
@@ -28,7 +27,25 @@ class PowerGridScoring(Scoring, ABC):
         self.value_by_color = self.config.get_option("valuebycolor")
 
     def scoring(self, metrics_path: str = "", metrics_dict: Union[Dict, str, None] = None):
-        return read_json(json_path=metrics_path, json_object=metrics_dict)
+
+        if metrics_dict is not None:
+            metrics = metrics_dict
+        elif metrics_path != "":
+            metrics = utils.read_json(json_path=metrics_path, json_object=metrics_dict)
+        else:
+            raise ValueError("metrics_path and metrics_dict cant' both be None")
+
+
+        score_color = PowerGridScoring.calculate_score_color(metrics, self.thresholds)
+
+        score = {}
+
+        for key in self.coefficients:
+            if key in score_color:
+                flat_dict = utils.flatten_dict(score_color[key])
+                score[key] = self.calculate_sub_score(flat_dict.values())
+        return score
+
 
     @staticmethod
     def calculate_score_color(metrics, thresholds):
@@ -41,6 +58,10 @@ class PowerGridScoring(Scoring, ABC):
                                                                       thresholds=thresholds)
                 tree[key] = discrete_metric
         return tree
+
+    def calculate_sub_score(self, colors: List[str]):
+        s = sum([self.value_by_color[color] for color in colors])
+        return s / (len(colors) * max(self.value_by_color.values()))
 
     @staticmethod
     def _discretize_metric(metric_name, metric_value, thresholds):
@@ -83,7 +104,8 @@ class PowerGridScoring(Scoring, ABC):
     @staticmethod
     def _calculate_speed_score(time_inference, time_classical_solver, max_speed_ratio_allowed):
         speed_up = PowerGridScoring._calculate_speed_up(time_classical_solver, time_inference)
-        return max(min(math.log10(speed_up) / math.log10(max_speed_ratio_allowed), 1), 0)
+        res = utils.weibull(5, 1.7, speed_up)
+        return max(min(res, 1), 0)
 
     @staticmethod
     def _calculate_speed_up(time_classical_solver, time_inference):

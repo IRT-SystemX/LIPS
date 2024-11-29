@@ -1,4 +1,5 @@
 import json
+import math
 from typing import Union, Dict
 
 
@@ -40,3 +41,27 @@ def read_json(json_path: str = "", json_object: Union[Dict, str, None] = None):
             raise ValueError("json_metrics must be a valid JSON string or dictionary.")
     else:
         raise ValueError("Both json_path and json_object are empty. Provide at least one.")
+
+
+def flatten_dict(input_dict, parent_key=""):
+    """
+    Flatten a nested dictionary structure.
+
+    :param input_dict: Dictionary to flatten
+    :param parent_key: Key to prepend (used for recursion)
+    :return: Flattened dictionary
+    """
+    flattened = {}
+    for key, value in input_dict.items():
+        if isinstance(value, dict):
+            # Recursively flatten if the value is a dictionary
+            flattened.update(flatten_dict(value, parent_key))
+        else:
+            # Add to flattened dictionary
+            flattened[key] = value
+    return flattened
+
+
+def weibull(c, b, x):
+    a = c * ((-math.log(0.9)) ** (-1 / b))
+    return 1. - math.exp(-(x / a) ** b)
