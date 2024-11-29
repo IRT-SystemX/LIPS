@@ -44,6 +44,8 @@ class PowerGridScoring(Scoring, ABC):
             if key in score_color:
                 flat_dict = utils.flatten_dict(score_color[key])
                 score[key] = self.calculate_sub_score(flat_dict.values())
+
+        ##TODO add speedup score
         return score
 
 
