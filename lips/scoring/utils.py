@@ -65,3 +65,30 @@ def flatten_dict(input_dict, parent_key=""):
 def weibull(c, b, x):
     a = c * ((-math.log(0.9)) ** (-1 / b))
     return 1. - math.exp(-(x / a) ** b)
+
+def merge_dicts(dict_list):
+    """
+    Merges a list of dictionaries into a single dictionary.
+
+    Parameters:
+    - dict_list (list): A list of dictionaries to merge.
+
+    Returns:
+    - dict: A single dictionary containing all key-value pairs.
+    """
+    merged_dict = {}
+    for d in dict_list:
+        merged_dict.update(d)  # Update merged_dict with each dictionary in the list
+    return merged_dict
+
+def get_nested_value(data, keys):
+    """Retrieve a nested value from a dictionary using a list of keys."""
+    for key in keys:
+        if key not in data:
+            return None
+        data = data[key]
+    return data
+
+def filter_metrics(data, metric_list):
+    """Filter the data dictionary to include only the specified metrics."""
+    return {key: value for key, value in data.items() if key in metric_list}
