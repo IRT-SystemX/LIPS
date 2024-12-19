@@ -1,5 +1,4 @@
 import math
-from abc import ABC
 from typing import Union, Dict, List
 
 from lips.config import ConfigManager
@@ -11,17 +10,9 @@ from lips.scoring.utils import get_nested_value, filter_metrics
 
 class PowerGridScoring(Scoring):
 
-    def __init__(self,
-                 config: Union[ConfigManager, None] = None,
-                 config_path: Union[str, None] = None,
-                 scenario: Union[str, None] = None,
-                 log_path: Union[str, None] = None
-                 ):
-        super().__init__(config=config,
-                         config_path=config_path,
-                         config_section=scenario,
-                         log_path=log_path
-                         )
+    def __init__(self, config: Union[ConfigManager, None] = None, config_path: Union[str, None] = None,
+                 scenario: Union[str, None] = None, log_path: Union[str, None] = None):
+        super().__init__(config=config, config_path=config_path, config_section=scenario, log_path=log_path)
         self.logger = CustomLogger(__class__.__name__, self.log_path).logger
 
         self.thresholds = self.config.get_option("thresholds")
@@ -42,7 +33,7 @@ class PowerGridScoring(Scoring):
         # calculate speed score
         time_inference = metrics.pop("Speed")["inference_time"]
         speed_score = self._calculate_speed_score(time_inference)
-        #score discretize
+        # score discretize
         score_color = PowerGridScoring._calculate_score_color(metrics, self.thresholds)
 
         score_values = dict()
@@ -112,6 +103,7 @@ class PowerGridScoring(Scoring):
             evaluation = "r" if metric_value <= threshold_min else "o" if metric_value < threshold_max else "g"
 
         return evaluation
+
     # separate competions from powergrid_scoring
     def _calculate_speed_score(self, time_inference):
 
@@ -195,3 +187,31 @@ class PowerGridScoring(Scoring):
             raise TypeError(f"Inference time must be a numeric value, but got {type(inference_time).__name__}.")
 
         return {"Speed": {"inference_time": inference_time}}
+
+    @staticmethod
+    def reconstruct_physic_metrics(input_json, physic_key_path, competition_name, used_metric_list=None):
+
+        all_physic_metrics = get_nested_value(input_json, physic_key_path)
+        if all_physic_metrics is None:
+            raise ValueError(f"Invalid path {physic_key_path}. Could not retrieve physic metrics.")
+
+        if not isinstance(all_physic_metrics, dict):
+            raise TypeError(f"Expected a dictionary at {physic_key_path}, but got {type(all_physic_metrics).__name__}.")
+
+        if competition_name == "AirFoil Competition":
+            physic_metrics = filter_metrics(all_physic_metrics, used_metric_list)
+
+        elif competition_name == "PowerGrid Competition":
+            physic_metrics = {"CURRENT_POS": all_physic_metrics["CURRENT_POS"]["a_or"]["Violation_proportion"] * 100.,
+                              "VOLTAGE_POS": all_physic_metrics["VOLTAGE_POS"]["v_or"]["Violation_proportion"] * 100.,
+                              "LOSS_POS": all_physic_metrics["LOSS_POS"]["violation_proportion"] * 100.,
+                              "DISC_LINES": all_physic_metrics["DISC_LINES"]["violation_proportion"] * 100.,
+                              "CHECK_LOSS": all_physic_metrics["CHECK_LOSS"]["violation_percentage"],
+                              "CHECK_GC": all_physic_metrics["CHECK_GC"]["violation_percentage"],
+                              "CHECK_LC": all_physic_metrics["CHECK_LC"]["violation_percentage"],
+                              "CHECK_JOULE_LAW": all_physic_metrics["CHECK_JOULE_LAW"]["violation_proportion"] * 100.}
+
+        else:
+            raise ValueError(f'{competition_name} not in options')
+
+        return {"Physics": physic_metrics}
