@@ -1,0 +1,4 @@
+global_warmup: 76.765637772046
+ML_warmup: 0.764509111029
+Physics_warmup: 0.875000000000
+OOD_warmup: 0.664509111029

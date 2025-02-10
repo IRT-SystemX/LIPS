@@ -1,0 +1,29 @@
+{
+  "ML": {
+    "x-velocity": 0.00262499232487287,
+    "y-velocity": 0.0012471767764183842,
+    "pressure": 0.0031353064368674637,
+    "turbulent_viscosity": 0.02861798351376769
+  },
+  "Physics": {
+    "spearman_correlation_drag": 0.8187369684242107,
+    "spearman_correlation_lift": 0.9983799594989875,
+    "mean_relative_drag": 0.23041081909925168,
+    "mean_relative_lift": 0.0611844697009299
+  },
+  "Speed" : {"inference_time":  699.8024816513062},
+  "OOD": {
+    "ML": {
+      "x-velocity": 0.009187407726621506,
+      "y-velocity": 0.0027280858877766494,
+      "pressure": 0.016331825251314956,
+      "turbulent_viscosity": 0.049333853470072006
+    },
+    "Physics": {
+      "spearman_correlation_drag": 0.7894712360182601,
+      "spearman_correlation_lift": 0.9971664788339026,
+      "mean_relative_drag": 0.3940285291162256,
+      "mean_relative_lift": 0.08437221869348716
+    }
+  }
+}
