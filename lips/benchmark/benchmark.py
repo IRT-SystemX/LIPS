@@ -63,13 +63,16 @@ class Benchmark(ABC):
         self.path_datasets = os.path.join(benchmark_path, self.benchmark_name) if benchmark_path else None
 
         # config file
-        if not(os.path.exists(config_path)):
-            raise RuntimeError("Configuration path not found for the benchmark!")
-        elif not str(config_path).endswith(".ini"):
-            raise RuntimeError("The configuration file should have `.ini` extension!")
+        if ("config" in kwargs) and (kwargs.get("config") is not None):
+            self.config = kwargs.get("config")
         else:
-            self.config = ConfigManager(section_name=benchmark_name, path=config_path)
-        self.config.set_options_from_dict(**kwargs)
+            if not(os.path.exists(config_path)):
+                raise RuntimeError("Configuration path not found for the benchmark!")
+            elif not str(config_path).endswith(".ini"):
+                raise RuntimeError("The configuration file should have `.ini` extension!")
+            else:
+                self.config = ConfigManager(section_name=benchmark_name, path=config_path)
+            self.config.set_options_from_dict(**kwargs)
         # Object of class DataSet contianing datasets for testing
         # It contains the last dataset used for evaluation
         self.dataset = dataset
