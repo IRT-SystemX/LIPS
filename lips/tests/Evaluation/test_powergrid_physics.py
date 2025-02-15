@@ -153,12 +153,14 @@ def test_verify_ohm_law():
     """
     Verify if the Ohm law is respected with respect to the indicated threshold
     """
+    config = ConfigManager(path=CONFIG_PATH, section_name="Benchmark3")
+    config.edit_config_option("attr_physics", '("YBus", "SBus", "PV_nodes", "slack")')
     benchmark3= PowerGridBenchmark(benchmark_path=DATA_PATH,
                                    benchmark_name="Benchmark3",
                                    load_data_set=True,
                                    config_path=CONFIG_PATH,
+                                   config=config,
                                    log_path=LOG_PATH)
-
     data = benchmark3._test_dataset.data
     # env = benchmark3.training_simulator._simulator
     env = get_env(get_kwargs_simulator_scenario(benchmark3.config))
