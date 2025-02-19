@@ -57,6 +57,7 @@ class PowerGridScoring(Scoring):
             if isinstance(value, dict):
                 tree[key] = PowerGridScoring._calculate_score_color(value, thresholds)
             else:
+
                 discrete_metric = PowerGridScoring._discretize_metric(metric_name=key, metric_value=value,
                                                                       thresholds=thresholds)
                 tree[key] = discrete_metric
@@ -215,3 +216,4 @@ class PowerGridScoring(Scoring):
             raise ValueError(f'{competition_name} not in options')
 
         return {"Physics": physic_metrics}
+
