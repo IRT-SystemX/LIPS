@@ -41,7 +41,7 @@ class PowerGridScoring(Scoring):
         for key in self.coefficients:
             if key in score_color:
                 flat_dict = utils.flatten_dict(score_color[key])
-                score_values[key] = self._calculate_sub_score(flat_dict.values())
+                score_values[key] = self._calculate_leaf_score(flat_dict.values())
         score_values["Speed"] = speed_score
 
         # calculate global score value
@@ -63,7 +63,7 @@ class PowerGridScoring(Scoring):
                 tree[key] = discrete_metric
         return tree
 
-    def _calculate_sub_score(self, colors: List[str]):
+    def _calculate_leaf_score(self, colors: List[str]):
         s = sum([self.value_by_color[color] for color in colors])
         return s / (len(colors) * max(self.value_by_color.values()))
 

@@ -15,91 +15,136 @@ VALID_COMPARISONS = {"minimize", "maximize"}
 
 
 class Scoring(ABC):
+    """
+    Abstract base class for calculating scores based on metrics and thresholds.
+    """
+
     def __init__(self, config: Union[ConfigManager, None] = None, config_path: Union[str, None] = None,
                  config_section: Union[str, None] = None, log_path: Union[str, None] = None):
         """
-        Initializes the Scoring instance, loading configuration and setting up logger.
+        Initializes the Scoring instance with configuration and logger.
 
         Args:
-            config (ConfigManager, optional): A ConfigManager instance. Defaults to None.
-            config_path (str, optional): Path to the configuration file. Defaults to None.
-            config_section (str, optional): Section of the configuration file. Defaults to None.
-            log_path (str, optional): Path to the log file. Defaults to None.
+            config: A ConfigManager instance. Defaults to None.
+            config_path: Path to the configuration file. Defaults to None.
+            config_section: Section of the configuration file. Defaults to None.
+            log_path: Path to the log file. Defaults to None.
         """
         self.config = config if config else ConfigManager(section_name=config_section, path=config_path)
         self.logger = CustomLogger(__class__.__name__, log_path).logger
 
         self.thresholds = self.config.get_option("thresholds")
         self.value_by_color = self.config.get_option("valuebycolor")
+        self.coefficients = self.config.get_option("coefficients")
+        self._validate_configuration()
 
-        self._validate_thresholds_config()
-
-    def calculate_score_color(self, metrics: Dict[str, Any]) -> Dict[str, Any]:
+    def colorize_metrics(self, metrics: Dict[str, Any]) -> Dict[str, Any]:
         """
-        Recursively calculates the score color for each metric in a tree metrics dictionary.
+        Recursively colorizes metric values based on thresholds.
 
         Args:
-            metrics: A dictionary of metric names and their corresponding values.
+            metrics: A dictionary of metric names and their corresponding values (can be nested).
 
         Returns:
             A dictionary with the same structure as `metrics` but with colorized values.
         """
-        tree = {}
-
+        colorized_metrics = {}
         for key, value in metrics.items():
             if isinstance(value, dict):
-                tree[key] = self.calculate_score_color(value)
+                colorized_metrics[key] = self.colorize_metrics(value)
             else:
-                threshold_data = self.thresholds[key]
-                comparison_type = threshold_data["comparison_type"]
-                metric_thresholds = threshold_data["thresholds"]
-                discrete_metric = self.colorize_metric_value(metric_value=value, comparison_type=comparison_type,
-                                                             thresholds=metric_thresholds)
-                tree[key] = discrete_metric
+                colorized_metrics[key] = self._colorize_metric_value(key, value)
+        return colorized_metrics
 
-        return tree
-
-    def colorize_metric_value(self, metric_value: float, comparison_type: str, thresholds: List[float]) -> str:
+    def _colorize_metric_value(self, metric_name: str, metric_value: float) -> str:
         """
-        Assigns a color based on the metric value, its comparison type (minimize or maximize), and thresholds.
+        Assigns a color to a single metric value based on its threshold.
 
         Args:
-            metric_value (float): The value of the metric to be colorized.
-            comparison_type (str): Either 'minimize' or 'maximize' to indicate how the threshold comparison is performed.
-            thresholds (List[float]): A sorted list of threshold values.
+            metric_name: The name of the metric.
+            metric_value: The value of the metric.
 
         Returns:
-            str: The color corresponding to the metric value based on its threshold position.
+            The color corresponding to the metric value.
 
         Raises:
-            ValueError: If the comparison_type is not 'minimize' or 'maximize'.
+            ValueError: If the comparison type is invalid.
         """
+        threshold_data = self.thresholds[metric_name]
+        comparison_type = threshold_data["comparison_type"]
+        thresholds = threshold_data["thresholds"]
+
         if comparison_type not in VALID_COMPARISONS:
-            raise ValueError("comparison_type must be 'minimize' or 'maximize'")
+            raise ValueError(f"Invalid comparison type: {comparison_type}. Must be 'minimize' or 'maximize'.")
 
-        value_position = bisect.bisect_left(thresholds, metric_value)
+        index = bisect.bisect_left(thresholds, metric_value)
+        colors = list(self.value_by_color.keys())
+        return colors[index] if comparison_type == "minimize" else colors[-(index + 1)]
 
-        color_by_threshold = list(self.value_by_color.keys())
-
-        return color_by_threshold[value_position] if comparison_type == "minimize" else color_by_threshold[
-            - (value_position + 1)]
-
-    def _validate_thresholds_config(self) -> None:
+    def _validate_configuration(self) -> None:
         """
-        Validates the thresholds configuration against the value_by_color length.
+        Validates the thresholds and value_by_color configurations.
 
         Raises:
-            ValueError: If the thresholds configuration is invalid or missing required data.
+            ValueError: If the configuration is invalid.
         """
         if not self.thresholds:
             raise ValueError("Thresholds configuration is missing.")
         if not self.value_by_color:
             raise ValueError("Value by color configuration is missing.")
 
-        expected_len = len(self.value_by_color) - 1
+        expected_threshold_count = len(self.value_by_color) - 1
         for metric_name, threshold_data in self.thresholds.items():
-            if not isinstance(threshold_data, dict) or "thresholds" not in threshold_data:
-                raise ValueError(f"Invalid format for thresholds data for metric '{metric_name}'.")
-            if len(threshold_data["thresholds"]) != expected_len:
+            if not isinstance(threshold_data,
+                              dict) or "thresholds" not in threshold_data or "comparison_type" not in threshold_data:
                 raise ValueError(
-                    f"Metric '{metric_name}': Thresholds list length must be equal to ValueByColor length -1: i.e: {expected_len}.")
+                    f"Invalid thresholds data for metric '{metric_name}'. Must be a dict with 'thresholds' and 'comparison_type' keys.")
+            if len(threshold_data["thresholds"]) != expected_threshold_count:
+                raise ValueError(
+                    f"Metric '{metric_name}': Thresholds count must be {expected_threshold_count} (length of ValueByColor - 1).")
+
+    def _calculate_leaf_score(self, colors: List[str]) -> float:
+        """Calculates the score for a leaf node (set of colorized metrics)."""
+        return sum(self.value_by_color[color] for color in colors) / (len(colors) * max(self.value_by_color.values()))
+
+    def calculate_sub_scores(self, node: Dict[str, Any]) -> Union[float, Dict[str, Any]]:
+        """
+        Calculates sub-scores recursively for a node in the metrics tree.
+
+        Args:
+            node: A node in the metrics tree (can be a leaf or a sub-tree).
+
+        Returns:
+            The sub-score for the node (float for leaf, dict for sub-tree).
+
+        Raises:
+            ValueError: If the input JSON is not a dictionary or if a parent node is inconsistently branched.
+        """
+        if not isinstance(node, dict):
+            raise ValueError("Input must be a dictionary.")
+
+        if all(isinstance(value, str) for value in node.values()):  # Leaf node
+            return self._calculate_leaf_score(list(node.values()))
+        elif any(isinstance(value, str) for value in node.values()):  # Inconsistent branching
+            raise ValueError("Parent node is not uniformly branched (mix of leaf and sub-tree children).")
+        else:  # Sub-tree node
+            return {key: self.calculate_sub_scores(value) for key, value in node.items()}
+
+    def calculate_global_score(self, tree: Union[float, Dict[str, Any]]) -> float:
+        """
+        Calculates the global score for the entire metrics tree.
+
+        Args:
+            tree: a pre-calculated sub-score tree
+
+        Returns:
+            The global score.
+        """
+        if isinstance(tree, (int, float)):  # Base case: already a sub-score
+            return tree
+
+        global_score = 0
+        for key, subtree in tree.items():
+            weight = self.coefficients.get(key, 1)  # Default weight is 1
+            global_score += weight * self.calculate_global_score(subtree)
+        return global_score
