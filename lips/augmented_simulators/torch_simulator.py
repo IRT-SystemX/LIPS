@@ -389,7 +389,7 @@ class TorchSimulator(AugmentedSimulator):
         self._save_model(epoch_, save_path)
 
 
-        if epoch is None and save_metadata:
+        if save_metadata:
             self._save_metadata(save_path)
 
         self.logger.info("Model {%s} is saved at {%s}", self.name, save_path)
