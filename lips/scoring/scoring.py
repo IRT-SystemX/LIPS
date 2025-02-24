@@ -99,7 +99,8 @@ class Scoring(ABC):
                               dict) or "thresholds" not in threshold_data or "comparison_type" not in threshold_data:
                 raise ValueError(
                     f"Invalid thresholds data for metric '{metric_name}'. Must be a dict with 'thresholds' and 'comparison_type' keys.")
-            if len(threshold_data["thresholds"]) != expected_threshold_count:
+            if (threshold_data["comparison_type"] in VALID_COMPARISONS) and (
+                    len(threshold_data["thresholds"]) != expected_threshold_count):
                 raise ValueError(
                     f"Metric '{metric_name}': Thresholds count must be {expected_threshold_count} (length of ValueByColor - 1).")
 

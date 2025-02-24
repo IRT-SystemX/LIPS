@@ -89,6 +89,6 @@ def get_nested_value(data, keys):
         data = data[key]
     return data
 
-def filter_metrics(data, metric_list):
+def filter_metrics(data, metrics):
     """Filter the data dictionary to include only the specified metrics."""
-    return {key: value for key, value in data.items() if key in metric_list}
+    return {key: value for key, value in data.items() if key in metrics}
