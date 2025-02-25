@@ -117,7 +117,7 @@ class AirfoilPowerGridScoring(Scoring):
 
         speed_up = self._calculate_speed_up(time_inference)
         max_speed_ratio_allowed = self.thresholds["max_speed_ratio_allowed"]["thresholds"][0]
-        res = min(math.log10(speed_up) / math.log10(max_speed_ratio_allowed), 1)
+        res = min((math.log10(speed_up) / math.log10(max_speed_ratio_allowed)), 1)
         return max(res, 0)
 
     def _calculate_speed_up(self, time_inference: float) -> float:
@@ -141,7 +141,7 @@ class AirfoilPowerGridScoring(Scoring):
         Raises:
             ValueError: If both metrics_dict and metrics_path are None.
         """
-        
+
         if metrics_dict is not None:
             metrics = metrics_dict.copy()
         elif metrics_path != "":
@@ -149,7 +149,7 @@ class AirfoilPowerGridScoring(Scoring):
         else:
             raise ValueError("metrics_path and metrics_dict cant' both be None")
 
-        time_inference = metrics_dict["test_mean_simulation_time"]
+        time_inference = metrics["test_mean_simulation_time"]
 
         ml_metrics = self._reconstruct_ml_metrics(metrics,
                                                   ml_key_path=["fc_metrics_test", "test", "ML", "MSE_normalized"])

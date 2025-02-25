@@ -1,6 +1,7 @@
 import json
 import math
 from typing import Union, Dict
+import logging
 
 
 def read_json(json_path: str = "", json_object: Union[Dict, str, None] = None):
@@ -85,6 +86,7 @@ def get_nested_value(data, keys):
     """Retrieve a nested value from a dictionary using a list of keys."""
     for key in keys:
         if key not in data:
+            logging.warning(f"Path '{keys}' not found in data. Returning None.")
             return None
         data = data[key]
     return data
