@@ -7,7 +7,6 @@
 # This file is part of leap_net, leap_net a keras implementation of the LEAP Net model.
 
 
-import time
 import os
 import setuptools
 from setuptools import setup
