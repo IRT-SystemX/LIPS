@@ -1,7 +1,11 @@
 # Copyright (c) 2021, IRT SystemX (https://www.irt-systemx.fr/en/)
 # See AUTHORS.txt
 # This Source Code Form is subject to the terms of the Mozilla Public License, version 2.0.
+# If a copy of the Mozilla Public License, version 2.0 was not distributed with this file,
+# you can obtain one at http://mozilla.org/MPL/2.0/.
 # SPDX-License-Identifier: MPL-2.0
+# This file is part of LIPS, LIPS is a python platform for power networks benchmarking
+
 
 import bisect
 from abc import ABC
@@ -16,7 +20,7 @@ VALID_COMPARISONS = {"minimize", "maximize"}
 
 class Scoring(ABC):
     """
-    Abstract base class for calculating scores based on metrics and thresholds.
+    Base class for calculating scores based on metrics and thresholds.
     """
 
     def __init__(self, config: Union[ConfigManager, None] = None, config_path: Union[str, None] = None,
@@ -105,7 +109,15 @@ class Scoring(ABC):
                     f"Metric '{metric_name}': Thresholds count must be {expected_threshold_count} (length of ValueByColor - 1).")
 
     def _calculate_leaf_score(self, colors: List[str]) -> float:
-        """Calculates the score for a leaf node (set of colorized metrics)."""
+        """
+        Calculates the score for a leaf node (set of colorized metrics).
+
+        Args:
+            colors: A list of color strings representing the colorized metrics.
+
+        Returns:
+            The calculated score for the leaf node.
+        """
         return sum(self.value_by_color[color] for color in colors) / (len(colors) * max(self.value_by_color.values()))
 
     def calculate_sub_scores(self, node: Dict[str, Any]) -> Union[float, Dict[str, Any]]:
@@ -137,7 +149,6 @@ class Scoring(ABC):
 
         Args:
             tree: a pre-calculated sub-score tree
-            coefficients: a tree containing coefficient values
             key_path: the path to the current node in the tree
 
         Returns:
@@ -175,4 +186,3 @@ class Scoring(ABC):
                 self.logger.warning(f"Coefficient not found for path: {' -> '.join(key_path)}. Using default value 1.")
                 return None
         return current.get("value")
-
