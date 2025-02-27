@@ -1,12 +1,12 @@
 import math
 from typing import Union, Dict, List
 
-from .scoring import Scoring
+from .powergrid_scoring import PowerGridScoring
 from .utils import get_nested_value, filter_metrics, read_json
 from ..config import ConfigManager
 
 
-class AirfoilPowerGridScoring(Scoring):
+class AirfoilPowerGridScoring(PowerGridScoring):
     """
     Class responsible for calculating the score of the AirFoil Power Grid competition : https://www.codabench.org/competitions/3282/
     """
@@ -119,14 +119,6 @@ class AirfoilPowerGridScoring(Scoring):
         max_speed_ratio_allowed = self.thresholds["max_speed_ratio_allowed"]["thresholds"][0]
         res = min((math.log10(speed_up) / math.log10(max_speed_ratio_allowed)), 1)
         return max(res, 0)
-
-    def _calculate_speed_up(self, time_inference: float) -> float:
-        """Calculates the speedup factor based on:
-        SpeedUp = time_ClassicalSolver / time_Inference
-        """
-
-        time_classical_solver = self.thresholds["reference_mean_simulation_time"]["thresholds"][0]
-        return time_classical_solver / time_inference
 
     def compute_scores(self, metrics_dict: Union[Dict, None] = None, metrics_path: str = "") -> Dict:
         """

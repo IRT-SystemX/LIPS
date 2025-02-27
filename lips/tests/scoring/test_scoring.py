@@ -12,10 +12,10 @@ class TestScoring(unittest.TestCase):
                            "spearman_correlation_drag": {"comparison_type": "maximize", "thresholds": [0.8, 0.9]},
                            "inference_time": {"comparison_type": "minimize", "thresholds": [500, 1000]},
                            "reference_mean_simulation_time": {"comparison_type": "ratio", "thresholds": [1500]},
-                           "max_speed_ratio_allowed": {"comparison_type": "ratio", "thresholds": [10000]}
-                           },
+                           "max_speed_ratio_allowed": {"comparison_type": "ratio", "thresholds": [10000]}},
             "valuebycolor": {"green": 2, "orange": 1, "red": 0},
-            "coefficients": {"ML": 0.3, "OOD": 0.3, "Physics": 0.3, "Speed": 0.1}}[key]
+            "coefficients": {"ML": {"value": 0.3}, "OOD": {"value": 0.3}, "Physics": {"value": 0.3},
+                             "Speed": {"value": 0.1}}}[key]
         self.scoring = Scoring(config=self.mock_config)
 
     def test_colorize_metrics(self):

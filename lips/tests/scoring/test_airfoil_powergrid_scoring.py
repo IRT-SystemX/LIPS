@@ -17,7 +17,9 @@ class TestAirfoilPowerGridScoring(unittest.TestCase):
                            "reference_mean_simulation_time": {"comparison_type": "ratio", "thresholds": [1500]},
                            "max_speed_ratio_allowed": {"comparison_type": "ratio", "thresholds": [10000]}},
             "valuebycolor": {"green": 2, "orange": 1, "red": 0},
-            "coefficients": {"ML": 0.3, "OOD": 0.3, "Physics": 0.3, "Speed": 0.1}}[key]
+            "coefficients": {"ML": {"value": 0.3, "Accuracy": {"value": 0.75}, "Speed": {"value": 0.25}},
+                             "OOD": {"value": 0.3, "Accuracy": {"value": 0.75}, "Speed": {"value": 0.25}},
+                             "Physics": {"value": 0.3}}}[key]
         self.scoring = AirfoilPowerGridScoring(config=self.mock_config)
 
     def test__reconstruct_ml_metrics(self):
@@ -72,13 +74,13 @@ class TestAirfoilPowerGridScoring(unittest.TestCase):
     def test_compute_scores_from_path(self, mock_file):
         mock_json_data = {"test_mean_simulation_time": 5.0, "fc_metrics_test": {
             "test": {"ML": {"MSE_normalized": {"a_or": 0.4}, "MSE_normalized_surfacic": {"pressure": 0.008}},
-                "Physics": {"spearman_correlation_drag": 0.7}}}, "fc_metrics_test_ood": {
+                     "Physics": {"spearman_correlation_drag": 0.7}}}, "fc_metrics_test_ood": {
             "test_ood": {"ML": {"MSE_normalized": {"a_or": 0.3}, "MSE_normalized_surfacic": {"pressure": 0.06}},
-                "Physics": {"spearman_correlation_lift": 0.9}}}}
+                         "Physics": {"spearman_correlation_lift": 0.9}}}}
         mock_file.return_value.read.return_value = json.dumps(mock_json_data)
 
         scores = self.scoring.compute_scores(metrics_path="dummy.json")
-        self.assertAlmostEqual(scores["Global Score"], 0.521568188)
+        self.assertAlmostEqual(scores["Global Score"], 0.484068188)
 
     def test_compute_scores_from_dict(self):
         metrics_dict = {"test_mean_simulation_time": 5.0, "fc_metrics_test": {
@@ -87,7 +89,7 @@ class TestAirfoilPowerGridScoring(unittest.TestCase):
             "test_ood": {"ML": {"MSE_normalized": {"a_or": 0.3}, "MSE_normalized_surfacic": {"pressure": 0.06}},
                          "Physics": {"spearman_correlation_lift": 0.9}}}}
         scores = self.scoring.compute_scores(metrics_dict=metrics_dict)
-        self.assertAlmostEqual(scores["Global Score"], 0.521568188)
+        self.assertAlmostEqual(scores["Global Score"], 0.484068188)
 
     def test_compute_scores_invalid_input(self):
         with self.assertRaises(ValueError):
@@ -96,10 +98,11 @@ class TestAirfoilPowerGridScoring(unittest.TestCase):
     def test_compute_scores_missing_time(self):
         metrics_dict = {"fc_metrics_test": {
             "test": {"ML": {"MSE_normalized": {"some_metric": 0.4}}, "Physics": {"some_metric": 0.7}}},
-                        "fc_metrics_test_ood": {"test_ood": {"ML": {"MSE_normalized": {"some_metric": 0.3}},
-                                                             "Physics": {"some_metric": 0.9}}}}  # Dummy metrics
+            "fc_metrics_test_ood": {"test_ood": {"ML": {"MSE_normalized": {"some_metric": 0.3}},
+                                                 "Physics": {"some_metric": 0.9}}}}  # Dummy metrics
         with self.assertRaises(KeyError):
             self.scoring.compute_scores(metrics_dict=metrics_dict)
+
 
 if __name__ == '__main__':
     unittest.main()

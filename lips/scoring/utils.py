@@ -1,7 +1,6 @@
 import json
-import math
-from typing import Union, Dict
 import logging
+from typing import Union, Dict
 
 
 def read_json(json_path: str = "", json_object: Union[Dict, str, None] = None):
@@ -44,44 +43,6 @@ def read_json(json_path: str = "", json_object: Union[Dict, str, None] = None):
         raise ValueError("Both json_path and json_object are empty. Provide at least one.")
 
 
-def flatten_dict(input_dict, parent_key=""):
-    """
-    Flatten a nested dictionary structure.
-
-    :param input_dict: Dictionary to flatten
-    :param parent_key: Key to prepend (used for recursion)
-    :return: Flattened dictionary
-    """
-    flattened = {}
-    for key, value in input_dict.items():
-        if isinstance(value, dict):
-            # Recursively flatten if the value is a dictionary
-            flattened.update(flatten_dict(value, parent_key))
-        else:
-            # Add to flattened dictionary
-            flattened[key] = value
-    return flattened
-
-
-def weibull(c, b, x):
-    a = c * ((-math.log(0.9)) ** (-1 / b))
-    return 1. - math.exp(-(x / a) ** b)
-
-def merge_dicts(dict_list):
-    """
-    Merges a list of dictionaries into a single dictionary.
-
-    Parameters:
-    - dict_list (list): A list of dictionaries to merge.
-
-    Returns:
-    - dict: A single dictionary containing all key-value pairs.
-    """
-    merged_dict = {}
-    for d in dict_list:
-        merged_dict.update(d)  # Update merged_dict with each dictionary in the list
-    return merged_dict
-
 def get_nested_value(data, keys):
     """Retrieve a nested value from a dictionary using a list of keys."""
     for key in keys:
@@ -90,6 +51,7 @@ def get_nested_value(data, keys):
             return None
         data = data[key]
     return data
+
 
 def filter_metrics(data, metrics):
     """Filter the data dictionary to include only the specified metrics."""

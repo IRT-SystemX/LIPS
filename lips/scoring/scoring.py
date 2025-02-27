@@ -131,21 +131,48 @@ class Scoring(ABC):
         else:  # Sub-tree node
             return {key: self.calculate_sub_scores(value) for key, value in node.items()}
 
-    def calculate_global_score(self, tree: Union[float, Dict[str, Any]]) -> float:
+    def calculate_global_score(self, tree: Union[float, Dict[str, Any]], key_path: List[str] = None) -> float:
         """
         Calculates the global score for the entire metrics tree.
 
         Args:
             tree: a pre-calculated sub-score tree
+            coefficients: a tree containing coefficient values
+            key_path: the path to the current node in the tree
 
         Returns:
             The global score.
+
         """
+
         if isinstance(tree, (int, float)):  # Base case: already a sub-score
             return tree
 
+        key_path = key_path or []
         global_score = 0
         for key, subtree in tree.items():
-            weight = self.coefficients.get(key, 1)  # Default weight is 1
-            global_score += weight * self.calculate_global_score(subtree)
+            new_path = key_path + [key]
+
+            weight = self._get_coefficient(new_path) or 1  # Default weight is 1
+            global_score += weight * self.calculate_global_score(subtree, new_path)
+
         return global_score
+
+    def _get_coefficient(self, key_path: List[str]) -> Union[float, None]:
+        """
+        Retrieves the coefficient value from a nested dictionary based on a given path.
+        Args:
+            key_path: A list of keys representing the path to the desired coefficient.
+
+        Returns:
+            The coefficient value if found, otherwise None.
+        """
+        current = self.coefficients
+        for key in key_path:
+            if isinstance(current, dict) and key in current:
+                current = current[key]
+            else:
+                self.logger.warning(f"Coefficient not found for path: {' -> '.join(key_path)}. Using default value 1.")
+                return None
+        return current.get("value")
+
