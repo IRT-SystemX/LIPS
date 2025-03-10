@@ -9,12 +9,12 @@
 import math
 from typing import Union, Dict, List
 
-from .powergrid_scoring import PowerGridScoring
+from .scoring import Scoring
 from .utils import get_nested_value, filter_metrics, read_json
 from ..config import ConfigManager
 
 
-class AirfoilPowerGridScoring(PowerGridScoring):
+class AirfoilPowerGridScoring(Scoring):
     """
     Calculates the score for the AirFoil Power Grid competition: https://www.codabench.org/competitions/3282/
     """
@@ -171,3 +171,17 @@ class AirfoilPowerGridScoring(PowerGridScoring):
         global_score = self.calculate_global_score(sub_scores_values)
 
         return {"Score Colors": sub_scores_color, "Score values": sub_scores_values, "Global Score": global_score}
+
+    def _calculate_speed_up(self, time_inference: float) -> float:
+        """
+        Calculates the speedup factor based on:
+           SpeedUp = time_ClassicalSolver / time_Inference
+        Args:
+            time_inference: The inference time in seconds.
+
+        Returns:
+            The calculated speedup factor.
+        """
+
+        time_classical_solver = self.thresholds["reference_mean_simulation_time"]["thresholds"][0]
+        return time_classical_solver / time_inference
