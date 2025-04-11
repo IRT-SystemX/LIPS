@@ -150,9 +150,9 @@ class PowerGridDataSet(DataSet):
         self._sizes_x = None  # dimension of each variable
         self._sizes_tau = None
         self._sizes_y = None  # dimension of each variable
-        self._attr_tau = self.config.get_option("attr_tau")
-        self._attr_x = self.config.get_option("attr_x")
-        self._attr_y = self.config.get_option("attr_y")
+        self._attr_tau = self._get_tuple(self.config.get_option("attr_tau"))
+        self._attr_x = self._get_tuple(self.config.get_option("attr_x"))
+        self._attr_y = self._get_tuple(self.config.get_option("attr_y"))
 
         self.env_data = dict()
         self._slack_id = None
@@ -644,6 +644,13 @@ class PowerGridDataSet(DataSet):
         if self._attr_tau is not None:
             self._sizes_tau = np.array([self.data[el].shape[1] for el in self._attr_tau], dtype=int)
             self._size_tau = np.sum(self._sizes_tau)
+            
+    @staticmethod
+    def _get_tuple(attr):
+        if not isinstance(attr, tuple):
+            return (attr,)
+        else:
+            return attr
 
     def get_sizes(self, attr_x: Union[tuple, None]=None, attr_tau: Union[tuple, None]=None, attr_y: Union[tuple, None]=None):
         """Get the sizes of the dataset
