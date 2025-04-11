@@ -110,11 +110,11 @@ class PowerGridBenchmark(Benchmark):
         # concatenate all the variables for data generation
         attr_names = ()
         if self.config.get_option("attr_x") is not None:
-            attr_names += self.config.get_option("attr_x")
+            attr_names += self._get_tuple(self.config.get_option("attr_x"))
         if self.config.get_option("attr_tau") is not None:
-            attr_names += self.config.get_option("attr_tau")
+            attr_names += self._get_tuple(self.config.get_option("attr_tau"))
         if self.config.get_option("attr_y") is not None:
-            attr_names += self.config.get_option("attr_y")
+            attr_names += self._get_tuple(self.config.get_option("attr_y"))
         
         # attr_names = self.config.get_option("attr_x") + \
         #              self.config.get_option("attr_tau") + \
@@ -432,6 +432,13 @@ class PowerGridBenchmark(Benchmark):
                                                scenario_params=self.config.get_option("dataset_create_params")["test_ood"],
                                                seed=self.test_ood_topo_actor_seed,
                                                log_path=self.log_path)
+        
+    @staticmethod
+    def _get_tuple(attr):
+        if not isinstance(attr, tuple):
+            return (attr,)
+        else:
+            return attr
 
 def get_env(env_kwargs: dict):
     """Getter for the environment
