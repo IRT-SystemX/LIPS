@@ -213,3 +213,6 @@ logs.log
 lips_logs.log
 
 trained_models/
+/draft.py
+/score_scripts/NeurIPS_scoreV2_8/
+/score_scripts/PowerGrid_score/
